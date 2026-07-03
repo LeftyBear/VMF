@@ -270,27 +270,17 @@ Reverse dependencies **MUST NOT** exist.
 
 The specification hierarchy is defined as follows:
 
-```text
-Canon_v2.0.md
-        │
-        ▼
-Architecture_v2.0.md
-        │
-        ▼
-SpecificationHierarchy_v2.0.md
-        │
-        ▼
-Domain Specifications
-        │
-        ▼
-Component Specifications
-        │
-        ▼
-Interface Specifications
-        │
-        ▼
-Operational Specifications
-```
+| Level | Specification |
+|------:|---------------|
+| 1 | `Canon_v2.0.md` |
+| 2 | `Architecture_v2.0.md` |
+| 3 | `SpecificationHierarchy_v2.0.md` |
+| 4 | Domain Specifications |
+| 5 | Component Specifications |
+| 6 | Interface Specifications |
+| 7 | Operational Specifications |
+
+Each specification **MUST** depend only on specifications located above it in the hierarchy.
 
 All dependency relationships **MUST** follow this direction.
 
