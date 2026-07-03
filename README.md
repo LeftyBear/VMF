@@ -1,12 +1,12 @@
 # VMF
 
-Build.xlam は VMF の実装プロジェクトです
+Build.xlam の実装プロジェクトです。
 
-本プロジェクトは、保守性・拡張性・テスト容易性を重視したアーキテクチャを採用し、GitHub を唯一の正本（Single Source of Truth）として管理します。
+本プロジェクトは、**保守性・拡張性・テスト容易性**を重視したアーキテクチャを採用し、GitHub を唯一の正本（Single Source of Truth）として管理します。
 
 ---
 
-## アーキテクチャ
+## Architecture
 
 ```text
 UI
@@ -20,20 +20,22 @@ Infrastructure
 Common
 ```
 
-依存関係は一方向のみとし、循環参照は禁止します。
+依存関係は一方向のみとし、循環参照を禁止します。
 
 ---
 
-## 開発環境
+## Development Environment
 
-* Language : VBA (Excel)
-* IDE : Visual Studio Code
-* Version Control : Git / GitHub
-* AI Assistant : ChatGPT / OpenAI Codex
+| Item            | Value                  |
+| --------------- | ---------------------- |
+| Language        | VBA (Excel)            |
+| IDE             | Visual Studio Code     |
+| Version Control | Git / GitHub           |
+| AI Assistant    | ChatGPT / OpenAI Codex |
 
 ---
 
-## ディレクトリ構成
+## Directory Structure
 
 ```text
 src/
@@ -45,24 +47,26 @@ prompt/
 
 ---
 
-## 開発ルール
+## Development Rules
 
 * VMF v1.0 の設計は凍結し、設計変更は行いません。
 * 改善案は **VMF v1.1 Candidate** として管理します。
-* GitHub を唯一の正本として運用します。
+* GitHub を唯一の正本（Single Source of Truth）として運用します。
 * 原則として **1ファイル完成 = 1コミット** とします。
 
 ---
 
-## ドキュメント
+## Documentation
 
-* `spec/` : 仕様書
-* `docs/` : 開発ドキュメント
-* `prompt/` : AI プロンプト
-* `tests/` : テスト
+| Directory | Description |
+| --------- | ----------- |
+| `spec/`   | 仕様書         |
+| `docs/`   | 開発ドキュメント    |
+| `prompt/` | AI プロンプト    |
+| `tests/`  | テスト         |
 
 ---
 
-## ライセンス
+## License
 
-プロジェクト方針に従って決定します。
+ライセンスは、プロジェクト方針に従って決定します。
