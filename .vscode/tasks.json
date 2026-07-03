@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Export VBA",
+            "type": "shell",
+            "command": "./tools/export/export.ps1",
+            "problemMatcher": []
+        },
+        {
+            "label": "Import VBA",
+            "type": "shell",
+            "command": "./tools/import/import.ps1",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "./tools/build/build.ps1",
+            "problemMatcher": []
+        },
+        {
+            "label": "Release",
+            "type": "shell",
+            "command": "./tools/release/release.ps1",
+            "problemMatcher": []
+        }
+    ]
+}
