@@ -1,6 +1,6 @@
-# Build.xlam
+# VMF
 
-Build.xlam は、**VMF v1.0** および **VBAアプリケーション開発正典 v2.0** に基づいて開発する Excel VBA アドインプロジェクトです。
+Build.xlam は VMF の実装プロジェクトです
 
 本プロジェクトは、保守性・拡張性・テスト容易性を重視したアーキテクチャを採用し、GitHub を唯一の正本（Single Source of Truth）として管理します。
 
