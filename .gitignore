@@ -1,0 +1,9 @@
+*.xlam
+*.xlsm
+*.xlsb
+
+*.tmp
+*.bak
+*.log
+
+.vscode/
