@@ -92,45 +92,23 @@ Partial conformance SHALL NOT be claimed.
 
 ---
 
-# 5. Composition Root Responsibilities
+# 5. Core Responsibilities (Unified)
 
-## 5.1 General
+## 5.1 Object Creation
+A Composition Root SHALL be solely responsible for constructing application components.
 
-A Composition Root SHALL act as the single location responsible for composing application object graphs.
+## 5.2 Dependency Resolution
+A Composition Root SHALL resolve dependencies between application components in accordance with Architecture_v2.0.md.
 
-No other component SHALL assume this responsibility.
-
----
-
-## 5.2 Object Creation
-
-A Composition Root SHALL create and initialize application components as required by the published architecture.
-
-Object creation SHALL NOT be delegated to consumers.
-
----
-
-## 5.3 Dependency Resolution
-
-A Composition Root SHALL resolve dependencies between application components.
-
-Dependency resolution SHALL comply with Architecture_v2.0.md.
-
----
+## 5.3 Lifecycle Coordination
+A Composition Root SHALL coordinate application lifecycle initialization and shutdown in a deterministic manner.
 
 ## 5.4 Initialization
-
-A Composition Root SHALL initialize components in a deterministic order.
-
-Initialization order SHALL be documented where externally observable.
-
----
+A Composition Root SHALL initialize components in a deterministic order before external exposure.
 
 ## 5.5 Encapsulation
+Composition mechanisms SHALL remain hidden from consumers.
 
-Consumers SHALL NOT require knowledge of the object composition process.
-
-Composition mechanisms SHALL remain internal to the Composition Root.
 ---
 
 # 6. Composition Design Principles
@@ -215,124 +193,33 @@ The Composition Root SHALL document:
 
 ---
 
-# 7. Object Creation Responsibilities
+# 7. Object Creation (Normative Reinforcement)
 
-## 7.1 General
+This section reinforces Section 5.1.
 
-The Composition Root SHALL be solely responsible for constructing application components.
+All object creation responsibilities remain defined in Section 5.1.
 
-Consumers SHALL NOT create application service objects directly unless explicitly permitted by the architecture.
-
----
-
-## 7.2 Ownership
-
-Every application component SHALL have a clearly defined creator.
-
-Ownership of object creation SHALL be unambiguous.
+No additional behavioral rules are introduced.
 
 ---
 
-## 7.3 Initialization
+# 8. Dependency Resolution (Formal Appendix)
 
-Objects SHALL be initialized before becoming externally accessible.
+This section reinforces Section 5.2.
 
-Partially initialized objects SHALL NOT be exposed.
+All dependency resolution rules are defined in Section 5.2.
 
----
-
-## 7.4 Construction Consistency
-
-Equivalent startup conditions SHALL produce equivalent object instances and dependency relationships.
-
-Construction behavior SHALL remain deterministic.
+No additional behavioral rules are introduced.
 
 ---
 
-## 7.5 Lifetime Registration
+# 9. Lifecycle Responsibilities (Formal Appendix)
 
-Where component lifetimes are managed, lifetime ownership SHALL be defined by the Composition Root.
+This section reinforces Section 5.3.
 
-Lifetime policies SHALL remain consistent throughout the application.
+All lifecycle responsibilities are defined in Section 5.3.
 
----
-
-# 8. Dependency Resolution Rules
-
-## 8.1 General
-
-Dependency resolution SHALL occur exclusively within the Composition Root unless otherwise defined by the architecture.
-
----
-
-## 8.2 Contract-Based Resolution
-
-Dependencies SHALL be resolved through published contracts.
-
-Concrete implementation details SHALL remain internal.
-
----
-
-## 8.3 Direction
-
-Dependency direction SHALL conform to Architecture_v2.0.md.
-
-Circular dependency resolution SHALL NOT occur.
-
----
-
-## 8.4 Visibility
-
-Resolved dependencies SHALL remain invisible to consumers except through published contracts.
-
-Implementation-specific wiring SHALL NOT become part of the public contract.
-
----
-
-## 8.5 Stability
-
-Changes to dependency resolution SHALL NOT alter published API behavior unless governed by the project's compatibility policy.
----
-
-# 9. Lifecycle Responsibilities
-
-## 9.1 General
-
-The Composition Root SHALL coordinate the application lifecycle in accordance with the project architecture.
-
-Lifecycle coordination SHALL remain deterministic.
-
----
-
-## 9.2 Startup
-
-The Composition Root SHALL initialize application components in a well-defined order.
-
-Components SHALL NOT become externally accessible before required initialization has completed.
-
----
-
-## 9.3 Runtime Coordination
-
-The Composition Root MAY coordinate application-wide lifecycle events where defined by the architecture.
-
-Business processing SHALL remain outside lifecycle coordination responsibilities.
-
----
-
-## 9.4 Shutdown
-
-Where orderly shutdown is supported, the Composition Root SHALL coordinate component termination in a deterministic manner.
-
-Resource release responsibilities SHALL be clearly defined.
-
----
-
-## 9.5 Lifetime Management
-
-The Composition Root SHALL manage component lifetimes according to documented lifecycle policies.
-
-Lifetime behavior SHALL remain consistent across compatible releases.
+No additional behavioral rules are introduced.
 
 ---
 
@@ -417,6 +304,7 @@ Behavioral differences resulting from configuration SHALL be documented where ex
 Where default configuration influences startup behavior, such behavior SHALL be documented.
 
 Consumers SHALL NOT rely upon undocumented default values.
+
 ---
 
 # 12. Review Checklist
