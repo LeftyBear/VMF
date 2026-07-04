@@ -623,6 +623,9 @@ A specification conforms to the Version Rules only if:
 - the current version is recorded in the Manifest;
 - version progression follows the defined rules; and
 - revision history preserves traceability across version changes.
+
+---
+
 # 10. Manifest Table
 
 ## 10.1 General
