@@ -757,7 +757,7 @@ Normative requirements SHALL be stable across implementation revisions unless su
 
 ---
 
-# Integrated Review
+# Appendix A. Integrated Review
 
 The completed **ClassSpecification_v2.0.md** has been reviewed against the frozen project specifications.
 
