@@ -49,10 +49,12 @@ This specification SHALL conform to the following normative documents:
 - Canon_v2.0
 - Architecture_v2.0
 - ...
-# 4. Naming Principles
 
-## 4.1 General
+---
 
+## 4. Naming Principles
+
+### 4.1 General
 All identifiers SHALL follow a consistent naming convention throughout the Build.xlam Project.
 
 Naming SHALL emphasize:
@@ -68,53 +70,38 @@ Identifiers SHALL clearly express their responsibility without requiring impleme
 
 ---
 
-## 4.2 Consistency
-
+### 4.2 Consistency
 The same concept SHALL always use the same identifier.
-
 Different identifiers SHALL NOT be used for the same semantic meaning.
-
 Likewise, the same identifier SHALL NOT represent different concepts.
 
 ---
 
-## 4.3 Descriptiveness
-
+### 4.3 Descriptiveness
 Identifiers SHALL describe intent rather than implementation.
-
 Names SHALL represent domain concepts whenever possible.
-
 Implementation details SHALL NOT appear in public identifiers unless they are part of the public contract.
 
 ---
 
-## 4.4 Stability
-
+### 4.4 Stability
 Public identifiers SHALL remain stable across compatible releases.
-
 Renaming public APIs SHALL be treated as a breaking change unless compatibility is explicitly preserved.
-
 Internal identifiers MAY be renamed when doing so improves maintainability.
 
 ---
 
-## 4.5 Abbreviations
-
+### 4.5 Abbreviations
 Abbreviations SHALL be minimized.
-
 Only abbreviations defined by this specification or established by the project glossary MAY be used.
-
 Project-wide abbreviations SHALL remain consistent throughout all layers.
 
 ---
 
-## 4.6 Language
-
+### 4.6 Language
 All identifiers SHALL use English.
-
-User-facing text MAY use another language as required by the application.
-
-Comments SHOULD use the language defined by the project documentation policy.
+User-facing text MAY use other languages.
+Comments SHOULD follow project documentation policy.
 
 ---
 
@@ -1226,6 +1213,9 @@ InfErrAccessDenied
 ```
 
 Error names SHALL describe the error condition rather than its cause or implementation.
+
+---
+
 # 24. Abbreviation Rules
 
 ## 24.1 General
@@ -1238,24 +1228,23 @@ An abbreviation SHALL NOT reduce readability.
 
 ## 24.2 Approved Abbreviations
 
-The following abbreviations are approved for use.
-
 | Abbreviation | Meaning |
-|---------------|---------|
-| Api | Application Programming Interface |
-| App | Application |
-| Com | Common |
-| Dom | Domain |
-| Inf | Infrastructure |
-| Pre | Presentation |
-| Id | Identifier |
-| Url | Uniform Resource Locator |
-| Uri | Uniform Resource Identifier |
-| Xml | Extensible Markup Language |
-| Csv | Comma-Separated Values |
-| Json* | JavaScript Object Notation |
+|--------------|--------|
+| Api          | Application Programming Interface |
+| App          | Application |
+| Com          | Common |
+| Dom          | Domain |
+| Inf          | Infrastructure |
+| Pre          | Presentation |
+| Id           | Identifier |
+| Url          | Uniform Resource Locator |
+| Uri          | Uniform Resource Identifier |
+| Xml          | Extensible Markup Language |
+| Csv          | Comma-Separated Values |
+| Json         | JavaScript Object Notation |
 
-\* `Json` is reserved only for interoperability with external systems. Build.xlam Project SHALL NOT introduce JSON as an internal configuration or persistence mechanism.
+* Json is reserved only for interoperability with external systems.
+  Build.xlam Project SHALL NOT introduce JSON as an internal configuration or persistence mechanism.
 
 ---
 
