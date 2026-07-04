@@ -1,10 +1,10 @@
 # DocumentTemplate_v2.0
 
-**Version:** 2.0  
-**Status:** Frozen  
-**Encoding:** UTF-8  
-**Format:** Markdown (GitHub Flavored Markdown)  
-**Normative Language:** RFC 2119  
+**Version:** 2.0
+**Status:** Frozen
+**Encoding:** UTF-8
+**Format:** Markdown (GitHub Flavored Markdown)
+**Normative Language:** RFC 2119
 **Classification:** Normative Specification
 
 ---
@@ -113,6 +113,9 @@ Unless otherwise specified, all technical terms used in this document SHALL have
 Terms defined by higher-level specifications SHALL NOT be redefined within individual documents.
 
 If a new term is required, it SHALL first be added to the project glossary before being referenced elsewhere.
+
+---
+
 # 6. Document Metadata
 
 ## 6.1 Required Metadata
@@ -212,6 +215,7 @@ Normative requirements SHALL appear within the main body of the specification an
 Code blocks SHALL be informative unless explicitly identified as normative.
 
 ---
+
 # 11. Heading Level Rules
 
 ## 11.1 Heading Hierarchy
