@@ -436,7 +436,3 @@ This document has been reviewed against the following criteria.
 | Consistent with ClassSpecification_v2.0.md | ✔ |
 | Long-term maintainability ensured | ✔ |
 | Ready for GitHub publication | ✔ |
-
----
-
-**End of Document**
