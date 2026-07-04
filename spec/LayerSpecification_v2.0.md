@@ -1,7 +1,7 @@
 # LayerSpecification_v2.0
 
-Version: 2.0  
-Status: Frozen  
+Version: 2.0
+Status: Frozen
 Target: Build.xlam Project
 
 ---
@@ -626,9 +626,10 @@ When multiple implementation choices satisfy the specification, the alternative 
 Design consistency SHALL take precedence over local optimization.
 
 ---
-# 7. Compliance
 
-## 7.1 General Compliance
+## 7. Compliance
+
+### 7.1 General Compliance
 
 Every implementation within Build.xlam SHALL comply with this specification.
 
@@ -638,7 +639,7 @@ Non-compliant implementations SHALL be corrected before integration into the pro
 
 ---
 
-## 7.2 Layer Verification
+### 7.2 Layer Verification
 
 During design and implementation, verification SHALL confirm at minimum:
 
@@ -652,7 +653,7 @@ During design and implementation, verification SHALL confirm at minimum:
 
 ---
 
-## 7.3 Consistency with Other Specifications
+### 7.3 Consistency with Other Specifications
 
 This specification SHALL remain consistent with:
 
@@ -670,7 +671,7 @@ Where overlapping topics exist, this specification defines only the layer-specif
 
 ---
 
-## 7.4 Exception Handling
+### 7.4 Exception Handling
 
 No implementation MAY violate the layer model unless explicitly permitted by a higher-level specification.
 
@@ -680,7 +681,7 @@ Architectural exceptions SHALL be documented, justified, reviewed, and approved 
 
 ---
 
-## 7.5 Backward Compatibility
+### 7.5 Backward Compatibility
 
 Future revisions of the layer model SHOULD preserve compatibility whenever practical.
 
@@ -688,7 +689,7 @@ Where incompatible architectural changes become necessary, they SHALL be introdu
 
 ---
 
-## 7.6 Normative References
+### 7.6 Normative References
 
 The following specifications are normative for this document:
 
@@ -710,7 +711,7 @@ The following specifications are normative for this document:
 
 ---
 
-# Appendix A. Layer Dependency Matrix (Normative)
+### Appendix A. Layer Dependency Matrix (Normative)
 
 | From | Presentation | Application | Domain | Infrastructure | Common |
 |------|:------------:|:-----------:|:------:|:--------------:|:------:|
@@ -721,7 +722,3 @@ The following specifications are normative for this document:
 | Common | ✗ | ✗ | ✗ | ✗ | — |
 
 \* Infrastructure dependencies SHALL follow the contract-based dependency principles defined by DependencySpecification_v2.0.md.
-
----
-
-# End of Specification
