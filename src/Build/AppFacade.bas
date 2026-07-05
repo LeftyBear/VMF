@@ -130,6 +130,14 @@ Public Function AppGenerateApplication() As ComResult
     Set AppGenerateApplication = GeneratorService.AppGenerateApplication()
 End Function
 
+' Generates the Presentation layer in the active workbook from Presentation.manifest.
+Public Function AppGeneratePresentation() As ComResult
+    Dim GeneratorService As AppGeneratorService
+
+    Set GeneratorService = CreateCompositionRoot().AppCreateGeneratorService()
+    Set AppGeneratePresentation = GeneratorService.AppGeneratePresentation()
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================

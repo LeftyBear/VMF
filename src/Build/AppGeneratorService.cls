@@ -127,39 +127,46 @@ End Function
 
 ' Generates the Common layer from Common.manifest.
 Public Function AppGenerateCommon() As ComResult
-    Set AppGenerateCommon = GenerateLayer("Common", "Common.manifest", "AppGenerateCommon")
+    Set AppGenerateCommon = GenerateLayer("Common")
 End Function
 
 ' Generates the Manifest layer from Manifest.manifest.
 Public Function AppGenerateManifest() As ComResult
-    Set AppGenerateManifest = GenerateLayer("Manifest", "Manifest.manifest", "AppGenerateManifest")
+    Set AppGenerateManifest = GenerateLayer("Manifest")
 End Function
 
 ' Generates the Infrastructure layer from Infrastructure.manifest.
 Public Function AppGenerateInfrastructure() As ComResult
-    Set AppGenerateInfrastructure = GenerateLayer("Infrastructure", "Infrastructure.manifest", "AppGenerateInfrastructure")
+    Set AppGenerateInfrastructure = GenerateLayer("Infrastructure")
 End Function
 
 ' Generates the Domain layer from Domain.manifest.
 Public Function AppGenerateDomain() As ComResult
-    Set AppGenerateDomain = GenerateLayer("Domain", "Domain.manifest", "AppGenerateDomain")
+    Set AppGenerateDomain = GenerateLayer("Domain")
 End Function
 
 ' Generates the Application layer from Application.manifest.
 Public Function AppGenerateApplication() As ComResult
-    Set AppGenerateApplication = GenerateLayer("Application", "Application.manifest", "AppGenerateApplication")
+    Set AppGenerateApplication = GenerateLayer("Application")
 End Function
 
-Private Function GenerateLayer(ByVal LayerName As String, ByVal ManifestFileName As String, ByVal OperationName As String) As ComResult
+' Generates the Presentation layer from Presentation.manifest.
+Public Function AppGeneratePresentation() As ComResult
+    Set AppGeneratePresentation = GenerateLayer("Presentation")
+End Function
+
+Private Function GenerateLayer(ByVal LayerName As String) As ComResult
     Dim Items As Collection
     Dim Item As ManifestItem
     Dim CodeText As String
     Dim Result As ComResult
+    Dim OperationName As String
 
     On Error GoTo ErrHandler
 
+    OperationName = "AppGenerate" & LayerName
+
     ComRequireText LayerName, "LayerName", OperationName
-    ComRequireText ManifestFileName, "ManifestFileName", OperationName
 
     If Generator Is Nothing Then
         Err.Raise ComErrInvalidState, OperationName, "GeneratorService is not initialized."
@@ -173,7 +180,7 @@ Private Function GenerateLayer(ByVal LayerName As String, ByVal ManifestFileName
         Err.Raise ComErrInvalidState, OperationName, "ManifestProvider is not initialized."
     End If
 
-    Set Items = ManifestProvider.InfLoadManifestItems(ResolveBuildManifestPath(ManifestFileName))
+    Set Items = ManifestProvider.InfLoadManifestItems(ResolveBuildManifestPath(LayerName & ".manifest"))
     For Each Item In Items
         CodeText = Generator.InfGenerateManifestItem(Item)
         Set Result = AddGeneratedManifestItem(Item, CodeText)
