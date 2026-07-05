@@ -26,6 +26,7 @@ Public Sub PreRunUiPhase5Tests()
     VerifyInitialize
     VerifyValidationMessage
     VerifyBuildMessage
+    VerifyGenerateModuleMessage
     VerifyRibbonLoaded
 End Sub
 
@@ -50,6 +51,21 @@ Private Sub VerifyBuildMessage()
         PreExpectedBuildMessage, _
         PreShowBuildResult(ComCreateSuccess()), _
         "Build success message should match."
+End Sub
+
+Private Sub VerifyGenerateModuleMessage()
+    Dim Result As ComResult
+
+    Set Result = AppGenerateModule("VMF_TestModule_UI_Phase5")
+    AssertEquals _
+        PreExpectedBuildMessage, _
+        PreShowBuildResult(Result), _
+        "Generate module presentation message should match."
+
+    ' Cleanup generated module
+    On Error Resume Next
+    ThisWorkbook.VBProject.VBComponents.Remove ThisWorkbook.VBProject.VBComponents("VMF_TestModule_UI_Phase5")
+    On Error GoTo 0
 End Sub
 
 Private Sub VerifyRibbonLoaded()
