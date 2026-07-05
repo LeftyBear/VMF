@@ -82,6 +82,14 @@ Public Function AppGenerateModule(ByVal ModuleName As String) As ComResult
     Set AppGenerateModule = GeneratorService.AppGenerateModule(ModuleName)
 End Function
 
+' Generates a class module in the active workbook.
+Public Function AppGenerateClass(ByVal ClassName As String) As ComResult
+    Dim GeneratorService As AppGeneratorService
+
+    Set GeneratorService = CreateCompositionRoot().AppCreateGeneratorService()
+    Set AppGenerateClass = GeneratorService.AppGenerateClass(ClassName)
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================

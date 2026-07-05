@@ -14,6 +14,7 @@ $runners = @(
     'DomRunVmfCorePhase3Tests',
     'AppRunGeneratorPhase1Tests',
     'AppRunGeneratorPhase1NegativeTests',
+    'AppRunGeneratorPhase2Tests',
     'AppRunBuildPhase4Tests',
     'PreRunUiPhase5Tests',
     'PreRunGenerateModulePhase6Tests'

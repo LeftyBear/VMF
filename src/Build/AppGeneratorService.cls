@@ -74,6 +74,47 @@ ErrHandler:
     Set AppGenerateModule = ComCreateFailureFromErr("AppGeneratorService.AppGenerateModule", Desc, "Error", False)
 End Function
 
+' Generates a class module with the required template.
+' Parameters:
+'   ClassName: Desired class name.
+' Return value:
+'   ComResult describing success or failure.
+Public Function AppGenerateClass(ByVal ClassName As String) As ComResult
+    Dim CodeText As String
+    Dim LayerName As String
+
+    On Error GoTo ErrHandler
+
+    ComRequireText ClassName, "ClassName", "AppGenerateClass"
+
+    If Not ModuleNameLikeValid(ClassName) Then
+        Err.Raise vbObjectError + 9100, "AppGenerateClass", "ClassName is invalid. Use letters, numbers and underscore; start with a letter."
+    End If
+
+    If Generator Is Nothing Then
+        Err.Raise ComErrInvalidState, "AppGenerateClass", "GeneratorService is not initialized."
+    End If
+
+    If VbaProjectProvider Is Nothing Then
+        Err.Raise ComErrInvalidState, "AppGenerateClass", "VbaProjectProvider is not initialized."
+    End If
+
+    LayerName = ResolveLayerName(ClassName)
+    CodeText = Generator.InfGenerateStandardClass(ClassName, LayerName)
+    Set AppGenerateClass = VbaProjectProvider.InfAddClassModule(ClassName, CodeText)
+    Exit Function
+
+ErrHandler:
+    Dim Desc As String
+
+    Desc = Trim$(Err.Description)
+    If Len(Desc) = 0 Then
+        Desc = vbNullString
+    End If
+
+    Set AppGenerateClass = ComCreateFailureFromErr("AppGeneratorService.AppGenerateClass", Desc, "Error", False)
+End Function
+
 ' Validates basic module name rules.
 Private Function ModuleNameLikeValid(ByVal Name As String) As Boolean
     Dim i As Long

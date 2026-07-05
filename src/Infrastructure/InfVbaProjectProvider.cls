@@ -17,6 +17,7 @@ Option Explicit
 '=========================================================================
 
 Private Const InfVbextCtStdModule As Long = 1
+Private Const InfVbextCtClassModule As Long = 2
 
 ' Adds a standard module to the active workbook and writes CodeText.
 Public Function InfAddStandardModule(ByVal ModuleName As String, ByVal CodeText As String) As ComResult
@@ -59,6 +60,49 @@ ErrHandler:
     On Error GoTo 0
 
     Set InfAddStandardModule = ComCreateFailureFromErr("InfVbaProjectProvider.InfAddStandardModule", Description, "Error", False)
+End Function
+
+' Adds a class module to the active workbook and writes CodeText.
+Public Function InfAddClassModule(ByVal ClassName As String, ByVal CodeText As String) As ComResult
+    Dim VBProj As Object
+    Dim NewComp As Object
+    Dim VerificationResult As ComResult
+
+    On Error GoTo ErrHandler
+
+    ComRequireText ClassName, "ClassName", "InfAddClassModule"
+    ComRequireText CodeText, "CodeText", "InfAddClassModule"
+
+    Set VBProj = GetActiveVBProject()
+
+    If ModuleExistsInProject(VBProj, ClassName) Then
+        Err.Raise ComErrInvalidArgument, "InfAddClassModule", "Module already exists: " & ClassName
+    End If
+
+    Set NewComp = VBProj.VBComponents.Add(InfVbextCtClassModule)
+    NewComp.Name = ClassName
+    NewComp.CodeModule.AddFromString CodeText
+
+    Set VerificationResult = VerifyGeneratedClass(VBProj, ClassName, CodeText)
+    If VerificationResult.IsFailure Then
+        Err.Raise ComErrInvalidState, "InfAddClassModule", VerificationResult.Message
+    End If
+
+    Set InfAddClassModule = ComCreateSuccess("Class module created: " & ClassName)
+    Exit Function
+
+ErrHandler:
+    Dim Description As String
+
+    Description = Err.Description
+
+    On Error Resume Next
+    If Not NewComp Is Nothing Then
+        VBProj.VBComponents.Remove NewComp
+    End If
+    On Error GoTo 0
+
+    Set InfAddClassModule = ComCreateFailureFromErr("InfVbaProjectProvider.InfAddClassModule", Description, "Error", False)
 End Function
 
 ' Returns True when a module exists in the active workbook.
@@ -164,6 +208,34 @@ Private Function VerifyGeneratedModule(ByVal VBProj As Object, ByVal ModuleName 
     End If
 
     Set VerifyGeneratedModule = ComCreateSuccess()
+End Function
+
+Private Function VerifyGeneratedClass(ByVal VBProj As Object, ByVal ClassName As String, ByVal ExpectedText As String) As ComResult
+    Dim Text As String
+
+    If Not FullProjectCompile() Then
+        Text = GetModuleTextFromProject(VBProj, ClassName)
+
+        If InStr(1, Text, "Option Explicit", vbTextCompare) = 0 Then
+            Set VerifyGeneratedClass = ComCreateFailure( _
+                ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated class is missing Option Explicit."))
+            Exit Function
+        End If
+
+        If InStr(1, Text, "Class: " & ClassName, vbTextCompare) = 0 Then
+            Set VerifyGeneratedClass = ComCreateFailure( _
+                ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated class is missing its class header."))
+            Exit Function
+        End If
+
+        If Len(ExpectedText) > 0 And Len(Text) = 0 Then
+            Set VerifyGeneratedClass = ComCreateFailure( _
+                ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated class text is empty."))
+            Exit Function
+        End If
+    End If
+
+    Set VerifyGeneratedClass = ComCreateSuccess()
 End Function
 
 Private Function GetModuleTextFromProject(ByVal VBProj As Object, ByVal ModuleName As String) As String

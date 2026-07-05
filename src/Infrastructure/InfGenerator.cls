@@ -51,6 +51,18 @@ Public Function InfGenerateStandardModule(ByVal ModuleName As String, ByVal Laye
     InfGenerateStandardModule = InfGenerateModule(ModuleName, TemplateProvider.InfGetModuleTemplatePath(), LayerName)
 End Function
 
+' Generates a class module body using the default class template.
+Public Function InfGenerateStandardClass(ByVal ClassName As String, ByVal LayerName As String) As String
+    ComRequireText ClassName, "ClassName", "InfGenerateStandardClass"
+    ComRequireText LayerName, "LayerName", "InfGenerateStandardClass"
+
+    If TemplateProvider Is Nothing Then
+        Err.Raise ComErrInvalidState, "InfGenerateStandardClass", "Generator is not initialized."
+    End If
+
+    InfGenerateStandardClass = InfGenerateModule(ClassName, TemplateProvider.InfGetClassTemplatePath(), LayerName)
+End Function
+
 ' Generates a module body using template and manifest data.
 Public Function InfGenerateModule(ByVal ModuleName As String, ByVal TemplatePath As String, Optional ByVal LayerName As String = "Application") As String
     Dim Template As InfTemplate
