@@ -98,6 +98,14 @@ Public Function AppGenerateCommon() As ComResult
     Set AppGenerateCommon = GeneratorService.AppGenerateCommon()
 End Function
 
+' Generates the Manifest layer in the active workbook from Manifest.manifest.
+Public Function AppGenerateManifest() As ComResult
+    Dim GeneratorService As AppGeneratorService
+
+    Set GeneratorService = CreateCompositionRoot().AppCreateGeneratorService()
+    Set AppGenerateManifest = GeneratorService.AppGenerateManifest()
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================

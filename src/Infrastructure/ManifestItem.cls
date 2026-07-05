@@ -101,7 +101,7 @@ Public Function InfValidate() As Boolean
         Exit Function
     End If
 
-    If StrComp(This.LayerName, "Common", vbTextCompare) <> 0 Then
+    If Not IsSupportedLayerName(This.LayerName) Then
         InfValidate = False
         Exit Function
     End If
@@ -126,5 +126,14 @@ Private Function IsSupportedModuleType(ByVal ModuleType As String) As Boolean
             IsSupportedModuleType = True
         Case Else
             IsSupportedModuleType = False
+    End Select
+End Function
+
+Private Function IsSupportedLayerName(ByVal LayerName As String) As Boolean
+    Select Case LayerName
+        Case "Presentation", "Application", "Domain", "Infrastructure", "Common", "Manifest"
+            IsSupportedLayerName = True
+        Case Else
+            IsSupportedLayerName = False
     End Select
 End Function

@@ -170,6 +170,51 @@ ErrHandler:
     Set AppGenerateCommon = ComCreateFailureFromErr("AppGeneratorService.AppGenerateCommon", Desc, "Error", False)
 End Function
 
+' Generates the Manifest layer from Manifest.manifest.
+Public Function AppGenerateManifest() As ComResult
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim CodeText As String
+    Dim Result As ComResult
+
+    On Error GoTo ErrHandler
+
+    If Generator Is Nothing Then
+        Err.Raise ComErrInvalidState, "AppGenerateManifest", "GeneratorService is not initialized."
+    End If
+
+    If VbaProjectProvider Is Nothing Then
+        Err.Raise ComErrInvalidState, "AppGenerateManifest", "VbaProjectProvider is not initialized."
+    End If
+
+    If ManifestProvider Is Nothing Then
+        Err.Raise ComErrInvalidState, "AppGenerateManifest", "ManifestProvider is not initialized."
+    End If
+
+    Set Items = ManifestProvider.InfLoadManifestItems(ResolveManifestManifestPath())
+    For Each Item In Items
+        CodeText = Generator.InfGenerateManifestItem(Item)
+        Set Result = AddGeneratedManifestItem(Item, CodeText)
+        If Result.IsFailure Then
+            Set AppGenerateManifest = Result
+            Exit Function
+        End If
+    Next Item
+
+    Set AppGenerateManifest = ComCreateSuccess("Manifest layer generated.")
+    Exit Function
+
+ErrHandler:
+    Dim Desc As String
+
+    Desc = Trim$(Err.Description)
+    If Len(Desc) = 0 Then
+        Desc = vbNullString
+    End If
+
+    Set AppGenerateManifest = ComCreateFailureFromErr("AppGeneratorService.AppGenerateManifest", Desc, "Error", False)
+End Function
+
 ' Validates basic module name rules.
 Private Function ModuleNameLikeValid(ByVal Name As String) As Boolean
     Dim i As Long
@@ -250,4 +295,27 @@ Private Function ResolveCommonManifestPath() As String
     End If
 
     ResolveCommonManifestPath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "Common.manifest"
+End Function
+
+Private Function ResolveManifestManifestPath() As String
+    Dim AddinWorkbook As Object
+    Dim RootPath As String
+
+    RootPath = vbNullString
+
+    On Error Resume Next
+    Set AddinWorkbook = Application.Workbooks("Build.xlam")
+    On Error GoTo 0
+
+    If Not AddinWorkbook Is Nothing Then
+        RootPath = AddinWorkbook.Path
+    Else
+        RootPath = ThisWorkbook.Path
+    End If
+
+    If ComIsBlankText(RootPath) Then
+        Err.Raise ComErrInvalidState, "ResolveManifestManifestPath", "Manifest root path is unavailable."
+    End If
+
+    ResolveManifestManifestPath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "Manifest.manifest"
 End Function
