@@ -39,14 +39,27 @@ Public Sub InfInitialize(ByVal Provider As InfTemplateProvider, ByVal ProviderMa
     Set TokenReplacer = Replacer
 End Sub
 
+' Generates a standard module body using the default module template.
+Public Function InfGenerateStandardModule(ByVal ModuleName As String, ByVal LayerName As String) As String
+    ComRequireText ModuleName, "ModuleName", "InfGenerateStandardModule"
+    ComRequireText LayerName, "LayerName", "InfGenerateStandardModule"
+
+    If TemplateProvider Is Nothing Then
+        Err.Raise ComErrInvalidState, "InfGenerateStandardModule", "Generator is not initialized."
+    End If
+
+    InfGenerateStandardModule = InfGenerateModule(ModuleName, TemplateProvider.InfGetModuleTemplatePath(), LayerName)
+End Function
+
 ' Generates a module body using template and manifest data.
-Public Function InfGenerateModule(ByVal ModuleName As String, ByVal TemplatePath As String) As String
+Public Function InfGenerateModule(ByVal ModuleName As String, ByVal TemplatePath As String, Optional ByVal LayerName As String = "Application") As String
     Dim Template As InfTemplate
     Dim Manifest As Object
     Dim GeneratedText As String
 
     ComRequireText ModuleName, "ModuleName", "InfGenerateModule"
     ComRequireText TemplatePath, "TemplatePath", "InfGenerateModule"
+    ComRequireText LayerName, "LayerName", "InfGenerateModule"
 
     If TemplateProvider Is Nothing Or ManifestProvider Is Nothing Or TokenReplacer Is Nothing Then
         Err.Raise ComErrInvalidState, "InfGenerateModule", "Generator is not initialized."
@@ -57,7 +70,7 @@ Public Function InfGenerateModule(ByVal ModuleName As String, ByVal TemplatePath
         Err.Raise ComErrInvalidState, "InfGenerateModule", "Template is invalid."
     End If
 
-    Set Manifest = ManifestProvider.InfCreateManifest(ModuleName, TemplatePath)
+    Set Manifest = ManifestProvider.InfCreateManifest(ModuleName, TemplatePath, LayerName)
     GeneratedText = TokenReplacer.InfReplaceTokens(Template, Manifest)
 
     If ComIsBlankText(GeneratedText) Then
