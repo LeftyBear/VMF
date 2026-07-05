@@ -71,3 +71,33 @@ End Function
 Public Function InfCreateWorkbookProvider() As InfWorkbookProvider
     Set InfCreateWorkbookProvider = New InfWorkbookProvider
 End Function
+
+' Creates a template provider.
+Public Function InfCreateTemplateProvider() As InfTemplateProvider
+    Dim TemplateProvider As InfTemplateProvider
+
+    Set TemplateProvider = New InfTemplateProvider
+    TemplateProvider.InfInitialize InfCreateFileSystemProvider()
+
+    Set InfCreateTemplateProvider = TemplateProvider
+End Function
+
+' Creates a manifest provider.
+Public Function InfCreateManifestProvider() As InfManifestProvider
+    Set InfCreateManifestProvider = New InfManifestProvider
+End Function
+
+' Creates a token replacer.
+Public Function InfCreateTokenReplacer() As InfTokenReplacer
+    Set InfCreateTokenReplacer = New InfTokenReplacer
+End Function
+
+' Creates a generator.
+Public Function InfCreateGenerator() As InfGenerator
+    Dim Generator As InfGenerator
+
+    Set Generator = New InfGenerator
+    Generator.InfInitialize InfCreateTemplateProvider(), InfCreateManifestProvider(), InfCreateTokenReplacer()
+
+    Set InfCreateGenerator = Generator
+End Function
