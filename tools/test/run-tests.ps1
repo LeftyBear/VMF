@@ -12,6 +12,8 @@ $runners = @(
     'ComRunCommonPhase1Tests',
     'InfRunInfrastructurePhase2Tests',
     'DomRunVmfCorePhase3Tests',
+    'AppRunGeneratorPhase1Tests',
+    'AppRunGeneratorPhase1NegativeTests',
     'AppRunBuildPhase4Tests',
     'PreRunUiPhase5Tests'
 )
