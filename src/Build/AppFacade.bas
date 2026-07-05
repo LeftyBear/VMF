@@ -1,0 +1,91 @@
+Option Explicit
+Attribute VB_Name = "AppFacade"
+
+'=========================================================================
+' Module: AppFacade
+' Layer: Application
+' Responsibility: Published entry point for Build capabilities.
+' Dependencies: Common, Domain, Infrastructure, Application
+'=========================================================================
+
+'=========================================================================
+' Public API
+'=========================================================================
+
+' Initializes Build services.
+Public Function AppInitialize() As Boolean
+    Dim CompositionRoot As AppCompositionRoot
+
+    Set CompositionRoot = CreateCompositionRoot()
+    AppInitialize = CompositionRoot.AppInitialize()
+End Function
+
+' Shuts down Build services.
+Public Sub AppShutdown()
+    Dim CompositionRoot As AppCompositionRoot
+
+    Set CompositionRoot = CreateCompositionRoot()
+    CompositionRoot.AppShutdown
+End Sub
+
+' Validates a project.
+Public Function AppValidateProject(ByVal ProjectName As String, ByVal ProjectRootPath As String) As ComResult
+    Dim ValidationService As AppValidationService
+
+    Set ValidationService = CreateCompositionRoot().AppCreateValidationService()
+    Set AppValidateProject = ValidationService.AppValidateProject(ProjectName, ProjectRootPath)
+End Function
+
+' Exports a project.
+Public Function AppExportProject( _
+    ByVal ProjectName As String, _
+    ByVal ProjectRootPath As String, _
+    ByVal OutputFilePath As String) As ComResult
+
+    Dim ExportService As AppExportService
+    Dim ValidationService As AppValidationService
+
+    Set ExportService = CreateCompositionRoot().AppCreateExportService()
+    Set ValidationService = CreateCompositionRoot().AppCreateValidationService()
+    Set AppExportProject = ExportService.AppExportProject(ValidationService, ProjectName, ProjectRootPath, OutputFilePath)
+End Function
+
+' Imports a project.
+Public Function AppImportProject(ByVal InputFilePath As String) As ComResult
+    Dim ImportService As AppImportService
+
+    Set ImportService = CreateCompositionRoot().AppCreateImportService()
+    Set AppImportProject = ImportService.AppImportProject(InputFilePath)
+End Function
+
+' Builds a project.
+Public Function AppBuildProject( _
+    ByVal ProjectName As String, _
+    ByVal ProjectRootPath As String, _
+    ByVal OutputFilePath As String) As ComResult
+
+    Dim BuildService As AppBuildService
+    Dim ExportService As AppExportService
+    Dim ValidationService As AppValidationService
+
+    Set BuildService = CreateCompositionRoot().AppCreateBuildService()
+    Set ExportService = CreateCompositionRoot().AppCreateExportService()
+    Set ValidationService = CreateCompositionRoot().AppCreateValidationService()
+    Set AppBuildProject = BuildService.AppBuildProject(ExportService, ValidationService, ProjectName, ProjectRootPath, OutputFilePath)
+End Function
+
+' Generates a standard module in the active workbook.
+Public Function AppGenerateModule(ByVal ModuleName As String) As ComResult
+    Dim GeneratorService As AppGeneratorService
+
+    Set GeneratorService = CreateCompositionRoot().AppCreateGeneratorService()
+    Set AppGenerateModule = GeneratorService.AppGenerateModule(ModuleName)
+End Function
+
+'=========================================================================
+' Private Helper Functions
+'=========================================================================
+
+Private Function CreateCompositionRoot() As AppCompositionRoot
+    Set CreateCompositionRoot = New AppCompositionRoot
+End Function
