@@ -5,7 +5,7 @@ Attribute VB_Name = "PreUiPhase5Tests"
 ' Module: PreUiPhase5Tests
 ' Layer: Presentation
 ' Responsibility: Focused verification tests for Phase 5 UI contracts.
-' Dependencies: Common, Application, Presentation
+' Dependencies: Common, Application, Infrastructure, Presentation
 '=========================================================================
 
 '=========================================================================
@@ -14,6 +14,7 @@ Attribute VB_Name = "PreUiPhase5Tests"
 
 Private Const PreExpectedValidationMessage As String = "Validation completed successfully."
 Private Const PreExpectedBuildMessage As String = "Build completed successfully."
+Private Const PreExpectedGenerateMessage As String = "Module generated successfully."
 Private Const PreTestAssertTrueErrorNumber As Long = vbObjectError + 9400
 Private Const PreTestAssertEqualsErrorNumber As Long = vbObjectError + 9401
 
@@ -55,17 +56,18 @@ End Sub
 
 Private Sub VerifyGenerateModuleMessage()
     Dim Result As ComResult
+    Dim ProjectProvider As InfVbaProjectProvider
 
+    Set ProjectProvider = InfCreateVbaProjectProvider()
+    ProjectProvider.InfRemoveModule "VMF_TestModule_UI_Phase5"
     Set Result = AppGenerateModule("VMF_TestModule_UI_Phase5")
+
     AssertEquals _
-        PreExpectedBuildMessage, _
-        PreShowBuildResult(Result), _
+        PreExpectedGenerateMessage, _
+        PreShowGenerateModuleResult(Result), _
         "Generate module presentation message should match."
 
-    ' Cleanup generated module
-    On Error Resume Next
-    ThisWorkbook.VBProject.VBComponents.Remove ThisWorkbook.VBProject.VBComponents("VMF_TestModule_UI_Phase5")
-    On Error GoTo 0
+    ProjectProvider.InfRemoveModule "VMF_TestModule_UI_Phase5"
 End Sub
 
 Private Sub VerifyRibbonLoaded()
