@@ -51,7 +51,8 @@ Public Function PreGenerateModule() As ComResult
 
     ModuleName = PreRequestModuleName()
     If ComIsBlankText(ModuleName) Then
-        Err.Raise ComErrInvalidArgument, "PreGenerateModule", "ModuleName is required."
+        Set PreGenerateModule = CreateFailureResult("ModuleName is required.")
+        Exit Function
     End If
 
     Set Result = AppGenerateModule(ModuleName)
@@ -72,4 +73,11 @@ End Function
 
 Private Function CreateCompositionRoot() As PreCompositionRoot
     Set CreateCompositionRoot = New PreCompositionRoot
+End Function
+
+Private Function CreateFailureResult(ByVal Description As String) As ComResult
+    Dim ErrorInfo As ComErrorInfo
+
+    Set ErrorInfo = ComCreateErrorInfo(ComErrInvalidArgument, "PreFacade", Description)
+    Set CreateFailureResult = ComCreateFailure(ErrorInfo)
 End Function
