@@ -41,6 +41,11 @@ Public Function ComCreateErrorInfo( _
 
     Dim ErrorInfo As ComErrorInfo
 
+    ' Normalize ErrorDescription to ensure ComErrorInfo validation does not fail
+    If ComIsBlankText(ErrorDescription) Then
+        ErrorDescription = "An unexpected error occurred."
+    End If
+
     Set ErrorInfo = New ComErrorInfo
     ErrorInfo.ComInitializeErrorInfo ErrorNumber, ErrorSource, ErrorDescription, ErrorSeverity, IsRecoverable
 
@@ -98,6 +103,45 @@ Public Function ComCreateFailure(ByVal Failure As ComErrorInfo) As ComResult
     Result.ComInitializeFailure Failure
 
     Set ComCreateFailure = Result
+End Function
+
+' Creates a failure result from the current VBA Err state.
+'
+' Parameters:
+'   ErrorSource: Logical source that detected or owns the error.
+'   ErrorDescription: Optional consumer-safe description of the failure.
+'   ErrorSeverity: Error severity. Defaults to "Error".
+'   IsRecoverable: True only when a defined recovery strategy exists.
+'
+' Return value:
+'   Initialized failed ComResult instance.
+'
+' Raised errors:
+'   Raises a standardized Common validation error when ErrorSource is blank.
+Public Function ComCreateFailureFromErr( _
+    ByVal ErrorSource As String, _
+    Optional ByVal ErrorDescription As String = vbNullString, _
+    Optional ByVal ErrorSeverity As String = ComDefaultSeverity, _
+    Optional ByVal IsRecoverable As Boolean = False) As ComResult
+
+    Dim ErrorInfo As ComErrorInfo
+    Dim Description As String
+
+    If ComIsBlankText(ErrorSource) Then
+        Err.Raise ComErrInvalidArgument, "ComCreateFailureFromErr", "ErrorSource is required."
+    End If
+
+    Description = ErrorDescription
+    If ComIsBlankText(Description) Then
+        Description = Err.Description
+    End If
+
+    If ComIsBlankText(Description) Then
+        Description = "An unexpected error occurred. (Err.Number=" & CStr(Err.Number) & ")"
+    End If
+
+    Set ErrorInfo = ComCreateErrorInfo(Err.Number, ErrorSource, Description, ErrorSeverity, IsRecoverable)
+    Set ComCreateFailureFromErr = ComCreateFailure(ErrorInfo)
 End Function
 
 ' Returns True when TextValue is empty after trimming.
