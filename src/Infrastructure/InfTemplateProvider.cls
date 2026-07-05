@@ -64,6 +64,30 @@ Public Function InfCreateTemplateFromText(ByVal TemplateName As String, ByVal Te
     Set InfCreateTemplateFromText = Template
 End Function
 
+' Returns the default module template path.
+Public Function InfGetModuleTemplatePath() As String
+    Dim RootPath As String
+    Dim AddinWorkbook As Object
+
+    RootPath = vbNullString
+
+    On Error Resume Next
+    Set AddinWorkbook = Application.Workbooks("Build.xlam")
+    On Error GoTo 0
+
+    If Not AddinWorkbook Is Nothing Then
+        RootPath = AddinWorkbook.Path
+    Else
+        RootPath = ThisWorkbook.Path
+    End If
+
+    If ComIsBlankText(RootPath) Then
+        Err.Raise ComErrInvalidState, "InfTemplateProvider", "Template root path is unavailable."
+    End If
+
+    InfGetModuleTemplatePath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "ModuleTemplate.txt"
+End Function
+
 Private Function GetTemplateNameFromPath(ByVal TemplatePath As String) As String
     Dim FileName As String
     Dim SeparatorIndex As Long
