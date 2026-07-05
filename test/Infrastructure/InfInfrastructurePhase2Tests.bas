@@ -33,6 +33,7 @@ Private Const InfTestAssertEqualsErrorNumber As Long = vbObjectError + 9102
 Public Sub InfRunInfrastructurePhase2Tests()
     VerifyInitialize
     VerifyFileSystemOperations
+    VerifyTemplateDrivenGeneration
 End Sub
 
 '=========================================================================
@@ -59,6 +60,45 @@ Private Sub VerifyFileSystemOperations()
     AssertTrue InfFileExists(FilePath), "Test file should exist."
     AssertEquals InfTestContent, InfReadText(FilePath), "Text content should round-trip."
 End Sub
+
+Private Sub VerifyTemplateDrivenGeneration()
+    Dim Generator As InfGenerator
+    Dim CompositionRoot As InfCompositionRoot
+    Dim TemplatePath As String
+    Dim GeneratedCode As String
+
+    Set CompositionRoot = New InfCompositionRoot
+    Set Generator = CompositionRoot.InfCreateGenerator()
+
+    TemplatePath = ResolveTemplatePath()
+    GeneratedCode = Generator.InfGenerateModule("VMF_TestTemplate", TemplatePath)
+
+    AssertTrue Len(GeneratedCode) > 0, "Generated code should not be empty."
+    AssertTrue InStr(1, GeneratedCode, "Option Explicit", vbTextCompare) > 0, "Generated code should include Option Explicit."
+    AssertTrue InStr(1, GeneratedCode, "Module: VMF_TestTemplate", vbTextCompare) > 0, "Generated code should include the module header."
+    AssertTrue InStr(1, GeneratedCode, "Layer: Standard", vbTextCompare) > 0, "Generated code should include the token replacement result."
+End Sub
+
+Private Function ResolveTemplatePath() As String
+    Dim AddinWorkbook As Object
+    Dim RootPath As String
+
+    On Error Resume Next
+    Set AddinWorkbook = Application.Workbooks("Build.xlam")
+    On Error GoTo 0
+
+    If Not AddinWorkbook Is Nothing Then
+        RootPath = AddinWorkbook.Path
+    Else
+        RootPath = ThisWorkbook.Path
+    End If
+
+    If ComIsBlankText(RootPath) Then
+        Err.Raise vbObjectError + 9103, "InfInfrastructurePhase2Tests", "Template root path is unavailable."
+    End If
+
+    ResolveTemplatePath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "ModuleTemplate.txt"
+End Function
 
 Private Function GetTestFolderPath() As String
     GetTestFolderPath = Environ$("TEMP") & "\" & InfTestFolderName
