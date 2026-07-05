@@ -22,6 +22,7 @@ Option Explicit
 
 Private Const PreValidationSuccessMessage As String = "Validation completed successfully."
 Private Const PreBuildSuccessMessage As String = "Build completed successfully."
+Private Const PreGenerateModuleSuccessMessage As String = "Module generated successfully."
 
 '=========================================================================
 ' Public API
@@ -35,6 +36,11 @@ End Function
 ' Returns a user-facing build result message.
 Public Function PreShowBuildResult(ByVal Result As ComResult) As String
     PreShowBuildResult = FormatResult(Result, PreBuildSuccessMessage)
+End Function
+
+' Returns a user-facing module generation result message.
+Public Function PreShowGenerateModuleResult(ByVal Result As ComResult) As String
+    PreShowGenerateModuleResult = FormatResult(Result, PreGenerateModuleSuccessMessage)
 End Function
 
 '=========================================================================
