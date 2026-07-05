@@ -5,7 +5,7 @@ Attribute VB_Name = "AppGeneratorPhase1Tests"
 ' Module: AppGeneratorPhase1Tests
 ' Layer: Application
 ' Responsibility: Verification tests for Module generator Phase 1
-' Dependencies: Common, Build
+' Dependencies: Common, Build, Infrastructure
 '=========================================================================
 
 Public Sub AppRunGeneratorPhase1Tests()
@@ -15,46 +15,24 @@ End Sub
 Private Sub VerifyGenerateModule()
     Dim ModuleName As String
     Dim Result As ComResult
-    Dim VBProj As Object
-    Dim Comp As Object
-    Dim Found As Boolean
+    Dim ProjectProvider As InfVbaProjectProvider
     Dim Text As String
-    Dim LinesToCheck As Long
 
     ModuleName = "VMF_TestModule_Phase1"
+    Set ProjectProvider = InfCreateVbaProjectProvider()
 
-    ' Ensure cleanup from previous runs
-    On Error Resume Next
-    Set VBProj = ThisWorkbook.VBProject
-    For Each Comp In VBProj.VBComponents
-        If StrComp(Comp.Name, ModuleName, vbTextCompare) = 0 Then
-            VBProj.VBComponents.Remove Comp
-            Exit For
-        End If
-    Next Comp
-    On Error GoTo 0
+    ProjectProvider.InfRemoveModule ModuleName
 
     Set Result = AppGenerateModule(ModuleName)
     If Not Result.IsSuccess Then
         Err.Raise vbObjectError + 9200, "AppGeneratorPhase1Tests", "AppGenerateModule returned failure: " & Result.Message
     End If
 
-    ' Verify existence
-    Found = False
-    For Each Comp In VBProj.VBComponents
-        If StrComp(Comp.Name, ModuleName, vbTextCompare) = 0 Then
-            Found = True
-            With Comp.CodeModule
-                LinesToCheck = IIf(.CountOfLines >= 6, 6, .CountOfLines)
-                Text = .Lines(1, LinesToCheck)
-            End With
-            Exit For
-        End If
-    Next Comp
-
-    If Not Found Then
+    If Not ProjectProvider.InfModuleExists(ModuleName) Then
         Err.Raise vbObjectError + 9201, "AppGeneratorPhase1Tests", "Generated module not found."
     End If
+
+    Text = ProjectProvider.InfGetModuleText(ModuleName)
 
     If InStr(1, Text, "Option Explicit", vbTextCompare) = 0 Then
         Err.Raise vbObjectError + 9202, "AppGeneratorPhase1Tests", "Template missing Option Explicit."
@@ -64,8 +42,9 @@ Private Sub VerifyGenerateModule()
         Err.Raise vbObjectError + 9203, "AppGeneratorPhase1Tests", "Template missing module header with module name."
     End If
 
-    ' Cleanup
-    On Error Resume Next
-    VBProj.VBComponents.Remove Comp
-    On Error GoTo 0
+    If InStr(1, Text, "Layer: Application", vbTextCompare) = 0 Then
+        Err.Raise vbObjectError + 9204, "AppGeneratorPhase1Tests", "Template missing canonical layer header."
+    End If
+
+    ProjectProvider.InfRemoveModule ModuleName
 End Sub
