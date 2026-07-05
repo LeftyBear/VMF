@@ -1,0 +1,8 @@
+# ModuleName,ModuleType,LayerName,TemplatePath
+AppFacade,StandardModule,Application,ModuleTemplate.txt
+AppCompositionRoot,ClassModule,Application,ClassTemplate.txt
+AppValidationService,ClassModule,Application,ClassTemplate.txt
+AppExportService,ClassModule,Application,ClassTemplate.txt
+AppImportService,ClassModule,Application,ClassTemplate.txt
+AppBuildService,ClassModule,Application,ClassTemplate.txt
+AppGeneratorService,ClassModule,Application,ClassTemplate.txt
