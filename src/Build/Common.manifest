@@ -1,0 +1,6 @@
+# ModuleName,ModuleType,LayerName,TemplatePath
+ComError,StandardModule,Common,ModuleTemplate.txt
+ComFacade,StandardModule,Common,ModuleTemplate.txt
+ComCompositionRoot,ClassModule,Common,ClassTemplate.txt
+ComErrorInfo,ClassModule,Common,ClassTemplate.txt
+ComResult,ClassModule,Common,ClassTemplate.txt

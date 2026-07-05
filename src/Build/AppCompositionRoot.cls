@@ -54,7 +54,7 @@ Public Function AppCreateGeneratorService() As AppGeneratorService
     Dim GeneratorService As AppGeneratorService
 
     Set GeneratorService = New AppGeneratorService
-    GeneratorService.AppInitialize InfCreateGenerator(), InfCreateVbaProjectProvider()
+    GeneratorService.AppInitialize InfCreateGenerator(), InfCreateVbaProjectProvider(), InfCreateManifestProvider()
 
     Set AppCreateGeneratorService = GeneratorService
 End Function

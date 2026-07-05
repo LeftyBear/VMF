@@ -90,6 +90,14 @@ Public Function AppGenerateClass(ByVal ClassName As String) As ComResult
     Set AppGenerateClass = GeneratorService.AppGenerateClass(ClassName)
 End Function
 
+' Generates the Common layer in the active workbook from Common.manifest.
+Public Function AppGenerateCommon() As ComResult
+    Dim GeneratorService As AppGeneratorService
+
+    Set GeneratorService = CreateCompositionRoot().AppCreateGeneratorService()
+    Set AppGenerateCommon = GeneratorService.AppGenerateCommon()
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================

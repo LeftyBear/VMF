@@ -18,9 +18,14 @@ Option Explicit
 
 Private Generator As InfGenerator
 Private VbaProjectProvider As InfVbaProjectProvider
+Private ManifestProvider As InfManifestProvider
 
 ' Initializes the service with required generation infrastructure.
-Public Sub AppInitialize(ByVal ModuleGenerator As InfGenerator, ByVal ProjectProvider As InfVbaProjectProvider)
+Public Sub AppInitialize( _
+    ByVal ModuleGenerator As InfGenerator, _
+    ByVal ProjectProvider As InfVbaProjectProvider, _
+    ByVal ProviderManifest As InfManifestProvider)
+
     If ModuleGenerator Is Nothing Then
         Err.Raise ComErrInvalidArgument, "AppInitialize", "ModuleGenerator is required."
     End If
@@ -29,8 +34,13 @@ Public Sub AppInitialize(ByVal ModuleGenerator As InfGenerator, ByVal ProjectPro
         Err.Raise ComErrInvalidArgument, "AppInitialize", "ProjectProvider is required."
     End If
 
+    If ProviderManifest Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "AppInitialize", "ManifestProvider is required."
+    End If
+
     Set Generator = ModuleGenerator
     Set VbaProjectProvider = ProjectProvider
+    Set ManifestProvider = ProviderManifest
 End Sub
 
 ' Generates a standard module with the required template.
@@ -115,6 +125,51 @@ ErrHandler:
     Set AppGenerateClass = ComCreateFailureFromErr("AppGeneratorService.AppGenerateClass", Desc, "Error", False)
 End Function
 
+' Generates the Common layer from Common.manifest.
+Public Function AppGenerateCommon() As ComResult
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim CodeText As String
+    Dim Result As ComResult
+
+    On Error GoTo ErrHandler
+
+    If Generator Is Nothing Then
+        Err.Raise ComErrInvalidState, "AppGenerateCommon", "GeneratorService is not initialized."
+    End If
+
+    If VbaProjectProvider Is Nothing Then
+        Err.Raise ComErrInvalidState, "AppGenerateCommon", "VbaProjectProvider is not initialized."
+    End If
+
+    If ManifestProvider Is Nothing Then
+        Err.Raise ComErrInvalidState, "AppGenerateCommon", "ManifestProvider is not initialized."
+    End If
+
+    Set Items = ManifestProvider.InfLoadManifestItems(ResolveCommonManifestPath())
+    For Each Item In Items
+        CodeText = Generator.InfGenerateManifestItem(Item)
+        Set Result = AddGeneratedManifestItem(Item, CodeText)
+        If Result.IsFailure Then
+            Set AppGenerateCommon = Result
+            Exit Function
+        End If
+    Next Item
+
+    Set AppGenerateCommon = ComCreateSuccess("Common layer generated.")
+    Exit Function
+
+ErrHandler:
+    Dim Desc As String
+
+    Desc = Trim$(Err.Description)
+    If Len(Desc) = 0 Then
+        Desc = vbNullString
+    End If
+
+    Set AppGenerateCommon = ComCreateFailureFromErr("AppGeneratorService.AppGenerateCommon", Desc, "Error", False)
+End Function
+
 ' Validates basic module name rules.
 Private Function ModuleNameLikeValid(ByVal Name As String) As Boolean
     Dim i As Long
@@ -161,4 +216,38 @@ Private Function ResolveLayerName(ByVal ModuleName As String) As String
         Case Else
             ResolveLayerName = "Application"
     End Select
+End Function
+
+Private Function AddGeneratedManifestItem(ByVal Item As ManifestItem, ByVal CodeText As String) As ComResult
+    Select Case Item.InfGetModuleType()
+        Case "StandardModule"
+            Set AddGeneratedManifestItem = VbaProjectProvider.InfAddStandardModule(Item.InfGetModuleName(), CodeText)
+        Case "ClassModule"
+            Set AddGeneratedManifestItem = VbaProjectProvider.InfAddClassModule(Item.InfGetModuleName(), CodeText)
+        Case Else
+            Err.Raise ComErrInvalidArgument, "AddGeneratedManifestItem", "ModuleType is not supported."
+    End Select
+End Function
+
+Private Function ResolveCommonManifestPath() As String
+    Dim AddinWorkbook As Object
+    Dim RootPath As String
+
+    RootPath = vbNullString
+
+    On Error Resume Next
+    Set AddinWorkbook = Application.Workbooks("Build.xlam")
+    On Error GoTo 0
+
+    If Not AddinWorkbook Is Nothing Then
+        RootPath = AddinWorkbook.Path
+    Else
+        RootPath = ThisWorkbook.Path
+    End If
+
+    If ComIsBlankText(RootPath) Then
+        Err.Raise ComErrInvalidState, "ResolveCommonManifestPath", "Manifest root path is unavailable."
+    End If
+
+    ResolveCommonManifestPath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "Common.manifest"
 End Function
