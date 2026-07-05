@@ -155,6 +155,53 @@ Public Function AppGeneratePresentation() As ComResult
     Set AppGeneratePresentation = GenerateLayer("Presentation")
 End Function
 
+' Generates all Build layers in canonical dependency order.
+Public Function AppGenerateProject() As ComResult
+    Set AppGenerateProject = GenerateProject()
+End Function
+
+Private Function GenerateProject() As ComResult
+    Dim Result As ComResult
+
+    Set Result = GenerateLayer("Common")
+    If Result.IsFailure Then
+        Set GenerateProject = Result
+        Exit Function
+    End If
+
+    Set Result = GenerateLayer("Manifest")
+    If Result.IsFailure Then
+        Set GenerateProject = Result
+        Exit Function
+    End If
+
+    Set Result = GenerateLayer("Infrastructure")
+    If Result.IsFailure Then
+        Set GenerateProject = Result
+        Exit Function
+    End If
+
+    Set Result = GenerateLayer("Domain")
+    If Result.IsFailure Then
+        Set GenerateProject = Result
+        Exit Function
+    End If
+
+    Set Result = GenerateLayer("Application")
+    If Result.IsFailure Then
+        Set GenerateProject = Result
+        Exit Function
+    End If
+
+    Set Result = GenerateLayer("Presentation")
+    If Result.IsFailure Then
+        Set GenerateProject = Result
+        Exit Function
+    End If
+
+    Set GenerateProject = ComCreateSuccess("Project generated.")
+End Function
+
 Private Function GenerateLayer(ByVal LayerName As String) As ComResult
     Dim Items As Collection
     Dim Item As ManifestItem
