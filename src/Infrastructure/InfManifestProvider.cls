@@ -17,17 +17,32 @@ Option Explicit
 '==========================================================================
 
 ' Creates a manifest dictionary for the supplied generation inputs.
-Public Function InfCreateManifest(ByVal ModuleName As String, Optional ByVal TemplatePath As String = vbNullString) As Object
+Public Function InfCreateManifest( _
+    ByVal ModuleName As String, _
+    Optional ByVal TemplatePath As String = vbNullString, _
+    Optional ByVal LayerName As String = "Application") As Object
+
     Dim Manifest As Object
 
     ComRequireText ModuleName, "ModuleName", "InfCreateManifest"
+    ComRequireText LayerName, "LayerName", "InfCreateManifest"
+    ValidateLayerName LayerName
 
     Set Manifest = CreateObject("Scripting.Dictionary")
     Manifest("ModuleName") = ModuleName
-    Manifest("Layer") = "Standard"
+    Manifest("Layer") = LayerName
     If Not ComIsBlankText(TemplatePath) Then
         Manifest("TemplatePath") = TemplatePath
     End If
 
     Set InfCreateManifest = Manifest
 End Function
+
+Private Sub ValidateLayerName(ByVal LayerName As String)
+    Select Case LayerName
+        Case "Presentation", "Application", "Domain", "Infrastructure", "Common"
+            Exit Sub
+    End Select
+
+    Err.Raise ComErrInvalidArgument, "InfCreateManifest", "LayerName is not defined by LayerSpecification."
+End Sub
