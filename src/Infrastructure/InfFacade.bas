@@ -152,6 +152,11 @@ Public Function InfCreateGenerator() As InfGenerator
     Set InfCreateGenerator = CreateCompositionRoot().InfCreateGenerator()
 End Function
 
+' Creates a manifest provider.
+Public Function InfCreateManifestProvider() As InfManifestProvider
+    Set InfCreateManifestProvider = CreateCompositionRoot().InfCreateManifestProvider()
+End Function
+
 ' Creates a VBA project provider.
 Public Function InfCreateVbaProjectProvider() As InfVbaProjectProvider
     Set InfCreateVbaProjectProvider = CreateCompositionRoot().InfCreateVbaProjectProvider()

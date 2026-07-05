@@ -89,7 +89,12 @@ End Function
 
 ' Creates a manifest provider.
 Public Function InfCreateManifestProvider() As InfManifestProvider
-    Set InfCreateManifestProvider = New InfManifestProvider
+    Dim ManifestProvider As InfManifestProvider
+
+    Set ManifestProvider = New InfManifestProvider
+    ManifestProvider.InfInitialize InfCreateFileSystemProvider()
+
+    Set InfCreateManifestProvider = ManifestProvider
 End Function
 
 ' Creates a token replacer.
