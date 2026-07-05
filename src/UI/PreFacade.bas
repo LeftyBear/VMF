@@ -44,6 +44,28 @@ Public Function PreShowBuildResult(ByVal Result As ComResult) As String
     PreShowBuildResult = Presenter.PreShowBuildResult(Result)
 End Function
 
+' Generates a module by presenting an input dialog and delegating to AppFacade.
+Public Function PreGenerateModule() As ComResult
+    Dim ModuleName As String
+    Dim Result As ComResult
+
+    ModuleName = PreRequestModuleName()
+    If ComIsBlankText(ModuleName) Then
+        Err.Raise ComErrInvalidArgument, "PreGenerateModule", "ModuleName is required."
+    End If
+
+    Set Result = AppGenerateModule(ModuleName)
+    Set PreGenerateModule = Result
+End Function
+
+' Returns the generated module result as a user-facing message.
+Public Function PreGenerateModuleMessage() As String
+    Dim Result As ComResult
+
+    Set Result = PreGenerateModule()
+    PreGenerateModuleMessage = PreShowBuildResult(Result)
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================
