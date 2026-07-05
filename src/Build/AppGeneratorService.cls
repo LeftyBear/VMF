@@ -127,51 +127,20 @@ End Function
 
 ' Generates the Common layer from Common.manifest.
 Public Function AppGenerateCommon() As ComResult
-    Dim Items As Collection
-    Dim Item As ManifestItem
-    Dim CodeText As String
-    Dim Result As ComResult
-
-    On Error GoTo ErrHandler
-
-    If Generator Is Nothing Then
-        Err.Raise ComErrInvalidState, "AppGenerateCommon", "GeneratorService is not initialized."
-    End If
-
-    If VbaProjectProvider Is Nothing Then
-        Err.Raise ComErrInvalidState, "AppGenerateCommon", "VbaProjectProvider is not initialized."
-    End If
-
-    If ManifestProvider Is Nothing Then
-        Err.Raise ComErrInvalidState, "AppGenerateCommon", "ManifestProvider is not initialized."
-    End If
-
-    Set Items = ManifestProvider.InfLoadManifestItems(ResolveCommonManifestPath())
-    For Each Item In Items
-        CodeText = Generator.InfGenerateManifestItem(Item)
-        Set Result = AddGeneratedManifestItem(Item, CodeText)
-        If Result.IsFailure Then
-            Set AppGenerateCommon = Result
-            Exit Function
-        End If
-    Next Item
-
-    Set AppGenerateCommon = ComCreateSuccess("Common layer generated.")
-    Exit Function
-
-ErrHandler:
-    Dim Desc As String
-
-    Desc = Trim$(Err.Description)
-    If Len(Desc) = 0 Then
-        Desc = vbNullString
-    End If
-
-    Set AppGenerateCommon = ComCreateFailureFromErr("AppGeneratorService.AppGenerateCommon", Desc, "Error", False)
+    Set AppGenerateCommon = GenerateLayer("Common", "Common.manifest", "AppGenerateCommon")
 End Function
 
 ' Generates the Manifest layer from Manifest.manifest.
 Public Function AppGenerateManifest() As ComResult
+    Set AppGenerateManifest = GenerateLayer("Manifest", "Manifest.manifest", "AppGenerateManifest")
+End Function
+
+' Generates the Infrastructure layer from Infrastructure.manifest.
+Public Function AppGenerateInfrastructure() As ComResult
+    Set AppGenerateInfrastructure = GenerateLayer("Infrastructure", "Infrastructure.manifest", "AppGenerateInfrastructure")
+End Function
+
+Private Function GenerateLayer(ByVal LayerName As String, ByVal ManifestFileName As String, ByVal OperationName As String) As ComResult
     Dim Items As Collection
     Dim Item As ManifestItem
     Dim CodeText As String
@@ -179,29 +148,32 @@ Public Function AppGenerateManifest() As ComResult
 
     On Error GoTo ErrHandler
 
+    ComRequireText LayerName, "LayerName", OperationName
+    ComRequireText ManifestFileName, "ManifestFileName", OperationName
+
     If Generator Is Nothing Then
-        Err.Raise ComErrInvalidState, "AppGenerateManifest", "GeneratorService is not initialized."
+        Err.Raise ComErrInvalidState, OperationName, "GeneratorService is not initialized."
     End If
 
     If VbaProjectProvider Is Nothing Then
-        Err.Raise ComErrInvalidState, "AppGenerateManifest", "VbaProjectProvider is not initialized."
+        Err.Raise ComErrInvalidState, OperationName, "VbaProjectProvider is not initialized."
     End If
 
     If ManifestProvider Is Nothing Then
-        Err.Raise ComErrInvalidState, "AppGenerateManifest", "ManifestProvider is not initialized."
+        Err.Raise ComErrInvalidState, OperationName, "ManifestProvider is not initialized."
     End If
 
-    Set Items = ManifestProvider.InfLoadManifestItems(ResolveManifestManifestPath())
+    Set Items = ManifestProvider.InfLoadManifestItems(ResolveBuildManifestPath(ManifestFileName))
     For Each Item In Items
         CodeText = Generator.InfGenerateManifestItem(Item)
         Set Result = AddGeneratedManifestItem(Item, CodeText)
         If Result.IsFailure Then
-            Set AppGenerateManifest = Result
+            Set GenerateLayer = Result
             Exit Function
         End If
     Next Item
 
-    Set AppGenerateManifest = ComCreateSuccess("Manifest layer generated.")
+    Set GenerateLayer = ComCreateSuccess(LayerName & " layer generated.")
     Exit Function
 
 ErrHandler:
@@ -212,7 +184,7 @@ ErrHandler:
         Desc = vbNullString
     End If
 
-    Set AppGenerateManifest = ComCreateFailureFromErr("AppGeneratorService.AppGenerateManifest", Desc, "Error", False)
+    Set GenerateLayer = ComCreateFailureFromErr("AppGeneratorService." & OperationName, Desc, "Error", False)
 End Function
 
 ' Validates basic module name rules.
@@ -274,9 +246,11 @@ Private Function AddGeneratedManifestItem(ByVal Item As ManifestItem, ByVal Code
     End Select
 End Function
 
-Private Function ResolveCommonManifestPath() As String
+Private Function ResolveBuildManifestPath(ByVal ManifestFileName As String) As String
     Dim AddinWorkbook As Object
     Dim RootPath As String
+
+    ComRequireText ManifestFileName, "ManifestFileName", "ResolveBuildManifestPath"
 
     RootPath = vbNullString
 
@@ -291,31 +265,8 @@ Private Function ResolveCommonManifestPath() As String
     End If
 
     If ComIsBlankText(RootPath) Then
-        Err.Raise ComErrInvalidState, "ResolveCommonManifestPath", "Manifest root path is unavailable."
+        Err.Raise ComErrInvalidState, "ResolveBuildManifestPath", "Manifest root path is unavailable."
     End If
 
-    ResolveCommonManifestPath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "Common.manifest"
-End Function
-
-Private Function ResolveManifestManifestPath() As String
-    Dim AddinWorkbook As Object
-    Dim RootPath As String
-
-    RootPath = vbNullString
-
-    On Error Resume Next
-    Set AddinWorkbook = Application.Workbooks("Build.xlam")
-    On Error GoTo 0
-
-    If Not AddinWorkbook Is Nothing Then
-        RootPath = AddinWorkbook.Path
-    Else
-        RootPath = ThisWorkbook.Path
-    End If
-
-    If ComIsBlankText(RootPath) Then
-        Err.Raise ComErrInvalidState, "ResolveManifestManifestPath", "Manifest root path is unavailable."
-    End If
-
-    ResolveManifestManifestPath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "Manifest.manifest"
+    ResolveBuildManifestPath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & ManifestFileName
 End Function

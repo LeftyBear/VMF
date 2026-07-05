@@ -106,6 +106,14 @@ Public Function AppGenerateManifest() As ComResult
     Set AppGenerateManifest = GeneratorService.AppGenerateManifest()
 End Function
 
+' Generates the Infrastructure layer in the active workbook from Infrastructure.manifest.
+Public Function AppGenerateInfrastructure() As ComResult
+    Dim GeneratorService As AppGeneratorService
+
+    Set GeneratorService = CreateCompositionRoot().AppCreateGeneratorService()
+    Set AppGenerateInfrastructure = GeneratorService.AppGenerateInfrastructure()
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================
