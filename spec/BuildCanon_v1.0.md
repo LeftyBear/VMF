@@ -3,7 +3,7 @@
 Version : 1.0
 Status  : Frozen
 Scope   : Build.xlam
-Depends : Canon_v2.0.md
+Depends : Canon_v2.0.md, BuildDocumentationStandard_v1.0.md
 
 ---
 
@@ -187,41 +187,27 @@ VBAProjectへの反映のみ担当する。
 
 # 第7章 Version Policy
 
-Build v1.0
+Build v1.0 は Frozen とする。
 
-Manifest Driven Generator
+Build v1.0 の範囲は Manifest Driven Generator である。
 
-Build v1.1
+Build v1.0 の内容を非公式に変更してはならない。
 
-Blueprint Parser
+Build v1.1 に向けた提案は BuildCandidates_v1.1.md に分離する。
 
-Manifest Auto Generation
+Candidate は正式採用されるまで Build v1.0 の仕様ではない。
 
-Build v2.0
-
-Self Hosting
-
-Build generates Build.
+Build v2.0 の目標は Self Hosting とする。
 
 ---
 
-# 第8章 v1.1 Candidate
+# 第8章 Documentation Policy
 
-Blueprint Parser
+Build.xlam の公式ドキュメントセットは BuildDocumentationStandard_v1.0.md に従う。
 
-Blueprint → Manifest 自動生成
+公式ドキュメントは Canon v2.0 および本書と矛盾してはならない。
 
-Template Validation
-
-Manifest Validation
-
-Generate Preview
-
-Incremental Generate
-
-Ribbon UI
-
-Visual Designer
+Blueprint、Release Checklist、Candidate、CHANGELOG、README はそれぞれの責務を分離しなければならない。
 
 ---
 
