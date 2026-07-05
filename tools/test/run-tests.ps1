@@ -15,7 +15,8 @@ $runners = @(
     'AppRunGeneratorPhase1Tests',
     'AppRunGeneratorPhase1NegativeTests',
     'AppRunBuildPhase4Tests',
-    'PreRunUiPhase5Tests'
+    'PreRunUiPhase5Tests',
+    'PreRunGenerateModulePhase6Tests'
 )
 
 $results = @()
