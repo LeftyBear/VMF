@@ -9,6 +9,7 @@ Scope   : Build.xlam
 # 1. Blueprint
 
 - [ ] BuildCanon v1.0 と一致している
+- [ ] BuildBlueprint v1.0.1 と一致している
 - [ ] Blueprint は凍結済み
 - [ ] v1.1 Candidate は分離済み
 
@@ -87,6 +88,8 @@ Scope   : Build.xlam
 
 - [ ] README 更新
 - [ ] BuildCanon 更新
+- [ ] BuildDocumentationStandard 更新
+- [ ] BuildBlueprint 更新
 - [ ] Candidate 更新
 - [ ] CHANGELOG 更新
 
