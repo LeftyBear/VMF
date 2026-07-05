@@ -145,6 +145,11 @@ Public Function AppGenerateDomain() As ComResult
     Set AppGenerateDomain = GenerateLayer("Domain", "Domain.manifest", "AppGenerateDomain")
 End Function
 
+' Generates the Application layer from Application.manifest.
+Public Function AppGenerateApplication() As ComResult
+    Set AppGenerateApplication = GenerateLayer("Application", "Application.manifest", "AppGenerateApplication")
+End Function
+
 Private Function GenerateLayer(ByVal LayerName As String, ByVal ManifestFileName As String, ByVal OperationName As String) As ComResult
     Dim Items As Collection
     Dim Item As ManifestItem
