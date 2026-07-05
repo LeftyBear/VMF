@@ -138,6 +138,14 @@ Public Function AppGeneratePresentation() As ComResult
     Set AppGeneratePresentation = GeneratorService.AppGeneratePresentation()
 End Function
 
+' Generates all Build layers in the active workbook.
+Public Function AppGenerateProject() As ComResult
+    Dim GeneratorService As AppGeneratorService
+
+    Set GeneratorService = CreateCompositionRoot().AppCreateGeneratorService()
+    Set AppGenerateProject = GeneratorService.AppGenerateProject()
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================
