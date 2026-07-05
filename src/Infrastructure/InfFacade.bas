@@ -6,7 +6,7 @@ Attribute VB_Name = "InfFacade"
 ' Layer: Infrastructure
 ' Responsibility: Published entry point for Infrastructure capabilities.
 ' Dependencies: Common, InfCompositionRoot, InfFileSystemProvider,
-'               InfWorkbookProvider
+'               InfWorkbookProvider, InfVbaProjectProvider
 '=========================================================================
 
 '=========================================================================
@@ -150,6 +150,11 @@ End Function
 ' Creates a template-driven generator for module generation.
 Public Function InfCreateGenerator() As InfGenerator
     Set InfCreateGenerator = CreateCompositionRoot().InfCreateGenerator()
+End Function
+
+' Creates a VBA project provider.
+Public Function InfCreateVbaProjectProvider() As InfVbaProjectProvider
+    Set InfCreateVbaProjectProvider = CreateCompositionRoot().InfCreateVbaProjectProvider()
 End Function
 
 '=========================================================================
