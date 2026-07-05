@@ -44,6 +44,14 @@ Public Function PreShowBuildResult(ByVal Result As ComResult) As String
     PreShowBuildResult = Presenter.PreShowBuildResult(Result)
 End Function
 
+' Returns a user-facing module generation result message.
+Public Function PreShowGenerateModuleResult(ByVal Result As ComResult) As String
+    Dim Presenter As PreNotificationPresenter
+
+    Set Presenter = CreateCompositionRoot().PreCreateNotificationPresenter()
+    PreShowGenerateModuleResult = Presenter.PreShowGenerateModuleResult(Result)
+End Function
+
 ' Generates a module by presenting an input dialog and delegating to AppFacade.
 Public Function PreGenerateModule() As ComResult
     Dim ModuleName As String
@@ -64,7 +72,7 @@ Public Function PreGenerateModuleMessage() As String
     Dim Result As ComResult
 
     Set Result = PreGenerateModule()
-    PreGenerateModuleMessage = PreShowBuildResult(Result)
+    PreGenerateModuleMessage = PreShowGenerateModuleResult(Result)
 End Function
 
 '=========================================================================
