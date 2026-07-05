@@ -76,7 +76,7 @@ Private Sub VerifyTemplateDrivenGeneration()
     AssertTrue Len(GeneratedCode) > 0, "Generated code should not be empty."
     AssertTrue InStr(1, GeneratedCode, "Option Explicit", vbTextCompare) > 0, "Generated code should include Option Explicit."
     AssertTrue InStr(1, GeneratedCode, "Module: VMF_TestTemplate", vbTextCompare) > 0, "Generated code should include the module header."
-    AssertTrue InStr(1, GeneratedCode, "Layer: Standard", vbTextCompare) > 0, "Generated code should include the token replacement result."
+    AssertTrue InStr(1, GeneratedCode, "Layer: Application", vbTextCompare) > 0, "Generated code should include the canonical layer token replacement result."
 End Sub
 
 Private Function ResolveTemplatePath() As String
