@@ -43,7 +43,8 @@ End Function
 
 Private Function FormatResult(ByVal Result As ComResult, ByVal SuccessMessage As String) As String
     If Result Is Nothing Then
-        Err.Raise ComErrInvalidArgument, "PreNotificationPresenter", "Result is required."
+        FormatResult = "Result is required."
+        Exit Function
     End If
 
     If Result.IsSuccess Then
