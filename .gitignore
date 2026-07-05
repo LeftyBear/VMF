@@ -51,7 +51,7 @@ tmp/
 # Build Artifacts (if generated locally)
 # --------------------------------------------------
 dist/
-build/
+/build/
 
 # --------------------------------------------------
 # Python Cache (utility scripts)
