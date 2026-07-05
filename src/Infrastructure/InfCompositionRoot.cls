@@ -72,6 +72,11 @@ Public Function InfCreateWorkbookProvider() As InfWorkbookProvider
     Set InfCreateWorkbookProvider = New InfWorkbookProvider
 End Function
 
+' Creates a VBA project provider.
+Public Function InfCreateVbaProjectProvider() As InfVbaProjectProvider
+    Set InfCreateVbaProjectProvider = New InfVbaProjectProvider
+End Function
+
 ' Creates a template provider.
 Public Function InfCreateTemplateProvider() As InfTemplateProvider
     Dim TemplateProvider As InfTemplateProvider
