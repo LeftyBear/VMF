@@ -140,6 +140,11 @@ Public Function AppGenerateInfrastructure() As ComResult
     Set AppGenerateInfrastructure = GenerateLayer("Infrastructure", "Infrastructure.manifest", "AppGenerateInfrastructure")
 End Function
 
+' Generates the Domain layer from Domain.manifest.
+Public Function AppGenerateDomain() As ComResult
+    Set AppGenerateDomain = GenerateLayer("Domain", "Domain.manifest", "AppGenerateDomain")
+End Function
+
 Private Function GenerateLayer(ByVal LayerName As String, ByVal ManifestFileName As String, ByVal OperationName As String) As ComResult
     Dim Items As Collection
     Dim Item As ManifestItem

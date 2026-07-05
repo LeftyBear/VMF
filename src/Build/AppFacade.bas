@@ -114,6 +114,14 @@ Public Function AppGenerateInfrastructure() As ComResult
     Set AppGenerateInfrastructure = GeneratorService.AppGenerateInfrastructure()
 End Function
 
+' Generates the Domain layer in the active workbook from Domain.manifest.
+Public Function AppGenerateDomain() As ComResult
+    Dim GeneratorService As AppGeneratorService
+
+    Set GeneratorService = CreateCompositionRoot().AppCreateGeneratorService()
+    Set AppGenerateDomain = GeneratorService.AppGenerateDomain()
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================
