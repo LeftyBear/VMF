@@ -91,3 +91,33 @@ Public Function InfGenerateModule(ByVal ModuleName As String, ByVal TemplatePath
 
     InfGenerateModule = GeneratedText
 End Function
+
+' Generates a module body from a manifest-driven generation item.
+Public Function InfGenerateManifestItem(ByVal Item As ManifestItem) As String
+    Dim Template As InfTemplate
+    Dim GeneratedText As String
+
+    If Item Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "InfGenerateManifestItem", "ManifestItem is required."
+    End If
+
+    If Not Item.InfValidate() Then
+        Err.Raise ComErrInvalidState, "InfGenerateManifestItem", "ManifestItem is invalid."
+    End If
+
+    If TemplateProvider Is Nothing Or TokenReplacer Is Nothing Then
+        Err.Raise ComErrInvalidState, "InfGenerateManifestItem", "Generator is not initialized."
+    End If
+
+    Set Template = TemplateProvider.InfCreateTemplate(Item.InfGetTemplatePath())
+    If Not Template.InfValidate() Then
+        Err.Raise ComErrInvalidState, "InfGenerateManifestItem", "Template is invalid."
+    End If
+
+    GeneratedText = TokenReplacer.InfReplaceTokens(Template, Item.InfToManifest())
+    If ComIsBlankText(GeneratedText) Then
+        Err.Raise ComErrInvalidState, "InfGenerateManifestItem", "Generated text is empty."
+    End If
+
+    InfGenerateManifestItem = GeneratedText
+End Function
