@@ -1,0 +1,7 @@
+# ModuleName,ModuleType,LayerName,TemplatePath
+DomFacade,StandardModule,Domain,DomainModuleTemplate.txt
+DomCompositionRoot,ClassModule,Domain,DomainClassTemplate.txt
+DomManifest,ClassModule,Domain,DomainClassTemplate.txt
+DomModuleInfo,ClassModule,Domain,DomainClassTemplate.txt
+DomProject,ClassModule,Domain,DomainClassTemplate.txt
+DomValidator,ClassModule,Domain,DomainClassTemplate.txt
