@@ -1,6 +1,23 @@
 # Build v1.1 Candidate
 
-## Accepted
+Version : 1.1 Candidate
+Status  : Candidate
+Scope   : Build.xlam
+Depends : Canon_v2.0.md, BuildCanon_v1.0.md, BuildDocumentationStandard_v1.0.md
+
+---
+
+# 1. Policy
+
+This document records Build v1.1 Candidate items.
+
+Candidate items are not part of Build v1.0 or Build v1.0.1 until formally adopted.
+
+Build v1.1 Candidate items SHALL NOT be mixed into BuildBlueprint_v1.0.1.md.
+
+---
+
+# 2. Candidates
 
 ### C001 Blueprint Parser
 Status : Accepted
@@ -28,4 +45,7 @@ Status : Proposed
 Status : Proposed
 
 ### C008 Ribbon UI
+Status : Proposed
+
+### C009 Visual Designer
 Status : Proposed
