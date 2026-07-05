@@ -147,6 +147,11 @@ Public Function InfGetWorkbookPath(ByVal Workbook As Object) As String
     InfGetWorkbookPath = WorkbookProvider.InfGetWorkbookPath(Workbook)
 End Function
 
+' Creates a template-driven generator for module generation.
+Public Function InfCreateGenerator() As InfGenerator
+    Set InfCreateGenerator = CreateCompositionRoot().InfCreateGenerator()
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================
