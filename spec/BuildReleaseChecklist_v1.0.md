@@ -93,6 +93,8 @@ Scope   : Build.xlam
 - [ ] Candidate 更新
 - [ ] CHANGELOG 更新
 
+- [ ] Release Report created and saved
+
 ---
 
 # 10. Git
