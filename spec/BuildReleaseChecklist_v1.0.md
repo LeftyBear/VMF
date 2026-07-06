@@ -3,6 +3,17 @@
 Version : 1.0
 Status  : Frozen
 Scope   : Build.xlam
+Depends : BuildReleaseProcedure_v1.0.md
+
+---
+
+# Purpose
+
+This checklist records only the release judgment for each item.
+
+All checks SHALL be performed according to BuildReleaseProcedure_v1.0.md before each item is marked complete.
+
+The procedure defines the purpose, target, confirmation method, expected result, and PASS/FAIL criteria for each checklist item.
 
 ---
 
