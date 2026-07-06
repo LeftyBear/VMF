@@ -24,6 +24,7 @@ The Build.xlam official documentation set consists of the following files:
 - BuildDocumentationStandard_v1.0.md
 - BuildBlueprint_v1.0.1.md
 - BuildReleaseChecklist_v1.0.md
+- releases/Build_v1.0.1_ReleaseReport.md
 - BuildCandidates_v1.1.md
 - CHANGELOG.md
 - README.md
@@ -39,9 +40,10 @@ When documents conflict, the following precedence SHALL apply:
 3. BuildDocumentationStandard_v1.0.md
 4. BuildBlueprint_v1.0.1.md
 5. BuildReleaseChecklist_v1.0.md
-6. BuildCandidates_v1.1.md
-7. CHANGELOG.md
-8. README.md
+6. releases/Build_v1.0.1_ReleaseReport.md
+7. BuildCandidates_v1.1.md
+8. CHANGELOG.md
+9. README.md
 
 Lower-precedence documents MUST NOT contradict higher-precedence documents.
 
@@ -56,6 +58,10 @@ Implementation details SHALL NOT be mixed into official documentation unless the
 Build v1.1 Candidate items SHALL be documented only in BuildCandidates_v1.1.md until formally adopted.
 
 BuildBlueprint_v1.0.1.md SHALL describe the approved Build v1.0.1 blueprint and SHALL NOT include v1.1 Candidate behavior.
+
+BuildReleaseChecklist_v1.0.md SHALL define the release readiness checks required before an official release.
+
+Release Reports under `spec/releases` SHALL record the completed release decision and evidence for a specific official release.
 
 CHANGELOG.md SHALL record documentation and specification changes without redefining the specifications.
 
@@ -91,7 +97,24 @@ New official documents SHALL be added to README.md and CHANGELOG.md.
 
 ---
 
-# 7. Review Checklist
+# 7. Release Management
+
+## Official Release Requirements
+
+An official Build.xlam release SHALL include both of the following release artifacts:
+
+- BuildReleaseChecklist_v1.0.md
+- A release-specific Release Report under `spec/releases`
+
+The Release Checklist SHALL be completed before the release decision is finalized.
+
+The Release Report SHALL be created and saved before the release is considered complete.
+
+The Release Report SHALL reference the applicable Release Checklist and SHALL NOT redefine BuildCanon_v1.0.md or BuildBlueprint_v1.0.1.md.
+
+---
+
+# 8. Review Checklist
 
 Before release, the documentation set SHALL be checked for:
 
@@ -102,3 +125,5 @@ Before release, the documentation set SHALL be checked for:
 - v1.1 Candidate items are isolated in BuildCandidates_v1.1.md
 - README.md lists the official documentation set
 - CHANGELOG.md records the documentation change
+- Release Checklist exists for the release
+- Release Report exists for the release
