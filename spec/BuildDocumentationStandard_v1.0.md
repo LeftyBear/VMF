@@ -23,6 +23,7 @@ The Build.xlam official documentation set consists of the following files:
 - BuildCanon_v1.0.md
 - BuildDocumentationStandard_v1.0.md
 - BuildBlueprint_v1.0.1.md
+- BuildReleaseProcedure_v1.0.md
 - BuildReleaseChecklist_v1.0.md
 - releases/Build_v1.0.1_ReleaseReport.md
 - BuildCandidates_v1.1.md
@@ -39,11 +40,12 @@ When documents conflict, the following precedence SHALL apply:
 2. BuildCanon_v1.0.md
 3. BuildDocumentationStandard_v1.0.md
 4. BuildBlueprint_v1.0.1.md
-5. BuildReleaseChecklist_v1.0.md
-6. releases/Build_v1.0.1_ReleaseReport.md
-7. BuildCandidates_v1.1.md
-8. CHANGELOG.md
-9. README.md
+5. BuildReleaseProcedure_v1.0.md
+6. BuildReleaseChecklist_v1.0.md
+7. releases/Build_v1.0.1_ReleaseReport.md
+8. BuildCandidates_v1.1.md
+9. CHANGELOG.md
+10. README.md
 
 Lower-precedence documents MUST NOT contradict higher-precedence documents.
 
@@ -58,6 +60,8 @@ Implementation details SHALL NOT be mixed into official documentation unless the
 Build v1.1 Candidate items SHALL be documented only in BuildCandidates_v1.1.md until formally adopted.
 
 BuildBlueprint_v1.0.1.md SHALL describe the approved Build v1.0.1 blueprint and SHALL NOT include v1.1 Candidate behavior.
+
+BuildReleaseProcedure_v1.0.md SHALL define the executable release verification procedure for each checklist item.
 
 BuildReleaseChecklist_v1.0.md SHALL define the release readiness checks required before an official release.
 
@@ -103,14 +107,29 @@ New official documents SHALL be added to README.md and CHANGELOG.md.
 
 An official Build.xlam release SHALL include both of the following release artifacts:
 
+- BuildReleaseProcedure_v1.0.md
 - BuildReleaseChecklist_v1.0.md
 - A release-specific Release Report under `spec/releases`
 
-The Release Checklist SHALL be completed before the release decision is finalized.
+Every official checklist shall have a corresponding procedure.
+
+The Release Procedure SHALL define how each Release Checklist item is confirmed.
+
+The Release Checklist SHALL be completed according to the Release Procedure before the release decision is finalized.
+
+The Release Checklist SHALL record the judgment for each item and SHALL NOT redefine the confirmation procedure.
 
 The Release Report SHALL be created and saved before the release is considered complete.
 
-The Release Report SHALL reference the applicable Release Checklist and SHALL NOT redefine BuildCanon_v1.0.md or BuildBlueprint_v1.0.1.md.
+The Release Report SHALL reference the applicable Release Procedure and Release Checklist and SHALL NOT redefine BuildCanon_v1.0.md or BuildBlueprint_v1.0.1.md.
+
+The release documentation flow SHALL be:
+
+1. BuildBlueprint_v1.0.1.md
+2. BuildReleaseProcedure_v1.0.md
+3. BuildReleaseChecklist_v1.0.md
+4. releases/Build_v1.0.1_ReleaseReport.md
+5. Official Release
 
 ---
 
@@ -125,5 +144,6 @@ Before release, the documentation set SHALL be checked for:
 - v1.1 Candidate items are isolated in BuildCandidates_v1.1.md
 - README.md lists the official documentation set
 - CHANGELOG.md records the documentation change
+- Release Procedure exists for the release checklist
 - Release Checklist exists for the release
 - Release Report exists for the release
