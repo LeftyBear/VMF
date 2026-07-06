@@ -13,6 +13,7 @@ This directory contains the official documentation set for Build.xlam.
 | BuildDocumentationStandard_v1.0.md | Documentation rules for the official documentation set |
 | BuildBlueprint_v1.0.1.md | Frozen Build v1.0.1 blueprint |
 | BuildReleaseChecklist_v1.0.md | Release readiness checklist |
+| releases/Build_v1.0.1_ReleaseReport.md | Official release report for Build v1.0.1 |
 | BuildCandidates_v1.1.md | Build v1.1 Candidate items |
 | CHANGELOG.md | Documentation change history |
 | README.md | Index for the official documentation set |
@@ -26,6 +27,12 @@ Canon_v2.0.md is the highest-priority document.
 BuildCanon_v1.0.md defines the frozen Build.xlam v1.0 development canon.
 
 BuildDocumentationStandard_v1.0.md defines how this documentation set is maintained.
+
+BuildReleaseChecklist_v1.0.md defines the release readiness checks that SHALL be completed before an official release decision.
+
+Release Reports under `releases/` record the completed release decision and evidence for each official release.
+
+For release review, refer to BuildReleaseChecklist_v1.0.md first, then the applicable Release Report under `releases/`.
 
 Build v1.1 Candidate items are maintained only in BuildCandidates_v1.1.md until formally adopted.
 
