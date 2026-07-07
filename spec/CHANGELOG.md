@@ -4,6 +4,21 @@ All notable documentation changes for the Build.xlam official documentation set 
 
 ---
 
+# 2026-07-07
+
+## Added
+
+- Added BuildQualityStandard_v1.0.md as the official Build.xlam release quality standard.
+
+## Changed
+
+- Updated BuildReleaseProcedure_v1.0.md to define the 14 Step Build v1.0.1 release audit.
+- Updated Release Procedure steps to use the nine required items, including Inspection Targets, Result Code, and Failure Handling.
+- Updated BuildReleaseChecklist_v1.0.md to record final judgments for the 14 Step release audit.
+- Updated BuildDocumentationStandard_v1.0.md, BuildBlueprint_v1.0.1.md, README.md, BuildCandidates_v1.1.md, and releases/Build_v1.0.1_ReleaseReport.md for Result Code Standard, Generate Summary evidence, Version Verification, PowerShell-built Build.xlam audit target, and FAIL re-audit handling.
+
+---
+
 # 2026-07-05
 
 ## Added
