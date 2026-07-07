@@ -100,4 +100,20 @@ Candidate items SHALL be defined in BuildCandidates_v1.1.md and SHALL NOT be tre
 
 Build v1.0.1 release readiness SHALL be evaluated with BuildReleaseChecklist_v1.0.md.
 
+Build v1.0.1 release audit SHALL follow the 14 Step procedure defined by BuildReleaseProcedure_v1.0.md.
+
+Step 5 SHALL be Unit Verification.
+
+Step 6 SHALL be Integration Verification.
+
+Release audit SHALL include Result Code Standard, Version Verification, and PowerShell Build Artifact Verification.
+
+The latest Build.xlam produced after the approved PowerShell build SHALL be the audited release artifact.
+
+Generate Summary SHALL be treated as release evidence when generation behavior or generated output is inspected.
+
+If any release audit Step fails, the issue SHALL be recorded, corrected, rebuilt when required, and re-audited from Step 1 before release approval.
+
 Documentation consistency SHALL be evaluated with BuildDocumentationStandard_v1.0.md.
+
+Release quality consistency SHALL be evaluated with BuildQualityStandard_v1.0.md.
