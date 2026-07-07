@@ -91,7 +91,43 @@ Normative language SHOULD use MUST, MUST NOT, SHALL, SHALL NOT, SHOULD, SHOULD N
 
 ---
 
-# 6. Change Policy
+# 6. Procedure Design Rules
+
+Procedure documents SHALL define executable verification steps.
+
+Each Procedure step SHALL consist of the following seven items:
+
+- Purpose
+- Target
+- Verification Method
+- Expected Result
+- PASS Criteria
+- FAIL Criteria
+- Evidence
+
+Purpose SHALL define why the verification is performed.
+
+Target SHALL define the files, artifacts, behavior, or records to be verified.
+
+Verification Method SHALL define the concrete confirmation method.
+
+Expected Result SHALL define the expected state after verification.
+
+PASS Criteria SHALL define the condition required to judge the step as passed.
+
+FAIL Criteria SHALL define the condition requiring the step to be judged as failed.
+
+Evidence SHALL define the records to be preserved for traceability.
+
+Procedure documents SHALL NOT record only final judgments.
+
+Checklist documents SHALL record final judgments and SHALL NOT redefine Procedure steps.
+
+Release Reports SHALL record release-specific evidence and completed release decisions.
+
+---
+
+# 7. Change Policy
 
 Frozen documents SHALL receive only consistency, reference, and clarification updates unless an explicit version change is approved.
 
@@ -101,7 +137,7 @@ New official documents SHALL be added to README.md and CHANGELOG.md.
 
 ---
 
-# 7. Release Management
+# 8. Release Management
 
 ## Official Release Requirements
 
@@ -114,6 +150,8 @@ An official Build.xlam release SHALL include both of the following release artif
 Every official checklist shall have a corresponding procedure.
 
 The Release Procedure SHALL define how each Release Checklist item is confirmed.
+
+Each Release Procedure step SHALL follow the Procedure Design Rules.
 
 The Release Checklist SHALL be completed according to the Release Procedure before the release decision is finalized.
 
@@ -133,7 +171,7 @@ The release documentation flow SHALL be:
 
 ---
 
-# 8. Review Checklist
+# 9. Review Checklist
 
 Before release, the documentation set SHALL be checked for:
 
@@ -145,5 +183,6 @@ Before release, the documentation set SHALL be checked for:
 - README.md lists the official documentation set
 - CHANGELOG.md records the documentation change
 - Release Procedure exists for the release checklist
+- Release Procedure steps follow the Procedure Design Rules
 - Release Checklist exists for the release
 - Release Report exists for the release
