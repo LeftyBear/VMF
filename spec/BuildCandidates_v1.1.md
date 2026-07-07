@@ -15,6 +15,8 @@ Candidate items are not part of Build v1.0 or Build v1.0.1 until formally adopte
 
 Build v1.1 Candidate items SHALL NOT be mixed into BuildBlueprint_v1.0.1.md.
 
+Build v1.0.1 release audit rules, including the 14 Step release audit, Result Code Standard, Version Verification, PowerShell Build Artifact Verification, Generate Summary evidence handling, and FAIL re-audit handling, are release governance rules and SHALL NOT be treated as Build v1.1 Candidate behavior.
+
 ---
 
 # 2. Candidates
