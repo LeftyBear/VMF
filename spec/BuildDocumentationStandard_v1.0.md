@@ -22,6 +22,7 @@ The Build.xlam official documentation set consists of the following files:
 - Canon_v2.0.md
 - BuildCanon_v1.0.md
 - BuildDocumentationStandard_v1.0.md
+- BuildQualityStandard_v1.0.md
 - BuildBlueprint_v1.0.1.md
 - BuildReleaseProcedure_v1.0.md
 - BuildReleaseChecklist_v1.0.md
@@ -39,13 +40,14 @@ When documents conflict, the following precedence SHALL apply:
 1. Canon_v2.0.md
 2. BuildCanon_v1.0.md
 3. BuildDocumentationStandard_v1.0.md
-4. BuildBlueprint_v1.0.1.md
-5. BuildReleaseProcedure_v1.0.md
-6. BuildReleaseChecklist_v1.0.md
-7. releases/Build_v1.0.1_ReleaseReport.md
-8. BuildCandidates_v1.1.md
-9. CHANGELOG.md
-10. README.md
+4. BuildQualityStandard_v1.0.md
+5. BuildBlueprint_v1.0.1.md
+6. BuildReleaseProcedure_v1.0.md
+7. BuildReleaseChecklist_v1.0.md
+8. releases/Build_v1.0.1_ReleaseReport.md
+9. BuildCandidates_v1.1.md
+10. CHANGELOG.md
+11. README.md
 
 Lower-precedence documents MUST NOT contradict higher-precedence documents.
 
@@ -60,6 +62,8 @@ Implementation details SHALL NOT be mixed into official documentation unless the
 Build v1.1 Candidate items SHALL be documented only in BuildCandidates_v1.1.md until formally adopted.
 
 BuildBlueprint_v1.0.1.md SHALL describe the approved Build v1.0.1 blueprint and SHALL NOT include v1.1 Candidate behavior.
+
+BuildQualityStandard_v1.0.md SHALL define release quality rules, result codes, evidence handling, version verification, PowerShell build artifact verification, and failure handling.
 
 BuildReleaseProcedure_v1.0.md SHALL define the executable release verification procedure for each checklist item.
 
@@ -95,19 +99,21 @@ Normative language SHOULD use MUST, MUST NOT, SHALL, SHALL NOT, SHOULD, SHOULD N
 
 Procedure documents SHALL define executable verification steps.
 
-Each Procedure step SHALL consist of the following seven items:
+Each Procedure step SHALL consist of the following nine items:
 
 - Purpose
-- Target
+- Inspection Targets
 - Verification Method
 - Expected Result
 - PASS Criteria
 - FAIL Criteria
+- Result Code
 - Evidence
+- Failure Handling
 
 Purpose SHALL define why the verification is performed.
 
-Target SHALL define the files, artifacts, behavior, or records to be verified.
+Inspection Targets SHALL define the files, artifacts, behavior, logs, records, generated output, or release artifacts to be verified.
 
 Verification Method SHALL define the concrete confirmation method.
 
@@ -117,7 +123,11 @@ PASS Criteria SHALL define the condition required to judge the step as passed.
 
 FAIL Criteria SHALL define the condition requiring the step to be judged as failed.
 
+Result Code SHALL record PASS, FAIL, BLOCKED, or N/A according to BuildReleaseProcedure_v1.0.md and BuildQualityStandard_v1.0.md.
+
 Evidence SHALL define the records to be preserved for traceability.
+
+Failure Handling SHALL define the required issue recording, correction, rebuild when required, and re-audit from Step 1.
 
 Procedure documents SHALL NOT record only final judgments.
 
@@ -141,17 +151,24 @@ New official documents SHALL be added to README.md and CHANGELOG.md.
 
 ## Official Release Requirements
 
-An official Build.xlam release SHALL include both of the following release artifacts:
+An official Build.xlam release SHALL include the following release artifacts:
 
+- BuildQualityStandard_v1.0.md
 - BuildReleaseProcedure_v1.0.md
 - BuildReleaseChecklist_v1.0.md
 - A release-specific Release Report under `spec/releases`
 
 Every official checklist shall have a corresponding procedure.
 
-The Release Procedure SHALL define how each Release Checklist item is confirmed.
+The Release Procedure SHALL define the 14 Step release audit and how each Release Checklist item is confirmed.
 
 Each Release Procedure step SHALL follow the Procedure Design Rules.
+
+The Release Procedure SHALL include Result Code Standard.
+
+The Release Procedure SHALL include Version Verification.
+
+The Release Procedure SHALL require the latest Build.xlam produced after the approved PowerShell build to be audited.
 
 The Release Checklist SHALL be completed according to the Release Procedure before the release decision is finalized.
 
@@ -161,13 +178,18 @@ The Release Report SHALL be created and saved before the release is considered c
 
 The Release Report SHALL reference the applicable Release Procedure and Release Checklist and SHALL NOT redefine BuildCanon_v1.0.md or BuildBlueprint_v1.0.1.md.
 
+Generate Summary SHALL be recorded as release evidence when generation behavior or generated output is inspected.
+
+If any release audit Step fails, the issue SHALL be recorded, corrected, rebuilt when required, and re-audited from Step 1 before release approval.
+
 The release documentation flow SHALL be:
 
 1. BuildBlueprint_v1.0.1.md
-2. BuildReleaseProcedure_v1.0.md
-3. BuildReleaseChecklist_v1.0.md
-4. releases/Build_v1.0.1_ReleaseReport.md
-5. Official Release
+2. BuildQualityStandard_v1.0.md
+3. BuildReleaseProcedure_v1.0.md
+4. BuildReleaseChecklist_v1.0.md
+5. releases/Build_v1.0.1_ReleaseReport.md
+6. Official Release
 
 ---
 
@@ -183,6 +205,12 @@ Before release, the documentation set SHALL be checked for:
 - README.md lists the official documentation set
 - CHANGELOG.md records the documentation change
 - Release Procedure exists for the release checklist
+- Release Procedure defines the 14 Step release audit
 - Release Procedure steps follow the Procedure Design Rules
+- Result Code Standard is defined
+- Version Verification is included
+- PowerShell Build Artifact Verification is included
+- Generate Summary is handled as evidence
+- FAIL handling requires issue recording, correction, rebuild when required, and re-audit from Step 1
 - Release Checklist exists for the release
 - Release Report exists for the release
