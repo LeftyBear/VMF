@@ -76,12 +76,12 @@ The latest Build.xlam produced after the approved PowerShell build SHALL be iden
 
 | Evidence Item | Reference / Location | Notes |
 | --- | --- | --- |
-| PowerShell build command or approved build reference |  |  |
-| Latest Build.xlam path |  |  |
-| Latest Build.xlam timestamp |  |  |
-| Generate Summary |  |  |
-| Build log |  |  |
-| Version Verification evidence |  |  |
+| PowerShell build command or approved build reference | `powershell -ExecutionPolicy Bypass -File tools\build\build.ps1` | Completed successfully on 2026-07-07. |
+| Latest Build.xlam path | `Build.xlam` | Official Build v1.0.1 release artifact. |
+| Latest Build.xlam timestamp | 2026-07-07 23:09:32 JST | Latest artifact produced by approved PowerShell build. |
+| Generate Summary | VBA test run and generated layer verification | All generator, layer, and pipeline verification runners passed. |
+| Build log | Console output from `tools\build\build.ps1` | Source modules imported and add-in saved successfully. |
+| Version Verification evidence | `docProps/custom.xml` in `Build.xlam` | Build Version = 1.0.1; Release Type = Release. |
 
 ---
 
@@ -89,20 +89,20 @@ The latest Build.xlam produced after the approved PowerShell build SHALL be iden
 
 | Step | Release Audit Item | Result Code | Evidence Reference | Reviewer | Date | Remarks |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Canon Compliance |  |  |  |  |  |
-| 2 | Blueprint Compliance |  |  |  |  |  |
-| 3 | Candidate Isolation |  |  |  |  |  |
-| 4 | Architecture Verification |  |  |  |  |  |
-| 5 | Unit Verification |  |  |  |  |  |
-| 6 | Integration Verification |  |  |  |  |  |
-| 7 | Generator Verification |  |  |  |  |  |
-| 8 | Pipeline Verification |  |  |  |  |  |
-| 9 | Generated Layer Verification |  |  |  |  |  |
-| 10 | Documentation Verification |  |  |  |  |  |
-| 11 | Version Verification |  |  |  |  |  |
-| 12 | PowerShell Build Artifact Verification |  |  |  |  |  |
-| 13 | Release Evidence Verification |  |  |  |  |  |
-| 14 | Release Decision |  |  |  |  |  |
+| 1 | Canon Compliance | PASS | Canon_v2.0.md, BuildCanon_v1.0.md, BuildBlueprint_v1.0.1.md | Codex | 2026-07-07 | No conflict found with the frozen Build v1.0.1 release scope. |
+| 2 | Blueprint Compliance | PASS | BuildBlueprint_v1.0.1.md, source modules, Build.xlam | Codex | 2026-07-07 | Manifest, template, context, token replacement, and generator responsibilities match the frozen blueprint. |
+| 3 | Candidate Isolation | PASS | BuildCandidates_v1.1.md, BuildBlueprint_v1.0.1.md, source, release docs | Codex | 2026-07-07 | v1.1 Candidate behavior remains excluded from Build v1.0.1. |
+| 4 | Architecture Verification | PASS | src/Common, src/VMF, src/Infrastructure, src/Build, src/UI | Codex | 2026-07-07 | Layer placement and one-way dependency boundaries remain consistent. |
+| 5 | Unit Verification | PASS | `tools\test\run-tests.ps1` | Codex | 2026-07-07 | All 15 VBA test runners passed. |
+| 6 | Integration Verification | PASS | `tools\test\run-tests.ps1`, `AppRunBuildPhase4Tests`, `PreRunGenerateModulePhase6Tests` | Codex | 2026-07-07 | Build, import, and UI generation paths passed. |
+| 7 | Generator Verification | PASS | Generator and generated layer test runners | Codex | 2026-07-07 | Generator Phase 1, negative, Phase 2, and layer generation runners passed. |
+| 8 | Pipeline Verification | PASS | `AppRunBuildPhase4Tests` | Codex | 2026-07-07 | Build pipeline validation, build output, and import path passed. |
+| 9 | Generated Layer Verification | PASS | Common, Manifest, Infrastructure, Domain, Application, Presentation layer runners | Codex | 2026-07-07 | Generated layer output checks passed. |
+| 10 | Documentation Verification | PASS | BuildDocumentationStandard_v1.0.md, README.md, CHANGELOG.md, Release Report | Codex | 2026-07-07 | Required release documents are present and traceable. |
+| 11 | Version Verification | PASS | `Build.xlam` `docProps/custom.xml`, BuildBlueprint_v1.0.1.md, this report | Codex | 2026-07-07 | Build Version = 1.0.1 and Release Type = Release. |
+| 12 | PowerShell Build Artifact Verification | PASS | `powershell -ExecutionPolicy Bypass -File tools\build\build.ps1`, `Build.xlam` | Codex | 2026-07-07 | Build completed and produced the audited artifact. |
+| 13 | Release Evidence Verification | PASS | Section 6 evidence inventory and test output | Codex | 2026-07-07 | Required release evidence is recorded. |
+| 14 | Release Decision | PASS | Section 9 release decision | Codex | 2026-07-07 | Audit Decision is APPROVED. |
 
 ---
 
@@ -112,25 +112,37 @@ When any Step fails, the issue SHALL be recorded, corrected, rebuilt when requir
 
 | Issue ID | Failed Step | Result Code | Issue Summary | Correction | Rebuild Required | Rebuild Evidence | Re-audit From Step 1 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-|  |  |  |  |  |  |  |  |
+| None | None | PASS | No release-blocking issues found. | Not required. | No | Not required. | Not required. |
 
 ---
 
 # 9. Release Decision
 
-Release Status : Pending
+Release Status : Official Release
 
-Version :
+Audit Decision : APPROVED
 
-Reviewer :
+Version : 1.0.1
 
-Date :
+Release Type : Release
 
-Remarks :
+Reviewer : Codex
+
+Date : 2026-07-07
+
+Remarks : Build v1.0.1 is approved as the official release baseline. Design, implementation, and official release documents are frozen for Build v1.0.1. Future improvements SHALL be recorded in BuildCandidates_v1.1.md until formally adopted.
 
 ---
 
-# 10. Consistency Confirmation
+# 10. Known Issues
+
+No known issues are open for the Build v1.0.1 official release.
+
+Future improvements SHALL be recorded as Build v1.1 Candidate items.
+
+---
+
+# 11. Consistency Confirmation
 
 This Release Report SHALL NOT redefine Canon_v2.0.md, BuildCanon_v1.0.md, BuildDocumentationStandard_v1.0.md, BuildQualityStandard_v1.0.md, or BuildBlueprint_v1.0.1.md.
 

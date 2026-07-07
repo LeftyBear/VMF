@@ -115,4 +115,55 @@ $excel.Quit()
 [System.GC]::Collect()
 [System.GC]::WaitForPendingFinalizers()
 
+function Set-AddInReleaseMetadata {
+    param(
+        [string]$Path,
+        [string]$BuildVersion,
+        [string]$ReleaseType
+    )
+
+    Add-Type -AssemblyName System.IO.Compression
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $zip = [System.IO.Compression.ZipFile]::Open($Path, [System.IO.Compression.ZipArchiveMode]::Update)
+    try {
+        $customXml = @"
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="2" name="Build Version"><vt:lpwstr>$BuildVersion</vt:lpwstr></property><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="3" name="Release Type"><vt:lpwstr>$ReleaseType</vt:lpwstr></property></Properties>
+"@
+        $customEntry = $zip.GetEntry("docProps/custom.xml")
+        if ($customEntry -ne $null) { $customEntry.Delete() }
+        $customEntry = $zip.CreateEntry("docProps/custom.xml")
+        $writer = New-Object System.IO.StreamWriter($customEntry.Open(), [System.Text.Encoding]::UTF8)
+        try { $writer.Write($customXml) } finally { $writer.Dispose() }
+
+        $contentTypesEntry = $zip.GetEntry("[Content_Types].xml")
+        $reader = New-Object System.IO.StreamReader($contentTypesEntry.Open(), [System.Text.Encoding]::UTF8)
+        try { $contentTypes = $reader.ReadToEnd() } finally { $reader.Dispose() }
+        if ($contentTypes -notmatch "/docProps/custom\.xml") {
+            $contentTypes = $contentTypes -replace "</Types>", '<Override PartName="/docProps/custom.xml" ContentType="application/vnd.openxmlformats-officedocument.custom-properties+xml"/></Types>'
+            $contentTypesEntry.Delete()
+            $contentTypesEntry = $zip.CreateEntry("[Content_Types].xml")
+            $writer = New-Object System.IO.StreamWriter($contentTypesEntry.Open(), [System.Text.Encoding]::UTF8)
+            try { $writer.Write($contentTypes) } finally { $writer.Dispose() }
+        }
+
+        $relsEntry = $zip.GetEntry("_rels/.rels")
+        $reader = New-Object System.IO.StreamReader($relsEntry.Open(), [System.Text.Encoding]::UTF8)
+        try { $rels = $reader.ReadToEnd() } finally { $reader.Dispose() }
+        if ($rels -notmatch "custom-properties") {
+            $rels = $rels -replace "</Relationships>", '<Relationship Id="rIdCustomDocProps" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties" Target="docProps/custom.xml"/></Relationships>'
+            $relsEntry.Delete()
+            $relsEntry = $zip.CreateEntry("_rels/.rels")
+            $writer = New-Object System.IO.StreamWriter($relsEntry.Open(), [System.Text.Encoding]::UTF8)
+            try { $writer.Write($rels) } finally { $writer.Dispose() }
+        }
+    }
+    finally {
+        $zip.Dispose()
+    }
+}
+
+Set-AddInReleaseMetadata -Path $output -BuildVersion "1.0.1" -ReleaseType "Release"
+Write-Host "Recorded release metadata: Build Version=1.0.1; Release Type=Release"
+
 Write-Host "Build script finished."

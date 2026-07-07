@@ -36,31 +36,31 @@ Any FAIL or BLOCKED result SHALL prevent release approval until the issue is rec
 
 | Step | Release Audit Item | Result Code | Reviewer | Date | Remarks |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Canon Compliance |  |  |  |  |
-| 2 | Blueprint Compliance |  |  |  |  |
-| 3 | Candidate Isolation |  |  |  |  |
-| 4 | Architecture Verification |  |  |  |  |
-| 5 | Unit Verification |  |  |  |  |
-| 6 | Integration Verification |  |  |  |  |
-| 7 | Generator Verification |  |  |  |  |
-| 8 | Pipeline Verification |  |  |  |  |
-| 9 | Generated Layer Verification |  |  |  |  |
-| 10 | Documentation Verification |  |  |  |  |
-| 11 | Version Verification |  |  |  |  |
-| 12 | PowerShell Build Artifact Verification |  |  |  |  |
-| 13 | Release Evidence Verification |  |  |  |  |
-| 14 | Release Decision |  |  |  |  |
+| 1 | Canon Compliance | PASS | Codex | 2026-07-07 | Confirmed for Build v1.0.1 release scope. |
+| 2 | Blueprint Compliance | PASS | Codex | 2026-07-07 | Confirmed against BuildBlueprint_v1.0.1.md. |
+| 3 | Candidate Isolation | PASS | Codex | 2026-07-07 | v1.1 Candidate behavior remains excluded. |
+| 4 | Architecture Verification | PASS | Codex | 2026-07-07 | Layer and dependency boundaries confirmed. |
+| 5 | Unit Verification | PASS | Codex | 2026-07-07 | All VBA test runners passed. |
+| 6 | Integration Verification | PASS | Codex | 2026-07-07 | Integration paths passed. |
+| 7 | Generator Verification | PASS | Codex | 2026-07-07 | Generator verification passed. |
+| 8 | Pipeline Verification | PASS | Codex | 2026-07-07 | Build pipeline verification passed. |
+| 9 | Generated Layer Verification | PASS | Codex | 2026-07-07 | Generated layer verification passed. |
+| 10 | Documentation Verification | PASS | Codex | 2026-07-07 | Required release documents confirmed. |
+| 11 | Version Verification | PASS | Codex | 2026-07-07 | Build Version = 1.0.1; Release Type = Release. |
+| 12 | PowerShell Build Artifact Verification | PASS | Codex | 2026-07-07 | Build.xlam produced by approved PowerShell build. |
+| 13 | Release Evidence Verification | PASS | Codex | 2026-07-07 | Release Report evidence recorded. |
+| 14 | Release Decision | PASS | Codex | 2026-07-07 | Audit Decision APPROVED. |
 
 ---
 
 # Release Decision
 
-Release Status :
+Release Status : Official Release
 
-Version :
+Version : 1.0.1
 
-Reviewer :
+Reviewer : Codex
 
-Date :
+Date : 2026-07-07
 
-Remarks :
+Remarks : Build v1.0.1 is approved as the official release baseline.
