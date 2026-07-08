@@ -1,18 +1,32 @@
 # Build.xlam creation script (ASCII-only messages)
 # Uses Excel COM automation to import .bas/.cls from src and save as an XLAM add-in.
 
+param(
+    [string]$OutputPath
+)
+
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $workspaceRoot = Resolve-Path (Join-Path $scriptDir "..\..")
-$srcDir = Join-Path $workspaceRoot "src"
-$output = Join-Path $workspaceRoot "Build.xlam"
+$srcDir = Join-Path $workspaceRoot "src\build_tool"
+if ([string]::IsNullOrWhiteSpace($OutputPath)) {
+    $output = Join-Path $workspaceRoot "Build.xlam"
+}
+else {
+    $output = [IO.Path]::GetFullPath($OutputPath)
+}
 
 Write-Host "Workspace: $workspaceRoot"
 Write-Host "Source dir: $srcDir"
 Write-Host "Output: $output"
 
 if (-not (Test-Path $srcDir)) {
-    Write-Error "src directory not found: $srcDir"
+    Write-Error "Build source directory not found: $srcDir"
     exit 1
+}
+
+$outputParent = Split-Path -Parent $output
+if (-not (Test-Path $outputParent)) {
+    New-Item -ItemType Directory -Force -Path $outputParent | Out-Null
 }
 
 try {
@@ -93,15 +107,18 @@ foreach ($f in $files) {
 
 # Save as XLAM
 $xlOpenXMLAddin = 55
+$saveSucceeded = $false
 try {
     $wb.SaveAs($output, $xlOpenXMLAddin)
     Write-Host "Saved add-in: $output"
+    $saveSucceeded = $true
 }
 catch {
     Write-Warning "Could not save as XLAM: $_"
     try {
         $wb.SaveAs($output)
         Write-Host "Saved (fallback): $output"
+        $saveSucceeded = $true
     }
     catch {
         Write-Error "Save failed. Error: $_"
@@ -114,6 +131,11 @@ $excel.Quit()
 # Release COM
 [System.GC]::Collect()
 [System.GC]::WaitForPendingFinalizers()
+
+if (-not $saveSucceeded) {
+    Write-Error "Build failed before release metadata could be recorded."
+    exit 1
+}
 
 function Set-AddInReleaseMetadata {
     param(
@@ -163,7 +185,13 @@ function Set-AddInReleaseMetadata {
     }
 }
 
-Set-AddInReleaseMetadata -Path $output -BuildVersion "1.0.1" -ReleaseType "Release"
+try {
+    Set-AddInReleaseMetadata -Path $output -BuildVersion "1.0.1" -ReleaseType "Release"
+}
+catch {
+    Write-Error "Failed to record release metadata: $_"
+    exit 1
+}
 Write-Host "Recorded release metadata: Build Version=1.0.1; Release Type=Release"
 
 Write-Host "Build script finished."

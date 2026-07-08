@@ -83,7 +83,7 @@ foreach ($m in $testModules) {
 }
 
 # Also import project source modules so tests can early-bind to project types
-$srcDir = Join-Path $root "src"
+$srcDir = Join-Path $root "src\build_tool"
 if (Test-Path $srcDir) {
     $srcFiles = Get-ChildItem -Path $srcDir -Recurse -Include *.bas, *.cls -File | Sort-Object FullName
     foreach ($s in $srcFiles) {
@@ -96,7 +96,7 @@ if (Test-Path $srcDir) {
     }
 }
 else {
-    Write-Warning "src directory not found: $srcDir"
+    Write-Warning "Build source directory not found: $srcDir"
 }
 
 # Save workbook as macro-enabled temporary file so macros can run

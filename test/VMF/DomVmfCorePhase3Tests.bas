@@ -16,7 +16,7 @@ Private Const DomTestProjectName As String = "Build.xlam"
 Private Const DomTestRootPath As String = "C:\VMF"
 Private Const DomTestModuleName As String = "ComFacade"
 Private Const DomTestLayerName As String = "Common"
-Private Const DomTestFilePath As String = "src\Common\ComFacade.bas"
+Private Const DomTestFilePath As String = "src\build_tool\Common\ComFacade.bas"
 Private Const DomTestAssertTrueErrorNumber As Long = vbObjectError + 9200
 Private Const DomTestAssertEqualsErrorNumber As Long = vbObjectError + 9201
 
