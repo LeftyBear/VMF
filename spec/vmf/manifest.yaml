@@ -1,0 +1,90 @@
+project:
+  name: VMF
+  version: 1.0
+  status: Release
+  specification: VMF_v1.0.md
+  build_tool:
+    artifact: Build.xlam
+    version: 1.0.1
+    release_type: Release
+
+generation:
+  output_root: src/VMF
+  order:
+    - Common
+    - Core
+    - Domain
+    - Application
+    - Infrastructure
+    - Presentation
+
+layers:
+  - name: Common
+    canonical_layer: Common
+    modules:
+      - name: ComFacade
+        type: StandardModule
+      - name: ComCompositionRoot
+        type: ClassModule
+      - name: ComResult
+        type: ClassModule
+      - name: ComErrorInfo
+        type: ClassModule
+      - name: ComError
+        type: StandardModule
+
+  - name: Core
+    canonical_layer: Domain
+    modules:
+      - name: CorFacade
+        type: StandardModule
+      - name: CorCompositionRoot
+        type: ClassModule
+      - name: CorProject
+        type: ClassModule
+      - name: CorManifest
+        type: ClassModule
+      - name: CorModuleInfo
+        type: ClassModule
+      - name: CorValidator
+        type: ClassModule
+
+  - name: Domain
+    canonical_layer: Domain
+    modules:
+      - name: DomFacade
+        type: StandardModule
+      - name: DomCompositionRoot
+        type: ClassModule
+
+  - name: Application
+    canonical_layer: Application
+    modules:
+      - name: AppFacade
+        type: StandardModule
+      - name: AppCompositionRoot
+        type: ClassModule
+      - name: AppProjectService
+        type: ClassModule
+
+  - name: Infrastructure
+    canonical_layer: Infrastructure
+    modules:
+      - name: InfFacade
+        type: StandardModule
+      - name: InfCompositionRoot
+        type: ClassModule
+      - name: InfFileSystemProvider
+        type: ClassModule
+      - name: InfManifestProvider
+        type: ClassModule
+
+  - name: Presentation
+    canonical_layer: Presentation
+    modules:
+      - name: PreFacade
+        type: StandardModule
+      - name: PreCompositionRoot
+        type: ClassModule
+      - name: PreNotificationPresenter
+        type: ClassModule
