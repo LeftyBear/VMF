@@ -23,8 +23,8 @@ Build.xlam v1.0.1 was used as the frozen official Build tool baseline. Build.xla
 | --- | --- | --- |
 | VMF v1.0 Specification | `spec/vmf/VMF_v1.0.md` | Frozen |
 | VMF Manifest | `spec/vmf/manifest.yaml` | Used |
-| Build Blueprint | `spec/BuildBlueprint_v1.0.1.md` | Frozen |
-| Build Candidates | `spec/BuildCandidates_v1.1.md` | Candidate separation maintained |
+| Build Blueprint | `spec/build/BuildBlueprint_v1.0.1.md` | Frozen |
+| Build Candidates | `spec/build/BuildCandidates_v1.1.md` | Candidate separation maintained |
 | VMF Candidates | `spec/vmf/VMFCandidates_v1.1.md` | Candidate separation maintained |
 
 ---
@@ -46,11 +46,11 @@ Build.xlam v1.0.1 was used as the frozen official Build tool baseline. Build.xla
 
 | Gate | Evidence | Result |
 | --- | --- | --- |
-| Directory Reconfiguration | Build source isolated under `src/build_tool`; VMF output under `src/VMF`; Build manifests/templates retained under `src/Build` | PASS |
+| Directory Reconfiguration | Build source, manifests, and templates organized under `src/Build`; VMF output under `src/VMF` | PASS |
 | Manifest Verification | `spec/vmf/manifest.yaml` layer order and modules inspected by `tools/vmf/generate-vmf.ps1` | PASS |
 | Generate Project | `powershell -ExecutionPolicy Bypass -File tools\vmf\generate-vmf.ps1` | PASS |
 | Release Gate Audit | `powershell -ExecutionPolicy Bypass -File tools\vmf\audit-vmf.ps1` | PASS |
-| Build Script Verification | `powershell -ExecutionPolicy Bypass -File tools\build\build.ps1` | PASS |
+| Build Script Verification | `powershell -ExecutionPolicy Bypass -File tools\build\build.ps1` producing `dist/build/Build.xlam` | PASS |
 | VBA Test Verification | `powershell -ExecutionPolicy Bypass -File tools\test\run-tests.ps1` | PASS |
 
 ---
@@ -60,7 +60,7 @@ Build.xlam v1.0.1 was used as the frozen official Build tool baseline. Build.xla
 The following improvements were separated from VMF v1.0 and Build v1.0.1:
 
 - `spec/vmf/VMFCandidates_v1.1.md`: native Core layer generation and YAML manifest reader.
-- `spec/BuildCandidates_v1.1.md`: custom layer manifest generation.
+- `spec/build/BuildCandidates_v1.1.md`: custom layer manifest generation.
 
 ---
 

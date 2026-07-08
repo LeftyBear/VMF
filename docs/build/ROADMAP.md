@@ -50,5 +50,5 @@ VMF v1.0 の設計変更は行わない。
 ## References
 
 - README.md
-- docs/AI_DEVELOPMENT_RULES.md
+- docs/build/AI_DEVELOPMENT_RULES.md
 - spec/

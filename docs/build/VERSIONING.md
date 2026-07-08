@@ -78,6 +78,6 @@ Breaking changes require a new Major version.
 ## References
 
 - README.md
-- docs/ROADMAP.md
-- docs/AI_DEVELOPMENT_RULES.md
+- docs/build/ROADMAP.md
+- docs/build/AI_DEVELOPMENT_RULES.md
 - spec/

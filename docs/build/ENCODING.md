@@ -33,4 +33,4 @@ Maintaining consistent encodings prevents character corruption and ensures compa
 ## References
 
 - `README.md`
-- `docs/AI_DEVELOPMENT_RULES.md`
+- `docs/build/AI_DEVELOPMENT_RULES.md`
