@@ -1,90 +1,98 @@
-project:
-  name: VMF
-  version: 1.0
-  status: Release
-  specification: VMF_v1.0.md
-  build_tool:
-    artifact: Build.xlam
-    version: 1.0.1
-    release_type: Release
+Project:
+  Name: VMF_v1_0
+  Version: 1.0.0
+  Framework: VMF
+  BuildVersion: 1.0.1
+  Status: ReleaseCandidate
 
-generation:
-  output_root: src/VMF
-  order:
-    - Common
-    - Core
-    - Domain
-    - Application
-    - Infrastructure
-    - Presentation
+Policy:
+  BuildSpecification: Frozen
+  VMFSpecification: Frozen
+  BuildCandidates: BuildCandidates_v1.1.md
+  VMFCandidates: VMFCandidates_v1.1.md
 
-layers:
-  - name: Common
-    canonical_layer: Common
-    modules:
-      - name: ComFacade
-        type: StandardModule
-      - name: ComCompositionRoot
-        type: ClassModule
-      - name: ComResult
-        type: ClassModule
-      - name: ComErrorInfo
-        type: ClassModule
-      - name: ComError
-        type: StandardModule
+Layers:
+  - Common
+  - Core
+  - Domain
+  - Application
+  - Infrastructure
+  - Presentation
 
-  - name: Core
-    canonical_layer: Domain
-    modules:
-      - name: CorFacade
-        type: StandardModule
-      - name: CorCompositionRoot
-        type: ClassModule
-      - name: CorProject
-        type: ClassModule
-      - name: CorManifest
-        type: ClassModule
-      - name: CorModuleInfo
-        type: ClassModule
-      - name: CorValidator
-        type: ClassModule
+Modules:
+  Common:
+    Classes:
+      - Com_Result
+      - Com_ErrorInfo
+      - Com_Facade
+      - Com_CompositionRoot
+    Enums:
+      - Com_Severity
+    StandardModules:
+      - ComContract
+      - ComGuard
+      - ComError
 
-  - name: Domain
-    canonical_layer: Domain
-    modules:
-      - name: DomFacade
-        type: StandardModule
-      - name: DomCompositionRoot
-        type: ClassModule
+  Core:
+    Classes:
+      - Core_AppContext
+      - Core_Config
+      - Core_Clock
+      - Core_Logger
+      - Core_FilePath
+      - Core_Validator
 
-  - name: Application
-    canonical_layer: Application
-    modules:
-      - name: AppFacade
-        type: StandardModule
-      - name: AppCompositionRoot
-        type: ClassModule
-      - name: AppProjectService
-        type: ClassModule
+  Domain:
+    Classes:
+      - Dom_DateID
+      - Dom_ClassHour
+      - Dom_ClassHourID
+      - Dom_ClassHourValue
+      - Dom_SubjectName
+      - Dom_Grade
+    Enums:
+      - Dom_ClassHourType
 
-  - name: Infrastructure
-    canonical_layer: Infrastructure
-    modules:
-      - name: InfFacade
-        type: StandardModule
-      - name: InfCompositionRoot
-        type: ClassModule
-      - name: InfFileSystemProvider
-        type: ClassModule
-      - name: InfManifestProvider
-        type: ClassModule
+  Application:
+    Classes:
+      - App_Facade
+      - App_ProjectService
+      - App_ProjectRequest
+      - App_ProjectResult
 
-  - name: Presentation
-    canonical_layer: Presentation
-    modules:
-      - name: PreFacade
-        type: StandardModule
-      - name: PreCompositionRoot
-        type: ClassModule
-      - name: PreNotificationPresenter
-        type: ClassModule
+  Infrastructure:
+    Classes:
+      - Infra_FileRepository
+      - Infra_ConfigRepository
+      - Infra_LogRepository
+
+  Presentation:
+    Classes:
+      - Pre_MainPresenter
+      - Pre_MainViewContract
+      - Pre_MessageService
+
+GenerationOrder:
+  - Generate Project
+  - Generate Common
+  - Generate Core
+  - Generate Domain
+  - Generate Application
+  - Generate Infrastructure
+  - Generate Presentation
+
+ReleaseGate:
+  - Project generated
+  - Common generated
+  - Core generated
+  - Domain generated
+  - Application generated
+  - Infrastructure generated
+  - Presentation generated
+  - Manifest matched
+  - Blueprint matched
+  - BuildCanon complied
+  - DocumentationStandard complied
+  - QualityStandard complied
+  - Compile succeeded
+  - Runtime error none
