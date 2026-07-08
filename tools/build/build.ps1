@@ -7,9 +7,9 @@ param(
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $workspaceRoot = Resolve-Path (Join-Path $scriptDir "..\..")
-$srcDir = Join-Path $workspaceRoot "src\build_tool"
+$srcDir = Join-Path $workspaceRoot "src\Build"
 if ([string]::IsNullOrWhiteSpace($OutputPath)) {
-    $output = Join-Path $workspaceRoot "Build.xlam"
+    $output = Join-Path $workspaceRoot "dist\build\Build.xlam"
 }
 else {
     $output = [IO.Path]::GetFullPath($OutputPath)

@@ -2,7 +2,7 @@
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $root = Resolve-Path (Join-Path $scriptDir "..\..")
-$buildPath = Join-Path $root "Build.xlam"
+$buildPath = Join-Path $root "dist\build\Build.xlam"
 $testDir = Join-Path $root "test"
 
 if (-not (Test-Path $buildPath)) { Write-Error "Build.xlam not found at $buildPath"; exit 1 }
@@ -83,7 +83,7 @@ foreach ($m in $testModules) {
 }
 
 # Also import project source modules so tests can early-bind to project types
-$srcDir = Join-Path $root "src\build_tool"
+$srcDir = Join-Path $root "src\Build"
 if (Test-Path $srcDir) {
     $srcFiles = Get-ChildItem -Path $srcDir -Recurse -Include *.bas, *.cls -File | Sort-Object FullName
     foreach ($s in $srcFiles) {

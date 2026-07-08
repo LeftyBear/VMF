@@ -73,7 +73,39 @@ Private Function ResolveCommonManifestPath() As String
         Err.Raise vbObjectError + 9402, "AppGenerateCommonPhase3_1Tests", "Manifest root path is unavailable."
     End If
 
+    RootPath = ResolveWorkspaceRootPath(RootPath)
     ResolveCommonManifestPath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "Common.manifest"
+End Function
+
+Private Function ResolveWorkspaceRootPath(ByVal CandidatePath As String) As String
+    Dim FileSystem As Object
+    Dim ParentPath As String
+    Dim GrandParentPath As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+
+    If FileSystem.FolderExists(FileSystem.BuildPath(CandidatePath, "src\Build")) Then
+        ResolveWorkspaceRootPath = CandidatePath
+        Exit Function
+    End If
+
+    ParentPath = FileSystem.GetParentFolderName(CandidatePath)
+    If Len(ParentPath) > 0 Then
+        If FileSystem.FolderExists(FileSystem.BuildPath(ParentPath, "src\Build")) Then
+            ResolveWorkspaceRootPath = ParentPath
+            Exit Function
+        End If
+    End If
+
+    GrandParentPath = FileSystem.GetParentFolderName(ParentPath)
+    If Len(GrandParentPath) > 0 Then
+        If FileSystem.FolderExists(FileSystem.BuildPath(GrandParentPath, "src\Build")) Then
+            ResolveWorkspaceRootPath = GrandParentPath
+            Exit Function
+        End If
+    End If
+
+    ResolveWorkspaceRootPath = CandidatePath
 End Function
 
 Private Sub AssertTrue(ByVal Condition As Boolean, ByVal Message As String)
