@@ -39,10 +39,14 @@ Common
 
 ```text
 src/
+  build_tool/   Build.xlam source modules
+  Build/        Build v1.0.1 manifests and templates
+  VMF/          Generated VMF v1.0 project
 spec/
+  vmf/
 docs/
-tests/
-prompt/
+test/
+tools/
 ```
 
 ---
