@@ -51,3 +51,9 @@ Status : Proposed
 
 ### C009 Visual Designer
 Status : Proposed
+
+### C010 Custom Layer Manifest Generation
+Status : Proposed
+Priority : High
+
+Build v1.0.1 accepts only the frozen layer set defined by its current ManifestItem validation. A future Build version SHOULD support manifest-defined custom layer names so downstream VMF projects can generate layers such as Core without changing the Build v1.0.1 release contract.
