@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Module: DomFacade
-' Layer: Domain
+' Class: Com_Facade
+' Layer: Common
 ' Responsibility:
 '=========================================================================

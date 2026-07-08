@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: CorCompositionRoot
-' Layer: Core
+' Class: App_Facade
+' Layer: Application
 ' Responsibility:
 '=========================================================================

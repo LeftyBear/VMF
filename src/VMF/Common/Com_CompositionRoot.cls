@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: CorManifest
-' Layer: Core
+' Class: Com_CompositionRoot
+' Layer: Common
 ' Responsibility:
 '=========================================================================

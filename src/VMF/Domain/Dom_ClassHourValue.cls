@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Module: AppFacade
-' Layer: Application
+' Class: Dom_ClassHourValue
+' Layer: Domain
 ' Responsibility:
 '=========================================================================

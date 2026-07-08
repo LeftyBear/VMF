@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Module: PreFacade
-' Layer: Presentation
+' Class: Dom_ClassHour
+' Layer: Domain
 ' Responsibility:
 '=========================================================================

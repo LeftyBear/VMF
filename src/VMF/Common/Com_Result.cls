@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: AppProjectService
-' Layer: Application
+' Class: Com_Result
+' Layer: Common
 ' Responsibility:
 '=========================================================================

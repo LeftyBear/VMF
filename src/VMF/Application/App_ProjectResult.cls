@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: PreCompositionRoot
-' Layer: Presentation
+' Class: App_ProjectResult
+' Layer: Application
 ' Responsibility:
 '=========================================================================

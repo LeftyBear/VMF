@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: CorProject
-' Layer: Core
+' Class: App_ProjectService
+' Layer: Application
 ' Responsibility:
 '=========================================================================

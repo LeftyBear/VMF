@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: ComErrorInfo
-' Layer: Common
+' Class: Core_Validator
+' Layer: Core
 ' Responsibility:
 '=========================================================================

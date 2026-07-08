@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: AppCompositionRoot
-' Layer: Application
+' Class: Core_Logger
+' Layer: Core
 ' Responsibility:
 '=========================================================================

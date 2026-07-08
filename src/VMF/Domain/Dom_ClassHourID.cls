@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: CorValidator
-' Layer: Core
+' Class: Dom_ClassHourID
+' Layer: Domain
 ' Responsibility:
 '=========================================================================

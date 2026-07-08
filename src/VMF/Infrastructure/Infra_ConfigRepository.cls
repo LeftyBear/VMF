@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Module: InfFacade
+' Class: Infra_ConfigRepository
 ' Layer: Infrastructure
 ' Responsibility:
 '=========================================================================

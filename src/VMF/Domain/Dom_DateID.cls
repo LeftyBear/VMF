@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: InfCompositionRoot
-' Layer: Infrastructure
+' Class: Dom_DateID
+' Layer: Domain
 ' Responsibility:
 '=========================================================================

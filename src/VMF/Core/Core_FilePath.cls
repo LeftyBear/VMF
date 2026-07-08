@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Module: ComFacade
-' Layer: Common
+' Class: Core_FilePath
+' Layer: Core
 ' Responsibility:
 '=========================================================================

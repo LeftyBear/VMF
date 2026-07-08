@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: ComResult
-' Layer: Common
+' Class: Infra_LogRepository
+' Layer: Infrastructure
 ' Responsibility:
 '=========================================================================

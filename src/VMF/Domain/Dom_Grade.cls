@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: InfManifestProvider
-' Layer: Infrastructure
+' Class: Dom_Grade
+' Layer: Domain
 ' Responsibility:
 '=========================================================================

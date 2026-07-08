@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: DomCompositionRoot
-' Layer: Domain
+' Class: Pre_MainPresenter
+' Layer: Presentation
 ' Responsibility:
 '=========================================================================

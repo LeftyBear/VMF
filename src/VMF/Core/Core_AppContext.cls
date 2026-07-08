@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: InfFileSystemProvider
-' Layer: Infrastructure
+' Class: Core_AppContext
+' Layer: Core
 ' Responsibility:
 '=========================================================================

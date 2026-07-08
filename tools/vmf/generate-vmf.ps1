@@ -33,6 +33,23 @@ function New-VmfModuleText {
         [string]$LayerName
     )
 
+    if ($ModuleType -eq "EnumModule") {
+@"
+Option Explicit
+
+'=========================================================================
+' Enum: $ModuleName
+' Layer: $LayerName
+' Responsibility:
+'=========================================================================
+
+Public Enum $ModuleName
+    ${ModuleName}_None = 0
+End Enum
+"@
+        return
+    }
+
     $kind = "Module"
     if ($ModuleType -eq "ClassModule") { $kind = "Class" }
 
@@ -51,8 +68,9 @@ function Read-VmfManifest {
     param([string]$Path)
 
     $layers = New-Object System.Collections.Generic.List[object]
-    $currentLayer = $null
-    $currentModule = $null
+    $layerByName = @{}
+    $currentModuleLayer = $null
+    $currentModuleType = ""
     $section = ""
 
     foreach ($rawLine in Get-Content -Encoding UTF8 $Path) {
@@ -63,42 +81,58 @@ function Read-VmfManifest {
             continue
         }
 
-        if ($trimmed -eq "layers:") {
+        if ($trimmed -eq "Layers:") {
             $section = "layers"
             continue
         }
 
-        if ($section -ne "layers") {
+        if ($trimmed -eq "Modules:") {
+            $section = "modules"
             continue
         }
 
-        if ($line -match "^\s{2}- name:\s*(.+)$") {
-            $currentLayer = [pscustomobject]@{
-                Name = $matches[1].Trim()
-                CanonicalLayer = ""
+        if ($section -eq "layers" -and $line -match "^\s{2}-\s*(.+)$") {
+            $layerName = $matches[1].Trim()
+            $layer = [pscustomobject]@{
+                Name = $layerName
+                CanonicalLayer = $layerName
                 Modules = New-Object System.Collections.Generic.List[object]
             }
-            $layers.Add($currentLayer)
-            $currentModule = $null
+            $layers.Add($layer)
+            $layerByName[$layerName] = $layer
             continue
         }
 
-        if ($null -ne $currentLayer -and $trimmed -match "^canonical_layer:\s*(.+)$") {
-            $currentLayer.CanonicalLayer = $matches[1].Trim()
-            continue
-        }
-
-        if ($null -ne $currentLayer -and $line -match "^\s{6}- name:\s*(.+)$") {
-            $currentModule = [pscustomobject]@{
-                Name = $matches[1].Trim()
-                Type = ""
+        if ($section -eq "modules" -and $line -match "^\s{2}(\S[^:]*):\s*$") {
+            $currentModuleLayer = $matches[1].Trim()
+            $currentModuleType = ""
+            if (-not $layerByName.ContainsKey($currentModuleLayer)) {
+                Write-Error "Modules section references undefined layer: $currentModuleLayer"
+                exit 1
             }
-            $currentLayer.Modules.Add($currentModule)
             continue
         }
 
-        if ($null -ne $currentModule -and $trimmed -match "^type:\s*(.+)$") {
-            $currentModule.Type = $matches[1].Trim()
+        if ($section -eq "modules" -and $line -match "^\s{4}(Classes|StandardModules|Enums):\s*$") {
+            switch ($matches[1]) {
+                "Classes" { $currentModuleType = "ClassModule" }
+                "StandardModules" { $currentModuleType = "StandardModule" }
+                "Enums" { $currentModuleType = "EnumModule" }
+            }
+            continue
+        }
+
+        if ($section -eq "modules" -and $null -ne $currentModuleLayer -and $line -match "^\s{6}-\s*(\S.+)$") {
+            if ([string]::IsNullOrWhiteSpace($currentModuleType)) {
+                Write-Error "Module type is missing before module: $($matches[1].Trim())"
+                exit 1
+            }
+
+            $module = [pscustomobject]@{
+                Name = $matches[1].Trim()
+                Type = $currentModuleType
+            }
+            $layerByName[$currentModuleLayer].Modules.Add($module)
             continue
         }
     }
@@ -127,11 +161,6 @@ for ($i = 0; $i -lt $expectedOrder.Count; $i++) {
 }
 
 foreach ($layer in $layers) {
-    if ([string]::IsNullOrWhiteSpace($layer.CanonicalLayer)) {
-        Write-Error "Layer missing canonical_layer: $($layer.Name)"
-        exit 1
-    }
-
     $layerDir = Join-Path $outputFullPath $layer.Name
     New-Item -ItemType Directory -Force -Path $layerDir | Out-Null
 
@@ -143,6 +172,7 @@ foreach ($layer in $layers) {
 
         switch ($module.Type) {
             "StandardModule" { $extension = ".bas" }
+            "EnumModule" { $extension = ".bas" }
             "ClassModule" { $extension = ".cls" }
             default {
                 Write-Error "Unsupported module type for $($module.Name): $($module.Type)"

@@ -28,6 +28,60 @@ if (-not (Test-Path $OutputRoot)) {
 $requiredLayers = @("Common", "Core", "Domain", "Application", "Infrastructure", "Presentation")
 $failures = New-Object System.Collections.Generic.List[string]
 
+function Read-VmfManifestItems {
+    param([string]$Path)
+
+    $items = New-Object System.Collections.Generic.List[object]
+    $currentLayer = $null
+    $currentType = ""
+    $section = ""
+
+    foreach ($rawLine in Get-Content -Encoding UTF8 $Path) {
+        $line = $rawLine.TrimEnd()
+        $trimmed = $line.Trim()
+
+        if ([string]::IsNullOrWhiteSpace($trimmed) -or $trimmed.StartsWith("#")) {
+            continue
+        }
+
+        if ($trimmed -eq "Modules:") {
+            $section = "modules"
+            continue
+        }
+
+        if ($section -ne "modules") {
+            continue
+        }
+
+        if ($line -match "^\s{2}(\S[^:]*):\s*$") {
+            $currentLayer = $matches[1].Trim()
+            $currentType = ""
+            continue
+        }
+
+        if ($line -match "^\s{4}(Classes|StandardModules|Enums):\s*$") {
+            switch ($matches[1]) {
+                "Classes" { $currentType = "ClassModule" }
+                "StandardModules" { $currentType = "StandardModule" }
+                "Enums" { $currentType = "EnumModule" }
+            }
+            continue
+        }
+
+        if ($null -ne $currentLayer -and -not [string]::IsNullOrWhiteSpace($currentType) -and $line -match "^\s{6}-\s*(\S.+)$") {
+            $extension = ".bas"
+            if ($currentType -eq "ClassModule") { $extension = ".cls" }
+            $items.Add([pscustomobject]@{
+                Layer = $currentLayer
+                ModuleName = $matches[1].Trim()
+                Extension = $extension
+            })
+        }
+    }
+
+    return $items
+}
+
 foreach ($layer in $requiredLayers) {
     $layerPath = Join-Path $OutputRoot $layer
     if (-not (Test-Path $layerPath)) {
@@ -48,6 +102,14 @@ foreach ($layer in $requiredLayers) {
         if ($text -notmatch "Layer:\s*$layer") {
             $failures.Add("Layer header mismatch: $($file.FullName)")
         }
+    }
+}
+
+$manifestItems = @(Read-VmfManifestItems -Path $ManifestPath)
+foreach ($item in $manifestItems) {
+    $expectedPath = Join-Path (Join-Path $OutputRoot $item.Layer) ($item.ModuleName + $item.Extension)
+    if (-not (Test-Path $expectedPath)) {
+        $failures.Add("Manifest item missing from generated output: $expectedPath")
     }
 }
 

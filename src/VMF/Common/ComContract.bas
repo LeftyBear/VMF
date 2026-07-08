@@ -1,7 +1,7 @@
 Option Explicit
 
 '=========================================================================
-' Class: PreNotificationPresenter
-' Layer: Presentation
+' Module: ComContract
+' Layer: Common
 ' Responsibility:
 '=========================================================================
