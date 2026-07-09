@@ -38,6 +38,10 @@ Private Sub VerifyGenerateModule()
         Err.Raise vbObjectError + 9202, "AppGeneratorPhase1Tests", "Template missing Option Explicit."
     End If
 
+    If CountOptionExplicit(Text) <> 1 Then
+        Err.Raise vbObjectError + 9205, "AppGeneratorPhase1Tests", "Generated module should contain exactly one Option Explicit."
+    End If
+
     If InStr(1, Text, "Module: " & ModuleName, vbTextCompare) = 0 Then
         Err.Raise vbObjectError + 9203, "AppGeneratorPhase1Tests", "Template missing module header with module name."
     End If
@@ -48,3 +52,19 @@ Private Sub VerifyGenerateModule()
 
     ProjectProvider.InfRemoveModule ModuleName
 End Sub
+
+Private Function CountOptionExplicit(ByVal Text As String) As Long
+    Dim Lines() As String
+    Dim NormalizedText As String
+    Dim i As Long
+
+    NormalizedText = Replace(Text, vbCrLf, vbLf)
+    NormalizedText = Replace(NormalizedText, vbCr, vbLf)
+    Lines = Split(NormalizedText, vbLf)
+
+    For i = LBound(Lines) To UBound(Lines)
+        If StrComp(Trim$(Lines(i)), "Option Explicit", vbTextCompare) = 0 Then
+            CountOptionExplicit = CountOptionExplicit + 1
+        End If
+    Next i
+End Function

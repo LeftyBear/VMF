@@ -85,6 +85,7 @@ Private Sub VerifyVbaProjectProviderSkipsBuildWorkbook()
     Dim Provider As InfVbaProjectProvider
     Dim ModuleName As String
     Dim Result As ComResult
+    Dim Text As String
 
     Set AddinWorkbook = Nothing
     On Error Resume Next
@@ -110,6 +111,9 @@ Private Sub VerifyVbaProjectProviderSkipsBuildWorkbook()
     AssertTrue Result.IsSuccess, "Provider should generate into the external target workbook when Build.xlam is active."
     AssertTrue Provider.InfModuleExists(ModuleName), "Generated module should exist in the target workbook."
     AssertFalse ModuleExistsInWorkbook(AddinWorkbook, ModuleName), "Generated module should not be added to Build.xlam."
+
+    Text = Provider.InfGetModuleText(ModuleName)
+    AssertEquals 1, CountOptionExplicit(Text), "Generated module should contain exactly one Option Explicit."
 
     Provider.InfRemoveModule ModuleName
 End Sub
@@ -189,6 +193,22 @@ Private Function ModuleExistsInWorkbook(ByVal Workbook As Object, ByVal ModuleNa
     On Error GoTo 0
 
     ModuleExistsInWorkbook = False
+End Function
+
+Private Function CountOptionExplicit(ByVal Text As String) As Long
+    Dim Lines() As String
+    Dim NormalizedText As String
+    Dim i As Long
+
+    NormalizedText = Replace(Text, vbCrLf, vbLf)
+    NormalizedText = Replace(NormalizedText, vbCr, vbLf)
+    Lines = Split(NormalizedText, vbLf)
+
+    For i = LBound(Lines) To UBound(Lines)
+        If StrComp(Trim$(Lines(i)), "Option Explicit", vbTextCompare) = 0 Then
+            CountOptionExplicit = CountOptionExplicit + 1
+        End If
+    Next i
 End Function
 
 Private Sub AssertTrue(ByVal Condition As Boolean, ByVal Message As String)
