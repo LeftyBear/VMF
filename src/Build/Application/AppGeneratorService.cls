@@ -17,21 +17,21 @@ Option Explicit
 '==========================================================================
 
 Private Generator As InfGenerator
-Private VbaProjectProvider As InfVbaProjectProvider
+Private GenerationEngine As BuildGenerationEngine
 Private ManifestProvider As InfManifestProvider
 
 ' Initializes the service with required generation infrastructure.
 Public Sub AppInitialize( _
     ByVal ModuleGenerator As InfGenerator, _
-    ByVal ProjectProvider As InfVbaProjectProvider, _
+    ByVal Engine As BuildGenerationEngine, _
     ByVal ProviderManifest As InfManifestProvider)
 
     If ModuleGenerator Is Nothing Then
         Err.Raise ComErrInvalidArgument, "AppInitialize", "ModuleGenerator is required."
     End If
 
-    If ProjectProvider Is Nothing Then
-        Err.Raise ComErrInvalidArgument, "AppInitialize", "ProjectProvider is required."
+    If Engine Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "AppInitialize", "BuildGenerationEngine is required."
     End If
 
     If ProviderManifest Is Nothing Then
@@ -39,7 +39,7 @@ Public Sub AppInitialize( _
     End If
 
     Set Generator = ModuleGenerator
-    Set VbaProjectProvider = ProjectProvider
+    Set GenerationEngine = Engine
     Set ManifestProvider = ProviderManifest
 End Sub
 
@@ -64,13 +64,13 @@ Public Function AppGenerateModule(ByVal ModuleName As String) As ComResult
         Err.Raise ComErrInvalidState, "AppGenerateModule", "GeneratorService is not initialized."
     End If
 
-    If VbaProjectProvider Is Nothing Then
-        Err.Raise ComErrInvalidState, "AppGenerateModule", "VbaProjectProvider is not initialized."
+    If GenerationEngine Is Nothing Then
+        Err.Raise ComErrInvalidState, "AppGenerateModule", "BuildGenerationEngine is not initialized."
     End If
 
     LayerName = ResolveLayerName(ModuleName)
     CodeText = Generator.InfGenerateStandardModule(ModuleName, LayerName)
-    Set AppGenerateModule = VbaProjectProvider.InfAddStandardModule(ModuleName, CodeText)
+    Set AppGenerateModule = GenerationEngine.GenerateComponent(ModuleName, "StandardModule", CodeText)
     Exit Function
 
 ErrHandler:
@@ -105,13 +105,13 @@ Public Function AppGenerateClass(ByVal ClassName As String) As ComResult
         Err.Raise ComErrInvalidState, "AppGenerateClass", "GeneratorService is not initialized."
     End If
 
-    If VbaProjectProvider Is Nothing Then
-        Err.Raise ComErrInvalidState, "AppGenerateClass", "VbaProjectProvider is not initialized."
+    If GenerationEngine Is Nothing Then
+        Err.Raise ComErrInvalidState, "AppGenerateClass", "BuildGenerationEngine is not initialized."
     End If
 
     LayerName = ResolveLayerName(ClassName)
     CodeText = Generator.InfGenerateStandardClass(ClassName, LayerName)
-    Set AppGenerateClass = VbaProjectProvider.InfAddClassModule(ClassName, CodeText)
+    Set AppGenerateClass = GenerationEngine.GenerateComponent(ClassName, "ClassModule", CodeText)
     Exit Function
 
 ErrHandler:
@@ -219,8 +219,8 @@ Private Function GenerateLayer(ByVal LayerName As String) As ComResult
         Err.Raise ComErrInvalidState, OperationName, "GeneratorService is not initialized."
     End If
 
-    If VbaProjectProvider Is Nothing Then
-        Err.Raise ComErrInvalidState, OperationName, "VbaProjectProvider is not initialized."
+    If GenerationEngine Is Nothing Then
+        Err.Raise ComErrInvalidState, OperationName, "BuildGenerationEngine is not initialized."
     End If
 
     If ManifestProvider Is Nothing Then
@@ -300,14 +300,10 @@ Private Function ResolveLayerName(ByVal ModuleName As String) As String
 End Function
 
 Private Function AddGeneratedManifestItem(ByVal Item As ManifestItem, ByVal CodeText As String) As ComResult
-    Select Case Item.InfGetModuleType()
-        Case "StandardModule"
-            Set AddGeneratedManifestItem = VbaProjectProvider.InfAddStandardModule(Item.InfGetModuleName(), CodeText)
-        Case "ClassModule"
-            Set AddGeneratedManifestItem = VbaProjectProvider.InfAddClassModule(Item.InfGetModuleName(), CodeText)
-        Case Else
-            Err.Raise ComErrInvalidArgument, "AddGeneratedManifestItem", "ModuleType is not supported."
-    End Select
+    Set AddGeneratedManifestItem = GenerationEngine.GenerateComponent( _
+        Item.InfGetModuleName(), _
+        Item.InfGetModuleType(), _
+        CodeText)
 End Function
 
 Private Function ResolveBuildManifestPath(ByVal ManifestFileName As String) As String

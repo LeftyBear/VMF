@@ -54,7 +54,44 @@ Public Function AppCreateGeneratorService() As AppGeneratorService
     Dim GeneratorService As AppGeneratorService
 
     Set GeneratorService = New AppGeneratorService
-    GeneratorService.AppInitialize InfCreateGenerator(), InfCreateVbaProjectProvider(), InfCreateManifestProvider()
+    GeneratorService.AppInitialize InfCreateGenerator(), AppCreateGenerationEngine(), InfCreateManifestProvider()
 
     Set AppCreateGeneratorService = GeneratorService
+End Function
+
+' Creates the Build generation engine.
+Public Function AppCreateGenerationEngine() As BuildGenerationEngine
+    Dim Engine As BuildGenerationEngine
+    Dim Factory As ComponentFactory
+    Dim Normalizer As HeaderNormalizer
+    Dim AttributeService As AttributeWriter
+    Dim SourceService As SourceWriter
+    Dim Verifier As VerificationService
+
+    Set Engine = New BuildGenerationEngine
+    Set Factory = New ComponentFactory
+    Set Normalizer = New HeaderNormalizer
+    Set AttributeService = New AttributeWriter
+    Set SourceService = New SourceWriter
+    Set Verifier = New VerificationService
+
+    Engine.AppInitialize _
+        AppCreateProjectProvider(), _
+        Factory, _
+        Normalizer, _
+        AttributeService, _
+        SourceService, _
+        Verifier
+
+    Set AppCreateGenerationEngine = Engine
+End Function
+
+' Creates a project provider for generation.
+Public Function AppCreateProjectProvider() As ProjectProvider
+    Dim Provider As ProjectProvider
+
+    Set Provider = New ProjectProvider
+    Provider.AppInitialize InfCreateVbaProjectProvider()
+
+    Set AppCreateProjectProvider = Provider
 End Function
