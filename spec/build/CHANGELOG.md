@@ -4,6 +4,24 @@ All notable documentation changes for the Build.xlam official documentation set 
 
 ---
 
+# 2026-07-09
+
+## Fixed
+
+- Fixed `InfVbaProjectProvider` target VBProject resolution so Build.xlam is not selected as the generation target when Build.xlam is active.
+- Added regression coverage confirming generated modules are not added to Build.xlam.
+
+## Changed
+
+- Updated `tools/build/build.ps1` to record Build Version = 1.0.2 and Release Type = Release in Build.xlam.
+- Added `releases/Build_v1.0.2_ReleaseReport.md` and updated README.md to reference the patch release report.
+
+## Released
+
+- Released Build.xlam v1.0.2 as an official patch release.
+
+---
+
 # 2026-07-07
 
 ## Added
