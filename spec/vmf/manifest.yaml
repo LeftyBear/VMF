@@ -2,7 +2,7 @@ Project:
   Name: VMF_v1_0
   Version: 1.0.0
   Framework: VMF
-  BuildVersion: 1.0.1
+  BuildVersion: 1.0.2
   Status: ReleaseCandidate
 
 Policy:
@@ -20,27 +20,21 @@ Layers:
   - Presentation
 
 Modules:
+
   Common:
+    StandardModules:
+      - Com_Facade
+      - ComError
+
     Classes:
       - Com_Result
       - Com_ErrorInfo
-      - Com_Facade
       - Com_CompositionRoot
-    Enums:
-      - Com_Severity
-    StandardModules:
-      - ComContract
-      - ComGuard
-      - ComError
 
   Core:
-    Classes:
-      - Core_AppContext
-      - Core_Config
-      - Core_Clock
-      - Core_Logger
-      - Core_FilePath
-      - Core_Validator
+    Status: NotImplemented
+    GenerateCommand: None
+    Classes: []
 
   Domain:
     Classes:
@@ -50,8 +44,8 @@ Modules:
       - Dom_ClassHourValue
       - Dom_SubjectName
       - Dom_Grade
-    Enums:
-      - Dom_ClassHourType
+
+    Enums: []
 
   Application:
     Classes:
@@ -72,27 +66,26 @@ Modules:
       - Pre_MainViewContract
       - Pre_MessageService
 
-GenerationOrder:
-  - Generate Project
-  - Generate Common
-  - Generate Core
-  - Generate Domain
-  - Generate Application
-  - Generate Infrastructure
-  - Generate Presentation
+Generation:
+
+  Common: true
+  Core: false
+  Domain: true
+  Application: true
+  Infrastructure: true
+  Presentation: true
 
 ReleaseGate:
-  - Project generated
-  - Common generated
-  - Core generated
-  - Domain generated
-  - Application generated
-  - Infrastructure generated
-  - Presentation generated
-  - Manifest matched
-  - Blueprint matched
-  - BuildCanon complied
-  - DocumentationStandard complied
-  - QualityStandard complied
-  - Compile succeeded
-  - Runtime error none
+
+  Generate:
+    - Common
+    - Domain
+    - Application
+    - Infrastructure
+    - Presentation
+
+  Verify:
+    - ManifestMatched
+    - BlueprintMatched
+    - CompileSucceeded
+    - RuntimeErrorNone
