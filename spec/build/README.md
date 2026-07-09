@@ -16,6 +16,7 @@ This directory contains the official documentation set for Build.xlam.
 | BuildReleaseProcedure_v1.0.md | 14 Step release audit procedure |
 | BuildReleaseChecklist_v1.0.md | Release readiness checklist |
 | releases/Build_v1.0.1_ReleaseReport.md | Official release report for Build v1.0.1 |
+| releases/Build_v1.0.2_ReleaseReport.md | Official patch release report for Build v1.0.2 |
 | BuildCandidates_v1.1.md | Build v1.1 Candidate items |
 | CHANGELOG.md | Documentation change history |
 | README.md | Index for the official documentation set |
