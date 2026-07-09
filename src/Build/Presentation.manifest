@@ -1,6 +1,4 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
-PreFacade,StandardModule,Presentation,ModuleTemplate.txt
-PreCompositionRoot,ClassModule,Presentation,ClassTemplate.txt
-PreInputDialog,StandardModule,Presentation,ModuleTemplate.txt
-PreNotificationPresenter,ClassModule,Presentation,ClassTemplate.txt
-PreRibbon,StandardModule,Presentation,ModuleTemplate.txt
+Pre_MainPresenter,ClassModule,Presentation,ClassTemplate.txt
+Pre_MainViewContract,ClassModule,Presentation,ClassTemplate.txt
+Pre_MessageService,ClassModule,Presentation,ClassTemplate.txt

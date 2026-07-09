@@ -1,15 +1,5 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
-AppFacade,StandardModule,Application,ModuleTemplate.txt
-AppCompositionRoot,ClassModule,Application,ClassTemplate.txt
-AppValidationService,ClassModule,Application,ClassTemplate.txt
-AppExportService,ClassModule,Application,ClassTemplate.txt
-AppImportService,ClassModule,Application,ClassTemplate.txt
-AppBuildService,ClassModule,Application,ClassTemplate.txt
-AppGeneratorService,ClassModule,Application,ClassTemplate.txt
-BuildGenerationEngine,ClassModule,Application,ClassTemplate.txt
-ProjectProvider,ClassModule,Application,ClassTemplate.txt
-ComponentFactory,ClassModule,Application,ClassTemplate.txt
-HeaderNormalizer,ClassModule,Application,ClassTemplate.txt
-AttributeWriter,ClassModule,Application,ClassTemplate.txt
-SourceWriter,ClassModule,Application,ClassTemplate.txt
-VerificationService,ClassModule,Application,ClassTemplate.txt
+App_Facade,StandardModule,Application,ModuleTemplate.txt
+App_ProjectService,ClassModule,Application,ClassTemplate.txt
+App_ProjectRequest,ClassModule,Application,ClassTemplate.txt
+App_ProjectResult,ClassModule,Application,ClassTemplate.txt
