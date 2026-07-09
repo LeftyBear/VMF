@@ -18,8 +18,10 @@ Option Explicit
 
 Private Const InfVbextCtStdModule As Long = 1
 Private Const InfVbextCtClassModule As Long = 2
+Private Const InfBuildWorkbookName As String = "Build.xlam"
+Private Const InfDefaultTargetWorkbookName As String = "VMF.xlam"
 
-' Adds a standard module to the active workbook and writes CodeText.
+' Adds a standard module to the target workbook and writes CodeText.
 Public Function InfAddStandardModule(ByVal ModuleName As String, ByVal CodeText As String) As ComResult
     Dim VBProj As Object
     Dim NewComp As Object
@@ -62,7 +64,7 @@ ErrHandler:
     Set InfAddStandardModule = ComCreateFailureFromErr("InfVbaProjectProvider.InfAddStandardModule", Description, "Error", False)
 End Function
 
-' Adds a class module to the active workbook and writes CodeText.
+' Adds a class module to the target workbook and writes CodeText.
 Public Function InfAddClassModule(ByVal ClassName As String, ByVal CodeText As String) As ComResult
     Dim VBProj As Object
     Dim NewComp As Object
@@ -105,13 +107,13 @@ ErrHandler:
     Set InfAddClassModule = ComCreateFailureFromErr("InfVbaProjectProvider.InfAddClassModule", Description, "Error", False)
 End Function
 
-' Returns True when a module exists in the active workbook.
+' Returns True when a module exists in the target workbook.
 Public Function InfModuleExists(ByVal ModuleName As String) As Boolean
     ComRequireText ModuleName, "ModuleName", "InfModuleExists"
     InfModuleExists = ModuleExistsInProject(GetActiveVBProject(), ModuleName)
 End Function
 
-' Removes a module from the active workbook when present.
+' Removes a module from the target workbook when present.
 Public Function InfRemoveModule(ByVal ModuleName As String) As ComResult
     Dim VBProj As Object
     Dim Comp As Object
@@ -136,7 +138,7 @@ ErrHandler:
     Set InfRemoveModule = ComCreateFailureFromErr("InfVbaProjectProvider.InfRemoveModule", Err.Description, "Error", False)
 End Function
 
-' Returns all code text from a module in the active workbook.
+' Returns all code text from a module in the target workbook.
 Public Function InfGetModuleText(ByVal ModuleName As String) As String
     Dim VBProj As Object
     Dim Comp As Object
@@ -155,18 +157,81 @@ End Function
 Private Function GetActiveVBProject() As Object
     Dim WB As Object
 
-    On Error Resume Next
-    Set WB = Application.ActiveWorkbook
-    If WB Is Nothing Then
-        Set WB = ThisWorkbook
-    End If
-    On Error GoTo 0
+    Set WB = ResolveTargetWorkbook()
 
     If WB Is Nothing Then
-        Err.Raise ComErrInvalidState, "InfVbaProjectProvider", "No active workbook available."
+        Err.Raise ComErrInvalidState, "InfVbaProjectProvider", "No target workbook available."
     End If
 
     Set GetActiveVBProject = CallByName(WB, "VBProject", VbGet)
+End Function
+
+Private Function ResolveTargetWorkbook() As Object
+    Dim WB As Object
+
+    Set WB = TryGetActiveWorkbook()
+    If IsGenerationTargetWorkbook(WB) Then
+        Set ResolveTargetWorkbook = WB
+        Exit Function
+    End If
+
+    Set WB = TryGetWorkbookByName(InfDefaultTargetWorkbookName)
+    If IsGenerationTargetWorkbook(WB) Then
+        Set ResolveTargetWorkbook = WB
+        Exit Function
+    End If
+
+    On Error Resume Next
+    For Each WB In Application.Workbooks
+        If IsGenerationTargetWorkbook(WB) Then
+            Set ResolveTargetWorkbook = WB
+            Exit Function
+        End If
+    Next WB
+    On Error GoTo 0
+
+    Set ResolveTargetWorkbook = Nothing
+End Function
+
+Private Function TryGetActiveWorkbook() As Object
+    On Error Resume Next
+    Set TryGetActiveWorkbook = Application.ActiveWorkbook
+    On Error GoTo 0
+End Function
+
+Private Function TryGetWorkbookByName(ByVal WorkbookName As String) As Object
+    On Error Resume Next
+    Set TryGetWorkbookByName = Application.Workbooks(WorkbookName)
+    On Error GoTo 0
+End Function
+
+Private Function IsGenerationTargetWorkbook(ByVal WB As Object) As Boolean
+    If WB Is Nothing Then
+        IsGenerationTargetWorkbook = False
+        Exit Function
+    End If
+
+    If IsBuildWorkbook(WB) Then
+        IsGenerationTargetWorkbook = False
+        Exit Function
+    End If
+
+    IsGenerationTargetWorkbook = True
+End Function
+
+Private Function IsBuildWorkbook(ByVal WB As Object) As Boolean
+    Dim WorkbookName As String
+
+    If WB Is Nothing Then
+        IsBuildWorkbook = False
+        Exit Function
+    End If
+
+    On Error Resume Next
+    WorkbookName = CStr(CallByName(WB, "Name", VbGet))
+    On Error GoTo 0
+
+    IsBuildWorkbook = (StrComp(WorkbookName, InfBuildWorkbookName, vbTextCompare) = 0)
 End Function
 
 Private Function ModuleExistsInProject(ByVal VBProj As Object, ByVal ModuleName As String) As Boolean
