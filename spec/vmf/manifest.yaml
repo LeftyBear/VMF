@@ -2,8 +2,8 @@ Project:
   Name: VMF_v1_0
   Version: 1.0.0
   Framework: VMF
-  BuildVersion: 1.0.1
-  Status: ReleaseCandidate
+  BuildVersion: 1.0.2
+  Status: Released
 
 Policy:
   BuildSpecification: Frozen
