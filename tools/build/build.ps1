@@ -186,12 +186,12 @@ function Set-AddInReleaseMetadata {
 }
 
 try {
-    Set-AddInReleaseMetadata -Path $output -BuildVersion "1.0.1" -ReleaseType "Release"
+    Set-AddInReleaseMetadata -Path $output -BuildVersion "1.0.2" -ReleaseType "Release"
 }
 catch {
     Write-Error "Failed to record release metadata: $_"
     exit 1
 }
-Write-Host "Recorded release metadata: Build Version=1.0.1; Release Type=Release"
+Write-Host "Recorded release metadata: Build Version=1.0.2; Release Type=Release"
 
 Write-Host "Build script finished."
