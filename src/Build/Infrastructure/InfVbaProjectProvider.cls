@@ -40,7 +40,7 @@ Public Function InfAddStandardModule(ByVal ModuleName As String, ByVal CodeText 
 
     Set NewComp = VBProj.VBComponents.Add(InfVbextCtStdModule)
     NewComp.Name = ModuleName
-    NewComp.CodeModule.AddFromString CodeText
+    WriteComponentSource NewComp, NormalizeGeneratedSource(CodeText)
 
     Set VerificationResult = VerifyGeneratedModule(VBProj, ModuleName, CodeText)
     If VerificationResult.IsFailure Then
@@ -83,7 +83,7 @@ Public Function InfAddClassModule(ByVal ClassName As String, ByVal CodeText As S
 
     Set NewComp = VBProj.VBComponents.Add(InfVbextCtClassModule)
     NewComp.Name = ClassName
-    NewComp.CodeModule.AddFromString CodeText
+    WriteComponentSource NewComp, NormalizeGeneratedSource(CodeText)
 
     Set VerificationResult = VerifyGeneratedClass(VBProj, ClassName, CodeText)
     If VerificationResult.IsFailure Then
@@ -154,6 +154,49 @@ Public Function InfGetModuleText(ByVal ModuleName As String) As String
     End If
 End Function
 
+' Resolves the external target VBProject for generation.
+Public Function InfResolveTargetVBProject() As Object
+    Set InfResolveTargetVBProject = GetActiveVBProject()
+End Function
+
+' Returns True when ModuleName exists in VBProj.
+Public Function InfModuleExistsInProject(ByVal VBProj As Object, ByVal ModuleName As String) As Boolean
+    If VBProj Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "InfModuleExistsInProject", "VBProj is required."
+    End If
+
+    ComRequireText ModuleName, "ModuleName", "InfModuleExistsInProject"
+    InfModuleExistsInProject = ModuleExistsInProject(VBProj, ModuleName)
+End Function
+
+' Removes ModuleName from VBProj when present.
+Public Sub InfRemoveComponentFromProject(ByVal VBProj As Object, ByVal ModuleName As String)
+    Dim Comp As Object
+
+    If VBProj Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "InfRemoveComponentFromProject", "VBProj is required."
+    End If
+
+    ComRequireText ModuleName, "ModuleName", "InfRemoveComponentFromProject"
+
+    For Each Comp In VBProj.VBComponents
+        If StrComp(Comp.Name, ModuleName, vbTextCompare) = 0 Then
+            VBProj.VBComponents.Remove Comp
+            Exit Sub
+        End If
+    Next Comp
+End Sub
+
+' Returns all code text from ModuleName in VBProj.
+Public Function InfGetModuleTextFromProject(ByVal VBProj As Object, ByVal ModuleName As String) As String
+    If VBProj Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "InfGetModuleTextFromProject", "VBProj is required."
+    End If
+
+    ComRequireText ModuleName, "ModuleName", "InfGetModuleTextFromProject"
+    InfGetModuleTextFromProject = GetModuleTextFromProject(VBProj, ModuleName)
+End Function
+
 Private Function GetActiveVBProject() As Object
     Dim WB As Object
 
@@ -164,6 +207,56 @@ Private Function GetActiveVBProject() As Object
     End If
 
     Set GetActiveVBProject = CallByName(WB, "VBProject", VbGet)
+End Function
+
+Private Sub WriteComponentSource(ByVal Comp As Object, ByVal CodeText As String)
+    Dim CodeModule As Object
+
+    Set CodeModule = Comp.CodeModule
+    If CodeModule.CountOfLines > 0 Then
+        CodeModule.DeleteLines 1, CodeModule.CountOfLines
+    End If
+
+    CodeModule.AddFromString CodeText
+End Sub
+
+Private Function NormalizeGeneratedSource(ByVal CodeText As String) As String
+    Dim Lines() As String
+    Dim Result As String
+    Dim LineText As String
+    Dim NormalizedText As String
+    Dim i As Long
+    Dim HasBody As Boolean
+
+    NormalizedText = Replace(CodeText, vbCrLf, vbLf)
+    NormalizedText = Replace(NormalizedText, vbCr, vbLf)
+    Lines = Split(NormalizedText, vbLf)
+
+    Result = "Option Explicit"
+    HasBody = False
+
+    For i = LBound(Lines) To UBound(Lines)
+        LineText = Lines(i)
+
+        If StrComp(Trim$(LineText), "Option Explicit", vbTextCompare) = 0 Then
+            ' The canonical declaration is written once at the top.
+        ElseIf StrComp(Left$(Trim$(LineText), 10), "Attribute ", vbTextCompare) = 0 Then
+            ' Component attributes are managed by the VBE component.
+        ElseIf Not HasBody And Len(Trim$(LineText)) = 0 Then
+            ' Drop leading blank lines before the canonical header.
+        Else
+            If Not HasBody Then
+                Result = Result & vbCrLf & vbCrLf
+                HasBody = True
+            Else
+                Result = Result & vbCrLf
+            End If
+
+            Result = Result & LineText
+        End If
+    Next i
+
+    NormalizeGeneratedSource = Result
 End Function
 
 Private Function ResolveTargetWorkbook() As Object
@@ -250,26 +343,24 @@ End Function
 Private Function VerifyGeneratedModule(ByVal VBProj As Object, ByVal ModuleName As String, ByVal ExpectedText As String) As ComResult
     Dim Text As String
 
-    If Not FullProjectCompile() Then
-        Text = GetModuleTextFromProject(VBProj, ModuleName)
+    Text = GetModuleTextFromProject(VBProj, ModuleName)
 
-        If InStr(1, Text, "Option Explicit", vbTextCompare) = 0 Then
-            Set VerifyGeneratedModule = ComCreateFailure( _
-                ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated module is missing Option Explicit."))
-            Exit Function
-        End If
+    If CountOptionExplicit(Text) <> 1 Then
+        Set VerifyGeneratedModule = ComCreateFailure( _
+            ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated module must contain exactly one Option Explicit."))
+        Exit Function
+    End If
 
-        If InStr(1, Text, "Module: " & ModuleName, vbTextCompare) = 0 Then
-            Set VerifyGeneratedModule = ComCreateFailure( _
-                ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated module is missing its module header."))
-            Exit Function
-        End If
+    If InStr(1, Text, "Module: " & ModuleName, vbTextCompare) = 0 Then
+        Set VerifyGeneratedModule = ComCreateFailure( _
+            ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated module is missing its module header."))
+        Exit Function
+    End If
 
-        If Len(ExpectedText) > 0 And Len(Text) = 0 Then
-            Set VerifyGeneratedModule = ComCreateFailure( _
-                ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated module text is empty."))
-            Exit Function
-        End If
+    If Len(ExpectedText) > 0 And Len(Text) = 0 Then
+        Set VerifyGeneratedModule = ComCreateFailure( _
+            ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated module text is empty."))
+        Exit Function
     End If
 
     Set VerifyGeneratedModule = ComCreateSuccess()
@@ -278,26 +369,24 @@ End Function
 Private Function VerifyGeneratedClass(ByVal VBProj As Object, ByVal ClassName As String, ByVal ExpectedText As String) As ComResult
     Dim Text As String
 
-    If Not FullProjectCompile() Then
-        Text = GetModuleTextFromProject(VBProj, ClassName)
+    Text = GetModuleTextFromProject(VBProj, ClassName)
 
-        If InStr(1, Text, "Option Explicit", vbTextCompare) = 0 Then
-            Set VerifyGeneratedClass = ComCreateFailure( _
-                ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated class is missing Option Explicit."))
-            Exit Function
-        End If
+    If CountOptionExplicit(Text) <> 1 Then
+        Set VerifyGeneratedClass = ComCreateFailure( _
+            ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated class must contain exactly one Option Explicit."))
+        Exit Function
+    End If
 
-        If InStr(1, Text, "Class: " & ClassName, vbTextCompare) = 0 Then
-            Set VerifyGeneratedClass = ComCreateFailure( _
-                ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated class is missing its class header."))
-            Exit Function
-        End If
+    If InStr(1, Text, "Class: " & ClassName, vbTextCompare) = 0 Then
+        Set VerifyGeneratedClass = ComCreateFailure( _
+            ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated class is missing its class header."))
+        Exit Function
+    End If
 
-        If Len(ExpectedText) > 0 And Len(Text) = 0 Then
-            Set VerifyGeneratedClass = ComCreateFailure( _
-                ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated class text is empty."))
-            Exit Function
-        End If
+    If Len(ExpectedText) > 0 And Len(Text) = 0 Then
+        Set VerifyGeneratedClass = ComCreateFailure( _
+            ComCreateErrorInfo(ComErrInvalidState, "InfVbaProjectProvider", "Generated class text is empty."))
+        Exit Function
     End If
 
     Set VerifyGeneratedClass = ComCreateSuccess()
@@ -315,14 +404,18 @@ Private Function GetModuleTextFromProject(ByVal VBProj As Object, ByVal ModuleNa
     End If
 End Function
 
-Private Function FullProjectCompile() As Boolean
-    On Error GoTo ErrHandler
+Private Function CountOptionExplicit(ByVal Text As String) As Long
+    Dim Lines() As String
+    Dim NormalizedText As String
+    Dim i As Long
 
-    Application.VBE.CommandBars("Menu Bar").Controls("Debug").Controls("Compile VBAProject").Execute
+    NormalizedText = Replace(Text, vbCrLf, vbLf)
+    NormalizedText = Replace(NormalizedText, vbCr, vbLf)
+    Lines = Split(NormalizedText, vbLf)
 
-    FullProjectCompile = True
-    Exit Function
-
-ErrHandler:
-    FullProjectCompile = False
+    For i = LBound(Lines) To UBound(Lines)
+        If StrComp(Trim$(Lines(i)), "Option Explicit", vbTextCompare) = 0 Then
+            CountOptionExplicit = CountOptionExplicit + 1
+        End If
+    Next i
 End Function
