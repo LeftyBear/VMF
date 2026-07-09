@@ -34,6 +34,7 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifyInitialize
     VerifyFileSystemOperations
     VerifyTemplateDrivenGeneration
+    VerifyVbaProjectProviderSkipsBuildWorkbook
 End Sub
 
 '=========================================================================
@@ -77,6 +78,40 @@ Private Sub VerifyTemplateDrivenGeneration()
     AssertTrue InStr(1, GeneratedCode, "Option Explicit", vbTextCompare) > 0, "Generated code should include Option Explicit."
     AssertTrue InStr(1, GeneratedCode, "Module: VMF_TestTemplate", vbTextCompare) > 0, "Generated code should include the module header."
     AssertTrue InStr(1, GeneratedCode, "Layer: Application", vbTextCompare) > 0, "Generated code should include the canonical layer token replacement result."
+End Sub
+
+Private Sub VerifyVbaProjectProviderSkipsBuildWorkbook()
+    Dim AddinWorkbook As Object
+    Dim Provider As InfVbaProjectProvider
+    Dim ModuleName As String
+    Dim Result As ComResult
+
+    Set AddinWorkbook = Nothing
+    On Error Resume Next
+    Set AddinWorkbook = Application.Workbooks("Build.xlam")
+    If Not AddinWorkbook Is Nothing Then
+        AddinWorkbook.Activate
+    End If
+    On Error GoTo 0
+
+    ModuleName = "VMF_Test_TargetProjectPatch"
+    Set Provider = InfCreateVbaProjectProvider()
+
+    Provider.InfRemoveModule ModuleName
+    Set Result = Provider.InfAddStandardModule( _
+        ModuleName, _
+        "Option Explicit" & vbCrLf & vbCrLf & _
+        "'=========================================================================" & vbCrLf & _
+        "' Module: " & ModuleName & vbCrLf & _
+        "' Layer: Infrastructure" & vbCrLf & _
+        "' Responsibility:" & vbCrLf & _
+        "'=========================================================================" & vbCrLf)
+
+    AssertTrue Result.IsSuccess, "Provider should generate into the external target workbook when Build.xlam is active."
+    AssertTrue Provider.InfModuleExists(ModuleName), "Generated module should exist in the target workbook."
+    AssertFalse ModuleExistsInWorkbook(AddinWorkbook, ModuleName), "Generated module should not be added to Build.xlam."
+
+    Provider.InfRemoveModule ModuleName
 End Sub
 
 Private Function ResolveTemplatePath() As String
@@ -134,6 +169,26 @@ End Function
 
 Private Function GetTestFolderPath() As String
     GetTestFolderPath = Environ$("TEMP") & "\" & InfTestFolderName
+End Function
+
+Private Function ModuleExistsInWorkbook(ByVal Workbook As Object, ByVal ModuleName As String) As Boolean
+    Dim Comp As Object
+
+    If Workbook Is Nothing Then
+        ModuleExistsInWorkbook = False
+        Exit Function
+    End If
+
+    On Error Resume Next
+    For Each Comp In Workbook.VBProject.VBComponents
+        If StrComp(Comp.Name, ModuleName, vbTextCompare) = 0 Then
+            ModuleExistsInWorkbook = True
+            Exit Function
+        End If
+    Next Comp
+    On Error GoTo 0
+
+    ModuleExistsInWorkbook = False
 End Function
 
 Private Sub AssertTrue(ByVal Condition As Boolean, ByVal Message As String)
