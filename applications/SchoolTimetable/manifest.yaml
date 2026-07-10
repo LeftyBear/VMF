@@ -1,0 +1,16 @@
+Application:
+  Name: SchoolTimetable
+  Framework: VMF
+  Status: Development
+
+SourceRoot: src
+TestRoot: tests
+DocumentationRoot: docs
+
+Layers:
+  - Common
+  - Core
+  - Domain
+  - Application
+  - Infrastructure
+  - Presentation
