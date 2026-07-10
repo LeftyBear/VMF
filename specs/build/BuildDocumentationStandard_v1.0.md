@@ -55,7 +55,7 @@ Lower-precedence documents MUST NOT contradict higher-precedence documents.
 
 # 4. Separation Rules
 
-Specifications SHALL remain under `spec`.
+Specifications SHALL remain under `specs`.
 
 Implementation details SHALL NOT be mixed into official documentation unless they define approved behavior.
 
@@ -69,7 +69,7 @@ BuildReleaseProcedure_v1.0.md SHALL define the executable release verification p
 
 BuildReleaseChecklist_v1.0.md SHALL define the release readiness checks required before an official release.
 
-Release Reports under `spec/releases` SHALL record the completed release decision and evidence for a specific official release.
+Release Reports under `specs/releases` SHALL record the completed release decision and evidence for a specific official release.
 
 CHANGELOG.md SHALL record documentation and specification changes without redefining the specifications.
 
@@ -156,7 +156,7 @@ An official Build.xlam release SHALL include the following release artifacts:
 - BuildQualityStandard_v1.0.md
 - BuildReleaseProcedure_v1.0.md
 - BuildReleaseChecklist_v1.0.md
-- A release-specific Release Report under `spec/releases`
+- A release-specific Release Report under `specs/releases`
 
 Every official checklist shall have a corresponding procedure.
 

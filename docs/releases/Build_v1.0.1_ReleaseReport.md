@@ -77,11 +77,11 @@ The latest Build.xlam produced after the approved PowerShell build SHALL be iden
 | Evidence Item | Reference / Location | Notes |
 | --- | --- | --- |
 | PowerShell build command or approved build reference | `powershell -ExecutionPolicy Bypass -File tools\build\build.ps1` | Completed successfully on 2026-07-07. |
-| Latest Build.xlam path | `dist/build/Build.xlam` | Official Build v1.0.1 release artifact. |
+| Latest Build.xlam path | `dist/release/Build_v1.0.2/Build.xlam` | Official Build v1.0.1 release artifact. |
 | Latest Build.xlam timestamp | 2026-07-07 23:09:32 JST | Latest artifact produced by approved PowerShell build. |
 | Generate Summary | VBA test run and generated layer verification | All generator, layer, and pipeline verification runners passed. |
 | Build log | Console output from `tools\build\build.ps1` | Source modules imported and add-in saved successfully. |
-| Version Verification evidence | `docProps/custom.xml` in `dist/build/Build.xlam` | Build Version = 1.0.1; Release Type = Release. |
+| Version Verification evidence | `docProps/custom.xml` in `dist/release/Build_v1.0.2/Build.xlam` | Build Version = 1.0.1; Release Type = Release. |
 
 ---
 
@@ -99,8 +99,8 @@ The latest Build.xlam produced after the approved PowerShell build SHALL be iden
 | 8 | Pipeline Verification | PASS | `AppRunBuildPhase4Tests` | Codex | 2026-07-07 | Build pipeline validation, build output, and import path passed. |
 | 9 | Generated Layer Verification | PASS | Common, Manifest, Infrastructure, Domain, Application, Presentation layer runners | Codex | 2026-07-07 | Generated layer output checks passed. |
 | 10 | Documentation Verification | PASS | BuildDocumentationStandard_v1.0.md, README.md, CHANGELOG.md, Release Report | Codex | 2026-07-07 | Required release documents are present and traceable. |
-| 11 | Version Verification | PASS | `dist/build/Build.xlam` `docProps/custom.xml`, BuildBlueprint_v1.0.1.md, this report | Codex | 2026-07-07 | Build Version = 1.0.1 and Release Type = Release. |
-| 12 | PowerShell Build Artifact Verification | PASS | `powershell -ExecutionPolicy Bypass -File tools\build\build.ps1`, `dist/build/Build.xlam` | Codex | 2026-07-07 | Build completed and produced the audited artifact. |
+| 11 | Version Verification | PASS | `dist/release/Build_v1.0.2/Build.xlam` `docProps/custom.xml`, BuildBlueprint_v1.0.1.md, this report | Codex | 2026-07-07 | Build Version = 1.0.1 and Release Type = Release. |
+| 12 | PowerShell Build Artifact Verification | PASS | `powershell -ExecutionPolicy Bypass -File tools\build\build.ps1`, `dist/release/Build_v1.0.2/Build.xlam` | Codex | 2026-07-07 | Build completed and produced the audited artifact. |
 | 13 | Release Evidence Verification | PASS | Section 6 evidence inventory and test output | Codex | 2026-07-07 | Required release evidence is recorded. |
 | 14 | Release Decision | PASS | Section 9 release decision | Codex | 2026-07-07 | Audit Decision is APPROVED. |
 

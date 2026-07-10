@@ -56,7 +56,7 @@ Any FAIL or BLOCKED result SHALL prevent release approval.
 
 # 4. Evidence Standard
 
-Release evidence SHALL be recorded in the applicable Release Report under `spec/releases`.
+Release evidence SHALL be recorded in the applicable Release Report under `specs/releases`.
 
 Evidence MAY include inspected documents, source modules, generated output, build logs, artifact paths, artifact timestamps, reviewer notes, issue records, and rebuild records.
 

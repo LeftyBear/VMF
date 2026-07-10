@@ -1,4 +1,4 @@
-# Generates the VMF v1.0 project from spec/vmf/manifest.yaml.
+# Generates the VMF v1.0 project from specs/vmf/manifest.yaml.
 # This wrapper preserves Build.xlam v1.0.1 by reusing its manifest-driven
 # template shape without changing the frozen add-in artifact.
 
@@ -11,7 +11,7 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $workspaceRoot = Resolve-Path (Join-Path $scriptDir "..\..")
 
 if ([string]::IsNullOrWhiteSpace($ManifestPath)) {
-    $ManifestPath = Join-Path $workspaceRoot "spec\vmf\manifest.yaml"
+    $ManifestPath = Join-Path $workspaceRoot "specs\vmf\manifest.yaml"
 }
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
     $OutputRoot = Join-Path $workspaceRoot "src\VMF"

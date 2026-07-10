@@ -26,7 +26,7 @@
 ### Phase B
 - GitHub 公開品質への改善
 - docs/ の整備
-- spec/ の整備
+- specs/ の整備
 - README の改善
 
 ### Phase C
@@ -51,4 +51,4 @@ VMF v1.0 の設計変更は行わない。
 
 - README.md
 - docs/build/AI_DEVELOPMENT_RULES.md
-- spec/
+- specs/

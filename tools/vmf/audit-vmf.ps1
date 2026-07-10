@@ -1,4 +1,4 @@
-# Audits generated VMF v1.0 project structure against spec/vmf/manifest.yaml.
+# Audits generated VMF v1.0 project structure against specs/vmf/manifest.yaml.
 
 param(
     [string]$ManifestPath,
@@ -9,7 +9,7 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $workspaceRoot = Resolve-Path (Join-Path $scriptDir "..\..")
 
 if ([string]::IsNullOrWhiteSpace($ManifestPath)) {
-    $ManifestPath = Join-Path $workspaceRoot "spec\vmf\manifest.yaml"
+    $ManifestPath = Join-Path $workspaceRoot "specs\vmf\manifest.yaml"
 }
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
     $OutputRoot = Join-Path $workspaceRoot "src\VMF"
@@ -113,7 +113,7 @@ foreach ($item in $manifestItems) {
     }
 }
 
-$candidatePath = Join-Path $workspaceRoot "spec\vmf\VMFCandidates_v1.1.md"
+$candidatePath = Join-Path $workspaceRoot "candidates\VMFCandidates_v1.1.md"
 if (-not (Test-Path $candidatePath)) {
     $failures.Add("Missing VMF candidate file: $candidatePath")
 }
@@ -128,5 +128,5 @@ if ($failures.Count -gt 0) {
 
 Write-Host "VMF v1.0 audit result: PASS"
 Write-Host "Blueprint: BuildBlueprint_v1.0.1.md"
-Write-Host "Manifest: spec/vmf/manifest.yaml"
+Write-Host "Manifest: specs/vmf/manifest.yaml"
 Write-Host "Release Gate: generated layers present with module headers and Option Explicit."

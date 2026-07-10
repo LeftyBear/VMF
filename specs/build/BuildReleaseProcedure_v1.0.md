@@ -27,7 +27,7 @@ Each Step SHALL use the same nine items:
 
 BuildReleaseChecklist_v1.0.md SHALL record only the final judgment for each Step.
 
-Release Reports under `spec/releases` SHALL record release-specific evidence, issues, rebuild history, and the completed release decision.
+Release Reports under `specs/releases` SHALL record release-specific evidence, issues, rebuild history, and the completed release decision.
 
 ---
 

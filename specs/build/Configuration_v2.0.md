@@ -7,7 +7,7 @@
 | Status | Released |
 | Classification | Normative |
 | Owner | Build.xlam Project |
-| Identifier | spec/Configuration_v2.0.md |
+| Identifier | specs/Configuration_v2.0.md |
 | Encoding | UTF-8 |
 | Format | Markdown |
 | Parent Specification | Canon_v2.0.md |

@@ -80,4 +80,4 @@ Breaking changes require a new Major version.
 - README.md
 - docs/build/ROADMAP.md
 - docs/build/AI_DEVELOPMENT_RULES.md
-- spec/
+- specs/

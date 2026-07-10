@@ -21,7 +21,7 @@ This patch does not change BuildBlueprint_v1.0.1, BuildCanon_v1.0, BuildDocument
 
 The Build v1.0.2 patch release includes the following required release artifacts:
 
-- `dist/build/Build.xlam`
+- `dist/release/Build_v1.0.2/Build.xlam`
 - `src/Build/Application/BuildGenerationEngine.cls`
 - `src/Build/Application/ProjectProvider.cls`
 - `src/Build/Application/ComponentFactory.cls`
@@ -34,10 +34,10 @@ The Build v1.0.2 patch release includes the following required release artifacts
 - `src/Build/Application.manifest`
 - `src/Build/Infrastructure/InfVbaProjectProvider.cls`
 - `tools/build/build.ps1`
-- `test/build/AppGeneratorPhase1Tests.bas`
-- `test/build/AppGeneratorPhase2Tests.bas`
-- `test/build/Infrastructure/InfInfrastructurePhase2Tests.bas`
-- `spec/build/releases/Build_v1.0.2_ReleaseReport.md`
+- `tests/build/AppGeneratorPhase1Tests.bas`
+- `tests/build/AppGeneratorPhase2Tests.bas`
+- `tests/build/Infrastructure/InfInfrastructurePhase2Tests.bas`
+- `docs/releases/Build_v1.0.2_ReleaseReport.md`
 
 ---
 
@@ -78,13 +78,13 @@ Generation is now orchestrated by `BuildGenerationEngine` through the following 
 | Evidence Item | Reference / Location | Notes |
 | --- | --- | --- |
 | PowerShell build command | `powershell -ExecutionPolicy Bypass -File tools\build\build.ps1` | Completed successfully on 2026-07-09. |
-| Latest Build.xlam path | `dist/build/Build.xlam` | Official Build v1.0.2 patch release artifact. |
+| Latest Build.xlam path | `dist/release/Build_v1.0.2/Build.xlam` | Official Build v1.0.2 patch release artifact. |
 | Latest Build.xlam timestamp | 2026-07-09 18:28:04 JST | Latest artifact produced by approved PowerShell build. |
 | Unit and integration verification | `powershell -ExecutionPolicy Bypass -File tools\test\run-tests.ps1` | All 15 VBA test runners passed. |
 | Target VBProject regression coverage | `InfRunInfrastructurePhase2Tests` | Confirms provider does not add generated modules to Build.xlam. |
 | Option Explicit regression coverage | `AppRunGeneratorPhase1Tests`, `AppRunGeneratorPhase2Tests`, `InfRunInfrastructurePhase2Tests` | Confirms generated modules/classes contain exactly one `Option Explicit`. |
 | Shared engine coverage | Layer generation runners | Confirms Common, Manifest, Infrastructure, Domain, Application, and Presentation generation continue to pass through the refactored path. |
-| Version Verification evidence | `docProps/custom.xml` in `dist/build/Build.xlam` | Build Version = 1.0.2; Release Type = Release. |
+| Version Verification evidence | `docProps/custom.xml` in `dist/release/Build_v1.0.2/Build.xlam` | Build Version = 1.0.2; Release Type = Release. |
 
 ---
 
@@ -102,8 +102,8 @@ Generation is now orchestrated by `BuildGenerationEngine` through the following 
 | 8 | Pipeline Verification | PASS | Build pipeline runners | Codex | 2026-07-09 | Manifest-driven and template-driven source creation remains unchanged; component writing is shared. |
 | 9 | Generated Layer Verification | PASS | Layer generation runners | Codex | 2026-07-09 | Common, Manifest, Infrastructure, Domain, Application, and Presentation checks passed. |
 | 10 | Documentation Verification | PASS | CHANGELOG.md, README.md, this report | Codex | 2026-07-09 | Patch release evidence is recorded without redefining frozen standards. |
-| 11 | Version Verification | PASS | `dist/build/Build.xlam` `docProps/custom.xml` | Codex | 2026-07-09 | Build Version = 1.0.2 and Release Type = Release. |
-| 12 | PowerShell Build Artifact Verification | PASS | `tools\build\build.ps1`, `dist/build/Build.xlam` | Codex | 2026-07-09 | Build completed and produced the audited artifact. |
+| 11 | Version Verification | PASS | `dist/release/Build_v1.0.2/Build.xlam` `docProps/custom.xml` | Codex | 2026-07-09 | Build Version = 1.0.2 and Release Type = Release. |
+| 12 | PowerShell Build Artifact Verification | PASS | `tools\build\build.ps1`, `dist/release/Build_v1.0.2/Build.xlam` | Codex | 2026-07-09 | Build completed and produced the audited artifact. |
 | 13 | Release Evidence Verification | PASS | Section 4 evidence inventory | Codex | 2026-07-09 | Required release evidence is recorded. |
 | 14 | Release Decision | PASS | Section 7 release decision | Codex | 2026-07-09 | Audit Decision is APPROVED. |
 

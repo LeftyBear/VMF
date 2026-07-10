@@ -771,4 +771,4 @@ Verification summary:
 - ✔ Excludes implementation details and VBA code.
 - ✔ Excludes naming rules, file organization, APIs, Facades, Composition Root, and development procedures as required.
 - ✔ Maintains long-term maintainability and implementation independence.
-- ✔ Suitable for direct publication under `spec/ClassSpecification_v2.0.md` in the Build.xlam Project repository.
+- ✔ Suitable for direct publication under `specs/ClassSpecification_v2.0.md` in the Build.xlam Project repository.

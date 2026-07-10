@@ -241,7 +241,7 @@ VMF v1.1 Candidate
 docs/
 src/
 tests/
-prompt/
+prompts/
 ```
 
 ---
@@ -250,7 +250,7 @@ prompt/
 
 ChatGPT へ入力した主要プロンプトは
 
-prompt/
+prompts/
 
 フォルダで管理する。
 
