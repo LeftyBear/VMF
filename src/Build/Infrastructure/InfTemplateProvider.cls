@@ -86,7 +86,7 @@ Public Function InfGetModuleTemplatePath() As String
     End If
 
     RootPath = ResolveWorkspaceRootPath(RootPath)
-    InfGetModuleTemplatePath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "ModuleTemplate.txt"
+    InfGetModuleTemplatePath = RootPath & Application.PathSeparator & "templates" & Application.PathSeparator & "ModuleTemplate.txt"
 End Function
 
 ' Returns the default class template path.
@@ -111,7 +111,7 @@ Public Function InfGetClassTemplatePath() As String
     End If
 
     RootPath = ResolveWorkspaceRootPath(RootPath)
-    InfGetClassTemplatePath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "ClassTemplate.txt"
+    InfGetClassTemplatePath = RootPath & Application.PathSeparator & "templates" & Application.PathSeparator & "ClassTemplate.txt"
 End Function
 
 Private Function ResolveWorkspaceRootPath(ByVal CandidatePath As String) As String

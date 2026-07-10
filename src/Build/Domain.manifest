@@ -1,7 +1,7 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
-Dom_DateID,ClassModule,Domain,DomainClassTemplate.txt
-Dom_ClassHour,ClassModule,Domain,DomainClassTemplate.txt
-Dom_ClassHourID,ClassModule,Domain,DomainClassTemplate.txt
-Dom_ClassHourValue,ClassModule,Domain,DomainClassTemplate.txt
-Dom_SubjectName,ClassModule,Domain,DomainClassTemplate.txt
-Dom_Grade,ClassModule,Domain,DomainClassTemplate.txt
+Dom_DateID,ClassModule,Domain,templates\DomainClassTemplate.txt
+Dom_ClassHour,ClassModule,Domain,templates\DomainClassTemplate.txt
+Dom_ClassHourID,ClassModule,Domain,templates\DomainClassTemplate.txt
+Dom_ClassHourValue,ClassModule,Domain,templates\DomainClassTemplate.txt
+Dom_SubjectName,ClassModule,Domain,templates\DomainClassTemplate.txt
+Dom_Grade,ClassModule,Domain,templates\DomainClassTemplate.txt

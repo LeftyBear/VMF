@@ -1,2 +1,2 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
-DomManifest,ClassModule,Manifest,ClassTemplate.txt
+DomManifest,ClassModule,Manifest,templates\ClassTemplate.txt

@@ -1,5 +1,5 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
-App_Facade,StandardModule,Application,ModuleTemplate.txt
-App_ProjectService,ClassModule,Application,ClassTemplate.txt
-App_ProjectRequest,ClassModule,Application,ClassTemplate.txt
-App_ProjectResult,ClassModule,Application,ClassTemplate.txt
+App_Facade,StandardModule,Application,templates\ModuleTemplate.txt
+App_ProjectService,ClassModule,Application,templates\ClassTemplate.txt
+App_ProjectRequest,ClassModule,Application,templates\ClassTemplate.txt
+App_ProjectResult,ClassModule,Application,templates\ClassTemplate.txt

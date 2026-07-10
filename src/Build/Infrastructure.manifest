@@ -1,4 +1,4 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
-Infra_FileRepository,ClassModule,Infrastructure,ClassTemplate.txt
-Infra_ConfigRepository,ClassModule,Infrastructure,ClassTemplate.txt
-Infra_LogRepository,ClassModule,Infrastructure,ClassTemplate.txt
+Infra_FileRepository,ClassModule,Infrastructure,templates\ClassTemplate.txt
+Infra_ConfigRepository,ClassModule,Infrastructure,templates\ClassTemplate.txt
+Infra_LogRepository,ClassModule,Infrastructure,templates\ClassTemplate.txt
