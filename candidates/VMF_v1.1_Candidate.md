@@ -283,7 +283,7 @@ Each phase SHALL be completed before the next phase begins.
 Each phase SHALL include:
 
 - source files under `src`;
-- focused verification tests under `test`;
+- focused verification tests under `tests`;
 - a facade where the phase exposes services;
 - a composition root where construction or lifecycle coordination is required;
 - no changes to VMF v1.0 normative text.
