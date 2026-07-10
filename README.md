@@ -1,86 +1,52 @@
 # VMF
 
-Build.xlam の実装プロジェクトです。
+VMF、Build.xlam、およびVMFを利用するアプリケーションを管理するリポジトリです。
 
-本プロジェクトは、**保守性・拡張性・テスト容易性**を重視したアーキテクチャを採用し、GitHub を唯一の正本（Single Source of Truth）として管理します。
-
----
+Build v1.0.2とVMF v1.0は正式リリース済みであり、設計変更は候補文書として分離します。
 
 ## Architecture
 
 ```text
 UI
-↑
+↓
 Build
-↑
+↓
 VMF
-↑
+↓
 Infrastructure
-↑
+↓
 Common
 ```
 
-依存関係は一方向のみとし、循環参照を禁止します。
-
----
-
-## Development Environment
-
-| Item            | Value                  |
-| --------------- | ---------------------- |
-| Language        | VBA (Excel)            |
-| IDE             | Visual Studio Code     |
-| Version Control | Git / GitHub           |
-| AI Assistant    | ChatGPT / OpenAI Codex |
-
----
+依存関係は一方向とし、循環参照を禁止します。
 
 ## Directory Structure
 
 ```text
-src/
-  Build/        Build.xlam source modules, manifests, and templates
-  VMF/          Generated VMF v1.0 project
-spec/
-  build/
-  vmf/
-docs/
-  build/
-  vmf/
-test/
-  build/
-  vmf/
-prompt/
-  build/
-  vmf/
-dist/
-  build/        Build.xlam artifact
-  release/
-tools/
+src/            共通基盤、VMF、Build、UIのソース
+tests/          unit / integration テスト
+specs/          Build / VMFの正式仕様
+candidates/     将来版の変更候補
+docs/           Build、開発、リリース文書
+templates/      Buildが参照する生成テンプレート
+tools/          ビルド、テスト、監査ツール
+prompts/        AIプロンプト
+assets/         静的資産
+applications/   VMFを利用する実アプリケーション
+dist/           生成成果物のみ
 ```
 
----
+SchoolTimetableは `applications/SchoolTimetable/` で、アプリケーション固有のソース、テスト、文書を管理します。
+
+正式版Build成果物は `dist/release/Build_v1.0.2/Build.xlam` に配置します。
 
 ## Development Rules
 
-* VMF v1.0 の設計は凍結し、設計変更は行いません。
-* 改善案は **VMF v1.1 Candidate** として管理します。
-* GitHub を唯一の正本（Single Source of Truth）として運用します。
-* 原則として **1ファイル完成 = 1コミット** とします。
-
----
-
-## Documentation
-
-| Directory | Description |
-| --------- | ----------- |
-| `spec/`   | 仕様書         |
-| `docs/`   | 開発ドキュメント    |
-| `prompt/` | AI プロンプト    |
-| `tests/`  | テスト         |
-
----
+- VMF v1.0およびBuild v1.0.2の設計は変更しません。
+- 将来の改善は `candidates/` に記録します。
+- 仕様、実装、テスト、生成成果物を混在させません。
+- GitHubをSingle Source of Truthとして運用します。
 
 ## License
 
-ライセンスは、プロジェクト方針に従って決定します。
+[LICENSE](LICENSE)を参照してください。

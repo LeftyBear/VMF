@@ -52,7 +52,7 @@ The current implementation MUST remain compliant with VMF v1.0.
 # 4. Repository Structure
 
 ```
-spec/
+specs/
     canon/
     vmf/
     architecture/
@@ -61,7 +61,7 @@ spec/
 
 src/
 
-test/
+tests/
 
 tools/
 ```
@@ -72,11 +72,11 @@ The AI MUST place files in the appropriate directory.
 
 # 5. Specification Rules
 
-Specifications belong only under `spec`.
+Specifications belong only under `specs`.
 
 Source code belongs only under `src`.
 
-Tests belong only under `test`.
+Tests belong only under `tests`.
 
 Tools belong only under `tools`.
 
