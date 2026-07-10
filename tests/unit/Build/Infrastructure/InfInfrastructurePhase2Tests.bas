@@ -137,7 +137,7 @@ Private Function ResolveTemplatePath() As String
     End If
 
     RootPath = ResolveWorkspaceRootPath(RootPath)
-    ResolveTemplatePath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "ModuleTemplate.txt"
+    ResolveTemplatePath = RootPath & Application.PathSeparator & "templates" & Application.PathSeparator & "ModuleTemplate.txt"
 End Function
 
 Private Function ResolveWorkspaceRootPath(ByVal CandidatePath As String) As String

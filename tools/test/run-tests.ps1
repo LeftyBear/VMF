@@ -2,8 +2,8 @@
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $root = Resolve-Path (Join-Path $scriptDir "..\..")
-$buildPath = Join-Path $root "dist\build\Build.xlam"
-$testDir = Join-Path $root "test"
+$buildPath = Join-Path $root "dist\release\Build_v1.0.2\Build.xlam"
+$testDir = Join-Path $root "tests"
 
 if (-not (Test-Path $buildPath)) { Write-Error "Build.xlam not found at $buildPath"; exit 1 }
 
