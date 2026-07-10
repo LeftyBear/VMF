@@ -52,11 +52,12 @@ tmp/
 # --------------------------------------------------
 dist/*
 !dist/.gitkeep
-!dist/build/
-!dist/build/.gitkeep
-!dist/build/Build.xlam
+!dist/debug/
+!dist/debug/.gitkeep
 !dist/release/
 !dist/release/.gitkeep
+!dist/release/Build_v1.0.2/
+!dist/release/Build_v1.0.2/Build.xlam
 /build/
 
 # --------------------------------------------------
