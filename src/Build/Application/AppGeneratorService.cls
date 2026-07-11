@@ -307,66 +307,11 @@ Private Function AddGeneratedManifestItem(ByVal Item As ManifestItem, ByVal Code
 End Function
 
 Private Function ResolveBuildManifestPath(ByVal ManifestFileName As String) As String
-    Dim AddinWorkbook As Object
-    Dim RootPath As String
-
     ComRequireText ManifestFileName, "ManifestFileName", "ResolveBuildManifestPath"
 
-    RootPath = vbNullString
-
-    On Error Resume Next
-    Set AddinWorkbook = Application.Workbooks("Build.xlam")
-    On Error GoTo 0
-
-    If Not AddinWorkbook Is Nothing Then
-        RootPath = AddinWorkbook.Path
-    Else
-        RootPath = ThisWorkbook.Path
-    End If
-
-    If ComIsBlankText(RootPath) Then
-        Err.Raise ComErrInvalidState, "ResolveBuildManifestPath", "Manifest root path is unavailable."
-    End If
-
-    RootPath = ResolveWorkspaceRootPath(RootPath)
-    ResolveBuildManifestPath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & ManifestFileName
-End Function
-
-Private Function ResolveWorkspaceRootPath(ByVal CandidatePath As String) As String
-    Dim FileSystem As Object
-    Dim CurrentDirectoryPath As String
-    Dim ActiveWorkbookPath As String
-
-    Set FileSystem = CreateObject("Scripting.FileSystemObject")
-
-    On Error Resume Next
-    CurrentDirectoryPath = CurDir$
-    ActiveWorkbookPath = ActiveWorkbook.Path
-    On Error GoTo 0
-
-    If IsWorkspaceRootPath(FileSystem, CurrentDirectoryPath) Then
-        ResolveWorkspaceRootPath = CurrentDirectoryPath
-        Exit Function
-    End If
-
-    If IsWorkspaceRootPath(FileSystem, ActiveWorkbookPath) Then
-        ResolveWorkspaceRootPath = ActiveWorkbookPath
-        Exit Function
-    End If
-
-    If IsWorkspaceRootPath(FileSystem, CandidatePath) Then
-        ResolveWorkspaceRootPath = CandidatePath
-        Exit Function
-    End If
-
-    ResolveWorkspaceRootPath = CandidatePath
-End Function
-
-Private Function IsWorkspaceRootPath(ByVal FileSystem As Object, ByVal CandidatePath As String) As Boolean
-    If ComIsBlankText(CandidatePath) Then
-        IsWorkspaceRootPath = False
-        Exit Function
-    End If
-
-    IsWorkspaceRootPath = FileSystem.FolderExists(FileSystem.BuildPath(CandidatePath, "src\Build"))
+    ResolveBuildManifestPath = BuildPathResolver.CombinePath( _
+        BuildPathResolver.CombinePath( _
+            BuildPathResolver.CombinePath(BuildPathResolver.RepositoryRootPath(), "src"), _
+            "Build"), _
+        ManifestFileName)
 End Function

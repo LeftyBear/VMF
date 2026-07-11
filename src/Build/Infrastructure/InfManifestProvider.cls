@@ -138,7 +138,7 @@ Private Function ResolveManifestRelativePath(ByVal FilePath As String, ByVal Man
         Exit Function
     End If
 
-    ResolveManifestRelativePath = GetParentFolderPath(ManifestPath) & Application.PathSeparator & FilePath
+    ResolveManifestRelativePath = BuildPathResolver.CombinePath(BuildPathResolver.RepositoryRootPath(), FilePath)
 End Function
 
 Private Function IsAbsolutePath(ByVal FilePath As String) As Boolean

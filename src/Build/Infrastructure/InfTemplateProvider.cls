@@ -39,7 +39,7 @@ Public Function InfCreateTemplate(ByVal TemplatePath As String) As InfTemplate
     End If
 
     If Not FileSystemProvider.InfFileExists(TemplatePath) Then
-        Err.Raise ComErrInvalidArgument, "InfCreateTemplate", "TemplatePath does not exist."
+        Err.Raise ComErrInvalidArgument, "InfCreateTemplate", "TemplatePath does not exist: " & TemplatePath
     End If
 
     TemplateText = FileSystemProvider.InfReadText(TemplatePath)
@@ -66,83 +66,16 @@ End Function
 
 ' Returns the default module template path.
 Public Function InfGetModuleTemplatePath() As String
-    Dim RootPath As String
-    Dim AddinWorkbook As Object
-
-    RootPath = vbNullString
-
-    On Error Resume Next
-    Set AddinWorkbook = Application.Workbooks("Build.xlam")
-    On Error GoTo 0
-
-    If Not AddinWorkbook Is Nothing Then
-        RootPath = AddinWorkbook.Path
-    Else
-        RootPath = ThisWorkbook.Path
-    End If
-
-    If ComIsBlankText(RootPath) Then
-        Err.Raise ComErrInvalidState, "InfTemplateProvider", "Template root path is unavailable."
-    End If
-
-    RootPath = ResolveWorkspaceRootPath(RootPath)
-    InfGetModuleTemplatePath = RootPath & Application.PathSeparator & "templates" & Application.PathSeparator & "ModuleTemplate.txt"
+    InfGetModuleTemplatePath = BuildPathResolver.CombinePath( _
+        BuildPathResolver.TemplatesDirectoryPath(), _
+        "ModuleTemplate.txt")
 End Function
 
 ' Returns the default class template path.
 Public Function InfGetClassTemplatePath() As String
-    Dim RootPath As String
-    Dim AddinWorkbook As Object
-
-    RootPath = vbNullString
-
-    On Error Resume Next
-    Set AddinWorkbook = Application.Workbooks("Build.xlam")
-    On Error GoTo 0
-
-    If Not AddinWorkbook Is Nothing Then
-        RootPath = AddinWorkbook.Path
-    Else
-        RootPath = ThisWorkbook.Path
-    End If
-
-    If ComIsBlankText(RootPath) Then
-        Err.Raise ComErrInvalidState, "InfTemplateProvider", "Template root path is unavailable."
-    End If
-
-    RootPath = ResolveWorkspaceRootPath(RootPath)
-    InfGetClassTemplatePath = RootPath & Application.PathSeparator & "templates" & Application.PathSeparator & "ClassTemplate.txt"
-End Function
-
-Private Function ResolveWorkspaceRootPath(ByVal CandidatePath As String) As String
-    Dim FileSystem As Object
-    Dim ParentPath As String
-    Dim GrandParentPath As String
-
-    Set FileSystem = CreateObject("Scripting.FileSystemObject")
-
-    If FileSystem.FolderExists(FileSystem.BuildPath(CandidatePath, "src\Build")) Then
-        ResolveWorkspaceRootPath = CandidatePath
-        Exit Function
-    End If
-
-    ParentPath = FileSystem.GetParentFolderName(CandidatePath)
-    If Len(ParentPath) > 0 Then
-        If FileSystem.FolderExists(FileSystem.BuildPath(ParentPath, "src\Build")) Then
-            ResolveWorkspaceRootPath = ParentPath
-            Exit Function
-        End If
-    End If
-
-    GrandParentPath = FileSystem.GetParentFolderName(ParentPath)
-    If Len(GrandParentPath) > 0 Then
-        If FileSystem.FolderExists(FileSystem.BuildPath(GrandParentPath, "src\Build")) Then
-            ResolveWorkspaceRootPath = GrandParentPath
-            Exit Function
-        End If
-    End If
-
-    ResolveWorkspaceRootPath = CandidatePath
+    InfGetClassTemplatePath = BuildPathResolver.CombinePath( _
+        BuildPathResolver.TemplatesDirectoryPath(), _
+        "ClassTemplate.txt")
 End Function
 
 Private Function GetTemplateNameFromPath(ByVal TemplatePath As String) As String
