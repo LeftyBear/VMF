@@ -37,6 +37,7 @@ $runners = @(
     'AppRunGeneratorPhase1Tests',
     'AppRunGeneratorPhase1NegativeTests',
     'AppRunGeneratorPhase2Tests',
+    'AppRunProjectManifestParseTests',
     'AppRunGenerateCommonPhase3_1Tests',
     'AppRunGenerateManifestPhase3_2Tests',
     'AppRunGenerateInfrastructurePhase3_3Tests',
