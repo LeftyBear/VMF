@@ -1,6 +1,17 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
-App_Facade,StandardModule,Application,..\..\templates\ModuleTemplate.txt
+AppFacade,StandardModule,Application,..\..\templates\ModuleTemplate.txt
 Build_ProjectManifest,ClassModule,Application,..\..\templates\ClassTemplate.txt
-App_ProjectService,ClassModule,Application,..\..\templates\ClassTemplate.txt
-App_ProjectRequest,ClassModule,Application,..\..\templates\ClassTemplate.txt
-App_ProjectResult,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppBuildService,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppCompositionRoot,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppExportService,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppGeneratorService,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppImportService,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppValidationService,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AttributeWriter,ClassModule,Application,..\..\templates\ClassTemplate.txt
+Build_BlueprintParser,ClassModule,Application,..\..\templates\ClassTemplate.txt
+BuildGenerationEngine,ClassModule,Application,..\..\templates\ClassTemplate.txt
+ComponentFactory,ClassModule,Application,..\..\templates\ClassTemplate.txt
+HeaderNormalizer,ClassModule,Application,..\..\templates\ClassTemplate.txt
+ProjectProvider,ClassModule,Application,..\..\templates\ClassTemplate.txt
+SourceWriter,ClassModule,Application,..\..\templates\ClassTemplate.txt
+VerificationService,ClassModule,Application,..\..\templates\ClassTemplate.txt

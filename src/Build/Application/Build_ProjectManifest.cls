@@ -520,7 +520,7 @@ End Function
 
 Private Function IsSupportedGenerationTargetLayer(ByVal LayerName As String) As Boolean
     Select Case LayerName
-        Case "Common", "Infrastructure", "Domain", "Application", "Presentation"
+        Case "Common", "Core", "Infrastructure", "Domain", "Application", "Presentation"
             IsSupportedGenerationTargetLayer = True
         Case Else
             IsSupportedGenerationTargetLayer = False
