@@ -51,6 +51,22 @@ Public Function InfCreateTemplate(ByVal TemplatePath As String) As InfTemplate
     Set InfCreateTemplate = Template
 End Function
 
+' Validates that a template file exists and contains required generation tokens.
+Public Function InfValidateTemplateFile(ByVal TemplatePath As String) As ComResult
+    Dim Template As InfTemplate
+
+    On Error GoTo ErrHandler
+
+    Set Template = InfCreateTemplate(TemplatePath)
+    ValidateRequiredTemplateTokens Template
+
+    Set InfValidateTemplateFile = ComCreateSuccess("Template is valid.")
+    Exit Function
+
+ErrHandler:
+    Set InfValidateTemplateFile = ComCreateFailureFromErr("InfTemplateProvider.InfValidateTemplateFile", Err.Description, "Error", False)
+End Function
+
 ' Creates a template directly from supplied text content.
 Public Function InfCreateTemplateFromText(ByVal TemplateName As String, ByVal TemplateText As String) As InfTemplate
     Dim Template As InfTemplate
@@ -101,3 +117,25 @@ Private Function GetTemplateNameFromPath(ByVal TemplatePath As String) As String
 
     GetTemplateNameFromPath = FileName
 End Function
+
+Private Sub ValidateRequiredTemplateTokens(ByVal Template As InfTemplate)
+    Dim TemplateText As String
+
+    If Template Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "ValidateRequiredTemplateTokens", "Template is required."
+    End If
+
+    If Not Template.InfValidate() Then
+        Err.Raise ComErrInvalidState, "ValidateRequiredTemplateTokens", "Template is invalid."
+    End If
+
+    TemplateText = Template.InfGetTemplateText()
+
+    If InStr(1, TemplateText, "{ModuleName}", vbBinaryCompare) = 0 Then
+        Err.Raise ComErrInvalidArgument, "ValidateRequiredTemplateTokens", "Template is missing required token: {ModuleName}"
+    End If
+
+    If InStr(1, TemplateText, "{Layer}", vbBinaryCompare) = 0 Then
+        Err.Raise ComErrInvalidArgument, "ValidateRequiredTemplateTokens", "Template is missing required token: {Layer}"
+    End If
+End Sub

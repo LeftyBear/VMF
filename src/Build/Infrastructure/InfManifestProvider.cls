@@ -85,13 +85,44 @@ Public Function InfLoadManifestItems(ByVal ManifestPath As String) As Collection
     Set InfLoadManifestItems = Items
 End Function
 
-Private Sub ValidateLayerName(ByVal LayerName As String)
-    Select Case LayerName
-        Case "Presentation", "Application", "Domain", "Infrastructure", "Common"
-            Exit Sub
-    End Select
+' Validates that a manifest file can be loaded as manifest-driven generation items.
+Public Function InfValidateManifestFile(ByVal ManifestPath As String) As ComResult
+    Dim Items As Collection
 
-    Err.Raise ComErrInvalidArgument, "InfCreateManifest", "LayerName is not defined by LayerSpecification."
+    On Error GoTo ErrHandler
+
+    Set Items = InfLoadManifestItems(ManifestPath)
+
+    If Items.Count = 0 Then
+        Err.Raise ComErrInvalidState, "InfValidateManifestFile", "Manifest contains no generation items."
+    End If
+
+    Set InfValidateManifestFile = ComCreateSuccess("Manifest is valid.")
+    Exit Function
+
+ErrHandler:
+    Set InfValidateManifestFile = ComCreateFailureFromErr("InfManifestProvider.InfValidateManifestFile", Err.Description, "Error", False)
+End Function
+
+Private Sub ValidateLayerName(ByVal LayerName As String)
+    Dim Position As Long
+    Dim Character As String
+
+    If ComIsBlankText(LayerName) Then
+        Err.Raise ComErrInvalidArgument, "InfCreateManifest", "LayerName is required."
+    End If
+
+    Character = Mid$(LayerName, 1, 1)
+    If Not Character Like "[A-Za-z]" Then
+        Err.Raise ComErrInvalidArgument, "InfCreateManifest", "LayerName must start with a letter."
+    End If
+
+    For Position = 1 To Len(LayerName)
+        Character = Mid$(LayerName, Position, 1)
+        If Not (Character Like "[A-Za-z0-9_]") Then
+            Err.Raise ComErrInvalidArgument, "InfCreateManifest", "LayerName must contain only letters, numbers, or underscore."
+        End If
+    Next Position
 End Sub
 
 Private Function CreateManifestItemFromLine(ByVal LineText As String, ByVal ManifestPath As String) As ManifestItem

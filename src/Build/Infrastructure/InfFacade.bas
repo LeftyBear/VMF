@@ -157,6 +157,22 @@ Public Function InfCreateManifestProvider() As InfManifestProvider
     Set InfCreateManifestProvider = CreateCompositionRoot().InfCreateManifestProvider()
 End Function
 
+' Validates a template file before generation.
+Public Function InfValidateTemplateFile(ByVal TemplatePath As String) As ComResult
+    Dim TemplateProvider As InfTemplateProvider
+
+    Set TemplateProvider = CreateCompositionRoot().InfCreateTemplateProvider()
+    Set InfValidateTemplateFile = TemplateProvider.InfValidateTemplateFile(TemplatePath)
+End Function
+
+' Validates a manifest file before generation.
+Public Function InfValidateManifestFile(ByVal ManifestPath As String) As ComResult
+    Dim ManifestProvider As InfManifestProvider
+
+    Set ManifestProvider = CreateCompositionRoot().InfCreateManifestProvider()
+    Set InfValidateManifestFile = ManifestProvider.InfValidateManifestFile(ManifestPath)
+End Function
+
 ' Creates a VBA project provider.
 Public Function InfCreateVbaProjectProvider() As InfVbaProjectProvider
     Set InfCreateVbaProjectProvider = CreateCompositionRoot().InfCreateVbaProjectProvider()

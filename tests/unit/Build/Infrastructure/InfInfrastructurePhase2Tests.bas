@@ -33,7 +33,10 @@ Private Const InfTestAssertEqualsErrorNumber As Long = vbObjectError + 9102
 Public Sub InfRunInfrastructurePhase2Tests()
     VerifyInitialize
     VerifyFileSystemOperations
+    VerifyTemplateValidation
     VerifyTemplateDrivenGeneration
+    VerifyCustomLayerManifestGeneration
+    VerifyBuildManifestFormatCoverage
     VerifyManifestTemplatePathResolution
     VerifyMissingManifestTemplatePathResolution
     VerifyVbaProjectProviderSkipsBuildWorkbook
@@ -80,6 +83,99 @@ Private Sub VerifyTemplateDrivenGeneration()
     AssertTrue InStr(1, GeneratedCode, "Option Explicit", vbTextCompare) > 0, "Generated code should include Option Explicit."
     AssertTrue InStr(1, GeneratedCode, "Module: VMF_TestTemplate", vbTextCompare) > 0, "Generated code should include the module header."
     AssertTrue InStr(1, GeneratedCode, "Layer: Application", vbTextCompare) > 0, "Generated code should include the canonical layer token replacement result."
+End Sub
+
+Private Sub VerifyCustomLayerManifestGeneration()
+    Dim FileSystem As Object
+    Dim FileProvider As InfFileSystemProvider
+    Dim ManifestProvider As InfManifestProvider
+    Dim Generator As InfGenerator
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim ManifestDir As String
+    Dim ManifestPath As String
+    Dim GeneratedCode As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "custom-layer")
+    ManifestPath = FileSystem.BuildPath(ManifestDir, "Core.manifest")
+
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath" & vbCrLf & _
+        "CoreBootstrap,StandardModule,Core," & ResolveTemplatePath()
+
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set Items = ManifestProvider.InfLoadManifestItems(ManifestPath)
+
+    AssertEquals "1", CStr(Items.Count), "Custom Core manifest should load one item."
+
+    Set Item = Items.Item(1)
+    AssertEquals "Core", Item.InfGetLayerName(), "Custom manifest item should preserve the Core layer."
+    AssertTrue Item.InfValidate(), "Custom Core manifest item should be valid."
+
+    Set Generator = InfCreateGenerator()
+    GeneratedCode = Generator.InfGenerateManifestItem(Item)
+
+    AssertTrue InStr(1, GeneratedCode, "Module: CoreBootstrap", vbTextCompare) > 0, "Custom layer generation should replace ModuleName."
+    AssertTrue InStr(1, GeneratedCode, "Layer: Core", vbTextCompare) > 0, "Custom layer generation should replace the Core layer."
+End Sub
+
+Private Sub VerifyTemplateValidation()
+    Dim TemplateProvider As InfTemplateProvider
+
+    Set TemplateProvider = New InfTemplateProvider
+    TemplateProvider.InfInitialize New InfFileSystemProvider
+
+    AssertTrue TemplateProvider.InfValidateTemplateFile(ResolveTemplatePath()).IsSuccess, "ModuleTemplate.txt should pass template validation."
+    AssertTrue TemplateProvider.InfValidateTemplateFile(ResolveTemplateFilePath("ClassTemplate.txt")).IsSuccess, "ClassTemplate.txt should pass template validation."
+    AssertTrue TemplateProvider.InfValidateTemplateFile(ResolveTemplateFilePath("DomainClassTemplate.txt")).IsSuccess, "DomainClassTemplate.txt should pass template validation."
+    AssertTrue TemplateProvider.InfValidateTemplateFile(ResolveTemplateFilePath("DomainModuleTemplate.txt")).IsSuccess, "DomainModuleTemplate.txt should pass template validation."
+End Sub
+
+Private Sub VerifyBuildManifestFormatCoverage()
+    Dim FileSystem As Object
+    Dim ManifestProvider As InfManifestProvider
+    Dim TemplateProvider As InfTemplateProvider
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim ManifestNames As Variant
+    Dim ManifestName As Variant
+    Dim ManifestPath As String
+    Dim ExpectedTemplatePath As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set TemplateProvider = New InfTemplateProvider
+    TemplateProvider.InfInitialize New InfFileSystemProvider
+    ManifestNames = Array( _
+        "Common.manifest", _
+        "Manifest.manifest", _
+        "Infrastructure.manifest", _
+        "Domain.manifest", _
+        "Application.manifest", _
+        "Presentation.manifest")
+
+    For Each ManifestName In ManifestNames
+        ManifestPath = ResolveBuildManifestPath(CStr(ManifestName))
+        AssertTrue ManifestProvider.InfValidateManifestFile(ManifestPath).IsSuccess, CStr(ManifestName) & " should pass manifest validation."
+
+        Set Items = ManifestProvider.InfLoadManifestItems(ManifestPath)
+
+        AssertTrue Items.Count > 0, CStr(ManifestName) & " should contain generation items."
+
+        For Each Item In Items
+            AssertTrue Item.InfValidate(), CStr(ManifestName) & " should contain valid manifest items."
+            AssertTrue IsSupportedManifestModuleType(Item.InfGetModuleType()), CStr(ManifestName) & " should use a supported module type."
+            AssertTrue IsSupportedManifestLayerName(Item.InfGetLayerName()), CStr(ManifestName) & " should use a supported layer name."
+            AssertTrue Len(Item.InfGetModuleName()) > 0, CStr(ManifestName) & " should define ModuleName."
+            AssertTrue Len(Item.InfGetTemplatePath()) > 0, CStr(ManifestName) & " should define TemplatePath."
+
+            ExpectedTemplatePath = FileSystem.GetAbsolutePathName(Item.InfGetTemplatePath())
+            AssertTrue FileSystem.FileExists(ExpectedTemplatePath), CStr(ManifestName) & " should reference an existing template."
+            AssertTrue TemplateProvider.InfValidateTemplateFile(ExpectedTemplatePath).IsSuccess, CStr(ManifestName) & " should reference a valid template."
+        Next Item
+    Next ManifestName
 End Sub
 
 Private Sub VerifyManifestTemplatePathResolution()
@@ -206,6 +302,50 @@ Private Function ResolveTemplatePath() As String
     ResolveTemplatePath = RootPath & Application.PathSeparator & "templates" & Application.PathSeparator & "ModuleTemplate.txt"
 End Function
 
+Private Function ResolveTemplateFilePath(ByVal TemplateFileName As String) As String
+    Dim AddinWorkbook As Object
+    Dim RootPath As String
+
+    On Error Resume Next
+    Set AddinWorkbook = Application.Workbooks("Build.xlam")
+    On Error GoTo 0
+
+    If Not AddinWorkbook Is Nothing Then
+        RootPath = AddinWorkbook.Path
+    Else
+        RootPath = ThisWorkbook.Path
+    End If
+
+    If ComIsBlankText(RootPath) Then
+        Err.Raise vbObjectError + 9105, "InfInfrastructurePhase2Tests", "Template root path is unavailable."
+    End If
+
+    RootPath = ResolveWorkspaceRootPath(RootPath)
+    ResolveTemplateFilePath = RootPath & Application.PathSeparator & "templates" & Application.PathSeparator & TemplateFileName
+End Function
+
+Private Function ResolveBuildManifestPath(ByVal ManifestFileName As String) As String
+    Dim AddinWorkbook As Object
+    Dim RootPath As String
+
+    On Error Resume Next
+    Set AddinWorkbook = Application.Workbooks("Build.xlam")
+    On Error GoTo 0
+
+    If Not AddinWorkbook Is Nothing Then
+        RootPath = AddinWorkbook.Path
+    Else
+        RootPath = ThisWorkbook.Path
+    End If
+
+    If ComIsBlankText(RootPath) Then
+        Err.Raise vbObjectError + 9104, "InfInfrastructurePhase2Tests", "Manifest root path is unavailable."
+    End If
+
+    RootPath = ResolveWorkspaceRootPath(RootPath)
+    ResolveBuildManifestPath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & ManifestFileName
+End Function
+
 Private Function ResolveWorkspaceRootPath(ByVal CandidatePath As String) As String
     Dim FileSystem As Object
     Dim CurrentPath As String
@@ -269,6 +409,41 @@ Private Function CountOptionExplicit(ByVal Text As String) As Long
             CountOptionExplicit = CountOptionExplicit + 1
         End If
     Next i
+End Function
+
+Private Function IsSupportedManifestModuleType(ByVal ModuleType As String) As Boolean
+    Select Case ModuleType
+        Case "StandardModule", "ClassModule"
+            IsSupportedManifestModuleType = True
+        Case Else
+            IsSupportedManifestModuleType = False
+    End Select
+End Function
+
+Private Function IsSupportedManifestLayerName(ByVal LayerName As String) As Boolean
+    Dim Position As Long
+    Dim Character As String
+
+    If ComIsBlankText(LayerName) Then
+        IsSupportedManifestLayerName = False
+        Exit Function
+    End If
+
+    Character = Mid$(LayerName, 1, 1)
+    If Not Character Like "[A-Za-z]" Then
+        IsSupportedManifestLayerName = False
+        Exit Function
+    End If
+
+    For Position = 1 To Len(LayerName)
+        Character = Mid$(LayerName, Position, 1)
+        If Not (Character Like "[A-Za-z0-9_]") Then
+            IsSupportedManifestLayerName = False
+            Exit Function
+        End If
+    Next Position
+
+    IsSupportedManifestLayerName = True
 End Function
 
 Private Sub AssertTrue(ByVal Condition As Boolean, ByVal Message As String)

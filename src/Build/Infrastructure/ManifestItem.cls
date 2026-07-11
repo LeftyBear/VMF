@@ -101,7 +101,7 @@ Public Function InfValidate() As Boolean
         Exit Function
     End If
 
-    If Not IsSupportedLayerName(This.LayerName) Then
+    If Not IsValidLayerName(This.LayerName) Then
         InfValidate = False
         Exit Function
     End If
@@ -129,11 +129,28 @@ Private Function IsSupportedModuleType(ByVal ModuleType As String) As Boolean
     End Select
 End Function
 
-Private Function IsSupportedLayerName(ByVal LayerName As String) As Boolean
-    Select Case LayerName
-        Case "Presentation", "Application", "Domain", "Infrastructure", "Common", "Manifest"
-            IsSupportedLayerName = True
-        Case Else
-            IsSupportedLayerName = False
-    End Select
+Private Function IsValidLayerName(ByVal LayerName As String) As Boolean
+    Dim Position As Long
+    Dim Character As String
+
+    If ComIsBlankText(LayerName) Then
+        IsValidLayerName = False
+        Exit Function
+    End If
+
+    Character = Mid$(LayerName, 1, 1)
+    If Not Character Like "[A-Za-z]" Then
+        IsValidLayerName = False
+        Exit Function
+    End If
+
+    For Position = 1 To Len(LayerName)
+        Character = Mid$(LayerName, Position, 1)
+        If Not (Character Like "[A-Za-z0-9_]") Then
+            IsValidLayerName = False
+            Exit Function
+        End If
+    Next Position
+
+    IsValidLayerName = True
 End Function

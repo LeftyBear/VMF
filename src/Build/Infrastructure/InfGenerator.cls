@@ -68,6 +68,7 @@ Public Function InfGenerateModule(ByVal ModuleName As String, ByVal TemplatePath
     Dim Template As InfTemplate
     Dim Manifest As Object
     Dim GeneratedText As String
+    Dim ValidationResult As ComResult
 
     ComRequireText ModuleName, "ModuleName", "InfGenerateModule"
     ComRequireText TemplatePath, "TemplatePath", "InfGenerateModule"
@@ -75,6 +76,11 @@ Public Function InfGenerateModule(ByVal ModuleName As String, ByVal TemplatePath
 
     If TemplateProvider Is Nothing Or ManifestProvider Is Nothing Or TokenReplacer Is Nothing Then
         Err.Raise ComErrInvalidState, "InfGenerateModule", "Generator is not initialized."
+    End If
+
+    Set ValidationResult = TemplateProvider.InfValidateTemplateFile(TemplatePath)
+    If ValidationResult.IsFailure Then
+        Err.Raise ComErrInvalidArgument, "InfGenerateModule", ValidationResult.Message
     End If
 
     Set Template = TemplateProvider.InfCreateTemplate(TemplatePath)
@@ -96,6 +102,7 @@ End Function
 Public Function InfGenerateManifestItem(ByVal Item As ManifestItem) As String
     Dim Template As InfTemplate
     Dim GeneratedText As String
+    Dim ValidationResult As ComResult
 
     If Item Is Nothing Then
         Err.Raise ComErrInvalidArgument, "InfGenerateManifestItem", "ManifestItem is required."
@@ -107,6 +114,11 @@ Public Function InfGenerateManifestItem(ByVal Item As ManifestItem) As String
 
     If TemplateProvider Is Nothing Or TokenReplacer Is Nothing Then
         Err.Raise ComErrInvalidState, "InfGenerateManifestItem", "Generator is not initialized."
+    End If
+
+    Set ValidationResult = TemplateProvider.InfValidateTemplateFile(Item.InfGetTemplatePath())
+    If ValidationResult.IsFailure Then
+        Err.Raise ComErrInvalidArgument, "InfGenerateManifestItem", ValidationResult.Message
     End If
 
     Set Template = TemplateProvider.InfCreateTemplate(Item.InfGetTemplatePath())
