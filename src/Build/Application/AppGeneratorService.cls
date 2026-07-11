@@ -334,19 +334,39 @@ End Function
 
 Private Function ResolveWorkspaceRootPath(ByVal CandidatePath As String) As String
     Dim FileSystem As Object
-    Dim CurrentPath As String
+    Dim CurrentDirectoryPath As String
+    Dim ActiveWorkbookPath As String
 
     Set FileSystem = CreateObject("Scripting.FileSystemObject")
-    CurrentPath = CandidatePath
 
-    Do While Len(CurrentPath) > 0
-        If FileSystem.FolderExists(FileSystem.BuildPath(CurrentPath, "src\Build")) Then
-            ResolveWorkspaceRootPath = CurrentPath
-            Exit Function
-        End If
+    On Error Resume Next
+    CurrentDirectoryPath = CurDir$
+    ActiveWorkbookPath = ActiveWorkbook.Path
+    On Error GoTo 0
 
-        CurrentPath = FileSystem.GetParentFolderName(CurrentPath)
-    Loop
+    If IsWorkspaceRootPath(FileSystem, CurrentDirectoryPath) Then
+        ResolveWorkspaceRootPath = CurrentDirectoryPath
+        Exit Function
+    End If
+
+    If IsWorkspaceRootPath(FileSystem, ActiveWorkbookPath) Then
+        ResolveWorkspaceRootPath = ActiveWorkbookPath
+        Exit Function
+    End If
+
+    If IsWorkspaceRootPath(FileSystem, CandidatePath) Then
+        ResolveWorkspaceRootPath = CandidatePath
+        Exit Function
+    End If
 
     ResolveWorkspaceRootPath = CandidatePath
+End Function
+
+Private Function IsWorkspaceRootPath(ByVal FileSystem As Object, ByVal CandidatePath As String) As Boolean
+    If ComIsBlankText(CandidatePath) Then
+        IsWorkspaceRootPath = False
+        Exit Function
+    End If
+
+    IsWorkspaceRootPath = FileSystem.FolderExists(FileSystem.BuildPath(CandidatePath, "src\Build"))
 End Function
