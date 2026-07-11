@@ -16,17 +16,27 @@ Option Explicit
 ' Dependencies: Common, Infrastructure
 '==========================================================================
 
-Private Const SectionModules As String = "Modules"
-Private Const SectionGeneration As String = "Generation"
+Private Const SectionApplication As String = "application"
+Private Const SectionGeneration As String = "generation"
+Private Const SectionPolicy As String = "policy"
+Private Const SectionLayers As String = "layers"
+Private Const SectionDomain As String = "domain"
+Private Const SectionApplicationServices As String = "application_services"
+Private Const SectionInfrastructure As String = "infrastructure"
+Private Const SectionPresentation As String = "presentation"
+
 Private Const ModuleGroupStandardModules As String = "StandardModules"
 Private Const ModuleGroupClasses As String = "Classes"
-Private Const ModuleGroupEnums As String = "Enums"
 
 Private Type TMember
     ItemsByLayer As Object
     DefinedLayers As Object
     GenerationEnabled As Object
     ItemKeys As Object
+    SectionSeen As Object
+    ApplicationValues As Object
+    PolicyValues As Object
+    LayerPaths As Object
     SourceRoot As String
     IsInitialized As Boolean
 End Type
@@ -42,7 +52,11 @@ Public Function BuildInitializeFromContent(ByVal ManifestContent As String) As C
     Set This.DefinedLayers = CreateObject("Scripting.Dictionary")
     Set This.GenerationEnabled = CreateObject("Scripting.Dictionary")
     Set This.ItemKeys = CreateObject("Scripting.Dictionary")
-    This.SourceRoot = "src"
+    Set This.SectionSeen = CreateObject("Scripting.Dictionary")
+    Set This.ApplicationValues = CreateObject("Scripting.Dictionary")
+    Set This.PolicyValues = CreateObject("Scripting.Dictionary")
+    Set This.LayerPaths = CreateObject("Scripting.Dictionary")
+    This.SourceRoot = vbNullString
     This.IsInitialized = False
 
     ParseManifestContent ManifestContent
@@ -99,9 +113,9 @@ Private Sub ParseManifestContent(ByVal ManifestContent As String)
     Dim LineIndex As Long
     Dim RawLine As String
     Dim LineText As String
-    Dim SectionName As String
-    Dim CurrentLayer As String
-    Dim CurrentGroup As String
+    Dim CurrentSection As String
+    Dim CurrentSubSection As String
+    Dim CurrentLayerName As String
 
     Lines = Split(NormalizeLineBreaks(ManifestContent), vbLf)
 
@@ -110,76 +124,246 @@ Private Sub ParseManifestContent(ByVal ManifestContent As String)
         LineText = Trim$(StripInlineComment(RawLine))
 
         If Not ComIsBlankText(LineText) Then
-            If IsTopLevelKey(RawLine) Then
-                SectionName = Trim$(RemoveTrailingColon(LineText))
-                CurrentLayer = vbNullString
-                CurrentGroup = vbNullString
+            ValidateIndentation RawLine
 
-                If Left$(LineText, Len("SourceRoot:")) = "SourceRoot:" Then
-                    This.SourceRoot = Trim$(Mid$(LineText, Len("SourceRoot:") + 1))
-                    If ComIsBlankText(This.SourceRoot) Then
-                        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "SourceRoot is required when defined."
-                    End If
+            If LeadingSpaceCount(RawLine) = 0 Then
+                CurrentSection = ParseTopLevelSection(LineText)
+                CurrentSubSection = vbNullString
+                CurrentLayerName = vbNullString
+            Else
+                If ComIsBlankText(CurrentSection) Then
+                    Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Manifest content must be inside a top-level section."
                 End If
-            ElseIf SectionName = SectionModules Then
-                ParseModulesLine RawLine, LineText, CurrentLayer, CurrentGroup
-            ElseIf SectionName = SectionGeneration Then
-                ParseGenerationLine RawLine, LineText
+
+                Select Case CurrentSection
+                    Case SectionApplication
+                        ParseApplicationLine RawLine, LineText
+                    Case SectionGeneration
+                        ParseGenerationLine RawLine, LineText
+                    Case SectionPolicy
+                        ParsePolicyLine RawLine, LineText
+                    Case SectionLayers
+                        ParseLayersLine RawLine, LineText, CurrentLayerName
+                    Case SectionDomain
+                        ParseDomainLine RawLine, LineText, CurrentSubSection
+                    Case SectionApplicationServices
+                        ParseApplicationServicesLine RawLine, LineText
+                    Case SectionInfrastructure
+                        ParseInfrastructureLine RawLine, LineText, CurrentSubSection
+                    Case SectionPresentation
+                        ParsePresentationLine RawLine, LineText, CurrentSubSection
+                    Case Else
+                        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported manifest section: " & CurrentSection
+                End Select
             End If
         End If
     Next LineIndex
 End Sub
 
-Private Sub ParseModulesLine( _
-    ByVal RawLine As String, _
-    ByVal LineText As String, _
-    ByRef CurrentLayer As String, _
-    ByRef CurrentGroup As String)
+Private Function ParseTopLevelSection(ByVal LineText As String) As String
+    Dim SectionName As String
 
-    Dim Indent As Long
-    Dim LayerName As String
-
-    Indent = LeadingSpaceCount(RawLine)
-
-    If Indent = 2 And Right$(LineText, 1) = ":" Then
-        LayerName = RemoveTrailingColon(LineText)
-        RegisterLayer LayerName
-        CurrentLayer = LayerName
-        CurrentGroup = vbNullString
-    ElseIf Indent = 4 And Right$(LineText, 1) = ":" Then
-        CurrentGroup = RemoveTrailingColon(LineText)
-        ValidateModuleGroup CurrentGroup
-    ElseIf Indent = 4 And IsInlineEmptyList(LineText) Then
-        CurrentGroup = Left$(LineText, InStr(1, LineText, ":", vbBinaryCompare) - 1)
-        ValidateModuleGroup CurrentGroup
-    ElseIf Indent = 6 And Left$(LineText, 1) = "-" Then
-        AddModuleItem CurrentLayer, CurrentGroup, Trim$(Mid$(LineText, 2))
-    ElseIf Indent >= 4 Then
-        ValidateSupportedModuleMetadata CurrentLayer, LineText
+    If Right$(LineText, 1) <> ":" Or InStr(1, LineText, ":", vbBinaryCompare) <> Len(LineText) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Top-level section must use section_name: syntax."
     End If
+
+    SectionName = RemoveTrailingColon(LineText)
+    ValidateTopLevelSection SectionName
+
+    If This.SectionSeen.Exists(SectionName) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Duplicate manifest section: " & SectionName
+    End If
+
+    This.SectionSeen.Add SectionName, True
+    ParseTopLevelSection = SectionName
+End Function
+
+Private Sub ParseApplicationLine(ByVal RawLine As String, ByVal LineText As String)
+    Dim KeyName As String
+    Dim KeyValue As String
+
+    RequireIndent RawLine, 2, "application entries must use two-space indentation."
+    ParseKeyValue LineText, KeyName, KeyValue
+
+    Select Case KeyName
+        Case "name", "version", "vmf_version", "build_version"
+            RequireValue KeyValue, "application." & KeyName
+            AddUniqueValue This.ApplicationValues, KeyName, KeyValue, "application"
+        Case Else
+            Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported application key: " & KeyName
+    End Select
 End Sub
 
 Private Sub ParseGenerationLine(ByVal RawLine As String, ByVal LineText As String)
-    Dim SeparatorIndex As Long
+    Dim KeyName As String
+    Dim KeyValue As String
     Dim LayerName As String
-    Dim LayerValue As String
 
-    If LeadingSpaceCount(RawLine) <> 2 Then
-        Exit Sub
+    RequireIndent RawLine, 2, "generation entries must use two-space indentation."
+    ParseKeyValue LineText, KeyName, KeyValue
+    ValidateGenerationKey KeyName
+
+    LayerName = CanonicalLayerName(KeyName)
+    If This.GenerationEnabled.Exists(LayerName) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Duplicate generation key: " & KeyName
     End If
 
-    SeparatorIndex = InStr(1, LineText, ":", vbBinaryCompare)
-    If SeparatorIndex = 0 Then
-        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Generation entry must use LayerName: true/false."
+    This.GenerationEnabled.Add LayerName, ParseStrictBoolean(KeyValue, "generation." & KeyName)
+End Sub
+
+Private Sub ParsePolicyLine(ByVal RawLine As String, ByVal LineText As String)
+    Dim KeyName As String
+    Dim KeyValue As String
+
+    RequireIndent RawLine, 2, "policy entries must use two-space indentation."
+    ParseKeyValue LineText, KeyName, KeyValue
+    ValidatePolicyKey KeyName
+    AddUniqueValue This.PolicyValues, KeyName, ParseStrictBoolean(KeyValue, "policy." & KeyName), "policy"
+End Sub
+
+Private Sub ParseLayersLine( _
+    ByVal RawLine As String, _
+    ByVal LineText As String, _
+    ByRef CurrentLayerName As String)
+
+    Dim KeyName As String
+    Dim KeyValue As String
+    Dim LayerName As String
+
+    Select Case LeadingSpaceCount(RawLine)
+        Case 2
+            If Right$(LineText, 1) <> ":" Then
+                Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Layer entry must use layer_name: syntax."
+            End If
+
+            KeyName = RemoveTrailingColon(LineText)
+            ValidateLayerKey KeyName
+            LayerName = CanonicalLayerName(KeyName)
+            RegisterLayer LayerName
+            CurrentLayerName = LayerName
+
+        Case 4
+            ComRequireText CurrentLayerName, "CurrentLayerName", "Build_ProjectManifest.ParseLayersLine"
+            ParseKeyValue LineText, KeyName, KeyValue
+            If KeyName <> "path" Then
+                Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported layer key: " & KeyName
+            End If
+
+            RequireValue KeyValue, "layers." & CurrentLayerName & ".path"
+            AddUniqueValue This.LayerPaths, CurrentLayerName, KeyValue, "layers"
+
+        Case Else
+            Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Invalid layers structure."
+    End Select
+End Sub
+
+Private Sub ParseDomainLine( _
+    ByVal RawLine As String, _
+    ByVal LineText As String, _
+    ByRef CurrentSubSection As String)
+
+    Select Case LeadingSpaceCount(RawLine)
+        Case 2
+            CurrentSubSection = ParseRequiredSubSection(LineText, "entities", "domain")
+        Case 4
+            If CurrentSubSection <> "entities" Then
+                Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "domain list item must be inside entities."
+            End If
+
+            AddListManifestItem LineText, "Domain", ModuleGroupClasses
+        Case Else
+            Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Invalid domain structure."
+    End Select
+End Sub
+
+Private Sub ParseApplicationServicesLine(ByVal RawLine As String, ByVal LineText As String)
+    RequireIndent RawLine, 2, "application_services list items must use two-space indentation."
+    AddListManifestItem LineText, "Application", ModuleGroupClasses
+End Sub
+
+Private Sub ParseInfrastructureLine( _
+    ByVal RawLine As String, _
+    ByVal LineText As String, _
+    ByRef CurrentSubSection As String)
+
+    Select Case LeadingSpaceCount(RawLine)
+        Case 2
+            CurrentSubSection = ParseRequiredSubSection(LineText, "repositories", "infrastructure")
+        Case 4
+            If CurrentSubSection <> "repositories" Then
+                Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "infrastructure list item must be inside repositories."
+            End If
+
+            AddListManifestItem LineText, "Infrastructure", ModuleGroupClasses
+        Case Else
+            Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Invalid infrastructure structure."
+    End Select
+End Sub
+
+Private Sub ParsePresentationLine( _
+    ByVal RawLine As String, _
+    ByVal LineText As String, _
+    ByRef CurrentSubSection As String)
+
+    Select Case LeadingSpaceCount(RawLine)
+        Case 2
+            CurrentSubSection = ParsePresentationSubSection(LineText)
+        Case 4
+            Select Case CurrentSubSection
+                Case "forms"
+                    AddListManifestItem LineText, "Presentation", ModuleGroupClasses
+                Case "modules"
+                    AddListManifestItem LineText, "Presentation", ModuleGroupStandardModules
+                Case Else
+                    Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "presentation list item must be inside forms or modules."
+            End Select
+        Case Else
+            Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Invalid presentation structure."
+    End Select
+End Sub
+
+Private Function ParseRequiredSubSection( _
+    ByVal LineText As String, _
+    ByVal ExpectedName As String, _
+    ByVal ParentSection As String) As String
+
+    If Right$(LineText, 1) <> ":" Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", ParentSection & " subsection must use subsection_name: syntax."
     End If
 
-    LayerName = Trim$(Left$(LineText, SeparatorIndex - 1))
-    LayerValue = LCase$(Trim$(Mid$(LineText, SeparatorIndex + 1)))
-    If LayerValue <> "true" And LayerValue <> "false" Then
-        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Generation value must be true or false."
+    ParseRequiredSubSection = RemoveTrailingColon(LineText)
+    If ParseRequiredSubSection <> ExpectedName Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported " & ParentSection & " subsection: " & ParseRequiredSubSection
+    End If
+End Function
+
+Private Function ParsePresentationSubSection(ByVal LineText As String) As String
+    If Right$(LineText, 1) <> ":" Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "presentation subsection must use subsection_name: syntax."
     End If
 
-    This.GenerationEnabled(LayerName) = (LayerValue = "true")
+    ParsePresentationSubSection = RemoveTrailingColon(LineText)
+    Select Case ParsePresentationSubSection
+        Case "forms", "modules"
+            Exit Function
+    End Select
+
+    Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported presentation subsection: " & ParsePresentationSubSection
+End Function
+
+Private Sub AddListManifestItem(ByVal LineText As String, ByVal LayerName As String, ByVal GroupName As String)
+    Dim ModuleName As String
+
+    If Left$(LineText, 1) <> "-" Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Manifest list item must use - item syntax."
+    End If
+
+    ModuleName = Trim$(Mid$(LineText, 2))
+    If InStr(1, ModuleName, ":", vbBinaryCompare) > 0 Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Manifest list item must be a scalar value."
+    End If
+
+    AddModuleItem LayerName, GroupName, ModuleName
 End Sub
 
 Private Sub AddModuleItem(ByVal LayerName As String, ByVal GroupName As String, ByVal ModuleName As String)
@@ -191,11 +375,7 @@ Private Sub AddModuleItem(ByVal LayerName As String, ByVal GroupName As String, 
     ComRequireText GroupName, "GroupName", "Build_ProjectManifest.AddModuleItem"
     ComRequireText ModuleName, "ModuleName", "Build_ProjectManifest.AddModuleItem"
 
-    If GroupName = ModuleGroupEnums Then
-        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Enum generation is not supported by Build v1.0.2."
-    End If
-
-    If Not IsSupportedGenerationLayer(LayerName) Then
+    If Not IsSupportedGenerationTargetLayer(LayerName) Then
         Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported generation layer: " & LayerName
     End If
 
@@ -216,9 +396,15 @@ End Sub
 Private Sub RegisterLayer(ByVal LayerName As String)
     ComRequireText LayerName, "LayerName", "Build_ProjectManifest.RegisterLayer"
 
-    If Not This.DefinedLayers.Exists(LayerName) Then
-        This.DefinedLayers.Add LayerName, True
+    If Not IsKnownManifestLayer(LayerName) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported manifest layer: " & LayerName
     End If
+
+    If This.DefinedLayers.Exists(LayerName) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Duplicate manifest layer: " & LayerName
+    End If
+
+    This.DefinedLayers.Add LayerName, True
 End Sub
 
 Private Sub EnsureLayerItems(ByVal LayerName As String)
@@ -228,54 +414,81 @@ Private Sub EnsureLayerItems(ByVal LayerName As String)
 End Sub
 
 Private Sub ValidateManifest()
-    Dim LayerName As Variant
+    RequireSection SectionApplication
+    RequireSection SectionGeneration
+    RequireSection SectionPolicy
+    RequireSection SectionLayers
+    RequireSection SectionDomain
+    RequireSection SectionApplicationServices
+    RequireSection SectionInfrastructure
+    RequireSection SectionPresentation
 
-    If This.DefinedLayers.Count = 0 Then
-        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Modules section is required."
-    End If
+    RequireDictionaryValue This.ApplicationValues, "name", "application.name"
+    RequireDictionaryValue This.ApplicationValues, "version", "application.version"
+    RequireDictionaryValue This.ApplicationValues, "vmf_version", "application.vmf_version"
+    RequireDictionaryValue This.ApplicationValues, "build_version", "application.build_version"
+
+    RequireGenerationKey "common"
+    RequireGenerationKey "core"
+    RequireGenerationKey "domain"
+    RequireGenerationKey "application"
+    RequireGenerationKey "infrastructure"
+    RequireGenerationKey "presentation"
+
+    RequireDictionaryValue This.PolicyValues, "common_editable", "policy.common_editable"
+    RequireDictionaryValue This.PolicyValues, "core_editable", "policy.core_editable"
+    RequireDictionaryValue This.PolicyValues, "build_design_frozen", "policy.build_design_frozen"
+    RequireDictionaryValue This.PolicyValues, "vmf_design_frozen", "policy.vmf_design_frozen"
+
+    RequireLayerPath "Common"
+    RequireLayerPath "Core"
+    RequireLayerPath "Domain"
+    RequireLayerPath "Application"
+    RequireLayerPath "Infrastructure"
+    RequireLayerPath "Presentation"
+
+    This.SourceRoot = DeriveSourceRoot()
 
     If This.ItemKeys.Count = 0 Then
         Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Manifest contains no supported generation targets."
     End If
-
-    For Each LayerName In This.GenerationEnabled.Keys
-        If CBool(This.GenerationEnabled(LayerName)) And Not IsSupportedGenerationLayer(CStr(LayerName)) Then
-            Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported generation layer: " & CStr(LayerName)
-        End If
-    Next LayerName
-
-    For Each LayerName In This.DefinedLayers.Keys
-        If IsSupportedGenerationLayer(CStr(LayerName)) And IsLayerGenerationEnabled(CStr(LayerName)) Then
-            If Not This.ItemsByLayer.Exists(CStr(LayerName)) Then
-                Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Generation layer contains no targets: " & CStr(LayerName)
-            End If
-        End If
-    Next LayerName
 End Sub
 
-Private Sub ValidateModuleGroup(ByVal GroupName As String)
-    Select Case GroupName
-        Case ModuleGroupStandardModules, ModuleGroupClasses, ModuleGroupEnums
+Private Sub ValidateTopLevelSection(ByVal SectionName As String)
+    Select Case SectionName
+        Case SectionApplication, SectionGeneration, SectionPolicy, SectionLayers, _
+            SectionDomain, SectionApplicationServices, SectionInfrastructure, SectionPresentation
             Exit Sub
     End Select
 
-    Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported module group: " & GroupName
+    Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported top-level manifest section: " & SectionName
 End Sub
 
-Private Sub ValidateSupportedModuleMetadata(ByVal LayerName As String, ByVal LineText As String)
-    If ComIsBlankText(LayerName) Then
-        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Module metadata must be defined inside a layer."
-    End If
+Private Sub ValidateGenerationKey(ByVal KeyName As String)
+    Select Case KeyName
+        Case "common", "core", "domain", "application", "infrastructure", "presentation"
+            Exit Sub
+    End Select
 
-    If Left$(LineText, Len("Status:")) = "Status:" Then
-        Exit Sub
-    End If
+    Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported generation key: " & KeyName
+End Sub
 
-    If Left$(LineText, Len("GenerateCommand:")) = "GenerateCommand:" Then
-        Exit Sub
-    End If
+Private Sub ValidatePolicyKey(ByVal KeyName As String)
+    Select Case KeyName
+        Case "common_editable", "core_editable", "build_design_frozen", "vmf_design_frozen"
+            Exit Sub
+    End Select
 
-    Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported manifest definition: " & LineText
+    Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported policy key: " & KeyName
+End Sub
+
+Private Sub ValidateLayerKey(ByVal KeyName As String)
+    Select Case KeyName
+        Case "common", "core", "domain", "application", "infrastructure", "presentation"
+            Exit Sub
+    End Select
+
+    Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported layer key: " & KeyName
 End Sub
 
 Private Function ResolveModuleType(ByVal GroupName As String) As String
@@ -299,30 +512,148 @@ Private Function ResolveTemplatePath(ByVal LayerName As String, ByVal GroupName 
     End If
 End Function
 
-Private Function IsSupportedGenerationLayer(ByVal LayerName As String) As Boolean
+Private Function IsSupportedGenerationTargetLayer(ByVal LayerName As String) As Boolean
     Select Case LayerName
-        Case "Common", "Manifest", "Infrastructure", "Domain", "Application", "Presentation"
-            IsSupportedGenerationLayer = True
+        Case "Common", "Infrastructure", "Domain", "Application", "Presentation"
+            IsSupportedGenerationTargetLayer = True
         Case Else
-            IsSupportedGenerationLayer = False
+            IsSupportedGenerationTargetLayer = False
     End Select
 End Function
 
-Private Function IsLayerGenerationEnabled(ByVal LayerName As String) As Boolean
-    If This.GenerationEnabled.Exists(LayerName) Then
-        IsLayerGenerationEnabled = CBool(This.GenerationEnabled(LayerName))
+Private Function IsKnownManifestLayer(ByVal LayerName As String) As Boolean
+    Select Case LayerName
+        Case "Common", "Core", "Infrastructure", "Domain", "Application", "Presentation"
+            IsKnownManifestLayer = True
+        Case Else
+            IsKnownManifestLayer = False
+    End Select
+End Function
+
+Private Function CanonicalLayerName(ByVal LayerKey As String) As String
+    Select Case LayerKey
+        Case "common"
+            CanonicalLayerName = "Common"
+        Case "core"
+            CanonicalLayerName = "Core"
+        Case "domain"
+            CanonicalLayerName = "Domain"
+        Case "application"
+            CanonicalLayerName = "Application"
+        Case "infrastructure"
+            CanonicalLayerName = "Infrastructure"
+        Case "presentation"
+            CanonicalLayerName = "Presentation"
+        Case Else
+            Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Unsupported layer key: " & LayerKey
+    End Select
+End Function
+
+Private Sub ParseKeyValue(ByVal LineText As String, ByRef KeyName As String, ByRef KeyValue As String)
+    Dim SeparatorIndex As Long
+
+    SeparatorIndex = InStr(1, LineText, ":", vbBinaryCompare)
+    If SeparatorIndex = 0 Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Manifest entry must use key: value syntax."
+    End If
+
+    KeyName = Trim$(Left$(LineText, SeparatorIndex - 1))
+    KeyValue = Trim$(Mid$(LineText, SeparatorIndex + 1))
+
+    If ComIsBlankText(KeyName) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Manifest key is required."
+    End If
+End Sub
+
+Private Function ParseStrictBoolean(ByVal TextValue As String, ByVal ValueName As String) As Boolean
+    Select Case TextValue
+        Case "true"
+            ParseStrictBoolean = True
+        Case "false"
+            ParseStrictBoolean = False
+        Case Else
+            Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", ValueName & " must be true or false."
+    End Select
+End Function
+
+Private Sub AddUniqueValue(ByVal Values As Object, ByVal KeyName As String, ByVal KeyValue As Variant, ByVal SectionName As String)
+    If Values.Exists(KeyName) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Duplicate " & SectionName & " key: " & KeyName
+    End If
+
+    Values.Add KeyName, KeyValue
+End Sub
+
+Private Sub RequireValue(ByVal KeyValue As String, ByVal ValueName As String)
+    If ComIsBlankText(KeyValue) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", ValueName & " is required."
+    End If
+End Sub
+
+Private Sub RequireSection(ByVal SectionName As String)
+    If Not This.SectionSeen.Exists(SectionName) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Manifest section is required: " & SectionName
+    End If
+End Sub
+
+Private Sub RequireDictionaryValue(ByVal Values As Object, ByVal KeyName As String, ByVal ValueName As String)
+    If Not Values.Exists(KeyName) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", ValueName & " is required."
+    End If
+End Sub
+
+Private Sub RequireGenerationKey(ByVal KeyName As String)
+    If Not This.GenerationEnabled.Exists(CanonicalLayerName(KeyName)) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "generation." & KeyName & " is required."
+    End If
+End Sub
+
+Private Sub RequireLayerPath(ByVal LayerName As String)
+    If Not This.DefinedLayers.Exists(LayerName) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "layers." & LayerName & " is required."
+    End If
+
+    If Not This.LayerPaths.Exists(LayerName) Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "layers." & LayerName & ".path is required."
+    End If
+End Sub
+
+Private Function DeriveSourceRoot() As String
+    Dim CommonPath As String
+    Dim SeparatorIndex As Long
+
+    If This.LayerPaths.Exists("Common") Then
+        CommonPath = CStr(This.LayerPaths("Common"))
+        SeparatorIndex = InStrRev(CommonPath, "/")
+        If SeparatorIndex = 0 Then
+            SeparatorIndex = InStrRev(CommonPath, "\")
+        End If
+
+        If SeparatorIndex > 1 Then
+            DeriveSourceRoot = Left$(CommonPath, SeparatorIndex - 1)
+        Else
+            DeriveSourceRoot = CommonPath
+        End If
     Else
-        IsLayerGenerationEnabled = True
+        DeriveSourceRoot = vbNullString
     End If
 End Function
 
-Private Function IsTopLevelKey(ByVal RawLine As String) As Boolean
-    IsTopLevelKey = (LeadingSpaceCount(RawLine) = 0 And InStr(1, Trim$(RawLine), ":", vbBinaryCompare) > 0)
-End Function
+Private Sub RequireIndent(ByVal RawLine As String, ByVal ExpectedIndent As Long, ByVal ErrorMessage As String)
+    If LeadingSpaceCount(RawLine) <> ExpectedIndent Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", ErrorMessage
+    End If
+End Sub
 
-Private Function IsInlineEmptyList(ByVal LineText As String) As Boolean
-    IsInlineEmptyList = (InStr(1, LineText, ":", vbBinaryCompare) > 0 And Right$(LineText, 2) = "[]")
-End Function
+Private Sub ValidateIndentation(ByVal RawLine As String)
+    If InStr(1, RawLine, vbTab, vbBinaryCompare) > 0 Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Manifest indentation must use spaces."
+    End If
+
+    If LeadingSpaceCount(RawLine) Mod 2 <> 0 Then
+        Err.Raise ComErrInvalidArgument, "Build_ProjectManifest", "Manifest indentation must use two-space levels."
+    End If
+End Sub
 
 Private Function RemoveTrailingColon(ByVal TextValue As String) As String
     If Right$(TextValue, 1) = ":" Then
