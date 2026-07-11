@@ -503,13 +503,19 @@ Private Function ResolveModuleType(ByVal GroupName As String) As String
 End Function
 
 Private Function ResolveTemplatePath(ByVal LayerName As String, ByVal GroupName As String) As String
+    Dim TemplateFileName As String
+
     If GroupName = ModuleGroupStandardModules Then
-        ResolveTemplatePath = "templates\ModuleTemplate.txt"
+        TemplateFileName = "ModuleTemplate.txt"
     ElseIf LayerName = "Domain" Then
-        ResolveTemplatePath = "templates\DomainClassTemplate.txt"
+        TemplateFileName = "DomainClassTemplate.txt"
     Else
-        ResolveTemplatePath = "templates\ClassTemplate.txt"
+        TemplateFileName = "ClassTemplate.txt"
     End If
+
+    ResolveTemplatePath = BuildPathResolver.CombinePath( _
+        BuildPathResolver.TemplatesDirectoryPath(), _
+        TemplateFileName)
 End Function
 
 Private Function IsSupportedGenerationTargetLayer(ByVal LayerName As String) As Boolean

@@ -17,6 +17,7 @@ End Sub
 Private Sub VerifyCurrentManifestParses()
     Dim Manifest As Build_ProjectManifest
     Dim Result As ComResult
+    Dim DomainItems As Collection
 
     Set Manifest = New Build_ProjectManifest
     Set Result = Manifest.BuildInitializeFromContent(ReadCurrentManifestContent())
@@ -30,6 +31,10 @@ Private Sub VerifyCurrentManifestParses()
     AssertEquals "4", CStr(Manifest.BuildGetLayerItems("Application").Count), "Application services should become class items."
     AssertEquals "6", CStr(Manifest.BuildGetLayerItems("Infrastructure").Count), "Infrastructure repositories should become class items."
     AssertEquals "4", CStr(Manifest.BuildGetLayerItems("Presentation").Count), "Presentation entries should become items."
+
+    Set DomainItems = Manifest.BuildGetLayerItems("Domain")
+    AssertTrue IsAbsolutePath(DomainItems.Item(1).InfGetTemplatePath()), "Project manifest template path should be absolute."
+    AssertTrue CreateObject("Scripting.FileSystemObject").FileExists(DomainItems.Item(1).InfGetTemplatePath()), "Project manifest template path should exist."
 End Sub
 
 Private Function ReadCurrentManifestContent() As String
@@ -56,3 +61,10 @@ Private Sub AssertEquals(ByVal Expected As String, ByVal Actual As String, ByVal
         Err.Raise AppTestAssertErrorNumber, "AppProjectManifestParseTests", Message & " Expected=" & Expected & " Actual=" & Actual
     End If
 End Sub
+
+Private Function IsAbsolutePath(ByVal FilePath As String) As Boolean
+    IsAbsolutePath = ((Len(FilePath) >= 3 _
+            And (Mid$(FilePath, 2, 2) = ":\" Or Mid$(FilePath, 2, 2) = ":/")) _
+        Or Left$(FilePath, 2) = "\\" _
+        Or Left$(FilePath, 2) = "//")
+End Function
