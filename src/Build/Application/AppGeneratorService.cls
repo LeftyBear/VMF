@@ -162,6 +162,11 @@ Public Function AppGenerateProject() As ComResult
     Set AppGenerateProject = GenerateProject()
 End Function
 
+' Previews one Build layer without mutating the target workbook.
+Public Function AppPreviewBuildLayer(ByVal LayerName As String) As String
+    AppPreviewBuildLayer = PreviewBuildLayerManifest(LayerName)
+End Function
+
 Private Function GenerateProject() As ComResult
     Dim ManifestPath As String
     Dim ManifestContent As String
@@ -180,6 +185,12 @@ Private Function GenerateProject() As ComResult
     End If
 
     Set Result = GenerateLayer("Common", ProjectManifest)
+    If Result.IsFailure Then
+        Set GenerateProject = Result
+        Exit Function
+    End If
+
+    Set Result = GenerateLayer("Core", ProjectManifest)
     If Result.IsFailure Then
         Set GenerateProject = Result
         Exit Function
@@ -322,6 +333,7 @@ Private Function GenerateBuildLayerManifest(ByVal LayerName As String) As ComRes
     Dim CodeText As String
     Dim Result As ComResult
     Dim OperationName As String
+    Dim ManifestPath As String
 
     On Error GoTo ErrHandler
 
@@ -341,7 +353,14 @@ Private Function GenerateBuildLayerManifest(ByVal LayerName As String) As ComRes
         Err.Raise ComErrInvalidState, OperationName, "ManifestProvider is not initialized."
     End If
 
-    Set Items = ManifestProvider.InfLoadManifestItems(ResolveBuildManifestPath(LayerName & ".manifest"))
+    ManifestPath = ResolveBuildManifestPath(LayerName & ".manifest")
+    Set Result = ManifestProvider.InfValidateManifestFile(ManifestPath)
+    If Result.IsFailure Then
+        Set GenerateBuildLayerManifest = Result
+        Exit Function
+    End If
+
+    Set Items = ManifestProvider.InfLoadManifestItems(ManifestPath)
     For Each Item In Items
         CodeText = Generator.InfGenerateManifestItem(Item)
         Set Result = AddGeneratedManifestItem(Item, CodeText)
@@ -363,6 +382,48 @@ ErrHandler:
     End If
 
     Set GenerateBuildLayerManifest = ComCreateFailureFromErr("AppGeneratorService." & OperationName, Desc, "Error", False)
+End Function
+
+Private Function PreviewBuildLayerManifest(ByVal LayerName As String) As String
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim CodeText As String
+    Dim PreviewText As String
+    Dim Result As ComResult
+    Dim OperationName As String
+    Dim ManifestPath As String
+
+    On Error GoTo ErrHandler
+
+    OperationName = "AppPreview" & LayerName
+
+    ComRequireText LayerName, "LayerName", OperationName
+
+    If Generator Is Nothing Then
+        Err.Raise ComErrInvalidState, OperationName, "GeneratorService is not initialized."
+    End If
+
+    If ManifestProvider Is Nothing Then
+        Err.Raise ComErrInvalidState, OperationName, "ManifestProvider is not initialized."
+    End If
+
+    ManifestPath = ResolveBuildManifestPath(LayerName & ".manifest")
+    Set Result = ManifestProvider.InfValidateManifestFile(ManifestPath)
+    If Result.IsFailure Then
+        Err.Raise ComErrInvalidArgument, OperationName, Result.Message
+    End If
+
+    Set Items = ManifestProvider.InfLoadManifestItems(ManifestPath)
+    For Each Item In Items
+        CodeText = Generator.InfGenerateManifestItem(Item)
+        PreviewText = AppendPreviewItem(PreviewText, Item, CodeText)
+    Next Item
+
+    PreviewBuildLayerManifest = PreviewText
+    Exit Function
+
+ErrHandler:
+    Err.Raise Err.Number, "AppGeneratorService." & OperationName, Err.Description
 End Function
 
 ' Validates basic module name rules.
@@ -402,6 +463,8 @@ Private Function ResolveLayerName(ByVal ModuleName As String) As String
             ResolveLayerName = "Presentation"
         Case "App"
             ResolveLayerName = "Application"
+        Case "Cor"
+            ResolveLayerName = "Core"
         Case "Dom"
             ResolveLayerName = "Domain"
         Case "Inf"
@@ -418,6 +481,21 @@ Private Function AddGeneratedManifestItem(ByVal Item As ManifestItem, ByVal Code
         Item.InfGetModuleName(), _
         Item.InfGetModuleType(), _
         CodeText)
+End Function
+
+Private Function AppendPreviewItem( _
+    ByVal PreviewText As String, _
+    ByVal Item As ManifestItem, _
+    ByVal CodeText As String _
+) As String
+
+    If Not ComIsBlankText(PreviewText) Then
+        PreviewText = PreviewText & vbCrLf & vbCrLf
+    End If
+
+    AppendPreviewItem = PreviewText & _
+        "# Preview: " & Item.InfGetModuleName() & " (" & Item.InfGetModuleType() & ", " & Item.InfGetLayerName() & ")" & _
+        vbCrLf & CodeText
 End Function
 
 Private Function ResolveBuildManifestPath(ByVal ManifestFileName As String) As String

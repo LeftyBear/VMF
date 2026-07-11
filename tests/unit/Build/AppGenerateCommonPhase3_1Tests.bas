@@ -14,6 +14,7 @@ Private Const AppTestAssertEqualsErrorNumber As Long = vbObjectError + 9401
 Public Sub AppRunGenerateCommonPhase3_1Tests()
     VerifyCommonManifestItems
     VerifyCommonManifestItemGeneration
+    VerifyCommonManifestPreview
 End Sub
 
 Private Sub VerifyCommonManifestItems()
@@ -51,6 +52,24 @@ Private Sub VerifyCommonManifestItemGeneration()
     AssertTrue InStr(1, GeneratedCode, "Option Explicit", vbTextCompare) > 0, "Generated Common code should include Option Explicit."
     AssertTrue InStr(1, GeneratedCode, "Layer: Common", vbTextCompare) > 0, "Generated Common code should include Common layer token replacement."
     AssertTrue InStr(1, GeneratedCode, Item.InfGetModuleName(), vbTextCompare) > 0, "Generated Common code should include the manifest module name."
+End Sub
+
+Private Sub VerifyCommonManifestPreview()
+    Dim ManifestProvider As InfManifestProvider
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim PreviewText As String
+
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set Items = ManifestProvider.InfLoadManifestItems(ResolveCommonManifestPath())
+    Set Item = Items.Item(1)
+
+    PreviewText = AppPreviewBuildLayer("Common")
+
+    AssertTrue Len(PreviewText) > 0, "Common preview should not be empty."
+    AssertTrue InStr(1, PreviewText, "# Preview: " & Item.InfGetModuleName(), vbTextCompare) > 0, "Common preview should identify the previewed module."
+    AssertTrue InStr(1, PreviewText, "Layer: Common", vbTextCompare) > 0, "Common preview should include generated Common source."
+    AssertTrue InStr(1, PreviewText, "Module created:", vbTextCompare) = 0, "Common preview should not return a mutation result message."
 End Sub
 
 Private Function ResolveCommonManifestPath() As String
