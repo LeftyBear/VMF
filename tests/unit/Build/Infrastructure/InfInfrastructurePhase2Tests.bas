@@ -142,31 +142,25 @@ End Function
 
 Private Function ResolveWorkspaceRootPath(ByVal CandidatePath As String) As String
     Dim FileSystem As Object
+    Dim CurrentPath As String
     Dim ParentPath As String
-    Dim GrandParentPath As String
 
     Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    CurrentPath = FileSystem.GetAbsolutePathName(CandidatePath)
 
-    If FileSystem.FolderExists(FileSystem.BuildPath(CandidatePath, "src\Build")) Then
-        ResolveWorkspaceRootPath = CandidatePath
-        Exit Function
-    End If
-
-    ParentPath = FileSystem.GetParentFolderName(CandidatePath)
-    If Len(ParentPath) > 0 Then
-        If FileSystem.FolderExists(FileSystem.BuildPath(ParentPath, "src\Build")) Then
-            ResolveWorkspaceRootPath = ParentPath
+    Do
+        If FileSystem.FileExists(FileSystem.BuildPath(CurrentPath, ".vmf-root")) Then
+            ResolveWorkspaceRootPath = CurrentPath
             Exit Function
         End If
-    End If
 
-    GrandParentPath = FileSystem.GetParentFolderName(ParentPath)
-    If Len(GrandParentPath) > 0 Then
-        If FileSystem.FolderExists(FileSystem.BuildPath(GrandParentPath, "src\Build")) Then
-            ResolveWorkspaceRootPath = GrandParentPath
-            Exit Function
+        ParentPath = FileSystem.GetParentFolderName(CurrentPath)
+        If Len(ParentPath) = 0 Or StrComp(ParentPath, CurrentPath, vbTextCompare) = 0 Then
+            Exit Do
         End If
-    End If
+
+        CurrentPath = ParentPath
+    Loop
 
     ResolveWorkspaceRootPath = CandidatePath
 End Function
