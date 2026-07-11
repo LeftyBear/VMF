@@ -34,6 +34,8 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifyInitialize
     VerifyFileSystemOperations
     VerifyTemplateDrivenGeneration
+    VerifyManifestTemplatePathResolution
+    VerifyMissingManifestTemplateUsesTemplateProviderError
     VerifyVbaProjectProviderSkipsBuildWorkbook
 End Sub
 
@@ -78,6 +80,86 @@ Private Sub VerifyTemplateDrivenGeneration()
     AssertTrue InStr(1, GeneratedCode, "Option Explicit", vbTextCompare) > 0, "Generated code should include Option Explicit."
     AssertTrue InStr(1, GeneratedCode, "Module: VMF_TestTemplate", vbTextCompare) > 0, "Generated code should include the module header."
     AssertTrue InStr(1, GeneratedCode, "Layer: Application", vbTextCompare) > 0, "Generated code should include the canonical layer token replacement result."
+End Sub
+
+Private Sub VerifyManifestTemplatePathResolution()
+    Dim FileSystem As Object
+    Dim Provider As InfManifestProvider
+    Dim FileProvider As InfFileSystemProvider
+    Dim Items As Collection
+    Dim ManifestDir As String
+    Dim ManifestPath As String
+    Dim RelativeTemplatePath As String
+    Dim AbsoluteTemplatePath As String
+    Dim SlashTemplatePath As String
+    Dim ManifestText As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "manifest-paths\manifests")
+    ManifestPath = FileSystem.BuildPath(ManifestDir, "templates.manifest")
+    RelativeTemplatePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "templates\RelativeTemplate.txt"))
+    AbsoluteTemplatePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(GetTestFolderPath(), "absolute\AbsoluteTemplate.txt"))
+    SlashTemplatePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "templates\SlashTemplate.txt"))
+
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText RelativeTemplatePath, "relative"
+    FileProvider.InfWriteText AbsoluteTemplatePath, "absolute"
+    FileProvider.InfWriteText SlashTemplatePath, "slash"
+
+    ManifestText = "# ModuleName,ModuleType,LayerName,TemplatePath" & vbCrLf & _
+        "RelativeModule,StandardModule,Application,templates\RelativeTemplate.txt" & vbCrLf & _
+        "AbsoluteModule,StandardModule,Application," & AbsoluteTemplatePath & vbCrLf & _
+        "SlashModule,StandardModule,Application,templates/SlashTemplate.txt"
+    FileProvider.InfWriteText ManifestPath, ManifestText
+
+    Set Provider = InfCreateManifestProvider()
+    Set Items = Provider.InfLoadManifestItems(ManifestPath)
+
+    AssertEquals RelativeTemplatePath, Items.Item(1).InfGetTemplatePath(), "Relative TemplatePath should resolve from the manifest directory."
+    AssertEquals AbsoluteTemplatePath, Items.Item(2).InfGetTemplatePath(), "Absolute TemplatePath should be preserved."
+    AssertEquals SlashTemplatePath, Items.Item(3).InfGetTemplatePath(), "Forward slash TemplatePath should resolve from the manifest directory."
+End Sub
+
+Private Sub VerifyMissingManifestTemplateUsesTemplateProviderError()
+    Dim FileSystem As Object
+    Dim FileProvider As InfFileSystemProvider
+    Dim Provider As InfManifestProvider
+    Dim Generator As InfGenerator
+    Dim Items As Collection
+    Dim ManifestDir As String
+    Dim ManifestPath As String
+    Dim MissingTemplatePath As String
+    Dim GeneratedCode As String
+    Dim ErrorSource As String
+    Dim ErrorDescription As String
+    Dim ErrorNumber As Long
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "missing-template")
+    ManifestPath = FileSystem.BuildPath(ManifestDir, "missing.manifest")
+    MissingTemplatePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "templates\MissingTemplate.txt"))
+
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath" & vbCrLf & _
+        "MissingModule,StandardModule,Application,templates\MissingTemplate.txt"
+
+    Set Provider = InfCreateManifestProvider()
+    Set Items = Provider.InfLoadManifestItems(ManifestPath)
+    Set Generator = InfCreateGenerator()
+
+    On Error Resume Next
+    GeneratedCode = Generator.InfGenerateManifestItem(Items.Item(1))
+    ErrorNumber = Err.Number
+    ErrorSource = Err.Source
+    ErrorDescription = Err.Description
+    Err.Clear
+    On Error GoTo 0
+
+    AssertTrue ErrorNumber <> 0, "Missing template should raise the existing InfCreateTemplate error."
+    AssertEquals "InfCreateTemplate", ErrorSource, "Missing template error should come from InfCreateTemplate."
+    AssertTrue InStr(1, ErrorDescription, "TemplatePath does not exist:", vbTextCompare) > 0, "Missing template error should keep the existing message."
+    AssertTrue InStr(1, ErrorDescription, MissingTemplatePath, vbTextCompare) > 0, "Missing template error should include the resolved absolute path."
 End Sub
 
 Private Sub VerifyVbaProjectProviderSkipsBuildWorkbook()

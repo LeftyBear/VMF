@@ -133,16 +133,28 @@ Private Function NormalizeLineBreaks(ByVal TextValue As String) As String
 End Function
 
 Private Function ResolveManifestRelativePath(ByVal FilePath As String, ByVal ManifestPath As String) As String
+    Dim ManifestDirectoryPath As String
+    Dim NormalizedFilePath As String
+    Dim FileSystem As Object
+
     If IsAbsolutePath(FilePath) Then
         ResolveManifestRelativePath = FilePath
         Exit Function
     End If
 
-    ResolveManifestRelativePath = BuildPathResolver.CombinePath(BuildPathResolver.RepositoryRootPath(), FilePath)
+    ManifestDirectoryPath = GetParentFolderPath(ManifestPath)
+    NormalizedFilePath = Replace(FilePath, "/", "\")
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ResolveManifestRelativePath = FileSystem.GetAbsolutePathName( _
+        BuildPathResolver.CombinePath(ManifestDirectoryPath, NormalizedFilePath))
 End Function
 
 Private Function IsAbsolutePath(ByVal FilePath As String) As Boolean
-    IsAbsolutePath = (InStr(1, FilePath, ":\", vbTextCompare) > 0 Or Left$(FilePath, 2) = "\\")
+    IsAbsolutePath = ((Len(FilePath) >= 3 _
+            And (Mid$(FilePath, 2, 2) = ":\" Or Mid$(FilePath, 2, 2) = ":/")) _
+        Or Left$(FilePath, 2) = "\\" _
+        Or Left$(FilePath, 2) = "//")
 End Function
 
 Private Function GetParentFolderPath(ByVal FilePath As String) As String

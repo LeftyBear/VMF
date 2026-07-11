@@ -1,4 +1,4 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
-Pre_MainPresenter,ClassModule,Presentation,templates\ClassTemplate.txt
-Pre_MainViewContract,ClassModule,Presentation,templates\ClassTemplate.txt
-Pre_MessageService,ClassModule,Presentation,templates\ClassTemplate.txt
+Pre_MainPresenter,ClassModule,Presentation,..\..\templates\ClassTemplate.txt
+Pre_MainViewContract,ClassModule,Presentation,..\..\templates\ClassTemplate.txt
+Pre_MessageService,ClassModule,Presentation,..\..\templates\ClassTemplate.txt
