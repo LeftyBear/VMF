@@ -21,15 +21,77 @@ Build v1.0.1 release audit rules, including the 14 Step release audit, Result Co
 
 # 2. Candidates
 
+## 2.1 Recommended Adoption Order
+
+The recommended Build v1.1 adoption order is:
+
+1. B001 Blueprint Parser
+2. B002 Manifest Auto Generation
+3. B011 Custom Layer Manifest Generation
+4. B008 Manifest Validation
+5. B007 Template Validation
+6. B004 Generate Preview
+
+B005 Source Generator Architecture is not recommended for Build v1.1 adoption.
+It is a Build v2.0 architecture candidate because it changes the generation target
+from VBProject artifacts to source files and separates packaging from generation.
+
+B003 Parallel Generation remains deferred.
+
+B006 Incremental Generate, B009 Ribbon UI, and B010 Visual Designer remain future
+improvement candidates and SHOULD NOT block Build v1.1 adoption.
+
+## 2.2 Build v1.1 Scope Recommendation
+
+Build v1.1 SHOULD focus on improving manifest-driven generation while preserving
+the Build v1.0.x architecture.
+
+The recommended Build v1.1 scope is:
+
+- parse blueprint input into generation metadata;
+- generate manifests from approved blueprint metadata;
+- support manifest-defined layer names, including downstream layers such as Core;
+- validate manifests before generation;
+- validate template availability and required tokens before generation.
+
+Build v1.1 SHOULD NOT:
+
+- replace VBProject generation with source-file generation;
+- introduce workbook or add-in packaging redesign;
+- adopt Build v2.0 self-hosting architecture;
+- modify frozen Build v1.0.x specifications.
+
+## 2.3 Build v2.0 Candidate Separation
+
+The following item is reserved for Build v2.0 planning:
+
+- B005 Source Generator Architecture
+
+Build v2.0 planning MAY use B005 as the starting point for source-first
+generation, Git-first development, and packaging separation.
+
+Build v1.1 adoption SHALL NOT require B005.
+
 ### B001 Blueprint Parser
 
 Status : Accepted
 Priority : High
+Recommended Release : Build v1.1
+Implementation Status : Completed
+
+Scope : Parse approved blueprint data into generation metadata without changing
+the frozen Build v1.0.x generation pipeline.
 
 ### B002 Manifest Auto Generation
 
 Status : Accepted
 Priority : High
+Recommended Release : Build v1.1
+Implementation Status : Completed
+
+Scope : Generate manifest entries from parsed blueprint metadata.
+
+Dependency : B001 Blueprint Parser
 
 ### B003 Parallel Generation
 
@@ -37,14 +99,24 @@ Status : Deferred
 Priority : Low
 Reason : VBAは単一スレッドであり現時点で効果が限定的
 
+Recommended Release : Not recommended for Build v1.1
+
 ### B004 Generate Preview
 
-Status : Proposed
+Status : Accepted
+Priority : Medium
+Recommended Release : Build v1.1 Optional
+Implementation Status : Completed
+
+Scope : Provide a non-mutating preview of manifest-driven generation output.
+
+Dependency : B001 Blueprint Parser, B002 Manifest Auto Generation, B008 Manifest Validation
 
 ### B005 Source Generator Architecture
 
-Status : Candidate
+Status : Deferred
 Priority : High
+Recommended Release : Build v2.0
 
 #### Background
 
@@ -128,26 +200,60 @@ This Candidate was identified during the first real-world VMF v1.0 application d
 ### B006 Incremental Generate
 
 Status : Proposed
+Priority : Medium
+Recommended Release : Future Candidate
+
+Scope : Generate only changed artifacts when a reliable change detection contract
+exists.
 
 ### B007 Template Validation
 
-Status : Proposed
+Status : Accepted
+Priority : High
+Recommended Release : Build v1.1
+Implementation Status : Completed
+
+Scope : Validate template existence and required token coverage before generation.
+
+Dependency : B008 Manifest Validation
 
 ### B008 Manifest Validation
 
-Status : Proposed
+Status : Accepted
+Priority : High
+Recommended Release : Build v1.1
+Implementation Status : Completed
+
+Scope : Validate manifest structure, component type, layer name, template path,
+module name, and required generation metadata before generation.
 
 ### B009 Ribbon UI
 
 Status : Proposed
+Priority : Low
+Recommended Release : Future Candidate
+
+Scope : Provide Excel Ribbon entry points for approved Build operations.
 
 ### B010 Visual Designer
 
 Status : Proposed
+Priority : Low
+Recommended Release : Future Candidate
+
+Scope : Provide visual editing of blueprint or manifest metadata after the
+underlying generation contracts are stable.
 
 ### B011 Custom Layer Manifest Generation
 
-Status : Proposed
+Status : Accepted
 Priority : High
+Recommended Release : Build v1.1
+Implementation Status : Completed
+
+Scope : Support manifest-defined custom layer names without changing the frozen
+Build v1.0.x layer contract.
+
+Dependency : B008 Manifest Validation
 
 Build v1.0.1 accepts only the frozen layer set defined by its current ManifestItem validation. A future Build version SHOULD support manifest-defined custom layer names so downstream VMF projects can generate layers such as Core without changing the Build v1.0.1 release contract.
