@@ -129,32 +129,32 @@ End Function
 
 ' Generates the Common layer from Common.manifest.
 Public Function AppGenerateCommon() As ComResult
-    Set AppGenerateCommon = GenerateLayer("Common")
+    Set AppGenerateCommon = GenerateBuildLayerManifest("Common")
 End Function
 
 ' Generates the Manifest layer from Manifest.manifest.
 Public Function AppGenerateManifest() As ComResult
-    Set AppGenerateManifest = GenerateLayer("Manifest")
+    Set AppGenerateManifest = GenerateBuildLayerManifest("Manifest")
 End Function
 
 ' Generates the Infrastructure layer from Infrastructure.manifest.
 Public Function AppGenerateInfrastructure() As ComResult
-    Set AppGenerateInfrastructure = GenerateLayer("Infrastructure")
+    Set AppGenerateInfrastructure = GenerateBuildLayerManifest("Infrastructure")
 End Function
 
 ' Generates the Domain layer from Domain.manifest.
 Public Function AppGenerateDomain() As ComResult
-    Set AppGenerateDomain = GenerateLayer("Domain")
+    Set AppGenerateDomain = GenerateBuildLayerManifest("Domain")
 End Function
 
 ' Generates the Application layer from Application.manifest.
 Public Function AppGenerateApplication() As ComResult
-    Set AppGenerateApplication = GenerateLayer("Application")
+    Set AppGenerateApplication = GenerateBuildLayerManifest("Application")
 End Function
 
 ' Generates the Presentation layer from Presentation.manifest.
 Public Function AppGeneratePresentation() As ComResult
-    Set AppGeneratePresentation = GenerateLayer("Presentation")
+    Set AppGeneratePresentation = GenerateBuildLayerManifest("Presentation")
 End Function
 
 ' Generates all Build layers in canonical dependency order.
@@ -164,55 +164,71 @@ End Function
 
 Private Function GenerateProject() As ComResult
     Dim ManifestPath As String
+    Dim ManifestContent As String
+    Dim ProjectManifest As Build_ProjectManifest
     Dim Result As ComResult
 
+    On Error GoTo ErrHandler
+
     ManifestPath = BuildPathResolver.ManifestFilePath(ResolveApplicationName())
-    LoadProjectManifest ManifestPath
+    ManifestContent = LoadProjectManifest(ManifestPath)
 
-    Set Result = GenerateLayer("Common")
+    Set Result = CreateProjectManifest(ManifestContent, ProjectManifest)
     If Result.IsFailure Then
         Set GenerateProject = Result
         Exit Function
     End If
 
-    Set Result = GenerateLayer("Manifest")
+    Set Result = GenerateLayer("Common", ProjectManifest)
     If Result.IsFailure Then
         Set GenerateProject = Result
         Exit Function
     End If
 
-    Set Result = GenerateLayer("Infrastructure")
+    Set Result = GenerateLayer("Manifest", ProjectManifest)
     If Result.IsFailure Then
         Set GenerateProject = Result
         Exit Function
     End If
 
-    Set Result = GenerateLayer("Domain")
+    Set Result = GenerateLayer("Infrastructure", ProjectManifest)
     If Result.IsFailure Then
         Set GenerateProject = Result
         Exit Function
     End If
 
-    Set Result = GenerateLayer("Application")
+    Set Result = GenerateLayer("Domain", ProjectManifest)
     If Result.IsFailure Then
         Set GenerateProject = Result
         Exit Function
     End If
 
-    Set Result = GenerateLayer("Presentation")
+    Set Result = GenerateLayer("Application", ProjectManifest)
+    If Result.IsFailure Then
+        Set GenerateProject = Result
+        Exit Function
+    End If
+
+    Set Result = GenerateLayer("Presentation", ProjectManifest)
     If Result.IsFailure Then
         Set GenerateProject = Result
         Exit Function
     End If
 
     Set GenerateProject = ComCreateSuccess("Project generated.")
+    Exit Function
+
+ErrHandler:
+    Set GenerateProject = ComCreateFailureFromErr("AppGeneratorService.GenerateProject", Err.Description, "Error", False)
 End Function
 
 Private Function ResolveApplicationName() As String
     ResolveApplicationName = DefaultApplicationName
 End Function
 
-Private Sub LoadProjectManifest(ByVal ManifestPath As String)
+Private Function LoadProjectManifest( _
+    ByVal ManifestPath As String _
+) As String
     Dim FileSystem As Object
     Dim ManifestFile As Object
     Dim Content As String
@@ -231,9 +247,76 @@ Private Sub LoadProjectManifest(ByVal ManifestPath As String)
     If ComIsBlankText(Content) Then
         Err.Raise ComErrInvalidState, "LoadProjectManifest", "Manifest contains no content."
     End If
-End Sub
 
-Private Function GenerateLayer(ByVal LayerName As String) As ComResult
+    LoadProjectManifest = Content
+End Function
+
+Private Function CreateProjectManifest( _
+    ByVal ManifestContent As String, _
+    ByRef ProjectManifest As Build_ProjectManifest _
+) As ComResult
+
+    Set ProjectManifest = New Build_ProjectManifest
+    Set CreateProjectManifest = ProjectManifest.BuildInitializeFromContent(ManifestContent)
+End Function
+
+Private Function GenerateLayer( _
+    ByVal LayerName As String, _
+    ByVal ProjectManifest As Build_ProjectManifest _
+) As ComResult
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim CodeText As String
+    Dim Result As ComResult
+    Dim OperationName As String
+
+    On Error GoTo ErrHandler
+
+    OperationName = "AppGenerate" & LayerName
+
+    ComRequireText LayerName, "LayerName", OperationName
+    If ProjectManifest Is Nothing Then
+        Err.Raise ComErrInvalidArgument, OperationName, "ProjectManifest is required."
+    End If
+
+    If Generator Is Nothing Then
+        Err.Raise ComErrInvalidState, OperationName, "GeneratorService is not initialized."
+    End If
+
+    If GenerationEngine Is Nothing Then
+        Err.Raise ComErrInvalidState, OperationName, "BuildGenerationEngine is not initialized."
+    End If
+
+    If Not ProjectManifest.BuildHasLayer(LayerName) Or Not ProjectManifest.BuildIsGenerationEnabled(LayerName) Then
+        Set GenerateLayer = ComCreateSuccess(LayerName & " layer skipped.")
+        Exit Function
+    End If
+
+    Set Items = ProjectManifest.BuildGetLayerItems(LayerName)
+    For Each Item In Items
+        CodeText = Generator.InfGenerateManifestItem(Item)
+        Set Result = AddGeneratedManifestItem(Item, CodeText)
+        If Result.IsFailure Then
+            Set GenerateLayer = Result
+            Exit Function
+        End If
+    Next Item
+
+    Set GenerateLayer = ComCreateSuccess(LayerName & " layer generated.")
+    Exit Function
+
+ErrHandler:
+    Dim Desc As String
+
+    Desc = Trim$(Err.Description)
+    If Len(Desc) = 0 Then
+        Desc = vbNullString
+    End If
+
+    Set GenerateLayer = ComCreateFailureFromErr("AppGeneratorService." & OperationName, Desc, "Error", False)
+End Function
+
+Private Function GenerateBuildLayerManifest(ByVal LayerName As String) As ComResult
     Dim Items As Collection
     Dim Item As ManifestItem
     Dim CodeText As String
@@ -263,12 +346,12 @@ Private Function GenerateLayer(ByVal LayerName As String) As ComResult
         CodeText = Generator.InfGenerateManifestItem(Item)
         Set Result = AddGeneratedManifestItem(Item, CodeText)
         If Result.IsFailure Then
-            Set GenerateLayer = Result
+            Set GenerateBuildLayerManifest = Result
             Exit Function
         End If
     Next Item
 
-    Set GenerateLayer = ComCreateSuccess(LayerName & " layer generated.")
+    Set GenerateBuildLayerManifest = ComCreateSuccess(LayerName & " layer generated.")
     Exit Function
 
 ErrHandler:
@@ -279,7 +362,7 @@ ErrHandler:
         Desc = vbNullString
     End If
 
-    Set GenerateLayer = ComCreateFailureFromErr("AppGeneratorService." & OperationName, Desc, "Error", False)
+    Set GenerateBuildLayerManifest = ComCreateFailureFromErr("AppGeneratorService." & OperationName, Desc, "Error", False)
 End Function
 
 ' Validates basic module name rules.
