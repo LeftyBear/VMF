@@ -35,7 +35,7 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifyFileSystemOperations
     VerifyTemplateDrivenGeneration
     VerifyManifestTemplatePathResolution
-    VerifyMissingManifestTemplateUsesTemplateProviderError
+    VerifyMissingManifestTemplatePathResolution
     VerifyVbaProjectProviderSkipsBuildWorkbook
 End Sub
 
@@ -120,19 +120,14 @@ Private Sub VerifyManifestTemplatePathResolution()
     AssertEquals SlashTemplatePath, Items.Item(3).InfGetTemplatePath(), "Forward slash TemplatePath should resolve from the manifest directory."
 End Sub
 
-Private Sub VerifyMissingManifestTemplateUsesTemplateProviderError()
+Private Sub VerifyMissingManifestTemplatePathResolution()
     Dim FileSystem As Object
     Dim FileProvider As InfFileSystemProvider
     Dim Provider As InfManifestProvider
-    Dim Generator As InfGenerator
     Dim Items As Collection
     Dim ManifestDir As String
     Dim ManifestPath As String
     Dim MissingTemplatePath As String
-    Dim GeneratedCode As String
-    Dim ErrorSource As String
-    Dim ErrorDescription As String
-    Dim ErrorNumber As Long
 
     Set FileSystem = CreateObject("Scripting.FileSystemObject")
     ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "missing-template")
@@ -146,20 +141,9 @@ Private Sub VerifyMissingManifestTemplateUsesTemplateProviderError()
 
     Set Provider = InfCreateManifestProvider()
     Set Items = Provider.InfLoadManifestItems(ManifestPath)
-    Set Generator = InfCreateGenerator()
 
-    On Error Resume Next
-    GeneratedCode = Generator.InfGenerateManifestItem(Items.Item(1))
-    ErrorNumber = Err.Number
-    ErrorSource = Err.Source
-    ErrorDescription = Err.Description
-    Err.Clear
-    On Error GoTo 0
-
-    AssertTrue ErrorNumber <> 0, "Missing template should raise the existing InfCreateTemplate error."
-    AssertEquals "InfCreateTemplate", ErrorSource, "Missing template error should come from InfCreateTemplate."
-    AssertTrue InStr(1, ErrorDescription, "TemplatePath does not exist:", vbTextCompare) > 0, "Missing template error should keep the existing message."
-    AssertTrue InStr(1, ErrorDescription, MissingTemplatePath, vbTextCompare) > 0, "Missing template error should include the resolved absolute path."
+    AssertEquals MissingTemplatePath, Items.Item(1).InfGetTemplatePath(), "Missing template path should still resolve from the manifest directory."
+    AssertFalse FileSystem.FileExists(Items.Item(1).InfGetTemplatePath()), "Missing template should remain absent for InfCreateTemplate to report."
 End Sub
 
 Private Sub VerifyVbaProjectProviderSkipsBuildWorkbook()
