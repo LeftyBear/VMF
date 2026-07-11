@@ -6,10 +6,32 @@ param(
 )
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$workspaceRoot = Resolve-Path (Join-Path $scriptDir "..\..")
+
+function Resolve-VmfRepositoryRoot {
+    param([string]$StartPath)
+
+    $currentPath = [IO.Path]::GetFullPath($StartPath)
+    while ($true) {
+        $markerPath = Join-Path $currentPath ".vmf-root"
+        if (Test-Path -LiteralPath $markerPath -PathType Leaf) {
+            return $currentPath
+        }
+
+        $parentPath = Split-Path -Parent $currentPath
+        if ([string]::IsNullOrWhiteSpace($parentPath) -or $parentPath -eq $currentPath) {
+            break
+        }
+
+        $currentPath = $parentPath
+    }
+
+    throw "VMF repository root could not be resolved from: $StartPath"
+}
+
+$workspaceRoot = Resolve-VmfRepositoryRoot -StartPath $scriptDir
 $srcDir = Join-Path $workspaceRoot "src\Build"
 if ([string]::IsNullOrWhiteSpace($OutputPath)) {
-    $output = Join-Path $workspaceRoot "dist\release\Build_v1.0.2\Build.xlam"
+    $output = Join-Path $workspaceRoot "dist\release\Build\v1.0.2\Build.xlam"
 }
 else {
     $output = [IO.Path]::GetFullPath($OutputPath)

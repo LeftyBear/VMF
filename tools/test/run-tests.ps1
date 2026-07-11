@@ -1,8 +1,30 @@
 # Runs VBA unit tests by importing test modules and invoking their public runners.
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$root = Resolve-Path (Join-Path $scriptDir "..\..")
-$buildPath = Join-Path $root "dist\release\Build_v1.0.2\Build.xlam"
+
+function Resolve-VmfRepositoryRoot {
+    param([string]$StartPath)
+
+    $currentPath = [IO.Path]::GetFullPath($StartPath)
+    while ($true) {
+        $markerPath = Join-Path $currentPath ".vmf-root"
+        if (Test-Path -LiteralPath $markerPath -PathType Leaf) {
+            return $currentPath
+        }
+
+        $parentPath = Split-Path -Parent $currentPath
+        if ([string]::IsNullOrWhiteSpace($parentPath) -or $parentPath -eq $currentPath) {
+            break
+        }
+
+        $currentPath = $parentPath
+    }
+
+    throw "VMF repository root could not be resolved from: $StartPath"
+}
+
+$root = Resolve-VmfRepositoryRoot -StartPath $scriptDir
+$buildPath = Join-Path $root "dist\release\Build\v1.0.2\Build.xlam"
 $testDir = Join-Path $root "tests"
 
 if (-not (Test-Path $buildPath)) { Write-Error "Build.xlam not found at $buildPath"; exit 1 }
