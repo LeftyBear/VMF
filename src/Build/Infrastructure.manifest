@@ -1,4 +1,12 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
-Infra_FileRepository,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
-Infra_ConfigRepository,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
-Infra_LogRepository,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
+InfFacade,StandardModule,Infrastructure,..\..\templates\ModuleTemplate.txt
+InfCompositionRoot,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
+InfFileSystemProvider,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
+InfGenerator,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
+InfManifestProvider,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
+InfTemplate,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
+InfTemplateProvider,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
+InfTokenReplacer,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
+InfVbaProjectProvider,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
+InfWorkbookProvider,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
+ManifestItem,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt

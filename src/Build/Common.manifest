@@ -1,6 +1,7 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
 ComError,StandardModule,Common,..\..\templates\ModuleTemplate.txt
-Com_Facade,StandardModule,Common,..\..\templates\ModuleTemplate.txt
-Com_CompositionRoot,ClassModule,Common,..\..\templates\ClassTemplate.txt
-Com_ErrorInfo,ClassModule,Common,..\..\templates\ClassTemplate.txt
-Com_Result,ClassModule,Common,..\..\templates\ClassTemplate.txt
+ComFacade,StandardModule,Common,..\..\templates\ModuleTemplate.txt
+BuildPathResolver,StandardModule,Common,..\..\templates\ModuleTemplate.txt
+ComCompositionRoot,ClassModule,Common,..\..\templates\ClassTemplate.txt
+ComErrorInfo,ClassModule,Common,..\..\templates\ClassTemplate.txt
+ComResult,ClassModule,Common,..\..\templates\ClassTemplate.txt

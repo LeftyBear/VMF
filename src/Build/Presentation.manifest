@@ -1,4 +1,6 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
-Pre_MainPresenter,ClassModule,Presentation,..\..\templates\ClassTemplate.txt
-Pre_MainViewContract,ClassModule,Presentation,..\..\templates\ClassTemplate.txt
-Pre_MessageService,ClassModule,Presentation,..\..\templates\ClassTemplate.txt
+PreFacade,StandardModule,Presentation,..\..\templates\ModuleTemplate.txt
+PreInputDialog,StandardModule,Presentation,..\..\templates\ModuleTemplate.txt
+PreRibbon,StandardModule,Presentation,..\..\templates\ModuleTemplate.txt
+PreCompositionRoot,ClassModule,Presentation,..\..\templates\ClassTemplate.txt
+PreNotificationPresenter,ClassModule,Presentation,..\..\templates\ClassTemplate.txt

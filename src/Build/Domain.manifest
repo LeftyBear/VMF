@@ -1,7 +1,6 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
-Dom_DateID,ClassModule,Domain,..\..\templates\DomainClassTemplate.txt
-Dom_ClassHour,ClassModule,Domain,..\..\templates\DomainClassTemplate.txt
-Dom_ClassHourID,ClassModule,Domain,..\..\templates\DomainClassTemplate.txt
-Dom_ClassHourValue,ClassModule,Domain,..\..\templates\DomainClassTemplate.txt
-Dom_SubjectName,ClassModule,Domain,..\..\templates\DomainClassTemplate.txt
-Dom_Grade,ClassModule,Domain,..\..\templates\DomainClassTemplate.txt
+DomFacade,StandardModule,Domain,..\..\templates\ModuleTemplate.txt
+DomCompositionRoot,ClassModule,Domain,..\..\templates\ClassTemplate.txt
+DomModuleInfo,ClassModule,Domain,..\..\templates\ClassTemplate.txt
+DomProject,ClassModule,Domain,..\..\templates\ClassTemplate.txt
+DomValidator,ClassModule,Domain,..\..\templates\ClassTemplate.txt
