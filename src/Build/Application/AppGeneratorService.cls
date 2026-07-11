@@ -20,6 +20,8 @@ Private Generator As InfGenerator
 Private GenerationEngine As BuildGenerationEngine
 Private ManifestProvider As InfManifestProvider
 
+Private Const DefaultApplicationName As String = "SchoolTimetable"
+
 ' Initializes the service with required generation infrastructure.
 Public Sub AppInitialize( _
     ByVal ModuleGenerator As InfGenerator, _
@@ -161,7 +163,11 @@ Public Function AppGenerateProject() As ComResult
 End Function
 
 Private Function GenerateProject() As ComResult
+    Dim ManifestPath As String
     Dim Result As ComResult
+
+    ManifestPath = BuildPathResolver.ManifestFilePath(ResolveApplicationName())
+    LoadProjectManifest ManifestPath
 
     Set Result = GenerateLayer("Common")
     If Result.IsFailure Then
@@ -201,6 +207,31 @@ Private Function GenerateProject() As ComResult
 
     Set GenerateProject = ComCreateSuccess("Project generated.")
 End Function
+
+Private Function ResolveApplicationName() As String
+    ResolveApplicationName = DefaultApplicationName
+End Function
+
+Private Sub LoadProjectManifest(ByVal ManifestPath As String)
+    Dim FileSystem As Object
+    Dim ManifestFile As Object
+    Dim Content As String
+
+    ComRequireText ManifestPath, "ManifestPath", "LoadProjectManifest"
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    If Not FileSystem.FileExists(ManifestPath) Then
+        Err.Raise ComErrInvalidState, "LoadProjectManifest", "ManifestPath does not exist."
+    End If
+
+    Set ManifestFile = FileSystem.OpenTextFile(ManifestPath, 1, False)
+    Content = ManifestFile.ReadAll
+    ManifestFile.Close
+
+    If ComIsBlankText(Content) Then
+        Err.Raise ComErrInvalidState, "LoadProjectManifest", "Manifest contains no content."
+    End If
+End Sub
 
 Private Function GenerateLayer(ByVal LayerName As String) As ComResult
     Dim Items As Collection
