@@ -334,31 +334,19 @@ End Function
 
 Private Function ResolveWorkspaceRootPath(ByVal CandidatePath As String) As String
     Dim FileSystem As Object
-    Dim ParentPath As String
-    Dim GrandParentPath As String
+    Dim CurrentPath As String
 
     Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    CurrentPath = CandidatePath
 
-    If FileSystem.FolderExists(FileSystem.BuildPath(CandidatePath, "src\Build")) Then
-        ResolveWorkspaceRootPath = CandidatePath
-        Exit Function
-    End If
-
-    ParentPath = FileSystem.GetParentFolderName(CandidatePath)
-    If Len(ParentPath) > 0 Then
-        If FileSystem.FolderExists(FileSystem.BuildPath(ParentPath, "src\Build")) Then
-            ResolveWorkspaceRootPath = ParentPath
+    Do While Len(CurrentPath) > 0
+        If FileSystem.FolderExists(FileSystem.BuildPath(CurrentPath, "src\Build")) Then
+            ResolveWorkspaceRootPath = CurrentPath
             Exit Function
         End If
-    End If
 
-    GrandParentPath = FileSystem.GetParentFolderName(ParentPath)
-    If Len(GrandParentPath) > 0 Then
-        If FileSystem.FolderExists(FileSystem.BuildPath(GrandParentPath, "src\Build")) Then
-            ResolveWorkspaceRootPath = GrandParentPath
-            Exit Function
-        End If
-    End If
+        CurrentPath = FileSystem.GetParentFolderName(CurrentPath)
+    Loop
 
     ResolveWorkspaceRootPath = CandidatePath
 End Function
