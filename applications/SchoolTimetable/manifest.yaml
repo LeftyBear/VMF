@@ -1,16 +1,66 @@
-Application:
-  Name: SchoolTimetable
-  Framework: VMF
-  Status: Development
+application:
+  name: SchoolTimetable
+  version: 1.0.0
+  vmf_version: 1.0
+  build_version: 1.0.2
 
-SourceRoot: src
-TestRoot: tests
-DocumentationRoot: docs
+generation:
+  common: true
+  core: true
+  domain: true
+  application: true
+  infrastructure: true
+  presentation: true
 
-Layers:
-  - Common
-  - Core
-  - Domain
-  - Application
-  - Infrastructure
-  - Presentation
+policy:
+  common_editable: false
+  core_editable: false
+  build_design_frozen: true
+  vmf_design_frozen: true
+
+layers:
+  common:
+    path: Source/Common
+  core:
+    path: Source/Core
+  domain:
+    path: Source/Domain
+  application:
+    path: Source/Application
+  infrastructure:
+    path: Source/Infrastructure
+  presentation:
+    path: Source/Presentation
+
+domain:
+  entities:
+    - Subject
+    - Teacher
+    - Grade
+    - SchoolClass
+    - Classroom
+    - ClassHour
+    - TimetableEntry
+
+application_services:
+  - TimetableRegistrationService
+  - TimetableValidationService
+  - TimetableImportService
+  - TimetableExportService
+
+infrastructure:
+  repositories:
+    - SubjectRepository
+    - TeacherRepository
+    - GradeRepository
+    - SchoolClassRepository
+    - ClassroomRepository
+    - TimetableRepository
+
+presentation:
+  forms:
+    - TimetableForm
+    - MasterMaintenanceForm
+  modules:
+    - TimetablePresenter
+    - MasterMaintenancePresenter

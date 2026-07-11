@@ -1,4 +1,4 @@
-# Build v1.1 Candidate
+# Build v1.1 Candidates
 
 Version : 1.1 Candidate
 Status  : Candidate
@@ -21,38 +21,132 @@ Build v1.0.1 release audit rules, including the 14 Step release audit, Result Co
 
 # 2. Candidates
 
-### C001 Blueprint Parser
+### B001 Blueprint Parser
+
 Status : Accepted
 Priority : High
 
-### C002 Manifest Auto Generation
+### B002 Manifest Auto Generation
+
 Status : Accepted
 Priority : High
 
-### C003 Parallel Generation
+### B003 Parallel Generation
+
 Status : Deferred
 Priority : Low
 Reason : VBAは単一スレッドであり現時点で効果が限定的
 
-### C004 Generate Preview
+### B004 Generate Preview
+
 Status : Proposed
 
-### C005 Incremental Generate
+### B005 Source Generator Architecture
+
+Status : Candidate
+Priority : High
+
+#### Background
+
+Build v1.0.2 generates VBA modules directly into a VBProject.
+
+This architecture is suitable for the first official release, but long-term development has the following limitations.
+
+- Source code cannot exist independently from Excel.
+- Git-based source management is difficult.
+- Code review is difficult.
+- VSCode-first development is impossible.
+- Build is tightly coupled to the Excel VBE.
+
+#### Proposal
+
+Redesign Build as a Source Generator instead of a VBProject Generator.
+
+Build shall generate standard VBA source files.
+
+Generated artifacts include:
+
+- `.bas`
+- `.cls`
+- `.frm`
+- `.frx`
+- `manifest.yaml`
+- project metadata
+
+Build is responsible for automatically generating scaffolds for:
+
+- Domain classes
+- Application Services
+- Repositories
+- Presenters
+- Dependency Injection (Composition Root)
+
+The generated source files become the canonical development artifacts.
+
+Packaging into Workbook (`.xlsm`) or Add-in (`.xlam`) shall be performed by a separate Build/Packaging process.
+
+#### Architecture
+
+```text
+manifest.yaml
+        │
+        ▼
+      Build
+        │
+        ▼
+   Source Files
+(.bas/.cls/.frm/.frx)
+        │
+        ▼
+ Packaging
+        │
+        ▼
+ Workbook / Add-in
+```
+
+#### Benefits
+
+- Git-first development
+- VSCode-first development
+- Independent source management
+- Easier code review
+- Separation of generation and packaging
+- Better compatibility with future tools (including twinBASIC)
+
+#### Impact
+
+No impact on Build v1.0.2.
+
+This proposal targets the Build v2 architecture.
+
+Do not modify any released Build v1.0.x specifications or implementation.
+
+#### Notes
+
+This Candidate was identified during the first real-world VMF v1.0 application development project and represents a long-term architectural evolution rather than a bug fix or enhancement.
+
+### B006 Incremental Generate
+
 Status : Proposed
 
-### C006 Template Validation
+### B007 Template Validation
+
 Status : Proposed
 
-### C007 Manifest Validation
+### B008 Manifest Validation
+
 Status : Proposed
 
-### C008 Ribbon UI
+### B009 Ribbon UI
+
 Status : Proposed
 
-### C009 Visual Designer
+### B010 Visual Designer
+
 Status : Proposed
 
-### C010 Custom Layer Manifest Generation
+### B011 Custom Layer Manifest Generation
+
 Status : Proposed
 Priority : High
 
