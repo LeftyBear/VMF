@@ -9,6 +9,8 @@ Attribute VB_Name = "BuildPathResolver"
 '=========================================================================
 
 Private Const RepositoryRootMarkerFileName As String = ".vmf-root"
+Private Const ApplicationsDirectoryName As String = "applications"
+Private Const ManifestFileName As String = "manifest.yaml"
 
 Public Function RepositoryRootPath() As String
     Dim FileSystem As Object
@@ -87,16 +89,27 @@ Public Function TemplatesDirectoryPath() As String
 End Function
 
 Public Function ApplicationsDirectoryPath() As String
-    ApplicationsDirectoryPath = CombinePath(RepositoryRootPath(), "applications")
+    ApplicationsDirectoryPath = CombinePath(RepositoryRootPath(), ApplicationsDirectoryName)
 End Function
 
 Public Function ApplicationDirectoryPath(ByVal applicationName As String) As String
-    ComRequireText applicationName, "applicationName", "BuildPathResolver.ApplicationDirectoryPath"
-    ApplicationDirectoryPath = CombinePath(ApplicationsDirectoryPath(), applicationName)
+    ValidateApplicationName applicationName
+    ApplicationDirectoryPath = CombinePath(ApplicationsDirectoryPath(), Trim$(applicationName))
 End Function
 
 Public Function ManifestFilePath(ByVal applicationName As String) As String
-    ManifestFilePath = CombinePath(ApplicationDirectoryPath(applicationName), "manifest.yaml")
+    Dim FileSystem As Object
+    Dim ResolvedPath As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ResolvedPath = CombinePath(ApplicationDirectoryPath(applicationName), ManifestFileName)
+
+    If Not FileSystem.FileExists(ResolvedPath) Then
+        Err.Raise ComErrInvalidState, "BuildPathResolver.ManifestFilePath", _
+            "manifest.yaml was not found: " & ResolvedPath
+    End If
+
+    ManifestFilePath = ResolvedPath
 End Function
 
 Public Function CandidatesDirectoryPath() As String
@@ -116,3 +129,15 @@ Public Function CombinePath(ByVal basePath As String, ByVal childPath As String)
     Set FileSystem = CreateObject("Scripting.FileSystemObject")
     CombinePath = FileSystem.BuildPath(basePath, childPath)
 End Function
+
+Private Sub ValidateApplicationName(ByVal applicationName As String)
+    ComRequireText applicationName, "applicationName", "BuildPathResolver.ValidateApplicationName"
+
+    If InStr(1, applicationName, "\", vbBinaryCompare) > 0 _
+        Or InStr(1, applicationName, "/", vbBinaryCompare) > 0 _
+        Or InStr(1, applicationName, "..", vbBinaryCompare) > 0 Then
+
+        Err.Raise ComErrInvalidArgument, "BuildPathResolver.ValidateApplicationName", _
+            "Invalid application name: " & applicationName
+    End If
+End Sub
