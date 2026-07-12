@@ -62,3 +62,27 @@ Priority : Medium
 Build v1.1 Impact : Partially related through Build blueprint-to-manifest generation, but not adopted as a VMF generation contract.
 
 VMF v1.0 defines generated components under a `Modules` section in `specs/vmf/manifest.yaml`. This structure is sufficient for documentation and auditing but is not optimized as a direct generation contract. A future VMF version SHOULD define a native generation contract that explicitly describes generation targets, component types, layers, and generation options, allowing Build tooling to consume the manifest directly without changing VMF v1.0.
+
+### V005 VMF v1.x Design Charter
+
+Status : Proposed
+Priority : High
+Build v1.1 Impact : Implemented as candidate documentation only.
+
+A future VMF version SHOULD adopt a v1.x design charter that states architecture is contract-driven, VMF v1.0 remains frozen, and future changes enter through candidate contracts before adoption.
+
+### V006 Contract-Driven Generation Architecture
+
+Status : Proposed
+Priority : High
+Build v1.1 Impact : Partially supported by the current Blueprint, Manifest, Template, and Generator implementation.
+
+A future VMF version SHOULD define Blueprint Contract, Manifest Contract, and Template Contract as separate generation contracts. Generator SHOULD be defined as the mediator between those contracts rather than as the owner of the generated design.
+
+### V007 Template Body And Section Contract
+
+Status : Proposed
+Priority : High
+Build v1.1 Impact : Candidate implementation added to templates and template replacement.
+
+A future VMF version SHOULD standardize `{{BODY}}` as the body insertion token for Class Module and Standard Module templates. It SHOULD also define `@section` / `@endsection` as the optional Section Contract and require empty sections to be omitted from generated source.

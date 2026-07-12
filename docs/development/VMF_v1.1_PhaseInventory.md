@@ -30,6 +30,15 @@ Candidate phases:
 | Phase 4 | Build | Present | Required facade and service classes are present. Generation services also exist. |
 | Phase 5 | UI | Present | Required facade, composition root, ribbon boundary, and presenter are present. |
 
+The current VMF v1.1 Candidate generation design also records the following
+contract-driven updates:
+
+- VMF v1.x design charter is recorded in `candidates/VMF_v1.1_Candidate.md`.
+- Blueprint, Manifest, and Template contracts are documented separately.
+- Generator is treated as a mediator between generation contracts.
+- Class and standard module templates use the `{{BODY}}` insertion contract.
+- The optional `@section` contract is supported for empty-section omission.
+
 The next implementation work should focus on Build v1.1 candidate adoption:
 
 1. B001 Blueprint Parser
@@ -263,6 +272,30 @@ Completed preparation:
 B005 Source Generator Architecture should remain outside Build v1.1. It should be
 tracked as Build v2.0 planning material because it changes the fundamental
 generation target and packaging boundary.
+
+## 4.4 VMF v1.1 Contract-Driven Generation Update
+
+Status : Candidate Implemented
+
+The VMF v1.1 Candidate now records the generation design as contract-driven
+architecture.
+
+Implemented alignment:
+
+- `templates/ModuleTemplate.txt` uses `{{ModuleName}}`, `{{Layer}}`, and
+  `{{BODY}}`.
+- `templates/ClassTemplate.txt` uses `{{ModuleName}}`, `{{Layer}}`, and
+  `{{BODY}}`.
+- `templates/DomainModuleTemplate.txt` follows the same body insertion contract.
+- `templates/DomainClassTemplate.txt` follows the same body insertion contract.
+- `InfTokenReplacer` supports both `{{Token}}` and legacy `{Token}` forms.
+- `InfTokenReplacer` removes empty `{{BODY}}` placeholders.
+- `InfTokenReplacer` supports `@section` / `@endsection` optional sections and
+  omits empty sections.
+- `InfTemplateProvider` validates the required body insertion token for current
+  templates.
+
+This update does not modify frozen VMF v1.0 specifications.
 
 ---
 
