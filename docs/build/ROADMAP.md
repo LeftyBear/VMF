@@ -2,53 +2,59 @@
 
 ## Purpose
 
-本ドキュメントは VMF プロジェクトの開発計画を示す。
-設計変更を行うものではなく、公開済み方針を時系列で整理する。
+This document records the VMF project roadmap at a high level.
+
+It is not a specification and does not change frozen VMF or Build behavior.
 
 ---
 
 ## Current Status
 
-- VMF v1.0 設計凍結
-- 正典 v2.0 完成
-- Build.xlam 実装中
-- GitHub を Single Source of Truth として運用
+- VMF v1.0 is officially released and frozen.
+- Build.xlam v1.1 is officially released.
+- Canon v2.0 remains the highest-priority project document.
+- GitHub is the single source of truth.
 
 ---
 
-## Milestone
+## Completed Milestones
 
-### Phase A
-- GitHub 基盤整備
-- VS Code 環境整備
-- Build.xlam 基盤実装
+### Foundation
 
-### Phase B
-- GitHub 公開品質への改善
-- docs/ の整備
-- specs/ の整備
-- README の改善
+- Repository structure established.
+- VS Code and GitHub development workflow established.
+- Build.xlam implementation baseline completed.
 
-### Phase C
-- Build.xlam 実装完了
-- API 完成
-- テスト整備
+### Documentation And Release Governance
 
-### Phase D
-- VMF v1.0 Release
+- `docs/`, `specs/`, `candidates/`, `templates/`, `tools/`, and `dist/`
+  responsibilities separated.
+- Build release procedure, checklist, quality standard, and release report
+  pattern established.
+
+### Official Releases
+
+- VMF v1.0 released.
+- Build.xlam v1.0.1 released.
+- Build.xlam v1.0.2 patch released.
+- Build.xlam v1.1 released.
 
 ---
 
 ## Future
 
-改善案は VMF v1.1 Candidate として管理する。
+Future improvements SHALL be recorded as candidate items before adoption.
 
-VMF v1.0 の設計変更は行わない。
+VMF v1.0 and frozen Build v1.0.x specifications SHALL NOT be modified in place.
+
+Build v2.0 planning remains separate from Build v1.1 maintenance.
 
 ---
 
 ## References
 
-- README.md
-- docs/build/AI_DEVELOPMENT_RULES.md
-- specs/
+- `README.md`
+- `docs/build/AI_DEVELOPMENT_RULES.md`
+- `docs/build/VERSIONING.md`
+- `specs/`
+- `candidates/`

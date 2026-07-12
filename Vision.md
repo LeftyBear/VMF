@@ -122,7 +122,7 @@ applications/   Applications that use VMF
 dist/           Generated distribution artifacts only
 ```
 
-Released Build artifacts are stored under `dist/release/Build/`, such as `dist/release/Build/v1.0.2/Build.xlam`.
+Released Build artifacts are stored under `dist/release/Build/`, such as `dist/release/Build/v1.1/Build.xlam`.
 
 ---
 

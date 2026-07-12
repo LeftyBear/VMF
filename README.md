@@ -1,52 +1,74 @@
 # VMF
 
-VMF、Build.xlam、およびVMFを利用するアプリケーションを管理するリポジトリです。
+VMF is the repository for the VMF architecture, Build.xlam, and applications
+that use VMF.
 
-Build v1.0.2とVMF v1.0は正式リリース済みであり、設計変更は候補文書として分離します。
+Build.xlam v1.1 and VMF v1.0 are official releases. Frozen specifications are
+not modified in place; future improvements are recorded as candidate documents.
+
+---
 
 ## Architecture
 
 ```text
-UI
-↓
-Build
-↓
-VMF
-↓
+Presentation
+    -> Application
+        -> Domain
+            -> Common
+
 Infrastructure
-↓
-Common
+    -> Common
 ```
 
-依存関係は一方向とし、循環参照を禁止します。
+Dependencies are one-way. Circular dependencies are prohibited.
+
+---
 
 ## Directory Structure
 
 ```text
-src/            共通基盤、VMF、Build、UIのソース
-tests/          unit / integration テスト
-specs/          Build / VMFの正式仕様
-candidates/     将来版の変更候補
-docs/           Build、開発、リリース文書
-templates/      Buildが参照する生成テンプレート
-tools/          ビルド、テスト、監査ツール
-prompts/        AIプロンプト
-assets/         静的資産
-applications/   VMFを利用する実アプリケーション
-dist/           生成成果物のみ
+src/            Build and VMF source
+tests/          Unit and integration tests
+specs/          Official Build and VMF specifications
+candidates/     Future candidate changes
+docs/           Development, build, and release documentation
+templates/      Build generation templates
+tools/          Build, test, and audit tools
+applications/   Applications that use VMF
+dist/           Generated distribution artifacts only
 ```
 
-SchoolTimetableは `applications/SchoolTimetable/` で、アプリケーション固有のソース、テスト、文書を管理します。
+The SchoolTimetable application workspace is under
+`applications/SchoolTimetable/`.
 
-正式版Build成果物は `dist/release/Build_v1.0.2/Build.xlam` に配置します。
+The current official Build artifact is:
+
+```text
+dist/release/Build/v1.1/Build.xlam
+```
+
+---
+
+## Release Reports
+
+- `docs/releases/VMF_v1.0_ReleaseReport.md`
+- `docs/releases/Build_v1.0.1_ReleaseReport.md`
+- `docs/releases/Build_v1.0.2_ReleaseReport.md`
+- `docs/releases/Build_v1.1_ReleaseReport.md`
+
+---
 
 ## Development Rules
 
-- VMF v1.0およびBuild v1.0.2の設計は変更しません。
-- 将来の改善は `candidates/` に記録します。
-- 仕様、実装、テスト、生成成果物を混在させません。
-- GitHubをSingle Source of Truthとして運用します。
+- Do not modify frozen VMF v1.0 specifications in place.
+- Do not modify frozen Build v1.0.x specifications in place.
+- Record future improvements under `candidates/`.
+- Keep specifications, implementation, tests, tools, documentation, and
+  generated artifacts separated by directory responsibility.
+- Treat GitHub as the single source of truth.
+
+---
 
 ## License
 
-[LICENSE](LICENSE)を参照してください。
+See [LICENSE](LICENSE).
