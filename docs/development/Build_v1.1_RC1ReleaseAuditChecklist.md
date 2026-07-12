@@ -1,7 +1,7 @@
 # Build v1.1 RC1 Release Audit Checklist
 
 Version : 0.1
-Status  : Working Checklist
+Status  : Completed Checklist
 Scope   : Build.xlam v1.1 RC1 preparation
 Date    : 2026-07-12
 Depends : docs/development/Build_v1.1_ReleasePlan.md, docs/development/Build_v1.1_RC1ScopeReview.md, specs/build/BuildReleaseProcedure_v1.0.md
@@ -15,8 +15,10 @@ This document prepares the release audit checklist for Build v1.1 RC1.
 This is not a normative specification. It does not modify VMF v1.0, Build
 v1.0.x, or any frozen specification.
 
-This checklist SHALL NOT be treated as an official Build v1.1 release approval
-until the RC1 audit is completed and the release decision is recorded.
+This checklist records the completed Build v1.1 RC1 audit decision.
+
+This checklist SHALL NOT be treated as the official Build v1.1 release approval.
+It approves only the RC1 milestone.
 
 ---
 
@@ -30,28 +32,28 @@ The final RC1 audit SHALL use the result codes defined by
 - BLOCKED
 - N/A
 
-Until the RC1 audit is executed, each checklist item remains Pending.
+Each completed checklist item records the RC1 audit result.
 
 ---
 
 # 3. RC1 Audit Checklist
 
-| Step | Release Audit Item | Preparation Status | Planned Evidence | Reviewer | Date | Remarks |
+| Step | Release Audit Item | Result Code | Evidence | Reviewer | Date | Remarks |
 |------|--------------------|--------------------|------------------|----------|------|---------|
-| 1 | Canon Compliance | Pending | Canon_v2.0.md, BuildCanon_v1.0.md, Build v1.1 candidate documents | Codex | 2026-07-12 | Confirm candidate adoption does not contradict higher-priority canon. |
-| 2 | Candidate Scope Compliance | Pending | `candidates/BuildCandidates_v1.1.md`, `Build_v1.1_RC1ScopeReview.md` | Codex | 2026-07-12 | Confirm RC1 includes only accepted v1.1 items. |
-| 3 | Candidate Isolation | Pending | Deferred candidate list and source search results | Codex | 2026-07-12 | Confirm B003, B005, B006, B009, and B010 remain outside RC1. |
-| 4 | Architecture Verification | Pending | Application, Infrastructure, manifest, and preview generation paths | Codex | 2026-07-12 | Confirm Build v1.0.x architecture is preserved. |
-| 5 | Unit Verification | Pending | `tools\test\run-tests.ps1` output | Codex | 2026-07-12 | Confirm all unit-level VBA runners pass. |
-| 6 | Integration Verification | Pending | Project manifest, blueprint parser, generation, preview, and UI runners | Codex | 2026-07-12 | Confirm integrated paths pass. |
-| 7 | Generator Verification | Pending | Generator and layer generation runners | Codex | 2026-07-12 | Confirm generation remains manifest-driven and template-driven. |
-| 8 | Pipeline Verification | Pending | Manifest validation, template validation, token replacement, preview flow | Codex | 2026-07-12 | Confirm validation runs before generation and preview is non-mutating. |
-| 9 | Generated Layer Verification | Pending | Common, Manifest, Infrastructure, Domain, Application, and Presentation runners | Codex | 2026-07-12 | Confirm generated layer checks pass. |
-| 10 | Documentation Verification | Pending | RC1 plan, scope review, checklist, release report draft, README/CHANGELOG when updated | Codex | 2026-07-12 | Confirm documentation is current and separated by responsibility. |
-| 11 | Version Verification | Pending | RC1 version identifiers and release report draft | Codex | 2026-07-12 | Confirm version labels consistently identify Build v1.1 RC1. |
-| 12 | PowerShell Build Artifact Verification | Pending | `tools\build\build.ps1`, generated Build.xlam artifact path and timestamp | Codex | 2026-07-12 | Confirm the audited artifact is produced by the approved build. |
-| 13 | Release Evidence Verification | Pending | Evidence inventory in the RC1 release report draft | Codex | 2026-07-12 | Confirm all evidence is traceable. |
-| 14 | RC1 Decision | Pending | Completed Step results and issue records | Codex | 2026-07-12 | Decide whether RC1 may be declared. |
+| 1 | Canon Compliance | PASS | Canon_v2.0.md, BuildCanon_v1.0.md, Build v1.1 candidate documents | Codex | 2026-07-12 | Candidate adoption does not contradict higher-priority canon. |
+| 2 | Candidate Scope Compliance | PASS | `candidates/BuildCandidates_v1.1.md`, `Build_v1.1_RC1ScopeReview.md` | Codex | 2026-07-12 | RC1 includes only accepted v1.1 items. |
+| 3 | Candidate Isolation | PASS | Deferred candidate list and source search results | Codex | 2026-07-12 | B003, B005, B006, B009, and B010 remain outside RC1. |
+| 4 | Architecture Verification | PASS | Application, Infrastructure, manifest, and preview generation paths | Codex | 2026-07-12 | Build v1.0.x architecture is preserved. |
+| 5 | Unit Verification | PASS | `tools\test\run-tests.ps1` output | Codex | 2026-07-12 | All 16 VBA test runners passed. |
+| 6 | Integration Verification | PASS | Project manifest, blueprint parser, generation, preview, and UI runners | Codex | 2026-07-12 | Integrated paths passed. |
+| 7 | Generator Verification | PASS | Generator and layer generation runners | Codex | 2026-07-12 | Generation remains manifest-driven and template-driven. |
+| 8 | Pipeline Verification | PASS | Manifest validation, template validation, token replacement, preview flow | Codex | 2026-07-12 | Validation runs before generation and preview is non-mutating. |
+| 9 | Generated Layer Verification | PASS | Common, Manifest, Infrastructure, Domain, Application, and Presentation runners | Codex | 2026-07-12 | Generated layer checks passed. |
+| 10 | Documentation Verification | PASS | RC1 plan, scope review, checklist, release report | Codex | 2026-07-12 | Documentation is current and separated by responsibility. |
+| 11 | Version Verification | PASS | `dist/release/Build/v1.1-rc1/Build.xlam` metadata | Codex | 2026-07-12 | Build Version = 1.1.0-rc1; Release Type = Release Candidate. |
+| 12 | PowerShell Build Artifact Verification | PASS | `tools\build\build.ps1`, `dist/release/Build/v1.1-rc1/Build.xlam` | Codex | 2026-07-12 | RC1 artifact was produced by the approved build script. |
+| 13 | Release Evidence Verification | PASS | `Build_v1.1_RC1ReleaseReport.md` | Codex | 2026-07-12 | Required evidence is traceable. |
+| 14 | RC1 Decision | PASS | Completed Step results and issue records | Codex | 2026-07-12 | RC1 is approved. |
 
 ---
 
@@ -63,7 +65,7 @@ The RC1 audit is expected to use the following working inputs:
 - `docs/development/Build_v1.1_ReleasePlan.md`
 - `docs/development/Build_v1.1_CandidateReadinessAudit.md`
 - `docs/development/Build_v1.1_RC1ScopeReview.md`
-- `docs/development/Build_v1.1_RC1ReleaseReportDraft.md`
+- `docs/development/Build_v1.1_RC1ReleaseReport.md`
 - `specs/build/BuildReleaseProcedure_v1.0.md`
 - `tools\test\run-tests.ps1`
 - `tools\build\build.ps1`
@@ -72,12 +74,12 @@ The RC1 audit is expected to use the following working inputs:
 
 # 5. Current Decision
 
-RC1 audit preparation is ready.
+RC1 audit is complete.
 
-RC1 is not approved by this checklist.
+RC1 is approved by this checklist.
 
-The next task is to execute the RC1 audit, build the RC1 artifact when required,
-record evidence, and update the result code for each Step.
+The next task is to decide whether to promote RC1 into the Build v1.1 official
+release path.
 
 ---
 
@@ -85,4 +87,4 @@ record evidence, and update the result code for each Step.
 
 | Version | Status | Description |
 |---------|--------|-------------|
-| 0.1 | Working Checklist | Prepares the Build v1.1 RC1 release audit checklist |
+| 0.1 | Completed Checklist | Records the completed Build v1.1 RC1 release audit checklist |
