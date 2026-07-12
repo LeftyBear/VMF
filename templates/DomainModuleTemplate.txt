@@ -1,7 +1,9 @@
 Option Explicit
 
 '=========================================================================
-' Module: {ModuleName}
-' Layer: {Layer}
+' Module: {{ModuleName}}
+' Layer: {{Layer}}
 ' Responsibility:
 '=========================================================================
+
+{{BODY}}
