@@ -23,6 +23,8 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 - Reorganized repository documentation and specifications under `docs/`, `specs/`, `candidates/`, and `templates/`.
 - Updated `README.md` and `AGENTS.md` to describe the optimized repository layout and AI development rules.
+- Updated `README.md`, `Vision.md`, and `docs/build/ROADMAP.md` for the Build v1.1 official release state.
+- Updated Build v1.1 development records to point to the official release report.
 - Consolidated tests under `tests/` and updated `tools/test/run-tests.ps1` for the reorganized test layout.
 - Moved Build templates to `templates/` and updated Build manifest template references.
 - Moved Build release artifacts under `dist/release/Build/v1.0.2/`.
