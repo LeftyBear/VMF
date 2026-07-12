@@ -1,4 +1,4 @@
-# Audits generated VMF v1.0 project structure against specs/vmf/manifest.yaml.
+# Audits generated VMF v1.0 project structure against a VMF manifest.
 
 param(
     [string]$ManifestPath,
@@ -9,15 +9,33 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $workspaceRoot = Resolve-Path (Join-Path $scriptDir "..\..")
 
 if ([string]::IsNullOrWhiteSpace($ManifestPath)) {
-    $ManifestPath = Join-Path $workspaceRoot "specs\vmf\manifest.yaml"
-}
-if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
-    $OutputRoot = Join-Path $workspaceRoot "src\VMF"
+    $defaultManifestPath = Join-Path $workspaceRoot "specs\vmf\manifest.yaml"
+    $applicationManifestPath = Join-Path $workspaceRoot "applications\SchoolTimetable\manifest.yaml"
+    if (Test-Path $defaultManifestPath) {
+        $ManifestPath = $defaultManifestPath
+    }
+    else {
+        $ManifestPath = $applicationManifestPath
+    }
 }
 
 if (-not (Test-Path $ManifestPath)) {
     Write-Error "Manifest not found: $ManifestPath"
     exit 1
+}
+
+$manifestFullPath = Resolve-Path $ManifestPath
+$manifestDirectory = Split-Path -Parent $manifestFullPath
+$manifestText = Get-Content -Raw -Encoding UTF8 $manifestFullPath
+$isApplicationManifest = ($manifestText -match "(?m)^application:\s*$") -and ($manifestText -match "(?m)^layers:\s*$")
+
+if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
+    if ($isApplicationManifest) {
+        $OutputRoot = Join-Path $manifestDirectory "src"
+    }
+    else {
+        $OutputRoot = Join-Path $workspaceRoot "src\VMF"
+    }
 }
 
 if (-not (Test-Path $OutputRoot)) {
@@ -27,11 +45,24 @@ if (-not (Test-Path $OutputRoot)) {
 
 $requiredLayers = @("Common", "Core", "Domain", "Application", "Infrastructure", "Presentation")
 $failures = New-Object System.Collections.Generic.List[string]
+$warnings = New-Object System.Collections.Generic.List[string]
+
+function New-LayerMap {
+    $layers = @{}
+    foreach ($layer in $requiredLayers) {
+        $layers[$layer] = [pscustomobject]@{
+            Name = $layer
+            Path = $layer
+            Items = New-Object System.Collections.Generic.List[object]
+        }
+    }
+    return $layers
+}
 
 function Read-VmfManifestItems {
     param([string]$Path)
 
-    $items = New-Object System.Collections.Generic.List[object]
+    $layers = New-LayerMap
     $currentLayer = $null
     $currentType = ""
     $section = ""
@@ -71,7 +102,7 @@ function Read-VmfManifestItems {
         if ($null -ne $currentLayer -and -not [string]::IsNullOrWhiteSpace($currentType) -and $line -match "^\s{6}-\s*(\S.+)$") {
             $extension = ".bas"
             if ($currentType -eq "ClassModule") { $extension = ".cls" }
-            $items.Add([pscustomobject]@{
+            $layers[$currentLayer].Items.Add([pscustomobject]@{
                 Layer = $currentLayer
                 ModuleName = $matches[1].Trim()
                 Extension = $extension
@@ -79,18 +110,119 @@ function Read-VmfManifestItems {
         }
     }
 
-    return $items
+    return $layers
+}
+
+function Read-ApplicationManifestItems {
+    param([string]$Path)
+
+    $canonicalLayers = @{
+        "common" = "Common"
+        "core" = "Core"
+        "domain" = "Domain"
+        "application" = "Application"
+        "infrastructure" = "Infrastructure"
+        "presentation" = "Presentation"
+    }
+    $layers = New-LayerMap
+    $section = ""
+    $subsection = ""
+    $currentLayerKey = ""
+
+    foreach ($rawLine in Get-Content -Encoding UTF8 $Path) {
+        $line = $rawLine.TrimEnd()
+        $trimmed = $line.Trim()
+
+        if ([string]::IsNullOrWhiteSpace($trimmed) -or $trimmed.StartsWith("#")) {
+            continue
+        }
+
+        if ($line -match "^([A-Za-z_][A-Za-z0-9_]*):\s*$") {
+            $section = $matches[1]
+            $subsection = ""
+            $currentLayerKey = ""
+            continue
+        }
+
+        if ($section -eq "layers" -and $line -match "^\s{2}([A-Za-z_][A-Za-z0-9_]*):\s*$") {
+            $currentLayerKey = $matches[1]
+            continue
+        }
+
+        if ($section -eq "layers" -and $line -match "^\s{4}path:\s*(.+)$") {
+            if ($canonicalLayers.ContainsKey($currentLayerKey)) {
+                $layers[$canonicalLayers[$currentLayerKey]].Path = $matches[1].Trim()
+            }
+            continue
+        }
+
+        if ($section -eq "domain" -and $line -match "^\s{2}entities:\s*$") {
+            $subsection = "entities"
+            continue
+        }
+
+        if ($section -eq "domain" -and $subsection -eq "entities" -and $line -match "^\s{4}-\s*(\S.+)$") {
+            $layers["Domain"].Items.Add([pscustomobject]@{ Layer = "Domain"; ModuleName = $matches[1].Trim(); Extension = ".cls" })
+            continue
+        }
+
+        if ($section -eq "application_services" -and $line -match "^\s{2}-\s*(\S.+)$") {
+            $layers["Application"].Items.Add([pscustomobject]@{ Layer = "Application"; ModuleName = $matches[1].Trim(); Extension = ".cls" })
+            continue
+        }
+
+        if ($section -eq "infrastructure" -and $line -match "^\s{2}repositories:\s*$") {
+            $subsection = "repositories"
+            continue
+        }
+
+        if ($section -eq "infrastructure" -and $subsection -eq "repositories" -and $line -match "^\s{4}-\s*(\S.+)$") {
+            $layers["Infrastructure"].Items.Add([pscustomobject]@{ Layer = "Infrastructure"; ModuleName = $matches[1].Trim(); Extension = ".cls" })
+            continue
+        }
+
+        if ($section -eq "presentation" -and $line -match "^\s{2}(forms|modules):\s*$") {
+            $subsection = $matches[1]
+            continue
+        }
+
+        if ($section -eq "presentation" -and $subsection -eq "forms" -and $line -match "^\s{4}-\s*(\S.+)$") {
+            $warnings.Add("Presentation form is declared but not generated by VMF tools: $($matches[1].Trim())")
+            continue
+        }
+
+        if ($section -eq "presentation" -and $subsection -eq "modules" -and $line -match "^\s{4}-\s*(\S.+)$") {
+            $layers["Presentation"].Items.Add([pscustomobject]@{ Layer = "Presentation"; ModuleName = $matches[1].Trim(); Extension = ".cls" })
+            continue
+        }
+    }
+
+    return $layers
+}
+
+if ($isApplicationManifest) {
+    $manifestLayers = Read-ApplicationManifestItems -Path $manifestFullPath
+}
+else {
+    $manifestLayers = Read-VmfManifestItems -Path $manifestFullPath
 }
 
 foreach ($layer in $requiredLayers) {
-    $layerPath = Join-Path $OutputRoot $layer
+    $layerSpec = $manifestLayers[$layer]
+    if ($isApplicationManifest) {
+        $layerPath = [IO.Path]::GetFullPath((Join-Path $manifestDirectory $layerSpec.Path))
+    }
+    else {
+        $layerPath = Join-Path $OutputRoot $layer
+    }
+
     if (-not (Test-Path $layerPath)) {
         $failures.Add("Missing layer directory: $layer")
         continue
     }
 
     $files = @(Get-ChildItem -Path $layerPath -Include *.bas,*.cls -File -Recurse)
-    if ($files.Count -eq 0) {
+    if (-not $isApplicationManifest -and $files.Count -eq 0) {
         $failures.Add("Layer contains no generated VBA files: $layer")
     }
 
@@ -103,13 +235,12 @@ foreach ($layer in $requiredLayers) {
             $failures.Add("Layer header mismatch: $($file.FullName)")
         }
     }
-}
 
-$manifestItems = @(Read-VmfManifestItems -Path $ManifestPath)
-foreach ($item in $manifestItems) {
-    $expectedPath = Join-Path (Join-Path $OutputRoot $item.Layer) ($item.ModuleName + $item.Extension)
-    if (-not (Test-Path $expectedPath)) {
-        $failures.Add("Manifest item missing from generated output: $expectedPath")
+    foreach ($item in $layerSpec.Items) {
+        $expectedPath = Join-Path $layerPath ($item.ModuleName + $item.Extension)
+        if (-not (Test-Path $expectedPath)) {
+            $failures.Add("Manifest item missing from generated output: $expectedPath")
+        }
     }
 }
 
@@ -127,6 +258,11 @@ if ($failures.Count -gt 0) {
 }
 
 Write-Host "VMF v1.0 audit result: PASS"
+if ($warnings.Count -gt 0) {
+    foreach ($warning in $warnings) {
+        Write-Host "WARN: $warning"
+    }
+}
 Write-Host "Blueprint: BuildBlueprint_v1.0.1.md"
-Write-Host "Manifest: specs/vmf/manifest.yaml"
+Write-Host "Manifest: $manifestFullPath"
 Write-Host "Release Gate: generated layers present with module headers and Option Explicit."
