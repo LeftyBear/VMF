@@ -19,7 +19,7 @@ v1.0.x, or any frozen specification.
 
 # 2. Audit Result
 
-Status : Ready for candidate review and RC1 preparation
+Status : Superseded by Build v1.1 official release
 
 The recommended Build v1.1 candidate implementation set is present and covered
 by the current automated VBA test suite.
@@ -119,14 +119,13 @@ Covered areas:
 
 # 8. Recommendation
 
-Proceed to a focused Build v1.1 candidate review, then prepare Release
-Candidate 1 (RC1) if the accepted candidate scope remains unchanged.
+Build v1.1 candidate review proceeded to RC1 and then to official release.
 
-Recommended next actions:
+Completed follow-up:
 
 1. Review the candidate implementation diff for public API acceptability.
 2. Confirm the Build v1.1 RC1 scope against `candidates/BuildCandidates_v1.1.md`.
 3. Keep Build v2.0 source-generator planning separate from Build v1.1 release
    readiness.
-4. Use `docs/development/Build_v1.1_ReleasePlan.md` as the working plan for the
-   Candidate -> RC1 -> official release path.
+4. Use `docs/releases/Build_v1.1_ReleaseReport.md` as the official Build v1.1
+   release record.

@@ -78,8 +78,9 @@ RC1 audit is complete.
 
 RC1 is approved by this checklist.
 
-The next task is to decide whether to promote RC1 into the Build v1.1 official
-release path.
+Build v1.1 has since been promoted to official release.
+
+See `docs/releases/Build_v1.1_ReleaseReport.md`.
 
 ---
 

@@ -126,14 +126,15 @@ Passed runners:
 
 # 8. RC1 Decision
 
-Build v1.1 is ready to proceed from Candidate review into RC1 preparation.
+Build v1.1 proceeded from Candidate review into RC1 preparation and was later
+promoted to official release.
 
-Next required work:
+Completed follow-up:
 
-1. Prepare the Build v1.1 RC1 release audit checklist.
-2. Prepare the Build v1.1 RC1 release report draft.
-3. Keep all RC1 material separate from frozen Build v1.0.x specifications until
-   official adoption is approved.
+1. Prepared the Build v1.1 RC1 release audit checklist.
+2. Prepared the Build v1.1 RC1 release report.
+3. Promoted Build v1.1 to official release in
+   `docs/releases/Build_v1.1_ReleaseReport.md`.
 
 ---
 

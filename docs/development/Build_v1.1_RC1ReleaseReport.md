@@ -119,8 +119,11 @@ does not approve the Build v1.1 official release.
 
 # 8. Known Open Items
 
-- Decide whether to promote RC1 into the Build v1.1 official release path.
-- Prepare official Build v1.1 release documentation if promotion is approved.
+No RC1 open items remain.
+
+Build v1.1 has since been promoted to official release.
+
+See `docs/releases/Build_v1.1_ReleaseReport.md`.
 
 ---
 
