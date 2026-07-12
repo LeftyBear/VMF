@@ -119,6 +119,21 @@ Public Function InfLoadBodySource(ByVal BodySourcePath As String) As String
     InfLoadBodySource = FileSystemProvider.InfReadText(BodySourcePath)
 End Function
 
+' Loads optional section source content for a manifest item.
+Public Function InfLoadSectionSource(ByVal SectionSourcePath As String) As String
+    ComRequireText SectionSourcePath, "SectionSourcePath", "InfLoadSectionSource"
+
+    If FileSystemProvider Is Nothing Then
+        Err.Raise ComErrInvalidState, "InfLoadSectionSource", "ManifestProvider is not initialized."
+    End If
+
+    If Not FileSystemProvider.InfFileExists(SectionSourcePath) Then
+        Err.Raise ComErrInvalidArgument, "InfLoadSectionSource", "SectionSourcePath does not exist."
+    End If
+
+    InfLoadSectionSource = FileSystemProvider.InfReadText(SectionSourcePath)
+End Function
+
 Private Sub ValidateLayerName(ByVal LayerName As String)
     Dim Position As Long
     Dim Character As String
@@ -144,14 +159,15 @@ Private Function CreateManifestItemFromLine(ByVal LineText As String, ByVal Mani
     Dim Fields() As String
     Dim Item As ManifestItem
     Dim BodySourcePath As String
+    Dim FieldIndex As Long
 
     Fields = Split(LineText, ",")
-    If UBound(Fields) <> 3 And UBound(Fields) <> 4 Then
-        Err.Raise ComErrInvalidArgument, "InfLoadManifestItems", "Manifest line must contain ModuleName, ModuleType, LayerName, TemplatePath and optional BodySourcePath."
+    If UBound(Fields) < 3 Then
+        Err.Raise ComErrInvalidArgument, "InfLoadManifestItems", "Manifest line must contain ModuleName, ModuleType, LayerName, TemplatePath, optional BodySourcePath and optional SectionSource entries."
     End If
 
     BodySourcePath = vbNullString
-    If UBound(Fields) = 4 Then
+    If UBound(Fields) >= 4 Then
         If Not ComIsBlankText(Trim$(Fields(4))) Then
             BodySourcePath = ResolveManifestRelativePath(Trim$(Fields(4)), ManifestPath)
         End If
@@ -165,8 +181,35 @@ Private Function CreateManifestItemFromLine(ByVal LineText As String, ByVal Mani
         ResolveManifestRelativePath(Trim$(Fields(3)), ManifestPath), _
         BodySourcePath
 
+    For FieldIndex = 5 To UBound(Fields)
+        AddSectionSourceFromField Item, Trim$(Fields(FieldIndex)), ManifestPath
+    Next FieldIndex
+
     Set CreateManifestItemFromLine = Item
 End Function
+
+Private Sub AddSectionSourceFromField( _
+    ByVal Item As ManifestItem, _
+    ByVal FieldText As String, _
+    ByVal ManifestPath As String)
+
+    Dim SeparatorIndex As Long
+    Dim SectionName As String
+    Dim SectionSourcePath As String
+
+    If ComIsBlankText(FieldText) Then
+        Exit Sub
+    End If
+
+    SeparatorIndex = InStr(1, FieldText, "=", vbBinaryCompare)
+    If SeparatorIndex <= 1 Or SeparatorIndex = Len(FieldText) Then
+        Err.Raise ComErrInvalidArgument, "InfLoadManifestItems", "SectionSource entry must use SectionName=SectionSourcePath."
+    End If
+
+    SectionName = Trim$(Left$(FieldText, SeparatorIndex - 1))
+    SectionSourcePath = Trim$(Mid$(FieldText, SeparatorIndex + 1))
+    Item.InfAddSectionSourcePath SectionName, ResolveManifestRelativePath(SectionSourcePath, ManifestPath)
+End Sub
 
 Private Function IsManifestDataLine(ByVal LineText As String) As Boolean
     If ComIsBlankText(LineText) Then

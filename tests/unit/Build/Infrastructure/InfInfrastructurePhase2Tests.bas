@@ -37,6 +37,7 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifyTemplateDrivenGeneration
     VerifyBodyInsertionAndSectionContract
     VerifyBodySourceManifestGeneration
+    VerifySectionSourceManifestGeneration
     VerifyCustomLayerManifestGeneration
     VerifyBuildManifestFormatCoverage
     VerifyManifestTemplatePathResolution
@@ -127,6 +128,18 @@ Private Sub VerifyBodyInsertionAndSectionContract()
     AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Empty @section markers should not be generated."
     AssertFalse InStr(1, GeneratedCode, "{{BODY}}", vbTextCompare) > 0, "Empty @section body placeholder should not be generated."
     AssertTrue InStr(1, GeneratedCode, "Private Const Marker", vbTextCompare) > 0, "Content outside empty @section should remain."
+
+    Manifest("PublicApi") = "Public Sub RunPublicApi()" & vbCrLf & "End Sub"
+    TemplateText = "Option Explicit" & vbCrLf & _
+        "' @section PublicApi" & vbCrLf & _
+        "{{PublicApi}}" & vbCrLf & _
+        "' @endsection"
+
+    Set Template = TemplateProvider.InfCreateTemplateFromText("NonEmptySectionTemplate", TemplateText)
+    GeneratedCode = Replacer.InfReplaceTokens(Template, Manifest)
+
+    AssertTrue InStr(1, GeneratedCode, "Public Sub RunPublicApi()", vbTextCompare) > 0, "Non-empty @section content should be generated."
+    AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Non-empty @section markers should not be generated."
 End Sub
 
 Private Sub VerifyBodySourceManifestGeneration()
@@ -168,6 +181,61 @@ Private Sub VerifyBodySourceManifestGeneration()
     AssertTrue InStr(1, GeneratedCode, "Module: BodySourceModule", vbTextCompare) > 0, "BodySource generation should replace ModuleName."
     AssertTrue InStr(1, GeneratedCode, "Public Sub RunBodySource()", vbTextCompare) > 0, "BodySource content should be inserted into {{BODY}}."
     AssertFalse InStr(1, GeneratedCode, "{{BODY}}", vbTextCompare) > 0, "BodySource generation should remove the body token."
+End Sub
+
+Private Sub VerifySectionSourceManifestGeneration()
+    Dim FileSystem As Object
+    Dim FileProvider As InfFileSystemProvider
+    Dim ManifestProvider As InfManifestProvider
+    Dim Generator As InfGenerator
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim ManifestDir As String
+    Dim ManifestPath As String
+    Dim TemplatePath As String
+    Dim SectionSourcePath As String
+    Dim SectionSourcePaths As Object
+    Dim TemplateText As String
+    Dim SectionText As String
+    Dim GeneratedCode As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "section-source")
+    ManifestPath = FileSystem.BuildPath(ManifestDir, "SectionSource.manifest")
+    TemplatePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "templates\SectionTemplate.txt"))
+    SectionSourcePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "sections\PublicApi.vba"))
+    TemplateText = "Option Explicit" & vbCrLf & _
+        "' Module: {{ModuleName}}" & vbCrLf & _
+        "' Layer: {{Layer}}" & vbCrLf & _
+        "' @section PublicApi" & vbCrLf & _
+        "{{PublicApi}}" & vbCrLf & _
+        "' @endsection" & vbCrLf & _
+        "{{BODY}}"
+    SectionText = "Public Sub RunSectionSource()" & vbCrLf & "End Sub"
+
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText TemplatePath, TemplateText
+    FileProvider.InfWriteText SectionSourcePath, SectionText
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath,BodySourcePath,SectionSources" & vbCrLf & _
+        "SectionSourceModule,StandardModule,Application,templates\SectionTemplate.txt,,PublicApi=sections\PublicApi.vba"
+
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set Items = ManifestProvider.InfLoadManifestItems(ManifestPath)
+
+    AssertEquals "1", CStr(Items.Count), "SectionSource manifest should load one item."
+
+    Set Item = Items.Item(1)
+    Set SectionSourcePaths = Item.InfGetSectionSourcePaths()
+    AssertEquals SectionSourcePath, SectionSourcePaths.Item("PublicApi"), "Relative SectionSourcePath should resolve from the manifest directory."
+
+    Set Generator = InfCreateGenerator()
+    GeneratedCode = Generator.InfGenerateManifestItem(Item)
+
+    AssertTrue InStr(1, GeneratedCode, "Module: SectionSourceModule", vbTextCompare) > 0, "SectionSource generation should replace ModuleName."
+    AssertTrue InStr(1, GeneratedCode, "Public Sub RunSectionSource()", vbTextCompare) > 0, "SectionSource content should be inserted into @section."
+    AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "SectionSource generation should remove section markers."
+    AssertFalse InStr(1, GeneratedCode, "{{PublicApi}}", vbTextCompare) > 0, "SectionSource generation should remove section token."
 End Sub
 
 Private Sub VerifyCustomLayerManifestGeneration()

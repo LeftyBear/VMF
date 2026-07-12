@@ -28,6 +28,7 @@ Private Type TMember
 End Type
 
 Private This As TMember
+Private SectionSourcePaths As Object
 
 ' Initializes a manifest item from parsed manifest values.
 Public Sub InfInitialize( _
@@ -47,10 +48,29 @@ Public Sub InfInitialize( _
     This.LayerName = Trim$(LayerName)
     This.TemplatePath = Trim$(TemplatePath)
     This.BodySourcePath = Trim$(BodySourcePath)
+    Set SectionSourcePaths = CreateObject("Scripting.Dictionary")
 
     If Not InfValidate() Then
         Err.Raise ComErrInvalidArgument, "ManifestItem.InfInitialize", "Manifest item is invalid."
     End If
+End Sub
+
+' Adds an optional section source path for this target.
+Public Sub InfAddSectionSourcePath(ByVal SectionName As String, ByVal SectionSourcePath As String)
+    RequireValidState "InfAddSectionSourcePath"
+    ComRequireText SectionName, "SectionName", "ManifestItem.InfAddSectionSourcePath"
+    ComRequireText SectionSourcePath, "SectionSourcePath", "ManifestItem.InfAddSectionSourcePath"
+
+    SectionName = Trim$(SectionName)
+    If Not IsValidSectionName(SectionName) Then
+        Err.Raise ComErrInvalidArgument, "ManifestItem.InfAddSectionSourcePath", "SectionName is invalid."
+    End If
+
+    If SectionSourcePaths.Exists(SectionName) Then
+        Err.Raise ComErrInvalidArgument, "ManifestItem.InfAddSectionSourcePath", "Duplicate SectionName: " & SectionName
+    End If
+
+    SectionSourcePaths.Add SectionName, Trim$(SectionSourcePath)
 End Sub
 
 ' Returns the target VBA module name.
@@ -81,6 +101,17 @@ End Function
 Public Function InfGetBodySourcePath() As String
     RequireValidState "InfGetBodySourcePath"
     InfGetBodySourcePath = This.BodySourcePath
+End Function
+
+' Returns optional section source paths keyed by section name.
+Public Function InfGetSectionSourcePaths() As Object
+    RequireValidState "InfGetSectionSourcePaths"
+
+    If SectionSourcePaths Is Nothing Then
+        Set SectionSourcePaths = CreateObject("Scripting.Dictionary")
+    End If
+
+    Set InfGetSectionSourcePaths = SectionSourcePaths
 End Function
 
 ' Creates the token manifest consumed by InfTokenReplacer.
@@ -121,6 +152,10 @@ Public Function InfValidate() As Boolean
     If ComIsBlankText(This.TemplatePath) Then
         InfValidate = False
         Exit Function
+    End If
+
+    If SectionSourcePaths Is Nothing Then
+        Set SectionSourcePaths = CreateObject("Scripting.Dictionary")
     End If
 
     InfValidate = True
@@ -165,4 +200,8 @@ Private Function IsValidLayerName(ByVal LayerName As String) As Boolean
     Next Position
 
     IsValidLayerName = True
+End Function
+
+Private Function IsValidSectionName(ByVal SectionName As String) As Boolean
+    IsValidSectionName = IsValidLayerName(SectionName)
 End Function

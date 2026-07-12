@@ -129,6 +129,7 @@ Public Function InfGenerateManifestItem(ByVal Item As ManifestItem) As String
 
     Set Manifest = Item.InfToManifest()
     ApplyBodySource Manifest, Item
+    ApplySectionSources Manifest, Item
 
     GeneratedText = TokenReplacer.InfReplaceTokens(Template, Manifest)
     If ComIsBlankText(GeneratedText) Then
@@ -155,4 +156,27 @@ Private Sub ApplyBodySource(ByVal Manifest As Object, ByVal Item As ManifestItem
     End If
 
     Manifest("BODY") = ManifestProvider.InfLoadBodySource(BodySourcePath)
+End Sub
+
+Private Sub ApplySectionSources(ByVal Manifest As Object, ByVal Item As ManifestItem)
+    Dim SectionSourcePaths As Object
+    Dim SectionName As Variant
+    Dim SectionBody As String
+
+    If Manifest Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "ApplySectionSources", "Manifest is required."
+    End If
+
+    If Item Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "ApplySectionSources", "ManifestItem is required."
+    End If
+
+    Set SectionSourcePaths = Item.InfGetSectionSourcePaths()
+    For Each SectionName In SectionSourcePaths.Keys
+        SectionBody = ManifestProvider.InfLoadSectionSource(CStr(SectionSourcePaths.Item(CStr(SectionName))))
+        If Not ComIsBlankText(SectionBody) Then
+            Manifest(CStr(SectionName)) = SectionBody
+            Manifest("Section:" & CStr(SectionName)) = SectionBody
+        End If
+    Next SectionName
 End Sub

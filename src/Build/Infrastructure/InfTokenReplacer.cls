@@ -116,7 +116,10 @@ Private Function ParseSectionName(ByVal SectionLine As String) As String
         Err.Raise ComErrInvalidArgument, "InfTokenReplacer.ParseSectionName", "Template section marker is invalid."
     End If
 
-    SectionName = Trim$(Mid$(SectionLine, MarkerIndex + Len("@section")))
+    SectionName = Mid$(SectionLine, MarkerIndex + Len("@section"))
+    SectionName = Replace(SectionName, vbCr, vbNullString)
+    SectionName = Replace(SectionName, vbLf, vbNullString)
+    SectionName = Trim$(SectionName)
     ComRequireText SectionName, "SectionName", "InfTokenReplacer.ParseSectionName"
 
     ParseSectionName = SectionName
