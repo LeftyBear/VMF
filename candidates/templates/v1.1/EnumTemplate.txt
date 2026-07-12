@@ -1,0 +1,17 @@
+Attribute VB_Name = "{{ModuleName}}"
+Option Explicit
+' @section OptionPrivateModule
+Option Private Module
+' @endsection
+
+'==========================================================================
+' Enum: {{ModuleName}}
+' Layer: {{Layer}}
+' Responsibility:
+'==========================================================================
+
+Public Enum {{ModuleName}}
+' @section Body
+{{BODY}}
+' @endsection
+End Enum

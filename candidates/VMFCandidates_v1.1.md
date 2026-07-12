@@ -86,3 +86,24 @@ Priority : High
 Build v1.1 Impact : Candidate implementation added to templates and template replacement.
 
 A future VMF version SHOULD standardize `{{BODY}}` as the body insertion token for Class Module and Standard Module templates. It SHOULD also define `@section` / `@endsection` as the optional Section Contract and require empty sections to be omitted from generated source.
+
+### V008 Canonical Template Contract
+
+Status : Proposed
+Priority : High
+Build v1.1 Impact : Candidate documentation and template assets only.
+
+A future VMF version SHOULD adopt canonical templates for Class Module, Predeclared Class Module, Standard Module, Interface, Enum, and UserForm code-behind generation. Template selection SHOULD be determined by the Manifest Contract, and module attributes such as `VB_PredeclaredId` SHOULD remain template-owned rather than rewritten by Generator.
+
+Candidate contract:
+
+- `candidates/TemplateContract_v1.1_Candidate.md`
+
+Candidate template assets:
+
+- `candidates/templates/v1.1/ClassModuleTemplate.txt`
+- `candidates/templates/v1.1/PredeclaredClassModuleTemplate.txt`
+- `candidates/templates/v1.1/StandardModuleTemplate.txt`
+- `candidates/templates/v1.1/InterfaceTemplate.txt`
+- `candidates/templates/v1.1/EnumTemplate.txt`
+- `candidates/templates/v1.1/UserFormTemplate.frm.txt`

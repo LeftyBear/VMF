@@ -1,0 +1,15 @@
+Attribute VB_Name = "{{ModuleName}}"
+Option Explicit
+' @section OptionPrivateModule
+Option Private Module
+' @endsection
+
+'==========================================================================
+' Module: {{ModuleName}}
+' Layer: {{Layer}}
+' Responsibility:
+'==========================================================================
+
+' @section Body
+{{BODY}}
+' @endsection
