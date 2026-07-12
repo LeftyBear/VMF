@@ -17,6 +17,7 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Added Build v1.1 candidate readiness documentation in `docs/development/Build_v1.1_CandidateReadinessAudit.md`.
 - Added VMF v1.1 phase inventory documentation in `docs/development/VMF_v1.1_PhaseInventory.md`.
 - Added Build v1.1 release planning documentation in `docs/development/Build_v1.1_ReleasePlan.md`.
+- Added Build v1.1 RC1 and official release documentation.
 
 ## Changed
 
@@ -30,7 +31,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Updated `AppGeneratorService` to use project manifest input during project generation.
 - Updated the Build preview API to return `ComResult`.
 - Updated Build v1.1 candidate notes, readiness audit, and phase inventory with RC1 readiness and next-step status.
+- Updated `tools/build/build.ps1` to support explicit release metadata for RC and official release artifacts.
 - Regenerated the Build v1.0.2 add-in artifact after path-resolution and manifest changes.
+- Generated Build v1.1 RC1 and official release artifacts.
 
 ## Fixed
 
@@ -48,6 +51,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Removed obsolete top-level `src/Common`, `src/Infrastructure`, and `src/UI` placeholders.
 - Removed generated VMF source placeholders and generated sample source modules from `src/VMF/`, leaving layer placeholders for future generation.
 - Removed obsolete `dist/release/VMF.xlam`.
+
+## Released
+
+- Released Build.xlam v1.1 as the official Build v1.1 release.
 
 ---
 
