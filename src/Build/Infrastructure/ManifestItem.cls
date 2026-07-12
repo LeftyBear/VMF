@@ -24,6 +24,7 @@ Private Type TMember
     ModuleType As String
     LayerName As String
     TemplatePath As String
+    BodySourcePath As String
 End Type
 
 Private This As TMember
@@ -33,7 +34,8 @@ Public Sub InfInitialize( _
     ByVal ModuleName As String, _
     ByVal ModuleType As String, _
     ByVal LayerName As String, _
-    ByVal TemplatePath As String)
+    ByVal TemplatePath As String, _
+    Optional ByVal BodySourcePath As String = vbNullString)
 
     ComRequireText ModuleName, "ModuleName", "ManifestItem.InfInitialize"
     ComRequireText ModuleType, "ModuleType", "ManifestItem.InfInitialize"
@@ -44,6 +46,7 @@ Public Sub InfInitialize( _
     This.ModuleType = Trim$(ModuleType)
     This.LayerName = Trim$(LayerName)
     This.TemplatePath = Trim$(TemplatePath)
+    This.BodySourcePath = Trim$(BodySourcePath)
 
     If Not InfValidate() Then
         Err.Raise ComErrInvalidArgument, "ManifestItem.InfInitialize", "Manifest item is invalid."
@@ -74,6 +77,12 @@ Public Function InfGetTemplatePath() As String
     InfGetTemplatePath = This.TemplatePath
 End Function
 
+' Returns the optional body source path for this target.
+Public Function InfGetBodySourcePath() As String
+    RequireValidState "InfGetBodySourcePath"
+    InfGetBodySourcePath = This.BodySourcePath
+End Function
+
 ' Creates the token manifest consumed by InfTokenReplacer.
 Public Function InfToManifest() As Object
     Dim Manifest As Object
@@ -85,6 +94,9 @@ Public Function InfToManifest() As Object
     Manifest("ModuleType") = This.ModuleType
     Manifest("Layer") = This.LayerName
     Manifest("TemplatePath") = This.TemplatePath
+    If Not ComIsBlankText(This.BodySourcePath) Then
+        Manifest("BodySourcePath") = This.BodySourcePath
+    End If
 
     Set InfToManifest = Manifest
 End Function

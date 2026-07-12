@@ -36,6 +36,7 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifyTemplateValidation
     VerifyTemplateDrivenGeneration
     VerifyBodyInsertionAndSectionContract
+    VerifyBodySourceManifestGeneration
     VerifyCustomLayerManifestGeneration
     VerifyBuildManifestFormatCoverage
     VerifyManifestTemplatePathResolution
@@ -126,6 +127,47 @@ Private Sub VerifyBodyInsertionAndSectionContract()
     AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Empty @section markers should not be generated."
     AssertFalse InStr(1, GeneratedCode, "{{BODY}}", vbTextCompare) > 0, "Empty @section body placeholder should not be generated."
     AssertTrue InStr(1, GeneratedCode, "Private Const Marker", vbTextCompare) > 0, "Content outside empty @section should remain."
+End Sub
+
+Private Sub VerifyBodySourceManifestGeneration()
+    Dim FileSystem As Object
+    Dim FileProvider As InfFileSystemProvider
+    Dim ManifestProvider As InfManifestProvider
+    Dim Generator As InfGenerator
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim ManifestDir As String
+    Dim ManifestPath As String
+    Dim BodySourcePath As String
+    Dim BodyText As String
+    Dim GeneratedCode As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "body-source")
+    ManifestPath = FileSystem.BuildPath(ManifestDir, "BodySource.manifest")
+    BodySourcePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "body\BodySourceModule.vba"))
+    BodyText = "Public Sub RunBodySource()" & vbCrLf & "End Sub"
+
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText BodySourcePath, BodyText
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath,BodySourcePath" & vbCrLf & _
+        "BodySourceModule,StandardModule,Application," & ResolveTemplatePath() & ",body\BodySourceModule.vba"
+
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set Items = ManifestProvider.InfLoadManifestItems(ManifestPath)
+
+    AssertEquals "1", CStr(Items.Count), "BodySource manifest should load one item."
+
+    Set Item = Items.Item(1)
+    AssertEquals BodySourcePath, Item.InfGetBodySourcePath(), "Relative BodySourcePath should resolve from the manifest directory."
+
+    Set Generator = InfCreateGenerator()
+    GeneratedCode = Generator.InfGenerateManifestItem(Item)
+
+    AssertTrue InStr(1, GeneratedCode, "Module: BodySourceModule", vbTextCompare) > 0, "BodySource generation should replace ModuleName."
+    AssertTrue InStr(1, GeneratedCode, "Public Sub RunBodySource()", vbTextCompare) > 0, "BodySource content should be inserted into {{BODY}}."
+    AssertFalse InStr(1, GeneratedCode, "{{BODY}}", vbTextCompare) > 0, "BodySource generation should remove the body token."
 End Sub
 
 Private Sub VerifyCustomLayerManifestGeneration()

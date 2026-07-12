@@ -104,6 +104,21 @@ ErrHandler:
     Set InfValidateManifestFile = ComCreateFailureFromErr("InfManifestProvider.InfValidateManifestFile", Err.Description, "Error", False)
 End Function
 
+' Loads optional body source content for a manifest item.
+Public Function InfLoadBodySource(ByVal BodySourcePath As String) As String
+    ComRequireText BodySourcePath, "BodySourcePath", "InfLoadBodySource"
+
+    If FileSystemProvider Is Nothing Then
+        Err.Raise ComErrInvalidState, "InfLoadBodySource", "ManifestProvider is not initialized."
+    End If
+
+    If Not FileSystemProvider.InfFileExists(BodySourcePath) Then
+        Err.Raise ComErrInvalidArgument, "InfLoadBodySource", "BodySourcePath does not exist."
+    End If
+
+    InfLoadBodySource = FileSystemProvider.InfReadText(BodySourcePath)
+End Function
+
 Private Sub ValidateLayerName(ByVal LayerName As String)
     Dim Position As Long
     Dim Character As String
@@ -128,10 +143,18 @@ End Sub
 Private Function CreateManifestItemFromLine(ByVal LineText As String, ByVal ManifestPath As String) As ManifestItem
     Dim Fields() As String
     Dim Item As ManifestItem
+    Dim BodySourcePath As String
 
     Fields = Split(LineText, ",")
-    If UBound(Fields) <> 3 Then
-        Err.Raise ComErrInvalidArgument, "InfLoadManifestItems", "Manifest line must contain ModuleName, ModuleType, LayerName and TemplatePath."
+    If UBound(Fields) <> 3 And UBound(Fields) <> 4 Then
+        Err.Raise ComErrInvalidArgument, "InfLoadManifestItems", "Manifest line must contain ModuleName, ModuleType, LayerName, TemplatePath and optional BodySourcePath."
+    End If
+
+    BodySourcePath = vbNullString
+    If UBound(Fields) = 4 Then
+        If Not ComIsBlankText(Trim$(Fields(4))) Then
+            BodySourcePath = ResolveManifestRelativePath(Trim$(Fields(4)), ManifestPath)
+        End If
     End If
 
     Set Item = New ManifestItem
@@ -139,7 +162,8 @@ Private Function CreateManifestItemFromLine(ByVal LineText As String, ByVal Mani
         Trim$(Fields(0)), _
         Trim$(Fields(1)), _
         Trim$(Fields(2)), _
-        ResolveManifestRelativePath(Trim$(Fields(3)), ManifestPath)
+        ResolveManifestRelativePath(Trim$(Fields(3)), ManifestPath), _
+        BodySourcePath
 
     Set CreateManifestItemFromLine = Item
 End Function

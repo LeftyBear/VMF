@@ -101,6 +101,7 @@ End Function
 ' Generates a module body from a manifest-driven generation item.
 Public Function InfGenerateManifestItem(ByVal Item As ManifestItem) As String
     Dim Template As InfTemplate
+    Dim Manifest As Object
     Dim GeneratedText As String
     Dim ValidationResult As ComResult
 
@@ -112,7 +113,7 @@ Public Function InfGenerateManifestItem(ByVal Item As ManifestItem) As String
         Err.Raise ComErrInvalidState, "InfGenerateManifestItem", "ManifestItem is invalid."
     End If
 
-    If TemplateProvider Is Nothing Or TokenReplacer Is Nothing Then
+    If TemplateProvider Is Nothing Or ManifestProvider Is Nothing Or TokenReplacer Is Nothing Then
         Err.Raise ComErrInvalidState, "InfGenerateManifestItem", "Generator is not initialized."
     End If
 
@@ -126,10 +127,32 @@ Public Function InfGenerateManifestItem(ByVal Item As ManifestItem) As String
         Err.Raise ComErrInvalidState, "InfGenerateManifestItem", "Template is invalid."
     End If
 
-    GeneratedText = TokenReplacer.InfReplaceTokens(Template, Item.InfToManifest())
+    Set Manifest = Item.InfToManifest()
+    ApplyBodySource Manifest, Item
+
+    GeneratedText = TokenReplacer.InfReplaceTokens(Template, Manifest)
     If ComIsBlankText(GeneratedText) Then
         Err.Raise ComErrInvalidState, "InfGenerateManifestItem", "Generated text is empty."
     End If
 
     InfGenerateManifestItem = GeneratedText
 End Function
+
+Private Sub ApplyBodySource(ByVal Manifest As Object, ByVal Item As ManifestItem)
+    Dim BodySourcePath As String
+
+    If Manifest Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "ApplyBodySource", "Manifest is required."
+    End If
+
+    If Item Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "ApplyBodySource", "ManifestItem is required."
+    End If
+
+    BodySourcePath = Item.InfGetBodySourcePath()
+    If ComIsBlankText(BodySourcePath) Then
+        Exit Sub
+    End If
+
+    Manifest("BODY") = ManifestProvider.InfLoadBodySource(BodySourcePath)
+End Sub
