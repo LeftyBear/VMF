@@ -147,11 +147,11 @@ Public Function AppGenerateProject() As ComResult
 End Function
 
 ' Previews a Build layer without generating components.
-Public Function AppPreviewBuildLayer(ByVal LayerName As String) As String
+Public Function AppPreviewBuildLayer(ByVal LayerName As String, ByRef PreviewText As String) As ComResult
     Dim GeneratorService As AppGeneratorService
 
     Set GeneratorService = CreateCompositionRoot().AppCreateGeneratorService()
-    AppPreviewBuildLayer = GeneratorService.AppPreviewBuildLayer(LayerName)
+    Set AppPreviewBuildLayer = GeneratorService.AppPreviewBuildLayer(LayerName, PreviewText)
 End Function
 
 '=========================================================================

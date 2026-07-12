@@ -15,6 +15,7 @@ Public Sub AppRunGenerateCommonPhase3_1Tests()
     VerifyCommonManifestItems
     VerifyCommonManifestItemGeneration
     VerifyCommonManifestPreview
+    VerifyCommonManifestPreviewFailure
 End Sub
 
 Private Sub VerifyCommonManifestItems()
@@ -59,17 +60,30 @@ Private Sub VerifyCommonManifestPreview()
     Dim Items As Collection
     Dim Item As ManifestItem
     Dim PreviewText As String
+    Dim Result As ComResult
 
     Set ManifestProvider = InfCreateManifestProvider()
     Set Items = ManifestProvider.InfLoadManifestItems(ResolveCommonManifestPath())
     Set Item = Items.Item(1)
 
-    PreviewText = AppPreviewBuildLayer("Common")
+    Set Result = AppPreviewBuildLayer("Common", PreviewText)
 
+    AssertTrue Result.IsSuccess, "Common preview should return success."
     AssertTrue Len(PreviewText) > 0, "Common preview should not be empty."
     AssertTrue InStr(1, PreviewText, "# Preview: " & Item.InfGetModuleName(), vbTextCompare) > 0, "Common preview should identify the previewed module."
     AssertTrue InStr(1, PreviewText, "Layer: Common", vbTextCompare) > 0, "Common preview should include generated Common source."
     AssertTrue InStr(1, PreviewText, "Module created:", vbTextCompare) = 0, "Common preview should not return a mutation result message."
+End Sub
+
+Private Sub VerifyCommonManifestPreviewFailure()
+    Dim Result As ComResult
+    Dim PreviewText As String
+
+    PreviewText = "unchanged"
+    Set Result = AppPreviewBuildLayer("MissingLayer", PreviewText)
+
+    AssertTrue Result.IsFailure, "Missing layer preview should return failure."
+    AssertEquals vbNullString, PreviewText, "Missing layer preview should clear preview text."
 End Sub
 
 Private Function ResolveCommonManifestPath() As String

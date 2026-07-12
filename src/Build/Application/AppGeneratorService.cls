@@ -163,8 +163,8 @@ Public Function AppGenerateProject() As ComResult
 End Function
 
 ' Previews one Build layer without mutating the target workbook.
-Public Function AppPreviewBuildLayer(ByVal LayerName As String) As String
-    AppPreviewBuildLayer = PreviewBuildLayerManifest(LayerName)
+Public Function AppPreviewBuildLayer(ByVal LayerName As String, ByRef PreviewText As String) As ComResult
+    Set AppPreviewBuildLayer = PreviewBuildLayerManifest(LayerName, PreviewText)
 End Function
 
 Private Function GenerateProject() As ComResult
@@ -384,17 +384,17 @@ ErrHandler:
     Set GenerateBuildLayerManifest = ComCreateFailureFromErr("AppGeneratorService." & OperationName, Desc, "Error", False)
 End Function
 
-Private Function PreviewBuildLayerManifest(ByVal LayerName As String) As String
+Private Function PreviewBuildLayerManifest(ByVal LayerName As String, ByRef PreviewText As String) As ComResult
     Dim Items As Collection
     Dim Item As ManifestItem
     Dim CodeText As String
-    Dim PreviewText As String
     Dim Result As ComResult
     Dim OperationName As String
     Dim ManifestPath As String
 
     On Error GoTo ErrHandler
 
+    PreviewText = vbNullString
     OperationName = "AppPreview" & LayerName
 
     ComRequireText LayerName, "LayerName", OperationName
@@ -410,7 +410,8 @@ Private Function PreviewBuildLayerManifest(ByVal LayerName As String) As String
     ManifestPath = ResolveBuildManifestPath(LayerName & ".manifest")
     Set Result = ManifestProvider.InfValidateManifestFile(ManifestPath)
     If Result.IsFailure Then
-        Err.Raise ComErrInvalidArgument, OperationName, Result.Message
+        Set PreviewBuildLayerManifest = Result
+        Exit Function
     End If
 
     Set Items = ManifestProvider.InfLoadManifestItems(ManifestPath)
@@ -419,11 +420,11 @@ Private Function PreviewBuildLayerManifest(ByVal LayerName As String) As String
         PreviewText = AppendPreviewItem(PreviewText, Item, CodeText)
     Next Item
 
-    PreviewBuildLayerManifest = PreviewText
+    Set PreviewBuildLayerManifest = ComCreateSuccess(LayerName & " layer preview generated.")
     Exit Function
 
 ErrHandler:
-    Err.Raise Err.Number, "AppGeneratorService." & OperationName, Err.Description
+    Set PreviewBuildLayerManifest = ComCreateFailureFromErr("AppGeneratorService." & OperationName, Err.Description, "Error", False)
 End Function
 
 ' Validates basic module name rules.
