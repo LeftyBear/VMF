@@ -34,6 +34,7 @@ This candidate defines:
 - the template policy that templates define structure only;
 - the standard `{{BODY}}` insertion contract for class and standard module templates;
 - the Section Contract using `@section`;
+- the BodySource and SectionSource reference contract for generated body content;
 - the policy that empty sections are not generated;
 - phase names for implementation planning;
 - the mapping between implementation phase names and canonical architectural layers;
@@ -153,6 +154,12 @@ Each manifest item SHALL define:
 
 Manifest data SHALL NOT contain source implementation bodies unless a future candidate explicitly adopts that extension.
 
+Manifest data MAY reference BodySource and SectionSource artifacts when a future
+candidate or adopted contract defines those references.
+
+Manifest data SHALL NOT embed implementation bodies directly when a BodySource
+or SectionSource contract is available.
+
 ## 7.3 Template Contract
 
 The Template Contract describes source structure.
@@ -252,7 +259,31 @@ Section names SHALL be stable contract names, not presentation labels.
 
 ---
 
-# 12. Empty Section Policy
+# 12. BodySource / SectionSource Contract
+
+BodySource and SectionSource artifacts SHALL describe generated body content
+inputs without redefining module identity, layer identity, or template selection.
+
+Manifest items SHOULD reference BodySource and SectionSource artifacts by stable
+identifier or path.
+
+Generator SHALL resolve those references, assemble body content in the canonical
+body section order, and insert the result through `{{BODY}}` or named section
+insertion points.
+
+Templates SHALL remain structural and SHALL NOT contain default implementation
+body skeletons.
+
+If no body or section content is supplied, Generator SHALL remove the relevant
+placeholder and SHALL NOT emit placeholder artifacts.
+
+Detailed BodySource and SectionSource rules are defined by:
+
+- `candidates/BodySourceSectionContract_v1.1_Candidate.md`
+
+---
+
+# 13. Empty Section Policy
 
 Empty optional sections SHALL NOT be generated.
 
@@ -269,7 +300,7 @@ Generated source SHOULD contain only meaningful structure and required VBA decla
 
 ---
 
-# 13. Documentation Organization Policy
+# 14. Documentation Organization Policy
 
 Candidate documentation SHALL be organized by contract:
 
@@ -284,7 +315,7 @@ Future candidate documents SHOULD avoid mixing formal contract rules with implem
 
 ---
 
-# 14. Phase Model
+# 15. Phase Model
 
 Implementation SHALL proceed in the following phases.
 
@@ -302,7 +333,7 @@ The candidate mapping avoids introducing new architectural layers under VMF v1.0
 
 ---
 
-# 15. Dependency Direction
+# 16. Dependency Direction
 
 Phase dependencies SHALL follow the canonical layer dependency matrix.
 
@@ -320,7 +351,7 @@ Lower phases SHALL NOT depend on higher phases.
 
 ---
 
-# 16. Phase 1: Common Contract
+# 17. Phase 1: Common Contract
 
 ## 7.1 Responsibility
 
@@ -364,7 +395,7 @@ Required members:
 
 ---
 
-# 17. Phase 2: Infrastructure Contract
+# 18. Phase 2: Infrastructure Contract
 
 ## 8.1 Responsibility
 
@@ -396,7 +427,7 @@ Infrastructure SHALL depend only on Common.
 
 ---
 
-# 18. Phase 3: VMF Core Contract
+# 19. Phase 3: VMF Core Contract
 
 ## 9.1 Responsibility
 
@@ -428,7 +459,7 @@ VMF Core SHALL depend only on Common.
 
 ---
 
-# 19. Phase 4: Build Contract
+# 20. Phase 4: Build Contract
 
 ## 10.1 Responsibility
 
@@ -462,7 +493,7 @@ Build SHALL NOT directly manipulate Excel UI.
 
 ---
 
-# 20. Phase 5: UI Contract
+# 21. Phase 5: UI Contract
 
 ## 11.1 Responsibility
 
@@ -492,7 +523,7 @@ UI SHALL NOT contain business rules.
 
 ---
 
-# 21. Implementation Rules
+# 22. Implementation Rules
 
 Each phase SHALL be completed before the next phase begins.
 
@@ -510,7 +541,7 @@ Implementation details SHALL remain private to the owning layer.
 
 ---
 
-# 22. Verification Rules
+# 23. Verification Rules
 
 Each phase SHOULD be verified by:
 
@@ -524,7 +555,7 @@ Tests SHALL NOT depend on private implementation details.
 
 ---
 
-# 23. Adoption Policy
+# 24. Adoption Policy
 
 This candidate SHALL NOT be treated as adopted VMF v1.0 behavior.
 
@@ -532,9 +563,10 @@ If approved for a future version, this candidate SHOULD become part of a new VMF
 
 ---
 
-# 24. Revision History
+# 25. Revision History
 
 | Version | Status | Description |
 |---------|--------|-------------|
 | 1.1 Candidate | Candidate | Defines phase implementation contracts for Build.xlam completion |
 | 1.1 Candidate Update | Candidate | Adds contract-driven architecture, template body insertion, section contract, and empty-section policy |
+| 1.1 Candidate Update | Candidate | Adds BodySource and SectionSource reference contract for generated body content |

@@ -64,6 +64,7 @@ Generator MAY:
 
 - replace required tokens;
 - include or omit a `@section` block according to section content;
+- insert body and section content supplied by a BodySource or SectionSource contract;
 - validate that a manifest-selected template exists;
 - validate required token availability before generation.
 
@@ -131,6 +132,9 @@ Sections with no generated content SHALL be omitted.
 Templates SHALL NOT emit empty section headers.
 
 Template-level static sections, such as `OptionPrivateModule`, MAY exist outside `{{BODY}}` when they represent structural declarations rather than generated implementation body content.
+
+Body and section content SHOULD be supplied by a BodySource or SectionSource
+contract rather than by template defaults.
 
 ---
 
@@ -264,7 +268,22 @@ Generator SHALL reject a manifest item when its component type, template contrac
 
 ---
 
-# 11. Compatibility
+# 11. Body Source Compatibility
+
+Templates SHALL remain independent of BodySource and SectionSource storage
+formats.
+
+Templates SHALL expose insertion points only.
+
+BodySource and SectionSource artifacts SHALL supply generated body content
+through Generator mediation.
+
+Manifest items MAY reference BodySource and SectionSource artifacts when the
+BodySource / SectionSource Contract is adopted.
+
+---
+
+# 12. Compatibility
 
 This candidate is additive.
 
@@ -274,8 +293,9 @@ Candidate templates SHALL NOT be treated as released templates while stored unde
 
 ---
 
-# 12. Revision History
+# 13. Revision History
 
 | Version | Status | Description |
 |---------|--------|-------------|
 | 1.1 Candidate | Candidate | Defines canonical candidate templates, section contract, body insertion, and manifest-driven template selection. |
+| 1.1 Candidate Update | Candidate | Clarifies that body and section content should be supplied through BodySource and SectionSource contracts. |

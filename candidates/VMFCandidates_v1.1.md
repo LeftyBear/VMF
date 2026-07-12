@@ -107,3 +107,19 @@ Candidate template assets:
 - `candidates/templates/v1.1/InterfaceTemplate.txt`
 - `candidates/templates/v1.1/EnumTemplate.txt`
 - `candidates/templates/v1.1/UserFormTemplate.frm.txt`
+
+### V009 Body Source / Section Source Contract
+
+Status : Proposed
+Priority : High
+Build v1.1 Impact : Not adopted.
+
+A future VMF version SHOULD define BodySource and SectionSource contracts as the
+source of generated implementation body content. Manifest items SHOULD reference
+body and section sources rather than embedding implementation bodies directly.
+Templates SHOULD remain structural and receive generated content only through
+`{{BODY}}` and the Section Contract.
+
+Candidate contract:
+
+- `candidates/BodySourceSectionContract_v1.1_Candidate.md`
