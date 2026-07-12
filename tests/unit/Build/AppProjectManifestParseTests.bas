@@ -14,6 +14,7 @@ Public Sub AppRunProjectManifestParseTests()
     VerifyCurrentManifestParses
     VerifyBlueprintParserCreatesGenerationMetadata
     VerifyBlueprintParserGeneratesManifestContent
+    VerifyBlueprintParserRejectsEmptyLayerManifest
 End Sub
 
 Private Sub VerifyCurrentManifestParses()
@@ -113,6 +114,16 @@ Private Sub VerifyBlueprintParserGeneratesManifestContent()
     AssertTrue FileSystem.FileExists(Item.InfGetTemplatePath()), "Generated manifest should preserve an existing template path."
 End Sub
 
+Private Sub VerifyBlueprintParserRejectsEmptyLayerManifest()
+    Dim Parser As Build_BlueprintParser
+    Dim Result As ComResult
+
+    Set Parser = New Build_BlueprintParser
+    Set Result = Parser.BuildInitializeFromContent(CreateBlueprintContentWithEmptyLayer())
+
+    AssertTrue Result.IsFailure, "Empty generation layer should not parse as a valid blueprint."
+End Sub
+
 Private Function CreateBlueprintContent() As String
     CreateBlueprintContent = _
         "blueprint:" & vbCrLf & _
@@ -129,6 +140,20 @@ Private Function CreateBlueprintContent() As String
         "    Classes:" & vbCrLf & _
         "      - Subject" & vbCrLf & _
         "      - Teacher"
+End Function
+
+Private Function CreateBlueprintContentWithEmptyLayer() As String
+    CreateBlueprintContentWithEmptyLayer = _
+        "blueprint:" & vbCrLf & _
+        "  name: SchoolTimetable" & vbCrLf & _
+        "  version: 1.1" & vbCrLf & _
+        "layers:" & vbCrLf & _
+        "  - Core" & vbCrLf & _
+        "  - Domain" & vbCrLf & _
+        "modules:" & vbCrLf & _
+        "  Domain:" & vbCrLf & _
+        "    Classes:" & vbCrLf & _
+        "      - Subject"
 End Function
 
 Private Function ReadCurrentManifestContent() As String

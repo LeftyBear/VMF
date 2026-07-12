@@ -104,6 +104,9 @@ Public Function BuildGenerateManifestContent(ByVal LayerName As String) As Strin
 
     Content = "# ModuleName,ModuleType,LayerName,TemplatePath"
     Set Items = BuildGetLayerItems(LayerName)
+    If Items.Count = 0 Then
+        Err.Raise ComErrInvalidArgument, "Build_BlueprintParser", "Blueprint layer contains no generation modules: " & LayerName
+    End If
 
     For Each Item In Items
         Content = Content & vbCrLf & FormatManifestItem(Item)
@@ -274,6 +277,8 @@ Private Sub AddModuleItem(ByVal LayerName As String, ByVal GroupName As String, 
 End Sub
 
 Private Sub ValidateBlueprint()
+    Dim LayerName As Variant
+
     RequireSection SectionBlueprint
     RequireSection SectionLayers
     RequireSection SectionModules
@@ -288,6 +293,12 @@ Private Sub ValidateBlueprint()
     If This.ItemKeys.Count = 0 Then
         Err.Raise ComErrInvalidArgument, "Build_BlueprintParser", "Blueprint contains no generation modules."
     End If
+
+    For Each LayerName In This.DefinedLayers.Keys
+        If Not This.ItemsByLayer.Exists(CStr(LayerName)) Then
+            Err.Raise ComErrInvalidArgument, "Build_BlueprintParser", "Blueprint generation layer contains no modules: " & CStr(LayerName)
+        End If
+    Next LayerName
 End Sub
 
 Private Sub RegisterLayer(ByVal LayerName As String)
