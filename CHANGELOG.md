@@ -18,6 +18,7 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Added VMF v1.1 phase inventory documentation in `docs/development/VMF_v1.1_PhaseInventory.md`.
 - Added Build v1.1 release planning documentation in `docs/development/Build_v1.1_ReleasePlan.md`.
 - Added Build v1.1 RC1 and official release documentation.
+- Added generated SchoolTimetable application class stubs from the application manifest.
 
 ## Changed
 
@@ -29,6 +30,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Added Build v1.1 post-release verification evidence.
 - Archived Build v1.1 candidate dispositions and noted Build v1.1 impacts on VMF v1.1 candidates.
 - Corrected Build v1.1 post-release verification to reference the moved SchoolTimetable manifest and recorded the VMF audit result.
+- Updated the SchoolTimetable manifest for Build v1.1 and `applications/SchoolTimetable/src` layer paths.
+- Updated VMF generation and audit tooling to support the moved SchoolTimetable application manifest.
+- Updated Build v1.1 post-release verification with the passing SchoolTimetable VMF audit result.
 - Consolidated tests under `tests/` and updated `tools/test/run-tests.ps1` for the reorganized test layout.
 - Moved Build templates to `templates/` and updated Build manifest template references.
 - Moved Build release artifacts under `dist/release/Build/v1.0.2/`.
