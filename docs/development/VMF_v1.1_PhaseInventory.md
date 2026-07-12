@@ -268,9 +268,11 @@ generation target and packaging boundary.
 
 # 5. Current Decision
 
-Build.xlam is ready to proceed with Build v1.1 candidate adoption planning.
+Build.xlam is ready to proceed with Build v1.1 candidate adoption planning and
+RC1 preparation.
 
 The immediate next task should be:
 
-> Review Build v1.1 candidate implementation and decide whether to promote it
-> into a formal release plan.
+> Review Build v1.1 candidate implementation, confirm the RC1 scope, and follow
+> the Candidate -> RC1 -> official release path recorded in
+> `docs/development/Build_v1.1_ReleasePlan.md`.
