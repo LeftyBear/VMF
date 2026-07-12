@@ -34,7 +34,7 @@ No changes were made under `specs/`.
 |-----------|--------|----------|
 | B001 Blueprint Parser | Completed | `Build_BlueprintParser` parses blueprint text into `ManifestItem` metadata. |
 | B002 Manifest Auto Generation | Completed | `Build_BlueprintParser.BuildGenerateManifestContent` emits manifest-format entries. |
-| B004 Generate Preview | Completed | `AppPreviewBuildLayer` returns generated source previews without creating VBProject components. |
+| B004 Generate Preview | Completed | `AppPreviewBuildLayer` returns `ComResult` status and generated source previews without creating VBProject components. |
 | B007 Template Validation | Completed | `InfValidateTemplateFile` validates template files before generation. |
 | B008 Manifest Validation | Completed | `InfValidateManifestFile` validates manifest files before manifest-driven generation. |
 | B011 Custom Layer Manifest Generation | Completed | Manifest items accept valid custom layer identifiers, including `Core`. |
@@ -106,8 +106,8 @@ Covered areas:
 
 # 7. Known Non-Blocking Notes
 
-- B004 preview currently returns generated source text as a string. It does not
-  introduce a richer preview result model.
+- B004 preview returns operation status through `ComResult` and preview text
+  through an explicit output argument.
 - The preview test validates non-mutating behavior by asserting preview output
   shape and absence of mutation-result messages. It does not remove or inspect
   imported runtime modules, because doing so can destabilize the Excel/VBE test
