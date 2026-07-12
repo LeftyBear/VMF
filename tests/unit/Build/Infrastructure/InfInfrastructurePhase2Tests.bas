@@ -35,6 +35,7 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifyFileSystemOperations
     VerifyTemplateValidation
     VerifyTemplateDrivenGeneration
+    VerifyBodyInsertionAndSectionContract
     VerifyCustomLayerManifestGeneration
     VerifyBuildManifestFormatCoverage
     VerifyManifestTemplatePathResolution
@@ -83,6 +84,48 @@ Private Sub VerifyTemplateDrivenGeneration()
     AssertTrue InStr(1, GeneratedCode, "Option Explicit", vbTextCompare) > 0, "Generated code should include Option Explicit."
     AssertTrue InStr(1, GeneratedCode, "Module: VMF_TestTemplate", vbTextCompare) > 0, "Generated code should include the module header."
     AssertTrue InStr(1, GeneratedCode, "Layer: Application", vbTextCompare) > 0, "Generated code should include the canonical layer token replacement result."
+End Sub
+
+Private Sub VerifyBodyInsertionAndSectionContract()
+    Dim TemplateProvider As InfTemplateProvider
+    Dim Replacer As InfTokenReplacer
+    Dim Template As InfTemplate
+    Dim Manifest As Object
+    Dim GeneratedCode As String
+    Dim TemplateText As String
+
+    Set TemplateProvider = New InfTemplateProvider
+    TemplateProvider.InfInitialize New InfFileSystemProvider
+    Set Replacer = New InfTokenReplacer
+    Set Manifest = CreateObject("Scripting.Dictionary")
+
+    Manifest("ModuleName") = "ContractModule"
+    Manifest("Layer") = "Application"
+    Manifest("BODY") = "Public Sub Run()" & vbCrLf & "End Sub"
+    TemplateText = "Option Explicit" & vbCrLf & _
+        "' Module: {{ModuleName}}" & vbCrLf & _
+        "' Layer: {{Layer}}" & vbCrLf & _
+        "{{BODY}}"
+
+    Set Template = TemplateProvider.InfCreateTemplateFromText("BodyTemplate", TemplateText)
+    GeneratedCode = Replacer.InfReplaceTokens(Template, Manifest)
+
+    AssertTrue InStr(1, GeneratedCode, "Public Sub Run()", vbTextCompare) > 0, "{{BODY}} should insert non-empty body content."
+    AssertFalse InStr(1, GeneratedCode, "{{BODY}}", vbTextCompare) > 0, "{{BODY}} token should not remain in generated output."
+
+    Manifest.Remove "BODY"
+    TemplateText = "Option Explicit" & vbCrLf & _
+        "' @section BODY" & vbCrLf & _
+        "{{BODY}}" & vbCrLf & _
+        "' @endsection" & vbCrLf & _
+        "Private Const Marker As String = ""done"""
+
+    Set Template = TemplateProvider.InfCreateTemplateFromText("SectionTemplate", TemplateText)
+    GeneratedCode = Replacer.InfReplaceTokens(Template, Manifest)
+
+    AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Empty @section markers should not be generated."
+    AssertFalse InStr(1, GeneratedCode, "{{BODY}}", vbTextCompare) > 0, "Empty @section body placeholder should not be generated."
+    AssertTrue InStr(1, GeneratedCode, "Private Const Marker", vbTextCompare) > 0, "Content outside empty @section should remain."
 End Sub
 
 Private Sub VerifyCustomLayerManifestGeneration()
