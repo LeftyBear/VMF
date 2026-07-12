@@ -67,6 +67,17 @@ A release should be created only after:
 
 ---
 
+## Current Releases
+
+| Product | Current Release | Release Report | Artifact |
+|---------|-----------------|----------------|----------|
+| VMF | v1.0 | `docs/releases/VMF_v1.0_ReleaseReport.md` | N/A |
+| Build.xlam | v1.1.0 | `docs/releases/Build_v1.1_ReleaseReport.md` | `dist/release/Build/v1.1/Build.xlam` |
+
+Build.xlam v1.0.1 and v1.0.2 remain historical official releases.
+
+---
+
 ## Compatibility
 
 Minor and Patch releases should maintain backward compatibility whenever possible.
