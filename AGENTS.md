@@ -23,11 +23,11 @@ The following documents define the project.
 
 Priority (highest first):
 
-1. Canon v2.0
-2. VMF v1.0
-3. Module Specifications
-4. API Specifications
-5. Source Code
+1. Canon v2.0 (`specs/build/Canon_v2.0.md`)
+2. VMF v1.0 (`specs/vmf/VMF_v1.0.md`)
+3. Build and architecture specifications (`specs/build/`)
+4. Module and API specifications (`specs/build/`)
+5. Source Code (`src/`)
 
 If multiple documents conflict, the higher-priority document SHALL take precedence.
 
@@ -52,18 +52,30 @@ The current implementation MUST remain compliant with VMF v1.0.
 # 4. Repository Structure
 
 ```
-specs/
-    canon/
+specs/          Official Build and VMF specifications
+    build/      Build canon, architecture, API, module, and release specifications
+    vmf/        VMF specifications
+
+src/            Source code
+    Build/      Build source
+    VMF/        VMF source
+
+tests/          Unit and integration tests
+    unit/
+    integration/
+
+tools/          Build, test, and VMF tools
+    build/
+    test/
     vmf/
-    architecture/
-    api/
-    modules/
 
-src/
-
-tests/
-
-tools/
+candidates/     Future-version candidate proposals
+docs/           Development and release documentation
+templates/      Generation templates
+prompts/        AI prompts
+assets/         Static assets
+applications/   Applications that use VMF
+dist/           Generated distribution artifacts only
 ```
 
 The AI MUST place files in the appropriate directory.
@@ -79,6 +91,10 @@ Source code belongs only under `src`.
 Tests belong only under `tests`.
 
 Tools belong only under `tools`.
+
+Future-version candidate proposals belong only under `candidates`.
+
+Generated distribution artifacts belong only under `dist`.
 
 The AI MUST NOT mix specifications with implementation.
 
