@@ -103,14 +103,30 @@ Passed runners:
 
 # 6. VMF Audit Note
 
-`tools/vmf/audit-vmf.ps1` expects `specs/vmf/manifest.yaml` by default.
+`manifest.yaml` has moved to:
 
-That manifest is not present in the current repository state, so the VMF v1.0
-generated-output audit was not executed as part of this Build v1.1 post-release
-verification.
+```text
+applications/SchoolTimetable/manifest.yaml
+```
+
+The VMF audit was executed with the moved manifest:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\vmf\audit-vmf.ps1 -ManifestPath applications\SchoolTimetable\manifest.yaml -OutputRoot applications\SchoolTimetable\src
+```
+
+Result:
+
+- VMF v1.0 audit result: FAIL
+- Each application layer currently contains no generated VBA files.
 
 This does not block Build v1.1 verification because the Build v1.1 release
 artifact and VBA test suite were verified independently.
+
+Follow-up candidate:
+
+- Align VMF/application audit tooling with the application manifest format and
+  generated application source layout.
 
 ---
 
