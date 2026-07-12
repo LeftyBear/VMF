@@ -2,7 +2,9 @@
 # Uses Excel COM automation to import .bas/.cls from src and save as an XLAM add-in.
 
 param(
-    [string]$OutputPath
+    [string]$OutputPath,
+    [string]$BuildVersion = "1.0.2",
+    [string]$ReleaseType = "Release"
 )
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -208,12 +210,12 @@ function Set-AddInReleaseMetadata {
 }
 
 try {
-    Set-AddInReleaseMetadata -Path $output -BuildVersion "1.0.2" -ReleaseType "Release"
+    Set-AddInReleaseMetadata -Path $output -BuildVersion $BuildVersion -ReleaseType $ReleaseType
 }
 catch {
     Write-Error "Failed to record release metadata: $_"
     exit 1
 }
-Write-Host "Recorded release metadata: Build Version=1.0.2; Release Type=Release"
+Write-Host "Recorded release metadata: Build Version=$BuildVersion; Release Type=$ReleaseType"
 
 Write-Host "Build script finished."
