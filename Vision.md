@@ -1,6 +1,7 @@
 # Vision
 
-**Project:** Build.xlam
+**Repository:** VMF
+**Project:** Build.xlam / VMF
 **Version:** 2.0
 **Status:** Frozen
 
@@ -8,15 +9,17 @@
 
 # 1. Purpose
 
-Build.xlam is the development platform for creating maintainable, extensible, and reusable VBA applications.
+The VMF repository exists to maintain the Build.xlam development platform, the VMF architecture, and applications that are built on top of VMF.
 
-Its purpose is not only to build a single Excel add-in, but to establish a standardized application architecture, development workflow, and engineering practices that enable long-term maintenance and continuous evolution.
+Build.xlam is the development platform for creating maintainable, extensible, and reusable VBA applications. VMF provides the frozen implementation contract and generated project foundation that apply the Build.xlam architectural principles to concrete VBA application structures.
+
+The purpose of this repository is not only to build a single Excel add-in, but to establish a standardized application architecture, development workflow, release structure, and engineering practice that enable long-term maintenance and continuous evolution.
 
 ---
 
 # 2. Vision
 
-Build.xlam aims to become a complete application framework for VBA development by providing:
+Build.xlam and VMF aim to provide a complete foundation for VBA application development by providing:
 
 * A clear layered architecture.
 * Strong separation of responsibilities.
@@ -24,6 +27,7 @@ Build.xlam aims to become a complete application framework for VBA development b
 * Predictable dependency management.
 * Consistent coding standards.
 * Automated development support.
+* Reproducible release artifacts.
 * High maintainability.
 * Long-term extensibility.
 
@@ -52,96 +56,144 @@ The project is based on the following principles:
 The primary objectives are:
 
 1. Build a reusable VBA application framework.
-2. Standardize application architecture.
-3. Standardize module design.
-4. Standardize class design.
-5. Standardize interface design.
-6. Standardize dependency management.
-7. Standardize naming conventions.
-8. Standardize error handling.
-9. Support automated building and deployment.
-10. Enable future expansion without redesign.
+2. Maintain VMF as a stable implementation contract.
+3. Standardize application architecture.
+4. Standardize module design.
+5. Standardize class design.
+6. Standardize interface design.
+7. Standardize dependency management.
+8. Standardize naming conventions.
+9. Standardize error handling.
+10. Support automated building, generation, testing, and deployment.
+11. Enable future expansion without redesign.
 
 ---
 
 # 5. Scope
 
-Build.xlam provides:
+The repository contains:
 
-* Common libraries
-* Infrastructure services
-* Domain support
-* Application services
-* Presentation support
-* Build automation
-* Development utilities
-* Configuration management
+* Build.xlam source and release artifacts.
+* VMF specifications and generated VMF project structure.
+* Common libraries.
+* Infrastructure services.
+* Domain support.
+* Application services.
+* Presentation support.
+* Build automation.
+* VMF generation and audit tooling.
+* Development utilities.
+* Configuration and manifest management.
+* Candidate proposals for future versions.
+* Applications that use VMF.
 
-Business-specific implementations are intentionally outside the scope of this project.
+Business-specific implementations are intentionally outside the Build.xlam and VMF framework scope, except where they are placed under `applications/` as consumers of VMF.
 
 ---
 
-# 6. Quality Goals
+# 6. Current Repository Structure
+
+The current repository structure is organized as follows:
+
+```text
+specs/          Official Build and VMF specifications
+    build/      Build canon, architecture, API, module, and release specifications
+    vmf/        VMF specifications
+
+src/            Source code and generated project structures
+    Build/      Build.xlam source
+    VMF/        VMF generated structure and layer placeholders
+
+tests/          Unit and integration tests
+    unit/
+    integration/
+
+tools/          Build, test, and VMF tools
+    build/
+    test/
+    vmf/
+
+candidates/     Future-version candidate proposals
+docs/           Development and release documentation
+templates/      Generation templates
+prompts/        AI prompts
+assets/         Static assets
+applications/   Applications that use VMF
+dist/           Generated distribution artifacts only
+```
+
+Released Build artifacts are stored under `dist/release/Build/`, such as `dist/release/Build/v1.0.2/Build.xlam`.
+
+---
+
+# 7. Quality Goals
 
 The framework should prioritize:
 
-* Maintainability
-* Extensibility
-* Readability
-* Reliability
-* Consistency
-* Testability
-* Reusability
-* Predictability
+* Maintainability.
+* Extensibility.
+* Readability.
+* Reliability.
+* Consistency.
+* Testability.
+* Reusability.
+* Predictability.
 
 Performance optimization should never compromise architectural integrity.
 
 ---
 
-# 7. Target Architecture
+# 8. Target Architecture
 
-The framework adopts a layered architecture consisting of:
+The standard architecture follows the layered model defined by `specs/build/LayerSpecification_v2.0.md`:
 
-* Common
-* Infrastructure
-* Domain
-* Application
-* Presentation
-* Build
+* Presentation.
+* Application.
+* Domain.
+* Infrastructure.
+* Common.
 
-Dependencies shall always flow in a single direction.
+Dependencies shall always flow in a single permitted direction.
 
 Circular dependencies are prohibited.
 
+Build.xlam is the development platform and tooling subsystem for generating, building, testing, and releasing VMF-based projects. It is not an additional standard application layer in the layer model.
+
+VMF v1.0 is the frozen implementation contract beneath Canon v2.0 and the applicable Build specifications.
+
 ---
 
-# 8. Governance
+# 9. Governance
 
-All specifications shall conform to the project canon.
+All specifications shall conform to the project canon and the applicable specification hierarchy.
 
-The following documents define the authoritative design:
+The following documents define the authoritative design and implementation contract:
 
-1. Canon_v2.0.md
-2. Architecture_v2.0.md
-3. SpecificationHierarchy_v2.0.md
+1. `specs/build/Canon_v2.0.md`
+2. `specs/build/Architecture_v2.0.md`
+3. `specs/build/SpecificationHierarchy_v2.0.md`
+4. `specs/vmf/VMF_v1.0.md`
 
 Lower-level specifications shall not contradict higher-level specifications.
 
+Candidate proposals under `candidates/` shall not modify frozen specifications until formally adopted.
+
 ---
 
-# 9. Success Criteria
+# 10. Success Criteria
 
 The project is considered successful when:
 
 * New modules can be implemented using only the published specifications.
-* Public APIs remain stable across versions.
+* Public APIs remain stable across frozen versions.
 * Internal implementations can evolve independently.
 * New functionality can be added with minimal impact.
-* Development practices remain consistent across the entire project.
+* Development practices remain consistent across the entire repository.
+* Release artifacts are reproducible from their authoritative sources.
 
 ---
 
-# 10. Future Evolution
+# 11. Future Evolution
 
 Major architectural changes shall be introduced only through new major versions.
 
@@ -149,32 +201,31 @@ Backward-compatible improvements should be introduced through minor versions.
 
 Experimental ideas shall be documented separately as candidate proposals and shall not modify frozen specifications.
 
+VMF v1.0 is frozen. Enhancements, redesigns, incompatible corrections, or architectural improvements shall be proposed as VMF v1.1 Candidate or a later candidate version until formally adopted.
+
 ---
 
-# 11. Document Relationship
+# 12. Document Relationship
 
-```
+```text
 Vision
-    │
-    ▼
-Canon
-    │
-    ▼
-Architecture
-    │
-    ▼
-Specification Hierarchy
-    │
-    ▼
-Detailed Specifications
+  -> Canon
+      -> Architecture
+          -> Specification Hierarchy
+              -> Build Specifications
+              -> VMF Specification
+                  -> Source, Tests, Tools, Releases, and Applications
 ```
 
 ---
 
-# 12. References
+# 13. References
 
-* Canon_v2.0.md
-* Architecture_v2.0.md
-* SpecificationHierarchy_v2.0.md
-* Glossary_v2.0.md
-* Manifest_v2.0.md
+* `specs/build/Canon_v2.0.md`
+* `specs/build/Architecture_v2.0.md`
+* `specs/build/SpecificationHierarchy_v2.0.md`
+* `specs/build/LayerSpecification_v2.0.md`
+* `specs/build/Glossary_v2.0.md`
+* `specs/build/Manifest_v2.0.md`
+* `specs/vmf/VMF_v1.0.md`
+* `AGENTS.md`
