@@ -28,6 +28,7 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Added a release report index and updated versioning documentation with the current Build v1.1 release.
 - Added Build v1.1 post-release verification evidence.
 - Archived Build v1.1 candidate dispositions and noted Build v1.1 impacts on VMF v1.1 candidates.
+- Corrected Build v1.1 post-release verification to reference the moved SchoolTimetable manifest and recorded the VMF audit result.
 - Consolidated tests under `tests/` and updated `tools/test/run-tests.ps1` for the reorganized test layout.
 - Moved Build templates to `templates/` and updated Build manifest template references.
 - Moved Build release artifacts under `dist/release/Build/v1.0.2/`.
