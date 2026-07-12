@@ -12,7 +12,7 @@ Option Explicit
 '=========================================================================
 ' Class: InfGenerator
 ' Layer: Infrastructure
-' Responsibility: Orchestrate template-driven generation.
+' Responsibility: Mediate manifest and template contracts for generation.
 ' Dependencies: Common, Infrastructure
 '==========================================================================
 

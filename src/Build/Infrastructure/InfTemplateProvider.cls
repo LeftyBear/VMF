@@ -138,4 +138,9 @@ Private Sub ValidateRequiredTemplateTokens(ByVal Template As InfTemplate)
     If InStr(1, TemplateText, "{Layer}", vbBinaryCompare) = 0 Then
         Err.Raise ComErrInvalidArgument, "ValidateRequiredTemplateTokens", "Template is missing required token: {Layer}"
     End If
+
+    If InStr(1, TemplateText, "{{BODY}}", vbBinaryCompare) = 0 And _
+        InStr(1, TemplateText, "{BODY}", vbBinaryCompare) = 0 Then
+        Err.Raise ComErrInvalidArgument, "ValidateRequiredTemplateTokens", "Template is missing required token: {{BODY}}"
+    End If
 End Sub
