@@ -1,6 +1,53 @@
 # Changelog
 
-All notable documentation changes for the Build.xlam official documentation set are recorded in this file.
+All notable Build.xlam, VMF, documentation, release artifact, tooling, and test changes are recorded in this file.
+
+---
+
+# 2026-07-12
+
+## Added
+
+- Added the application workspace structure under `applications/SchoolTimetable/`, including manifest, source layer placeholders, docs, and tests.
+- Added `.vmf-root` and `src/Build/Common/BuildPathResolver.bas` to support repository-root based path resolution.
+- Added project manifest parsing support in `src/Build/Application/Build_ProjectManifest.cls`.
+- Added project manifest parse regression coverage in `tests/unit/Build/AppProjectManifestParseTests.bas`.
+- Added Build blueprint manifest parsing and generation support through `src/Build/Application/Build_BlueprintParser.cls`.
+- Added Build layer preview generation support.
+- Added Build v1.1 candidate readiness documentation in `docs/development/Build_v1.1_CandidateReadinessAudit.md`.
+- Added VMF v1.1 phase inventory documentation in `docs/development/VMF_v1.1_PhaseInventory.md`.
+- Added Build v1.1 release planning documentation in `docs/development/Build_v1.1_ReleasePlan.md`.
+
+## Changed
+
+- Reorganized repository documentation and specifications under `docs/`, `specs/`, `candidates/`, and `templates/`.
+- Updated `README.md` and `AGENTS.md` to describe the optimized repository layout and AI development rules.
+- Consolidated tests under `tests/` and updated `tools/test/run-tests.ps1` for the reorganized test layout.
+- Moved Build templates to `templates/` and updated Build manifest template references.
+- Moved Build release artifacts under `dist/release/Build/v1.0.2/`.
+- Updated Build tooling and tests to resolve paths from the repository root.
+- Updated Build manifest files to align with resolved template paths, project manifests, and layer manifests.
+- Updated `AppGeneratorService` to use project manifest input during project generation.
+- Updated the Build preview API to return `ComResult`.
+- Updated Build v1.1 candidate notes, readiness audit, and phase inventory with RC1 readiness and next-step status.
+- Regenerated the Build v1.0.2 add-in artifact after path-resolution and manifest changes.
+
+## Fixed
+
+- Fixed Build workspace and release artifact path resolution when running from different current directories.
+- Fixed manifest template path resolution in `InfManifestProvider` and related Build manifests.
+- Fixed project manifest parser support for v1 YAML manifest format.
+- Fixed project manifest template path resolution in `Build_ProjectManifest`.
+- Hardened Build manifest validation for missing or invalid manifest and template values.
+- Rejected empty blueprint generation layers and added regression coverage.
+- Made missing-template-path infrastructure coverage runnable in the consolidated test layout.
+
+## Removed
+
+- Removed obsolete `prompt/`, `test/`, and top-level source placeholder directories after repository layout consolidation.
+- Removed obsolete top-level `src/Common`, `src/Infrastructure`, and `src/UI` placeholders.
+- Removed generated VMF source placeholders and generated sample source modules from `src/VMF/`, leaving layer placeholders for future generation.
+- Removed obsolete `dist/release/VMF.xlam`.
 
 ---
 
@@ -14,7 +61,7 @@ All notable documentation changes for the Build.xlam official documentation set 
 ## Changed
 
 - Updated `tools/build/build.ps1` to record Build Version = 1.0.2 and Release Type = Release in Build.xlam.
-- Added `releases/Build_v1.0.2_ReleaseReport.md` and updated README.md to reference the patch release report.
+- Added `docs/releases/Build_v1.0.2_ReleaseReport.md` and updated README.md to reference the patch release report.
 
 ## Released
 
@@ -35,8 +82,8 @@ All notable documentation changes for the Build.xlam official documentation set 
 - Updated BuildReleaseProcedure_v1.0.md to define the 14 Step Build v1.0.1 release audit.
 - Updated Release Procedure steps to use the nine required items, including Inspection Targets, Result Code, and Failure Handling.
 - Updated BuildReleaseChecklist_v1.0.md to record final judgments for the 14 Step release audit.
-- Updated BuildDocumentationStandard_v1.0.md, BuildBlueprint_v1.0.1.md, README.md, BuildCandidates_v1.1.md, and releases/Build_v1.0.1_ReleaseReport.md for Result Code Standard, Generate Summary evidence, Version Verification, PowerShell-built Build.xlam audit target, and FAIL re-audit handling.
-- Updated BuildReleaseChecklist_v1.0.md and releases/Build_v1.0.1_ReleaseReport.md with final PASS results and APPROVED release decision.
+- Updated BuildDocumentationStandard_v1.0.md, BuildBlueprint_v1.0.1.md, README.md, BuildCandidates_v1.1.md, and docs/releases/Build_v1.0.1_ReleaseReport.md for Result Code Standard, Generate Summary evidence, Version Verification, PowerShell-built Build.xlam audit target, and FAIL re-audit handling.
+- Updated BuildReleaseChecklist_v1.0.md and docs/releases/Build_v1.0.1_ReleaseReport.md with final PASS results and APPROVED release decision.
 - Updated tools/build/build.ps1 to record Build Version = 1.0.1 and Release Type = Release in Build.xlam.
 
 ## Released
