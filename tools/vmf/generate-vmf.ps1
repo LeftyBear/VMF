@@ -11,7 +11,14 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $workspaceRoot = Resolve-Path (Join-Path $scriptDir "..\..")
 
 if ([string]::IsNullOrWhiteSpace($ManifestPath)) {
-    $ManifestPath = Join-Path $workspaceRoot "specs\vmf\manifest.yaml"
+    $defaultManifestPath = Join-Path $workspaceRoot "specs\vmf\manifest.yaml"
+    $applicationManifestPath = Join-Path $workspaceRoot "applications\SchoolTimetable\manifest.yaml"
+    if (Test-Path $defaultManifestPath) {
+        $ManifestPath = $defaultManifestPath
+    }
+    else {
+        $ManifestPath = $applicationManifestPath
+    }
 }
 
 $manifestFullPath = Resolve-Path $ManifestPath
