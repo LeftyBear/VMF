@@ -2,7 +2,7 @@ application:
   name: SchoolTimetable
   version: 1.0.0
   vmf_version: 1.0
-  build_version: 1.0.2
+  build_version: 1.1.0
 
 generation:
   common: true
@@ -20,17 +20,17 @@ policy:
 
 layers:
   common:
-    path: Source/Common
+    path: src/Common
   core:
-    path: Source/Core
+    path: src/Core
   domain:
-    path: Source/Domain
+    path: src/Domain
   application:
-    path: Source/Application
+    path: src/Application
   infrastructure:
-    path: Source/Infrastructure
+    path: src/Infrastructure
   presentation:
-    path: Source/Presentation
+    path: src/Presentation
 
 domain:
   entities:
