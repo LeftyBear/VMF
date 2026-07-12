@@ -26,7 +26,7 @@ Private Sub VerifyCurrentManifestParses()
     Set Result = Manifest.BuildInitializeFromContent(ReadCurrentManifestContent())
 
     AssertTrue Result.IsSuccess, "Current manifest.yaml should parse."
-    AssertEquals "Source", Manifest.BuildGetSourceRoot(), "Source root should be derived from layer paths."
+    AssertEquals "src", Manifest.BuildGetSourceRoot(), "Source root should be derived from layer paths."
     AssertTrue Manifest.BuildHasLayer("Common"), "Common layer should be defined."
     AssertTrue Manifest.BuildHasLayer("Core"), "Core layer should be defined."
     AssertTrue Manifest.BuildIsGenerationEnabled("Core"), "Core generation flag should parse."
