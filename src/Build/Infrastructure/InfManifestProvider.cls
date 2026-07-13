@@ -92,6 +92,7 @@ Public Function InfValidateManifestFile(ByVal ManifestPath As String) As ComResu
     On Error GoTo ErrHandler
 
     Set Items = InfLoadManifestItems(ManifestPath)
+    ValidateSourcePaths Items
 
     If Items.Count = 0 Then
         Err.Raise ComErrInvalidState, "InfValidateManifestFile", "Manifest contains no generation items."
@@ -209,6 +210,33 @@ Private Sub AddSectionSourceFromField( _
     SectionName = Trim$(Left$(FieldText, SeparatorIndex - 1))
     SectionSourcePath = Trim$(Mid$(FieldText, SeparatorIndex + 1))
     Item.InfAddSectionSourcePath SectionName, ResolveManifestRelativePath(SectionSourcePath, ManifestPath)
+End Sub
+
+Private Sub ValidateSourcePaths(ByVal Items As Collection)
+    Dim Item As ManifestItem
+    Dim BodySourcePath As String
+    Dim SectionSourcePaths As Object
+    Dim SectionName As Variant
+
+    If Items Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "ValidateSourcePaths", "Manifest items are required."
+    End If
+
+    For Each Item In Items
+        BodySourcePath = Item.InfGetBodySourcePath()
+        If Not ComIsBlankText(BodySourcePath) Then
+            If Not FileSystemProvider.InfFileExists(BodySourcePath) Then
+                Err.Raise ComErrInvalidArgument, "ValidateSourcePaths", "BodySourcePath does not exist: " & BodySourcePath
+            End If
+        End If
+
+        Set SectionSourcePaths = Item.InfGetSectionSourcePaths()
+        For Each SectionName In SectionSourcePaths.Keys
+            If Not FileSystemProvider.InfFileExists(CStr(SectionSourcePaths.Item(CStr(SectionName)))) Then
+                Err.Raise ComErrInvalidArgument, "ValidateSourcePaths", "SectionSourcePath does not exist: " & CStr(SectionSourcePaths.Item(CStr(SectionName)))
+            End If
+        Next SectionName
+    Next Item
 End Sub
 
 Private Function IsManifestDataLine(ByVal LineText As String) As Boolean

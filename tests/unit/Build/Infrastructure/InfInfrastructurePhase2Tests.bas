@@ -40,6 +40,7 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifySectionSourceManifestGeneration
     VerifyMultipleSectionSourceManifestGeneration
     VerifyBodyAndSectionSourceManifestGeneration
+    VerifyManifestSourcePathValidation
     VerifyCustomLayerManifestGeneration
     VerifyBuildManifestFormatCoverage
     VerifyManifestTemplatePathResolution
@@ -360,6 +361,39 @@ Private Sub VerifyBodyAndSectionSourceManifestGeneration()
     AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Body + SectionSource generation should remove section markers."
     AssertFalse InStr(1, GeneratedCode, "{{PublicApi}}", vbTextCompare) > 0, "Section token should be removed."
     AssertFalse InStr(1, GeneratedCode, "{{BODY}}", vbTextCompare) > 0, "Body token should be removed."
+End Sub
+
+Private Sub VerifyManifestSourcePathValidation()
+    Dim FileSystem As Object
+    Dim FileProvider As InfFileSystemProvider
+    Dim ManifestProvider As InfManifestProvider
+    Dim ManifestDir As String
+    Dim BodyManifestPath As String
+    Dim SectionManifestPath As String
+    Dim BodyResult As ComResult
+    Dim SectionResult As ComResult
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "source-path-validation")
+    BodyManifestPath = FileSystem.BuildPath(ManifestDir, "MissingBodySource.manifest")
+    SectionManifestPath = FileSystem.BuildPath(ManifestDir, "MissingSectionSource.manifest")
+
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText BodyManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath,BodySourcePath" & vbCrLf & _
+        "MissingBodyModule,StandardModule,Application," & ResolveTemplatePath() & ",body\MissingBody.vba"
+    FileProvider.InfWriteText SectionManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath,BodySourcePath,SectionSources" & vbCrLf & _
+        "MissingSectionModule,StandardModule,Application," & ResolveTemplatePath() & ",,PublicApi=sections\MissingPublicApi.vba"
+
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set BodyResult = ManifestProvider.InfValidateManifestFile(BodyManifestPath)
+    Set SectionResult = ManifestProvider.InfValidateManifestFile(SectionManifestPath)
+
+    AssertTrue BodyResult.IsFailure, "Missing BodySourcePath should fail manifest validation."
+    AssertTrue InStr(1, BodyResult.Message, "BodySourcePath does not exist", vbTextCompare) > 0, "BodySource validation should identify the missing source."
+    AssertTrue SectionResult.IsFailure, "Missing SectionSourcePath should fail manifest validation."
+    AssertTrue InStr(1, SectionResult.Message, "SectionSourcePath does not exist", vbTextCompare) > 0, "SectionSource validation should identify the missing source."
 End Sub
 
 Private Sub VerifyCustomLayerManifestGeneration()
