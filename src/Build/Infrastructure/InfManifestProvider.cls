@@ -93,6 +93,7 @@ Public Function InfValidateManifestFile(ByVal ManifestPath As String) As ComResu
 
     Set Items = InfLoadManifestItems(ManifestPath)
     ValidateSourcePaths Items
+    ValidateSectionContracts Items
 
     If Items.Count = 0 Then
         Err.Raise ComErrInvalidState, "InfValidateManifestFile", "Manifest contains no generation items."
@@ -238,6 +239,95 @@ Private Sub ValidateSourcePaths(ByVal Items As Collection)
         Next SectionName
     Next Item
 End Sub
+
+Private Sub ValidateSectionContracts(ByVal Items As Collection)
+    Dim Item As ManifestItem
+    Dim SectionSourcePaths As Object
+    Dim TemplateSections As Object
+    Dim SectionName As Variant
+
+    If Items Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "ValidateSectionContracts", "Manifest items are required."
+    End If
+
+    For Each Item In Items
+        Set SectionSourcePaths = Item.InfGetSectionSourcePaths()
+        If SectionSourcePaths.Count > 0 Then
+            If Not FileSystemProvider.InfFileExists(Item.InfGetTemplatePath()) Then
+                Err.Raise ComErrInvalidArgument, "ValidateSectionContracts", "TemplatePath does not exist: " & Item.InfGetTemplatePath()
+            End If
+
+            Set TemplateSections = ExtractTemplateSections(FileSystemProvider.InfReadText(Item.InfGetTemplatePath()))
+            For Each SectionName In SectionSourcePaths.Keys
+                If Not TemplateSections.Exists(CStr(SectionName)) Then
+                    Err.Raise ComErrInvalidArgument, "ValidateSectionContracts", "Template section does not exist: " & CStr(SectionName)
+                End If
+            Next SectionName
+        End If
+    Next Item
+End Sub
+
+Private Function ExtractTemplateSections(ByVal TemplateText As String) As Object
+    Dim Sections As Object
+    Dim NormalizedText As String
+    Dim SectionStart As Long
+    Dim SectionLineStart As Long
+    Dim SectionLineEnd As Long
+    Dim SectionEnd As Long
+    Dim SectionLine As String
+    Dim SectionName As String
+
+    Set Sections = CreateObject("Scripting.Dictionary")
+    NormalizedText = NormalizeLineBreaks(TemplateText)
+
+    SectionStart = InStr(1, NormalizedText, "@section", vbTextCompare)
+    Do While SectionStart > 0
+        SectionLineStart = InStrRev(NormalizedText, vbLf, SectionStart)
+        If SectionLineStart = 0 Then
+            SectionLineStart = 1
+        Else
+            SectionLineStart = SectionLineStart + 1
+        End If
+
+        SectionLineEnd = InStr(SectionStart, NormalizedText, vbLf, vbBinaryCompare)
+        If SectionLineEnd = 0 Then
+            SectionLineEnd = Len(NormalizedText) + 1
+        End If
+
+        SectionEnd = InStr(SectionLineEnd, NormalizedText, "@endsection", vbTextCompare)
+        If SectionEnd = 0 Then
+            Err.Raise ComErrInvalidArgument, "ExtractTemplateSections", "Template section is missing @endsection."
+        End If
+
+        SectionLine = Mid$(NormalizedText, SectionLineStart, SectionLineEnd - SectionLineStart)
+        SectionName = ParseTemplateSectionName(SectionLine)
+        If Not Sections.Exists(SectionName) Then
+            Sections.Add SectionName, True
+        End If
+
+        SectionStart = InStr(SectionEnd + Len("@endsection"), NormalizedText, "@section", vbTextCompare)
+    Loop
+
+    Set ExtractTemplateSections = Sections
+End Function
+
+Private Function ParseTemplateSectionName(ByVal SectionLine As String) As String
+    Dim MarkerIndex As Long
+    Dim SectionName As String
+
+    MarkerIndex = InStr(1, SectionLine, "@section", vbTextCompare)
+    If MarkerIndex = 0 Then
+        Err.Raise ComErrInvalidArgument, "ParseTemplateSectionName", "Template section marker is invalid."
+    End If
+
+    SectionName = Mid$(SectionLine, MarkerIndex + Len("@section"))
+    SectionName = Replace(SectionName, vbCr, vbNullString)
+    SectionName = Replace(SectionName, vbLf, vbNullString)
+    SectionName = Trim$(SectionName)
+    ComRequireText SectionName, "SectionName", "ParseTemplateSectionName"
+
+    ParseTemplateSectionName = SectionName
+End Function
 
 Private Function IsManifestDataLine(ByVal LineText As String) As Boolean
     If ComIsBlankText(LineText) Then

@@ -41,6 +41,7 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifyMultipleSectionSourceManifestGeneration
     VerifyBodyAndSectionSourceManifestGeneration
     VerifyManifestSourcePathValidation
+    VerifyManifestSectionContractValidation
     VerifyCustomLayerManifestGeneration
     VerifyBuildManifestFormatCoverage
     VerifyManifestTemplatePathResolution
@@ -394,6 +395,40 @@ Private Sub VerifyManifestSourcePathValidation()
     AssertTrue InStr(1, BodyResult.Message, "BodySourcePath does not exist", vbTextCompare) > 0, "BodySource validation should identify the missing source."
     AssertTrue SectionResult.IsFailure, "Missing SectionSourcePath should fail manifest validation."
     AssertTrue InStr(1, SectionResult.Message, "SectionSourcePath does not exist", vbTextCompare) > 0, "SectionSource validation should identify the missing source."
+End Sub
+
+Private Sub VerifyManifestSectionContractValidation()
+    Dim FileSystem As Object
+    Dim FileProvider As InfFileSystemProvider
+    Dim ManifestProvider As InfManifestProvider
+    Dim ManifestDir As String
+    Dim ManifestPath As String
+    Dim TemplatePath As String
+    Dim SectionSourcePath As String
+    Dim Result As ComResult
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "section-contract-validation")
+    ManifestPath = FileSystem.BuildPath(ManifestDir, "MissingTemplateSection.manifest")
+    TemplatePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "templates\NoPublicApiSection.txt"))
+    SectionSourcePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "sections\PublicApi.vba"))
+
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText TemplatePath, _
+        "Option Explicit" & vbCrLf & _
+        "' Module: {{ModuleName}}" & vbCrLf & _
+        "' Layer: {{Layer}}" & vbCrLf & _
+        "{{BODY}}"
+    FileProvider.InfWriteText SectionSourcePath, "Public Sub MissingSection()" & vbCrLf & "End Sub"
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath,BodySourcePath,SectionSources" & vbCrLf & _
+        "MissingSectionModule,StandardModule,Application,templates\NoPublicApiSection.txt,,PublicApi=sections\PublicApi.vba"
+
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set Result = ManifestProvider.InfValidateManifestFile(ManifestPath)
+
+    AssertTrue Result.IsFailure, "Missing template section should fail manifest validation."
+    AssertTrue InStr(1, Result.Message, "Template section does not exist: PublicApi", vbTextCompare) > 0, "Section contract validation should identify the missing section."
 End Sub
 
 Private Sub VerifyCustomLayerManifestGeneration()
