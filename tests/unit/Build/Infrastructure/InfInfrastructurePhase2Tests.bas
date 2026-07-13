@@ -38,6 +38,7 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifyBodyInsertionAndSectionContract
     VerifyBodySourceManifestGeneration
     VerifySectionSourceManifestGeneration
+    VerifyMultipleSectionSourceManifestGeneration
     VerifyCustomLayerManifestGeneration
     VerifyBuildManifestFormatCoverage
     VerifyManifestTemplatePathResolution
@@ -236,6 +237,69 @@ Private Sub VerifySectionSourceManifestGeneration()
     AssertTrue InStr(1, GeneratedCode, "Public Sub RunSectionSource()", vbTextCompare) > 0, "SectionSource content should be inserted into @section."
     AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "SectionSource generation should remove section markers."
     AssertFalse InStr(1, GeneratedCode, "{{PublicApi}}", vbTextCompare) > 0, "SectionSource generation should remove section token."
+End Sub
+
+Private Sub VerifyMultipleSectionSourceManifestGeneration()
+    Dim FileSystem As Object
+    Dim FileProvider As InfFileSystemProvider
+    Dim ManifestProvider As InfManifestProvider
+    Dim Generator As InfGenerator
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim ManifestDir As String
+    Dim ManifestPath As String
+    Dim TemplatePath As String
+    Dim PublicApiPath As String
+    Dim PrivateProceduresPath As String
+    Dim SectionSourcePaths As Object
+    Dim TemplateText As String
+    Dim GeneratedCode As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "multi-section-source")
+    ManifestPath = FileSystem.BuildPath(ManifestDir, "MultiSectionSource.manifest")
+    TemplatePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "templates\MultiSectionTemplate.txt"))
+    PublicApiPath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "sections\PublicApi.vba"))
+    PrivateProceduresPath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "sections\PrivateProcedures.vba"))
+    TemplateText = "Option Explicit" & vbCrLf & _
+        "' Module: {{ModuleName}}" & vbCrLf & _
+        "' Layer: {{Layer}}" & vbCrLf & _
+        "' @section PublicApi" & vbCrLf & _
+        "{{PublicApi}}" & vbCrLf & _
+        "' @endsection" & vbCrLf & _
+        "' @section PrivateProcedures" & vbCrLf & _
+        "{{PrivateProcedures}}" & vbCrLf & _
+        "' @endsection" & vbCrLf & _
+        "{{BODY}}"
+
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText TemplatePath, TemplateText
+    FileProvider.InfWriteText PublicApiPath, "Public Sub RunPublicApi()" & vbCrLf & "End Sub"
+    FileProvider.InfWriteText PrivateProceduresPath, "Private Sub RunPrivateProcedures()" & vbCrLf & "End Sub"
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath,BodySourcePath,SectionSources" & vbCrLf & _
+        "MultiSectionModule,StandardModule,Application,templates\MultiSectionTemplate.txt,,PublicApi=sections\PublicApi.vba,PrivateProcedures=sections\PrivateProcedures.vba"
+
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set Items = ManifestProvider.InfLoadManifestItems(ManifestPath)
+
+    AssertEquals "1", CStr(Items.Count), "Multi SectionSource manifest should load one item."
+
+    Set Item = Items.Item(1)
+    Set SectionSourcePaths = Item.InfGetSectionSourcePaths()
+    AssertEquals "2", CStr(SectionSourcePaths.Count), "Manifest item should expose two SectionSource paths."
+    AssertEquals PublicApiPath, SectionSourcePaths.Item("PublicApi"), "PublicApi SectionSourcePath should resolve from the manifest directory."
+    AssertEquals PrivateProceduresPath, SectionSourcePaths.Item("PrivateProcedures"), "PrivateProcedures SectionSourcePath should resolve from the manifest directory."
+
+    Set Generator = InfCreateGenerator()
+    GeneratedCode = Generator.InfGenerateManifestItem(Item)
+
+    AssertTrue InStr(1, GeneratedCode, "Module: MultiSectionModule", vbTextCompare) > 0, "Multi SectionSource generation should replace ModuleName."
+    AssertTrue InStr(1, GeneratedCode, "Public Sub RunPublicApi()", vbTextCompare) > 0, "PublicApi SectionSource content should be inserted."
+    AssertTrue InStr(1, GeneratedCode, "Private Sub RunPrivateProcedures()", vbTextCompare) > 0, "PrivateProcedures SectionSource content should be inserted."
+    AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Multi SectionSource generation should remove section markers."
+    AssertFalse InStr(1, GeneratedCode, "{{PublicApi}}", vbTextCompare) > 0, "PublicApi token should be removed."
+    AssertFalse InStr(1, GeneratedCode, "{{PrivateProcedures}}", vbTextCompare) > 0, "PrivateProcedures token should be removed."
 End Sub
 
 Private Sub VerifyCustomLayerManifestGeneration()
