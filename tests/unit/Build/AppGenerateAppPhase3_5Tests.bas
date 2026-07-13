@@ -14,6 +14,7 @@ Private Const AppTestAssertEqualsErrorNumber As Long = vbObjectError + 9801
 Public Sub AppRunGenerateApplicationPhase3_5Tests()
     VerifyApplicationManifestItems
     VerifyApplicationManifestItemGeneration
+    VerifyApplicationManifestBodySourceGeneration
 End Sub
 
 Private Sub VerifyApplicationManifestItems()
@@ -54,6 +55,27 @@ Private Sub VerifyApplicationManifestItemGeneration()
     AssertTrue InStr(1, GeneratedCode, Item.InfGetModuleName(), vbTextCompare) > 0, "Generated Application code should include the manifest module name."
 End Sub
 
+Private Sub VerifyApplicationManifestBodySourceGeneration()
+    Dim ManifestProvider As InfManifestProvider
+    Dim Generator As InfGenerator
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim GeneratedCode As String
+
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set Generator = InfCreateGenerator()
+    Set Items = ManifestProvider.InfLoadManifestItems(ResolveApplicationManifestPath())
+    Set Item = FindManifestItem(Items, "AppValidationService")
+
+    AssertTrue Len(Item.InfGetBodySourcePath()) > 0, "AppValidationService should define a BodySourcePath."
+
+    GeneratedCode = Generator.InfGenerateManifestItem(Item)
+
+    AssertTrue InStr(1, GeneratedCode, "Class: AppValidationService", vbTextCompare) > 0, "Generated body source class should keep the template header."
+    AssertTrue InStr(1, GeneratedCode, "Public Function AppValidateProject", vbTextCompare) > 0, "Generated body source class should include the BodySource content."
+    AssertTrue InStr(1, GeneratedCode, "{{BODY}}", vbTextCompare) = 0, "Generated body source class should remove the body token."
+End Sub
+
 Private Function ResolveApplicationManifestPath() As String
     Dim AddinWorkbook As Object
     Dim RootPath As String
@@ -76,6 +98,19 @@ Private Function ResolveApplicationManifestPath() As String
 
     RootPath = ResolveWorkspaceRootPath(RootPath)
     ResolveApplicationManifestPath = RootPath & Application.PathSeparator & "src" & Application.PathSeparator & "Build" & Application.PathSeparator & "Application.manifest"
+End Function
+
+Private Function FindManifestItem(ByVal Items As Collection, ByVal ModuleName As String) As ManifestItem
+    Dim Item As ManifestItem
+
+    For Each Item In Items
+        If StrComp(Item.InfGetModuleName(), ModuleName, vbTextCompare) = 0 Then
+            Set FindManifestItem = Item
+            Exit Function
+        End If
+    Next Item
+
+    Err.Raise vbObjectError + 9803, "AppGenerateAppPhase3_5Tests", "Manifest item not found: " & ModuleName
 End Function
 
 Private Function ResolveWorkspaceRootPath(ByVal CandidatePath As String) As String

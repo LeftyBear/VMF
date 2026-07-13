@@ -101,6 +101,33 @@ therefore must not contain commas.
 
 ---
 
+## Source File Layout
+
+Build-owned body source files are placed under `src/Build/BodySource`.
+
+Use this default layout:
+
+```text
+src/Build/BodySource/<Layer>/<ModuleName>.body.txt
+src/Build/BodySource/<Layer>/<ModuleName>.<SectionName>.txt
+```
+
+Manifest records under `src/Build` reference those files relative to the
+manifest directory:
+
+```text
+AppValidationService,ClassModule,Application,..\..\templates\ClassTemplate.txt,BodySource\Application\AppValidationService.body.txt
+```
+
+BodySource and SectionSource files are fragments. They do not include VBA export
+metadata, `Option Explicit`, or the standard template header. Those remain
+template-owned.
+
+Use `.txt` for Build-owned source fragments so VBA test import tooling does not
+treat them as complete exported `.bas` or `.cls` modules.
+
+---
+
 ## Responsibility Boundaries
 
 Manifest records reference source files. They do not embed implementation

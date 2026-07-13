@@ -1,0 +1,22 @@
+'=========================================================================
+' Public API
+'=========================================================================
+
+' Validates project inputs by creating and validating a Domain project model.
+Public Function AppValidateProject(ByVal ProjectName As String, ByVal ProjectRootPath As String) As ComResult
+    Dim Project As DomProject
+    Dim ValidationResult As ComResult
+
+    ComRequireText ProjectName, "ProjectName", "AppValidateProject"
+    ComRequireText ProjectRootPath, "ProjectRootPath", "AppValidateProject"
+
+    Set Project = DomCreateProject(ProjectName, ProjectRootPath)
+    Set ValidationResult = DomValidateProject(Project)
+
+    If ValidationResult.IsFailure Then
+        Set AppValidateProject = ValidationResult
+        Exit Function
+    End If
+
+    Set AppValidateProject = ComCreateSuccess("Project is valid.")
+End Function
