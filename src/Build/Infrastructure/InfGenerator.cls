@@ -16,6 +16,11 @@ Option Explicit
 ' Dependencies: Common, Infrastructure
 '==========================================================================
 
+Private Const InsertModuleDeclaration As String = "ModuleDeclaration"
+Private Const InsertDeclarationSectionEnd As String = "DeclarationSectionEnd"
+Private Const InsertProcedureGroupStart As String = "ProcedureGroupStart"
+Private Const InsertProcedureGroupEnd As String = "ProcedureGroupEnd"
+
 Private TemplateProvider As InfTemplateProvider
 Private ManifestProvider As InfManifestProvider
 Private TokenReplacer As InfTokenReplacer
@@ -89,6 +94,7 @@ Public Function InfGenerateModule(ByVal ModuleName As String, ByVal TemplatePath
     End If
 
     Set Manifest = ManifestProvider.InfCreateManifest(ModuleName, TemplatePath, LayerName)
+    EnsureInsertionSections Manifest
     GeneratedText = TokenReplacer.InfReplaceTokens(Template, Manifest)
 
     If ComIsBlankText(GeneratedText) Then
@@ -130,6 +136,7 @@ Public Function InfGenerateManifestItem(ByVal Item As ManifestItem) As String
     Set Manifest = Item.InfToManifest()
     ApplyBodySource Manifest, Item
     ApplySectionSources Manifest, Item
+    EnsureInsertionSections Manifest
 
     GeneratedText = TokenReplacer.InfReplaceTokens(Template, Manifest)
     If ComIsBlankText(GeneratedText) Then
@@ -162,6 +169,7 @@ Private Sub ApplySectionSources(ByVal Manifest As Object, ByVal Item As Manifest
     Dim SectionSourcePaths As Object
     Dim SectionName As Variant
     Dim SectionBody As String
+    Dim InsertedBlocks As Object
 
     If Manifest Is Nothing Then
         Err.Raise ComErrInvalidArgument, "ApplySectionSources", "Manifest is required."
@@ -172,11 +180,104 @@ Private Sub ApplySectionSources(ByVal Manifest As Object, ByVal Item As Manifest
     End If
 
     Set SectionSourcePaths = Item.InfGetSectionSourcePaths()
+    Set InsertedBlocks = CreateObject("Scripting.Dictionary")
     For Each SectionName In SectionSourcePaths.Keys
-        SectionBody = ManifestProvider.InfLoadSectionSource(CStr(SectionSourcePaths.Item(CStr(SectionName))))
-        If Not ComIsBlankText(SectionBody) Then
-            Manifest(CStr(SectionName)) = SectionBody
-            Manifest("Section:" & CStr(SectionName)) = SectionBody
-        End If
+        SectionBody = NormalizeInsertionText( _
+            ManifestProvider.InfLoadSectionSource(CStr(SectionSourcePaths.Item(CStr(SectionName)))))
+        ApplySectionSource Manifest, CStr(SectionName), SectionBody, InsertedBlocks
     Next SectionName
 End Sub
+
+Private Sub EnsureInsertionSections(ByVal Manifest As Object)
+    If Manifest Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "EnsureInsertionSections", "Manifest is required."
+    End If
+
+    EnsureInsertionSection Manifest, InsertModuleDeclaration
+    EnsureInsertionSection Manifest, InsertDeclarationSectionEnd
+    EnsureInsertionSection Manifest, InsertProcedureGroupStart
+    EnsureInsertionSection Manifest, InsertProcedureGroupEnd
+End Sub
+
+Private Sub EnsureInsertionSection(ByVal Manifest As Object, ByVal SectionName As String)
+    ComRequireText SectionName, "SectionName", "EnsureInsertionSection"
+
+    If Not Manifest.Exists(SectionName) Then
+        Manifest(SectionName) = vbNullString
+    End If
+
+    If Not Manifest.Exists("Section:" & SectionName) Then
+        Manifest("Section:" & SectionName) = Manifest.Item(SectionName)
+    End If
+End Sub
+
+Private Sub ApplySectionSource( _
+    ByVal Manifest As Object, _
+    ByVal SectionName As String, _
+    ByVal SectionBody As String, _
+    ByVal InsertedBlocks As Object)
+
+    Dim BlockKey As String
+
+    If Manifest Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "ApplySectionSource", "Manifest is required."
+    End If
+
+    ComRequireText SectionName, "SectionName", "ApplySectionSource"
+
+    If ComIsBlankText(SectionBody) Then
+        Exit Sub
+    End If
+
+    BlockKey = NormalizeInsertionKey(SectionBody)
+    If InsertedBlocks.Exists(BlockKey) Then
+        Manifest(SectionName) = vbNullString
+        Manifest("Section:" & SectionName) = vbNullString
+        Exit Sub
+    End If
+
+    InsertedBlocks.Add BlockKey, True
+    Manifest(SectionName) = SectionBody
+    Manifest("Section:" & SectionName) = SectionBody
+End Sub
+
+Private Function NormalizeInsertionText(ByVal SourceText As String) As String
+    Dim Lines() As String
+    Dim FirstLine As Long
+    Dim LastLine As Long
+    Dim LineIndex As Long
+    Dim Result As String
+
+    SourceText = Replace(SourceText, vbCrLf, vbLf)
+    SourceText = Replace(SourceText, vbCr, vbLf)
+    Lines = Split(SourceText, vbLf)
+
+    FirstLine = LBound(Lines)
+    LastLine = UBound(Lines)
+
+    Do While FirstLine <= LastLine And ComIsBlankText(Lines(FirstLine))
+        FirstLine = FirstLine + 1
+    Loop
+
+    Do While LastLine >= FirstLine And ComIsBlankText(Lines(LastLine))
+        LastLine = LastLine - 1
+    Loop
+
+    If FirstLine > LastLine Then
+        NormalizeInsertionText = vbNullString
+        Exit Function
+    End If
+
+    For LineIndex = FirstLine To LastLine
+        If Len(Result) > 0 Then
+            Result = Result & vbCrLf
+        End If
+        Result = Result & Lines(LineIndex)
+    Next LineIndex
+
+    NormalizeInsertionText = Result
+End Function
+
+Private Function NormalizeInsertionKey(ByVal SourceText As String) As String
+    NormalizeInsertionKey = UCase$(Trim$(NormalizeInsertionText(SourceText)))
+End Function

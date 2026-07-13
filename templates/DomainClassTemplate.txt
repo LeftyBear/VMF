@@ -1,4 +1,7 @@
 Option Explicit
+@section ModuleDeclaration
+{{ModuleDeclaration}}
+@endsection
 
 '=========================================================================
 ' Class: {{ModuleName}}
@@ -6,4 +9,13 @@ Option Explicit
 ' Responsibility:
 '=========================================================================
 
+@section DeclarationSectionEnd
+{{DeclarationSectionEnd}}
+@endsection
+@section ProcedureGroupStart
+{{ProcedureGroupStart}}
+@endsection
 {{BODY}}
+@section ProcedureGroupEnd
+{{ProcedureGroupEnd}}
+@endsection

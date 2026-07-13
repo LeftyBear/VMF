@@ -40,6 +40,7 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifySectionSourceManifestGeneration
     VerifyMultipleSectionSourceManifestGeneration
     VerifyBodyAndSectionSourceManifestGeneration
+    VerifyFixedInsertionPointGeneration
     VerifyManifestSourcePathValidation
     VerifyManifestSectionContractValidation
     VerifyCustomLayerManifestGeneration
@@ -362,6 +363,60 @@ Private Sub VerifyBodyAndSectionSourceManifestGeneration()
     AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Body + SectionSource generation should remove section markers."
     AssertFalse InStr(1, GeneratedCode, "{{PublicApi}}", vbTextCompare) > 0, "Section token should be removed."
     AssertFalse InStr(1, GeneratedCode, "{{BODY}}", vbTextCompare) > 0, "Body token should be removed."
+End Sub
+
+Private Sub VerifyFixedInsertionPointGeneration()
+    Dim FileSystem As Object
+    Dim FileProvider As InfFileSystemProvider
+    Dim ManifestProvider As InfManifestProvider
+    Dim Generator As InfGenerator
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim ManifestDir As String
+    Dim ManifestPath As String
+    Dim BodySourcePath As String
+    Dim ModuleDeclarationPath As String
+    Dim DeclarationEndPath As String
+    Dim ProcedureStartPath As String
+    Dim ProcedureEndPath As String
+    Dim SharedProcedureText As String
+    Dim GeneratedCode As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "fixed-insertion-points")
+    ManifestPath = FileSystem.BuildPath(ManifestDir, "FixedInsertion.manifest")
+    BodySourcePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "body\Body.vba"))
+    ModuleDeclarationPath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "sections\ModuleDeclaration.vba"))
+    DeclarationEndPath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "sections\DeclarationSectionEnd.vba"))
+    ProcedureStartPath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "sections\ProcedureGroupStart.vba"))
+    ProcedureEndPath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "sections\ProcedureGroupEnd.vba"))
+    SharedProcedureText = "Private Sub InsertedSharedProcedure()" & vbCrLf & "End Sub"
+
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText BodySourcePath, "Public Sub RunFixedInsertionBody()" & vbCrLf & "End Sub"
+    FileProvider.InfWriteText ModuleDeclarationPath, vbCrLf & "Option Private Module" & vbCrLf
+    FileProvider.InfWriteText DeclarationEndPath, "Private Const FixedInsertionMarker As String = ""done"""
+    FileProvider.InfWriteText ProcedureStartPath, SharedProcedureText
+    FileProvider.InfWriteText ProcedureEndPath, SharedProcedureText
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath,BodySourcePath,SectionSources" & vbCrLf & _
+        "FixedInsertionModule,StandardModule,Core," & ResolveTemplateFilePath("ModuleTemplate.txt") & ",body\Body.vba," & _
+        "ModuleDeclaration=sections\ModuleDeclaration.vba,DeclarationSectionEnd=sections\DeclarationSectionEnd.vba," & _
+        "ProcedureGroupStart=sections\ProcedureGroupStart.vba,ProcedureGroupEnd=sections\ProcedureGroupEnd.vba"
+
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set Items = ManifestProvider.InfLoadManifestItems(ManifestPath)
+    Set Item = Items.Item(1)
+
+    Set Generator = InfCreateGenerator()
+    GeneratedCode = Generator.InfGenerateManifestItem(Item)
+
+    AssertTrue InStr(1, GeneratedCode, "Layer: Core", vbTextCompare) > 0, "Fixed insertion generation should preserve the target layer."
+    AssertTrue InStr(1, GeneratedCode, "Option Private Module", vbTextCompare) > 0, "ModuleDeclaration content should be inserted."
+    AssertTrue InStr(1, GeneratedCode, "Private Const FixedInsertionMarker", vbTextCompare) > 0, "DeclarationSectionEnd content should be inserted."
+    AssertTrue InStr(1, GeneratedCode, "Public Sub RunFixedInsertionBody()", vbTextCompare) > 0, "Body content should still be inserted."
+    AssertEquals 1, CountTextOccurrences(GeneratedCode, "Private Sub InsertedSharedProcedure()"), "Duplicate shared insertion blocks should be generated only once."
+    AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Fixed insertion generation should remove section markers."
 End Sub
 
 Private Sub VerifyManifestSourcePathValidation()
@@ -755,6 +810,16 @@ Private Function CountOptionExplicit(ByVal Text As String) As Long
             CountOptionExplicit = CountOptionExplicit + 1
         End If
     Next i
+End Function
+
+Private Function CountTextOccurrences(ByVal Text As String, ByVal SearchText As String) As Long
+    Dim Position As Long
+
+    Position = InStr(1, Text, SearchText, vbTextCompare)
+    Do While Position > 0
+        CountTextOccurrences = CountTextOccurrences + 1
+        Position = InStr(Position + Len(SearchText), Text, SearchText, vbTextCompare)
+    Loop
 End Function
 
 Private Function IsSupportedManifestModuleType(ByVal ModuleType As String) As Boolean
