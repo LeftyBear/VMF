@@ -39,6 +39,7 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifyBodySourceManifestGeneration
     VerifySectionSourceManifestGeneration
     VerifyMultipleSectionSourceManifestGeneration
+    VerifyBodyAndSectionSourceManifestGeneration
     VerifyCustomLayerManifestGeneration
     VerifyBuildManifestFormatCoverage
     VerifyManifestTemplatePathResolution
@@ -300,6 +301,65 @@ Private Sub VerifyMultipleSectionSourceManifestGeneration()
     AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Multi SectionSource generation should remove section markers."
     AssertFalse InStr(1, GeneratedCode, "{{PublicApi}}", vbTextCompare) > 0, "PublicApi token should be removed."
     AssertFalse InStr(1, GeneratedCode, "{{PrivateProcedures}}", vbTextCompare) > 0, "PrivateProcedures token should be removed."
+End Sub
+
+Private Sub VerifyBodyAndSectionSourceManifestGeneration()
+    Dim FileSystem As Object
+    Dim FileProvider As InfFileSystemProvider
+    Dim ManifestProvider As InfManifestProvider
+    Dim Generator As InfGenerator
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim ManifestDir As String
+    Dim ManifestPath As String
+    Dim TemplatePath As String
+    Dim BodySourcePath As String
+    Dim PublicApiPath As String
+    Dim SectionSourcePaths As Object
+    Dim TemplateText As String
+    Dim GeneratedCode As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "body-and-section-source")
+    ManifestPath = FileSystem.BuildPath(ManifestDir, "BodyAndSectionSource.manifest")
+    TemplatePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "templates\BodyAndSectionTemplate.txt"))
+    BodySourcePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "body\Body.vba"))
+    PublicApiPath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "sections\PublicApi.vba"))
+    TemplateText = "Option Explicit" & vbCrLf & _
+        "' Module: {{ModuleName}}" & vbCrLf & _
+        "' Layer: {{Layer}}" & vbCrLf & _
+        "' @section PublicApi" & vbCrLf & _
+        "{{PublicApi}}" & vbCrLf & _
+        "' @endsection" & vbCrLf & _
+        "{{BODY}}"
+
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText TemplatePath, TemplateText
+    FileProvider.InfWriteText BodySourcePath, "Private Sub RunBodyImplementation()" & vbCrLf & "End Sub"
+    FileProvider.InfWriteText PublicApiPath, "Public Sub RunCombinedPublicApi()" & vbCrLf & "End Sub"
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath,BodySourcePath,SectionSources" & vbCrLf & _
+        "BodyAndSectionModule,StandardModule,Application,templates\BodyAndSectionTemplate.txt,body\Body.vba,PublicApi=sections\PublicApi.vba"
+
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set Items = ManifestProvider.InfLoadManifestItems(ManifestPath)
+
+    AssertEquals "1", CStr(Items.Count), "Body + SectionSource manifest should load one item."
+
+    Set Item = Items.Item(1)
+    Set SectionSourcePaths = Item.InfGetSectionSourcePaths()
+    AssertEquals BodySourcePath, Item.InfGetBodySourcePath(), "BodySourcePath should resolve from the manifest directory."
+    AssertEquals PublicApiPath, SectionSourcePaths.Item("PublicApi"), "SectionSourcePath should resolve from the manifest directory."
+
+    Set Generator = InfCreateGenerator()
+    GeneratedCode = Generator.InfGenerateManifestItem(Item)
+
+    AssertTrue InStr(1, GeneratedCode, "Module: BodyAndSectionModule", vbTextCompare) > 0, "Body + SectionSource generation should replace ModuleName."
+    AssertTrue InStr(1, GeneratedCode, "Public Sub RunCombinedPublicApi()", vbTextCompare) > 0, "SectionSource content should be inserted."
+    AssertTrue InStr(1, GeneratedCode, "Private Sub RunBodyImplementation()", vbTextCompare) > 0, "BodySource content should be inserted."
+    AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Body + SectionSource generation should remove section markers."
+    AssertFalse InStr(1, GeneratedCode, "{{PublicApi}}", vbTextCompare) > 0, "Section token should be removed."
+    AssertFalse InStr(1, GeneratedCode, "{{BODY}}", vbTextCompare) > 0, "Body token should be removed."
 End Sub
 
 Private Sub VerifyCustomLayerManifestGeneration()
