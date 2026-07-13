@@ -136,6 +136,21 @@ Public Function InfLoadSectionSource(ByVal SectionSourcePath As String) As Strin
     InfLoadSectionSource = FileSystemProvider.InfReadText(SectionSourcePath)
 End Function
 
+' Loads optional class member definition content for a manifest item.
+Public Function InfLoadMemberSource(ByVal MemberSourcePath As String) As String
+    ComRequireText MemberSourcePath, "MemberSourcePath", "InfLoadMemberSource"
+
+    If FileSystemProvider Is Nothing Then
+        Err.Raise ComErrInvalidState, "InfLoadMemberSource", "ManifestProvider is not initialized."
+    End If
+
+    If Not FileSystemProvider.InfFileExists(MemberSourcePath) Then
+        Err.Raise ComErrInvalidArgument, "InfLoadMemberSource", "MemberSourcePath does not exist."
+    End If
+
+    InfLoadMemberSource = FileSystemProvider.InfReadText(MemberSourcePath)
+End Function
+
 Private Sub ValidateLayerName(ByVal LayerName As String)
     Dim Position As Long
     Dim Character As String
@@ -210,12 +225,18 @@ Private Sub AddSectionSourceFromField( _
 
     SectionName = Trim$(Left$(FieldText, SeparatorIndex - 1))
     SectionSourcePath = Trim$(Mid$(FieldText, SeparatorIndex + 1))
-    Item.InfAddSectionSourcePath SectionName, ResolveManifestRelativePath(SectionSourcePath, ManifestPath)
+    If StrComp(SectionName, "Members", vbTextCompare) = 0 _
+        Or StrComp(SectionName, "MemberSource", vbTextCompare) = 0 Then
+        Item.InfSetMemberSourcePath ResolveManifestRelativePath(SectionSourcePath, ManifestPath)
+    Else
+        Item.InfAddSectionSourcePath SectionName, ResolveManifestRelativePath(SectionSourcePath, ManifestPath)
+    End If
 End Sub
 
 Private Sub ValidateSourcePaths(ByVal Items As Collection)
     Dim Item As ManifestItem
     Dim BodySourcePath As String
+    Dim MemberSourcePath As String
     Dim SectionSourcePaths As Object
     Dim SectionName As Variant
 
@@ -228,6 +249,13 @@ Private Sub ValidateSourcePaths(ByVal Items As Collection)
         If Not ComIsBlankText(BodySourcePath) Then
             If Not FileSystemProvider.InfFileExists(BodySourcePath) Then
                 Err.Raise ComErrInvalidArgument, "ValidateSourcePaths", "BodySourcePath does not exist: " & BodySourcePath
+            End If
+        End If
+
+        MemberSourcePath = Item.InfGetMemberSourcePath()
+        If Not ComIsBlankText(MemberSourcePath) Then
+            If Not FileSystemProvider.InfFileExists(MemberSourcePath) Then
+                Err.Raise ComErrInvalidArgument, "ValidateSourcePaths", "MemberSourcePath does not exist: " & MemberSourcePath
             End If
         End If
 

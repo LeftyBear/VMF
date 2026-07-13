@@ -18,6 +18,13 @@ Option Explicit
 
 Private Const InsertModuleDeclaration As String = "ModuleDeclaration"
 Private Const InsertDeclarationSectionEnd As String = "DeclarationSectionEnd"
+Private Const InsertMemberDeclarations As String = "MemberDeclarations"
+Private Const InsertMemberBlock As String = "MemberBlock"
+Private Const InsertInitializeBody As String = "InitializeBody"
+Private Const InsertTerminateBody As String = "TerminateBody"
+Private Const InsertPropertyGroupStart As String = "PropertyGroupStart"
+Private Const InsertProperties As String = "Properties"
+Private Const InsertPropertyGroupEnd As String = "PropertyGroupEnd"
 Private Const InsertProcedureGroupStart As String = "ProcedureGroupStart"
 Private Const InsertProcedureGroupEnd As String = "ProcedureGroupEnd"
 
@@ -136,6 +143,7 @@ Public Function InfGenerateManifestItem(ByVal Item As ManifestItem) As String
     Set Manifest = Item.InfToManifest()
     ApplyBodySource Manifest, Item
     ApplySectionSources Manifest, Item
+    ApplyClassMemberSource Manifest, Item
     EnsureInsertionSections Manifest
 
     GeneratedText = TokenReplacer.InfReplaceTokens(Template, Manifest)
@@ -163,6 +171,36 @@ Private Sub ApplyBodySource(ByVal Manifest As Object, ByVal Item As ManifestItem
     End If
 
     Manifest("BODY") = ManifestProvider.InfLoadBodySource(BodySourcePath)
+End Sub
+
+Private Sub ApplyClassMemberSource(ByVal Manifest As Object, ByVal Item As ManifestItem)
+    Dim MemberSourcePath As String
+    Dim MemberSourceText As String
+    Dim ClassCodeGenerator As InfClassCodeGenerator
+    Dim ClassSections As Object
+    Dim SectionName As Variant
+
+    If Manifest Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "ApplyClassMemberSource", "Manifest is required."
+    End If
+
+    If Item Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "ApplyClassMemberSource", "ManifestItem is required."
+    End If
+
+    MemberSourcePath = Item.InfGetMemberSourcePath()
+    If ComIsBlankText(MemberSourcePath) Then
+        Exit Sub
+    End If
+
+    MemberSourceText = ManifestProvider.InfLoadMemberSource(MemberSourcePath)
+    Set ClassCodeGenerator = New InfClassCodeGenerator
+    Set ClassSections = ClassCodeGenerator.InfRenderClassMemberSections(MemberSourceText)
+
+    For Each SectionName In ClassSections.Keys
+        Manifest(CStr(SectionName)) = CStr(ClassSections.Item(CStr(SectionName)))
+        Manifest("Section:" & CStr(SectionName)) = CStr(ClassSections.Item(CStr(SectionName)))
+    Next SectionName
 End Sub
 
 Private Sub ApplySectionSources(ByVal Manifest As Object, ByVal Item As ManifestItem)
@@ -195,6 +233,13 @@ Private Sub EnsureInsertionSections(ByVal Manifest As Object)
 
     EnsureInsertionSection Manifest, InsertModuleDeclaration
     EnsureInsertionSection Manifest, InsertDeclarationSectionEnd
+    EnsureInsertionSection Manifest, InsertMemberDeclarations
+    EnsureInsertionSection Manifest, InsertMemberBlock
+    EnsureInsertionSection Manifest, InsertInitializeBody
+    EnsureInsertionSection Manifest, InsertTerminateBody
+    EnsureInsertionSection Manifest, InsertPropertyGroupStart
+    EnsureInsertionSection Manifest, InsertProperties
+    EnsureInsertionSection Manifest, InsertPropertyGroupEnd
     EnsureInsertionSection Manifest, InsertProcedureGroupStart
     EnsureInsertionSection Manifest, InsertProcedureGroupEnd
 End Sub

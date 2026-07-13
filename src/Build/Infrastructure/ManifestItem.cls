@@ -25,6 +25,7 @@ Private Type TMember
     LayerName As String
     TemplatePath As String
     BodySourcePath As String
+    MemberSourcePath As String
 End Type
 
 Private This As TMember
@@ -48,6 +49,7 @@ Public Sub InfInitialize( _
     This.LayerName = Trim$(LayerName)
     This.TemplatePath = Trim$(TemplatePath)
     This.BodySourcePath = Trim$(BodySourcePath)
+    This.MemberSourcePath = vbNullString
     Set SectionSourcePaths = CreateObject("Scripting.Dictionary")
 
     If Not InfValidate() Then
@@ -71,6 +73,14 @@ Public Sub InfAddSectionSourcePath(ByVal SectionName As String, ByVal SectionSou
     End If
 
     SectionSourcePaths.Add SectionName, Trim$(SectionSourcePath)
+End Sub
+
+' Sets an optional class member definition source path for this target.
+Public Sub InfSetMemberSourcePath(ByVal MemberSourcePath As String)
+    RequireValidState "InfSetMemberSourcePath"
+    ComRequireText MemberSourcePath, "MemberSourcePath", "ManifestItem.InfSetMemberSourcePath"
+
+    This.MemberSourcePath = Trim$(MemberSourcePath)
 End Sub
 
 ' Returns the target VBA module name.
@@ -103,6 +113,12 @@ Public Function InfGetBodySourcePath() As String
     InfGetBodySourcePath = This.BodySourcePath
 End Function
 
+' Returns the optional class member definition source path.
+Public Function InfGetMemberSourcePath() As String
+    RequireValidState "InfGetMemberSourcePath"
+    InfGetMemberSourcePath = This.MemberSourcePath
+End Function
+
 ' Returns optional section source paths keyed by section name.
 Public Function InfGetSectionSourcePaths() As Object
     RequireValidState "InfGetSectionSourcePaths"
@@ -127,6 +143,9 @@ Public Function InfToManifest() As Object
     Manifest("TemplatePath") = This.TemplatePath
     If Not ComIsBlankText(This.BodySourcePath) Then
         Manifest("BodySourcePath") = This.BodySourcePath
+    End If
+    If Not ComIsBlankText(This.MemberSourcePath) Then
+        Manifest("MemberSourcePath") = This.MemberSourcePath
     End If
 
     Set InfToManifest = Manifest

@@ -1,6 +1,7 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
 InfFacade,StandardModule,Infrastructure,..\..\templates\ModuleTemplate.txt
 InfCompositionRoot,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
+InfClassCodeGenerator,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
 InfFileSystemProvider,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
 InfGenerator,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt
 InfManifestProvider,ClassModule,Infrastructure,..\..\templates\ClassTemplate.txt

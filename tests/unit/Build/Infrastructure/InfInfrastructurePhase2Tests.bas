@@ -41,6 +41,7 @@ Public Sub InfRunInfrastructurePhase2Tests()
     VerifyMultipleSectionSourceManifestGeneration
     VerifyBodyAndSectionSourceManifestGeneration
     VerifyFixedInsertionPointGeneration
+    VerifyClassMemberDefinitionGeneration
     VerifyManifestSourcePathValidation
     VerifyManifestSectionContractValidation
     VerifyCustomLayerManifestGeneration
@@ -417,6 +418,60 @@ Private Sub VerifyFixedInsertionPointGeneration()
     AssertTrue InStr(1, GeneratedCode, "Public Sub RunFixedInsertionBody()", vbTextCompare) > 0, "Body content should still be inserted."
     AssertEquals 1, CountTextOccurrences(GeneratedCode, "Private Sub InsertedSharedProcedure()"), "Duplicate shared insertion blocks should be generated only once."
     AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Fixed insertion generation should remove section markers."
+End Sub
+
+Private Sub VerifyClassMemberDefinitionGeneration()
+    Dim FileSystem As Object
+    Dim FileProvider As InfFileSystemProvider
+    Dim ManifestProvider As InfManifestProvider
+    Dim Generator As InfGenerator
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim ManifestDir As String
+    Dim ManifestPath As String
+    Dim MemberSourcePath As String
+    Dim MemberDefinitions As String
+    Dim GeneratedCode As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    ManifestDir = FileSystem.BuildPath(GetTestFolderPath(), "class-member-definitions")
+    ManifestPath = FileSystem.BuildPath(ManifestDir, "ClassMembers.manifest")
+    MemberSourcePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(ManifestDir, "members\SampleClass.members"))
+    MemberDefinitions = _
+        "Name=Name;TypeName=String;IsObject=False;Accessor=GetLet;InitialValue=vbNullString" & vbCrLf & _
+        "Name=Parent;TypeName=Dom_Parent;IsObject=True;Accessor=GetSet;CreateInstance=True" & vbCrLf & _
+        "Name=ID;TypeName=Long;IsObject=False;Accessor=GetLet;InitialValue=0;ReadOnly=True" & vbCrLf & _
+        "Name=Name;TypeName=String;IsObject=False;Accessor=GetLet;InitialValue=vbNullString"
+
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText MemberSourcePath, MemberDefinitions
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath,BodySourcePath,Members" & vbCrLf & _
+        "ClassMemberModule,ClassModule,Domain," & ResolveTemplateFilePath("ClassTemplate.txt") & ",,Members=members\SampleClass.members"
+
+    Set ManifestProvider = InfCreateManifestProvider()
+    Set Items = ManifestProvider.InfLoadManifestItems(ManifestPath)
+    Set Item = Items.Item(1)
+
+    AssertEquals MemberSourcePath, Item.InfGetMemberSourcePath(), "MemberSourcePath should resolve from the manifest directory."
+
+    Set Generator = InfCreateGenerator()
+    GeneratedCode = Generator.InfGenerateManifestItem(Item)
+
+    AssertTrue InStr(1, GeneratedCode, "Private Type Member", vbTextCompare) > 0, "Class member generation should emit the Member type block."
+    AssertTrue InStr(1, GeneratedCode, "    Name As String", vbTextCompare) > 0, "Value member declaration should be generated."
+    AssertTrue InStr(1, GeneratedCode, "    Parent As Dom_Parent", vbTextCompare) > 0, "Object member declaration should be generated."
+    AssertTrue InStr(1, GeneratedCode, "Public Property Get Name() As String", vbTextCompare) > 0, "Value Property Get should be generated."
+    AssertTrue InStr(1, GeneratedCode, "Public Property Let Name(ByVal Value As String)", vbTextCompare) > 0, "Value Property Let should be generated."
+    AssertTrue InStr(1, GeneratedCode, "Public Property Get Parent() As Dom_Parent", vbTextCompare) > 0, "Object Property Get should be generated."
+    AssertTrue InStr(1, GeneratedCode, "Public Property Set Parent(ByVal Value As Dom_Parent)", vbTextCompare) > 0, "Object Property Set should be generated."
+    AssertTrue InStr(1, GeneratedCode, "    This.ID = 0", vbTextCompare) > 0, "InitialValue should generate assignment."
+    AssertTrue InStr(1, GeneratedCode, "    This.Name = vbNullString", vbTextCompare) > 0, "String InitialValue should generate assignment."
+    AssertTrue InStr(1, GeneratedCode, "    Set This.Parent = New Dom_Parent", vbTextCompare) > 0, "CreateInstance should generate object construction."
+    AssertTrue InStr(1, GeneratedCode, "    Set This.Parent = Nothing", vbTextCompare) > 0, "Object member should generate terminate cleanup."
+    AssertFalse InStr(1, GeneratedCode, "Public Property Let ID", vbTextCompare) > 0, "ReadOnly member should not generate a setter."
+    AssertEquals 1, CountTextOccurrences(GeneratedCode, "Public Property Get Name() As String"), "Duplicate member definitions should not duplicate properties."
+    AssertFalse InStr(1, GeneratedCode, "@section", vbTextCompare) > 0, "Class member generation should remove section markers."
 End Sub
 
 Private Sub VerifyManifestSourcePathValidation()
