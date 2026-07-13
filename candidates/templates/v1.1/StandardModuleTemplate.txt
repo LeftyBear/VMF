@@ -1,8 +1,8 @@
 Attribute VB_Name = "{{ModuleName}}"
 Option Explicit
-' @section OptionPrivateModule
-Option Private Module
-' @endsection
+@section ModuleDeclaration
+{{ModuleDeclaration}}
+@endsection
 
 '==========================================================================
 ' Module: {{ModuleName}}
@@ -10,6 +10,13 @@ Option Private Module
 ' Responsibility:
 '==========================================================================
 
-' @section Body
+@section DeclarationSectionEnd
+{{DeclarationSectionEnd}}
+@endsection
+@section ProcedureGroupStart
+{{ProcedureGroupStart}}
+@endsection
 {{BODY}}
-' @endsection
+@section ProcedureGroupEnd
+{{ProcedureGroupEnd}}
+@endsection

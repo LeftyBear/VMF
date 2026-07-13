@@ -1,8 +1,8 @@
 Attribute VB_Name = "{{ModuleName}}"
 Option Explicit
-' @section OptionPrivateModule
-Option Private Module
-' @endsection
+@section ModuleDeclaration
+{{ModuleDeclaration}}
+@endsection
 
 '==========================================================================
 ' Enum: {{ModuleName}}
@@ -10,8 +10,12 @@ Option Private Module
 ' Responsibility:
 '==========================================================================
 
+@section DeclarationSectionEnd
+{{DeclarationSectionEnd}}
+@endsection
 Public Enum {{ModuleName}}
-' @section Body
+@section EnumMembers
+{{EnumMembers}}
+@endsection
 {{BODY}}
-' @endsection
 End Enum

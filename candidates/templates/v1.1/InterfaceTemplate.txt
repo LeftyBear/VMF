@@ -8,6 +8,9 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
+@section ModuleDeclaration
+{{ModuleDeclaration}}
+@endsection
 
 '==========================================================================
 ' Interface: {{ModuleName}}
@@ -15,6 +18,22 @@ Option Explicit
 ' Responsibility:
 '==========================================================================
 
-' @section Body
+@section DeclarationSectionEnd
+{{DeclarationSectionEnd}}
+@endsection
+@section PropertyGroupStart
+{{PropertyGroupStart}}
+@endsection
+@section Properties
+{{Properties}}
+@endsection
+@section PropertyGroupEnd
+{{PropertyGroupEnd}}
+@endsection
+@section ProcedureGroupStart
+{{ProcedureGroupStart}}
+@endsection
 {{BODY}}
-' @endsection
+@section ProcedureGroupEnd
+{{ProcedureGroupEnd}}
+@endsection
