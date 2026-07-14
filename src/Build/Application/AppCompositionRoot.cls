@@ -54,7 +54,12 @@ Public Function AppCreateGeneratorService() As AppGeneratorService
     Dim GeneratorService As AppGeneratorService
 
     Set GeneratorService = New AppGeneratorService
-    GeneratorService.AppInitialize InfCreateGenerator(), AppCreateGenerationEngine(), InfCreateManifestProvider()
+    GeneratorService.AppInitialize _
+        InfCreateGenerator(), _
+        AppCreateGenerationEngine(), _
+        InfCreateManifestProvider(), _
+        AppCreateManifestValidationService(), _
+        AppCreateManifestEditorService()
 
     Set AppCreateGeneratorService = GeneratorService
 End Function
@@ -64,12 +69,17 @@ Public Function AppCreateManifestEditorService() As AppManifestEditorService
     Set AppCreateManifestEditorService = New AppManifestEditorService
 End Function
 
+' Creates a manifest validation service.
+Public Function AppCreateManifestValidationService() As AppManifestValidationService
+    Set AppCreateManifestValidationService = New AppManifestValidationService
+End Function
+
 ' Creates a code preview service.
 Public Function AppCreateCodePreviewService() As AppCodePreviewService
     Dim PreviewService As AppCodePreviewService
 
     Set PreviewService = New AppCodePreviewService
-    PreviewService.AppInitialize InfCreateGenerator(), AppCreateManifestEditorService()
+    PreviewService.AppInitialize InfCreateGenerator(), AppCreateManifestEditorService(), AppCreateManifestValidationService()
 
     Set AppCreateCodePreviewService = PreviewService
 End Function

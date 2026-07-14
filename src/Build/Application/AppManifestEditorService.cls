@@ -45,10 +45,17 @@ Public Function AppSaveManifestEditorModel( _
     ByVal ManifestPath As String, _
     ByVal Modules As Collection) As ComResult
 
+    Dim Result As ComResult
+
     On Error GoTo ErrHandler
 
     ComRequireText ManifestPath, "ManifestPath", "AppSaveManifestEditorModel"
-    ValidateManifestModules Modules
+    Set Result = ValidateBeforeSave(ManifestPath, Modules)
+    If Result.IsFailure Then
+        Set AppSaveManifestEditorModel = Result
+        Exit Function
+    End If
+
     SaveMemberSources ManifestPath, Modules
     WriteManifestContent ManifestPath, Modules
 
@@ -144,6 +151,17 @@ Private Function LoadManifestModules(ByVal ManifestPath As String) As Collection
     End If
 
     Set LoadManifestModules = Modules
+End Function
+
+Private Function ValidateBeforeSave(ByVal ManifestPath As String, ByVal Modules As Collection) As ComResult
+    Dim ValidationService As AppManifestValidationService
+    Dim Issues As Collection
+
+    Set ValidationService = New AppManifestValidationService
+    Set ValidateBeforeSave = ValidationService.AppValidateManifestEditorModel(ManifestPath, Modules, Issues)
+    If ValidationService.AppIssuesContainErrors(Issues) Then
+        Set ValidateBeforeSave = ValidationService.AppCreateFailureFromIssues(Issues, "AppManifestEditorService.AppSaveManifestEditorModel")
+    End If
 End Function
 
 Private Function ParseManifestLine(ByVal LineText As String, ByVal ManifestPath As String) As Object
@@ -259,116 +277,10 @@ Private Function ParseMemberLine(ByVal LineText As String) As Object
     Set ParseMemberLine = MemberInfo
 End Function
 
-Private Sub ValidateManifestModules(ByVal Modules As Collection)
-    Dim ModuleNames As Object
-    Dim ModuleInfo As Object
-    Dim ModuleKey As String
-
-    If Modules Is Nothing Then
-        Err.Raise ComErrInvalidArgument, "ValidateManifestModules", "Modules are required."
-    End If
-
-    If Modules.Count = 0 Then
-        Err.Raise ComErrInvalidArgument, "ValidateManifestModules", "At least one module is required."
-    End If
-
-    Set ModuleNames = CreateObject("Scripting.Dictionary")
-    For Each ModuleInfo In Modules
-        ValidateModule ModuleInfo
-        ModuleKey = LCase$(CStr(ModuleInfo("ModuleName")))
-        If ModuleNames.Exists(ModuleKey) Then
-            Err.Raise ComErrInvalidArgument, "ValidateManifestModules", "Duplicate ModuleName: " & CStr(ModuleInfo("ModuleName"))
-        End If
-
-        ModuleNames.Add ModuleKey, True
-    Next ModuleInfo
-End Sub
-
-Private Sub ValidateModule(ByVal ModuleInfo As Object)
-    If ModuleInfo Is Nothing Then
-        Err.Raise ComErrInvalidArgument, "ValidateModule", "Module is required."
-    End If
-
-    ValidateIdentifier CStr(ModuleInfo("ModuleName")), "ModuleName"
-    ValidateIdentifier CStr(ModuleInfo("Layer")), "Layer"
-    Select Case CStr(ModuleInfo("ModuleType"))
-        Case "StandardModule", "ClassModule"
-        Case Else
-            Err.Raise ComErrInvalidArgument, "ValidateModule", "ModuleType must be StandardModule or ClassModule."
-    End Select
-
-    ComRequireText CStr(ModuleInfo("TemplatePath")), "TemplatePath", "ValidateModule"
-    ValidateMembers ModuleInfo
-End Sub
-
-Private Sub ValidateMembers(ByVal ModuleInfo As Object)
-    Dim Members As Collection
-    Dim MemberNames As Object
-    Dim MemberInfo As Object
-    Dim MemberKey As String
-
-    Set Members = ModuleInfo("Members")
-    Set MemberNames = CreateObject("Scripting.Dictionary")
-    For Each MemberInfo In Members
-        ValidateIdentifier CStr(MemberInfo("Name")), "Member.Name"
-        ComRequireText CStr(MemberInfo("TypeName")), "Member.TypeName", "ValidateMembers"
-        ValidateAccessor CStr(MemberInfo("Accessor"))
-        ValidateBooleanText CStr(MemberInfo("CreateInstance")), "CreateInstance"
-        ValidateBooleanText CStr(MemberInfo("IsObject")), "IsObject"
-        ValidateBooleanText CStr(MemberInfo("ReadOnly")), "ReadOnly"
-
-        MemberKey = LCase$(CStr(MemberInfo("Name")))
-        If MemberNames.Exists(MemberKey) Then
-            Err.Raise ComErrInvalidArgument, "ValidateMembers", "Duplicate member name: " & CStr(MemberInfo("Name"))
-        End If
-
-        MemberNames.Add MemberKey, True
-    Next MemberInfo
-End Sub
-
 Private Sub SetRequiredMembers(ByVal Members As Collection)
     If Members Is Nothing Then
         Err.Raise ComErrInvalidArgument, "SetRequiredMembers", "Members are required."
     End If
-End Sub
-
-Private Sub ValidateAccessor(ByVal Accessor As String)
-    If ComIsBlankText(Accessor) Then
-        Exit Sub
-    End If
-
-    Select Case Accessor
-        Case "GetLet", "GetSet", "GetOnly"
-        Case Else
-            Err.Raise ComErrInvalidArgument, "ValidateAccessor", "Accessor must be GetLet, GetSet, or GetOnly."
-    End Select
-End Sub
-
-Private Sub ValidateBooleanText(ByVal TextValue As String, ByVal ValueName As String)
-    Select Case TextValue
-        Case "True", "False"
-        Case Else
-            Err.Raise ComErrInvalidArgument, "ValidateBooleanText", ValueName & " must be True or False."
-    End Select
-End Sub
-
-Private Sub ValidateIdentifier(ByVal Identifier As String, ByVal ValueName As String)
-    Dim Position As Long
-    Dim Character As String
-
-    ComRequireText Identifier, ValueName, "ValidateIdentifier"
-
-    Character = Mid$(Identifier, 1, 1)
-    If Not Character Like "[A-Za-z]" Then
-        Err.Raise ComErrInvalidArgument, "ValidateIdentifier", ValueName & " must start with a letter."
-    End If
-
-    For Position = 1 To Len(Identifier)
-        Character = Mid$(Identifier, Position, 1)
-        If Not (Character Like "[A-Za-z0-9_]") Then
-            Err.Raise ComErrInvalidArgument, "ValidateIdentifier", ValueName & " must contain only letters, numbers, or underscore."
-        End If
-    Next Position
 End Sub
 
 Private Sub SaveMemberSources(ByVal ManifestPath As String, ByVal Modules As Collection)

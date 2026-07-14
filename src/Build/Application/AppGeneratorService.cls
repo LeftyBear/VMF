@@ -19,6 +19,8 @@ Option Explicit
 Private Generator As InfGenerator
 Private GenerationEngine As BuildGenerationEngine
 Private ManifestProvider As InfManifestProvider
+Private ManifestValidationService As AppManifestValidationService
+Private ManifestEditorService As AppManifestEditorService
 
 Private Const DefaultApplicationName As String = "SchoolTimetable"
 
@@ -26,7 +28,9 @@ Private Const DefaultApplicationName As String = "SchoolTimetable"
 Public Sub AppInitialize( _
     ByVal ModuleGenerator As InfGenerator, _
     ByVal Engine As BuildGenerationEngine, _
-    ByVal ProviderManifest As InfManifestProvider)
+    ByVal ProviderManifest As InfManifestProvider, _
+    ByVal ValidationService As AppManifestValidationService, _
+    ByVal EditorService As AppManifestEditorService)
 
     If ModuleGenerator Is Nothing Then
         Err.Raise ComErrInvalidArgument, "AppInitialize", "ModuleGenerator is required."
@@ -40,9 +44,19 @@ Public Sub AppInitialize( _
         Err.Raise ComErrInvalidArgument, "AppInitialize", "ManifestProvider is required."
     End If
 
+    If ValidationService Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "AppInitialize", "ManifestValidationService is required."
+    End If
+
+    If EditorService Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "AppInitialize", "ManifestEditorService is required."
+    End If
+
     Set Generator = ModuleGenerator
     Set GenerationEngine = Engine
     Set ManifestProvider = ProviderManifest
+    Set ManifestValidationService = ValidationService
+    Set ManifestEditorService = EditorService
 End Sub
 
 ' Generates a standard module with the required template.
@@ -179,6 +193,12 @@ Private Function GenerateProject() As ComResult
     ManifestContent = LoadProjectManifest(ManifestPath)
 
     Set Result = CreateProjectManifest(ManifestContent, ProjectManifest)
+    If Result.IsFailure Then
+        Set GenerateProject = Result
+        Exit Function
+    End If
+
+    Set Result = ValidateProjectManifest(ProjectManifest)
     If Result.IsFailure Then
         Set GenerateProject = Result
         Exit Function
@@ -354,6 +374,12 @@ Private Function GenerateBuildLayerManifest(ByVal LayerName As String) As ComRes
     End If
 
     ManifestPath = ResolveBuildManifestPath(LayerName & ".manifest")
+    Set Result = ValidateBuildManifestFile(ManifestPath, OperationName)
+    If Result.IsFailure Then
+        Set GenerateBuildLayerManifest = Result
+        Exit Function
+    End If
+
     Set Result = ManifestProvider.InfValidateManifestFile(ManifestPath)
     If Result.IsFailure Then
         Set GenerateBuildLayerManifest = Result
@@ -384,6 +410,30 @@ ErrHandler:
     Set GenerateBuildLayerManifest = ComCreateFailureFromErr("AppGeneratorService." & OperationName, Desc, "Error", False)
 End Function
 
+Private Function ValidateBuildManifestFile(ByVal ManifestPath As String, ByVal OperationName As String) As ComResult
+    Dim Modules As Collection
+    Dim Issues As Collection
+    Dim Result As ComResult
+
+    Set Result = ManifestEditorService.AppLoadManifestEditorModel(ManifestPath, Modules)
+    If Result.IsFailure Then
+        Set ValidateBuildManifestFile = Result
+        Exit Function
+    End If
+
+    Set Result = ManifestValidationService.AppValidateManifestEditorModel(ManifestPath, Modules, Issues)
+    If Result.IsFailure Then
+        Set ValidateBuildManifestFile = Result
+        Exit Function
+    End If
+
+    If ManifestValidationService.AppIssuesContainErrors(Issues) Then
+        Set ValidateBuildManifestFile = ManifestValidationService.AppCreateFailureFromIssues(Issues, "AppGeneratorService." & OperationName)
+    Else
+        Set ValidateBuildManifestFile = ComCreateSuccess("Manifest validation passed.")
+    End If
+End Function
+
 Private Function PreviewBuildLayerManifest(ByVal LayerName As String, ByRef PreviewText As String) As ComResult
     Dim Items As Collection
     Dim Item As ManifestItem
@@ -408,6 +458,12 @@ Private Function PreviewBuildLayerManifest(ByVal LayerName As String, ByRef Prev
     End If
 
     ManifestPath = ResolveBuildManifestPath(LayerName & ".manifest")
+    Set Result = ValidateBuildManifestFile(ManifestPath, OperationName)
+    If Result.IsFailure Then
+        Set PreviewBuildLayerManifest = Result
+        Exit Function
+    End If
+
     Set Result = ManifestProvider.InfValidateManifestFile(ManifestPath)
     If Result.IsFailure Then
         Set PreviewBuildLayerManifest = Result
@@ -425,6 +481,60 @@ Private Function PreviewBuildLayerManifest(ByVal LayerName As String, ByRef Prev
 
 ErrHandler:
     Set PreviewBuildLayerManifest = ComCreateFailureFromErr("AppGeneratorService." & OperationName, Err.Description, "Error", False)
+End Function
+
+Private Function ValidateProjectManifest(ByVal ProjectManifest As Build_ProjectManifest) As ComResult
+    Dim Modules As Collection
+    Dim LayerNames As Variant
+    Dim LayerName As Variant
+    Dim Items As Collection
+    Dim Item As ManifestItem
+    Dim Issues As Collection
+    Dim Result As ComResult
+
+    If ProjectManifest Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "ValidateProjectManifest", "ProjectManifest is required."
+    End If
+
+    Set Modules = New Collection
+    LayerNames = Array("Common", "Core", "Manifest", "Infrastructure", "Domain", "Application", "Presentation")
+    For Each LayerName In LayerNames
+        If ProjectManifest.BuildHasLayer(CStr(LayerName)) And ProjectManifest.BuildIsGenerationEnabled(CStr(LayerName)) Then
+            Set Items = ProjectManifest.BuildGetLayerItems(CStr(LayerName))
+            For Each Item In Items
+                Modules.Add CreateModuleInfoFromManifestItem(Item)
+            Next Item
+        End If
+    Next LayerName
+
+    Set Result = ManifestValidationService.AppValidateManifestEditorModel(BuildPathResolver.ManifestFilePath(ResolveApplicationName()), Modules, Issues)
+    If Result.IsFailure Then
+        Set ValidateProjectManifest = Result
+    ElseIf ManifestValidationService.AppIssuesContainErrors(Issues) Then
+        Set ValidateProjectManifest = ManifestValidationService.AppCreateFailureFromIssues(Issues, "AppGeneratorService.AppGenerateProject")
+    Else
+        Set ValidateProjectManifest = ComCreateSuccess("Manifest validation passed.")
+    End If
+End Function
+
+Private Function CreateModuleInfoFromManifestItem(ByVal Item As ManifestItem) As Object
+    Dim ModuleInfo As Object
+
+    If Item Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "CreateModuleInfoFromManifestItem", "ManifestItem is required."
+    End If
+
+    Set ModuleInfo = CreateObject("Scripting.Dictionary")
+    ModuleInfo("ModuleName") = Item.InfGetModuleName()
+    ModuleInfo("Layer") = Item.InfGetLayerName()
+    ModuleInfo("ModuleType") = Item.InfGetModuleType()
+    ModuleInfo("TemplatePath") = Item.InfGetTemplatePath()
+    ModuleInfo("BodySourcePath") = Item.InfGetBodySourcePath()
+    ModuleInfo("MemberSourcePath") = Item.InfGetMemberSourcePath()
+    Set ModuleInfo("SectionFields") = New Collection
+    Set ModuleInfo("Members") = New Collection
+
+    Set CreateModuleInfoFromManifestItem = ModuleInfo
 End Function
 
 ' Validates basic module name rules.

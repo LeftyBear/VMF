@@ -30,6 +30,10 @@ Private PreviewErrorTextBox As MSForms.TextBox
 Private WithEvents PreviewRefreshButton As MSForms.CommandButton
 Private WithEvents PreviewCopyButton As MSForms.CommandButton
 Private WithEvents PreviewCloseButton As MSForms.CommandButton
+Private WithEvents ValidationButton As MSForms.CommandButton
+Private WithEvents ValidationListBox As MSForms.ListBox
+Private WithEvents ValidationCloseButton As MSForms.CommandButton
+Private ValidationIssues As Collection
 Public Sub PreOpenManifest(ByVal ManifestPath As String)
     txtManifestPath.Text = ManifestPath
     LoadManifest
@@ -50,6 +54,7 @@ Private Sub UserForm_Initialize()
     btnModuleApply.Height = 22
     btnLoad.Caption = "Browse..."
     CreatePreviewButton
+    CreateValidationButton
 
     cboModuleType.Clear
     cboModuleType.AddItem "ClassModule"
@@ -88,6 +93,13 @@ Private Sub btnSave_Click()
 
     ApplyModuleFieldsToSelection
     ApplyMemberFieldsToSelection
+    Set Result = ValidateProjectModel()
+    If AppValidationIssuesContainErrors(ValidationIssues) Then
+        ShowValidationPane ValidationIssues
+        MsgBox Result.Message, vbExclamation, "Manifest Editor"
+        Exit Sub
+    End If
+
     Set Result = AppSaveManifestEditorModel(txtManifestPath.Text, Modules)
     MsgBox Result.Message, IIf(Result.IsSuccess, vbInformation, vbExclamation), "Manifest Editor"
 End Sub
@@ -137,12 +149,40 @@ Private Sub btnModuleApply_Click()
 End Sub
 
 Private Sub PreviewButton_Click()
+    Dim Result As ComResult
+
     If SelectedModuleIndex <= 0 Then
         MsgBox "Select a module first.", vbExclamation, "Manifest Editor"
         Exit Sub
     End If
 
+    ApplyModuleFieldsToSelection
+    ApplyMemberFieldsToSelection
+    Set Result = ValidateSelectedModule()
+    If AppValidationIssuesContainErrors(ValidationIssues) Then
+        ShowValidationPane ValidationIssues
+        MsgBox Result.Message, vbExclamation, "Manifest Editor"
+        Exit Sub
+    End If
+
     ShowPreviewPane
+End Sub
+
+Private Sub ValidationButton_Click()
+    Dim Result As ComResult
+
+    ApplyModuleFieldsToSelection
+    ApplyMemberFieldsToSelection
+    Set Result = ValidateProjectModel()
+    ShowValidationPane ValidationIssues
+End Sub
+
+Private Sub ValidationCloseButton_Click()
+    HideValidationPane
+End Sub
+
+Private Sub ValidationListBox_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
+    NavigateToValidationIssue
 End Sub
 
 Private Sub PreviewRefreshButton_Click()
@@ -319,7 +359,24 @@ Private Sub CreatePreviewButton()
     PreviewButton.Top = btnModuleApply.Top
 End Sub
 
+Private Sub CreateValidationButton()
+    On Error Resume Next
+    Set ValidationButton = Me.Controls("btnValidate")
+    On Error GoTo 0
+
+    If ValidationButton Is Nothing Then
+        Set ValidationButton = Me.Controls.Add("Forms.CommandButton.1", "btnValidate", True)
+    End If
+
+    ValidationButton.Caption = "Validate"
+    ValidationButton.Width = 72
+    ValidationButton.Height = 22
+    ValidationButton.Left = PreviewButton.Left + PreviewButton.Width + 8
+    ValidationButton.Top = PreviewButton.Top
+End Sub
+
 Private Sub ShowPreviewPane()
+    HideValidationPane
     EnsurePreviewControls
     Me.Width = 980
     PreviewCodeTextBox.Visible = True
@@ -434,6 +491,140 @@ Private Sub EnsurePreviewControls()
     PreviewCloseButton.Width = 78
     PreviewCloseButton.Height = 24
     PreviewCloseButton.Visible = False
+End Sub
+Private Function ValidateProjectModel() As ComResult
+    Set ValidateProjectModel = AppValidateManifestEditorModel(txtManifestPath.Text, Modules, ValidationIssues)
+End Function
+
+Private Function ValidateSelectedModule() As ComResult
+    If SelectedModuleIndex <= 0 Then
+        Set ValidationIssues = New Collection
+        Set ValidateSelectedModule = ComCreateSuccess("Manifest validation failed.")
+        Exit Function
+    End If
+
+    Set ValidateSelectedModule = AppValidateManifestEditorModule(txtManifestPath.Text, Modules.Item(SelectedModuleIndex), ValidationIssues)
+End Function
+
+Private Sub ShowValidationPane(ByVal Issues As Collection)
+    HidePreviewPane
+    EnsureValidationControls
+    Me.Width = 980
+    ValidationListBox.Visible = True
+    ValidationCloseButton.Visible = True
+    RenderValidationIssues Issues
+End Sub
+
+Private Sub HideValidationPane()
+    If ValidationListBox Is Nothing Then
+        Exit Sub
+    End If
+
+    ValidationListBox.Visible = False
+    ValidationCloseButton.Visible = False
+End Sub
+
+Private Sub EnsureValidationControls()
+    If Not ValidationListBox Is Nothing Then
+        Exit Sub
+    End If
+
+    Set ValidationListBox = Me.Controls.Add("Forms.ListBox.1", "lstValidationIssues", True)
+    ValidationListBox.Left = 620
+    ValidationListBox.Top = 30
+    ValidationListBox.Width = 330
+    ValidationListBox.Height = 330
+    ValidationListBox.ColumnCount = 5
+    ValidationListBox.ColumnWidths = "58 pt;72 pt;74 pt;62 pt;190 pt"
+    ValidationListBox.Visible = False
+
+    Set ValidationCloseButton = Me.Controls.Add("Forms.CommandButton.1", "btnValidationClose", True)
+    ValidationCloseButton.Caption = "Close"
+    ValidationCloseButton.Left = 872
+    ValidationCloseButton.Top = 370
+    ValidationCloseButton.Width = 78
+    ValidationCloseButton.Height = 24
+    ValidationCloseButton.Visible = False
+End Sub
+
+Private Sub RenderValidationIssues(ByVal Issues As Collection)
+    Dim Issue As AppManifestValidationIssue
+
+    EnsureValidationControls
+    ValidationListBox.Clear
+    If Issues Is Nothing Then
+        ValidationListBox.AddItem "Information"
+        ValidationListBox.List(0, 1) = "VMF-VAL-000"
+        ValidationListBox.List(0, 2) = vbNullString
+        ValidationListBox.List(0, 3) = vbNullString
+        ValidationListBox.List(0, 4) = "Manifest validation passed."
+        Exit Sub
+    End If
+
+    If Issues.Count = 0 Then
+        ValidationListBox.AddItem "Information"
+        ValidationListBox.List(0, 1) = "VMF-VAL-000"
+        ValidationListBox.List(0, 2) = vbNullString
+        ValidationListBox.List(0, 3) = vbNullString
+        ValidationListBox.List(0, 4) = "Manifest validation passed."
+        Exit Sub
+    End If
+
+    For Each Issue In Issues
+        ValidationListBox.AddItem Issue.SeverityText
+        ValidationListBox.List(ValidationListBox.ListCount - 1, 1) = Issue.Code
+        ValidationListBox.List(ValidationListBox.ListCount - 1, 2) = Issue.ModuleName
+        ValidationListBox.List(ValidationListBox.ListCount - 1, 3) = Issue.MemberName
+        ValidationListBox.List(ValidationListBox.ListCount - 1, 4) = Issue.Message
+    Next Issue
+End Sub
+
+Private Sub NavigateToValidationIssue()
+    Dim Issue As AppManifestValidationIssue
+    Dim ModuleIndex As Long
+    Dim MemberIndex As Long
+    Dim ModuleInfo As Object
+    Dim Members As Collection
+    Dim MemberInfo As Object
+
+    If ValidationIssues Is Nothing Then
+        Exit Sub
+    End If
+
+    If ValidationListBox.ListIndex < 0 Then
+        Exit Sub
+    End If
+
+    If ValidationListBox.ListIndex + 1 > ValidationIssues.Count Then
+        Exit Sub
+    End If
+
+    Set Issue = ValidationIssues.Item(ValidationListBox.ListIndex + 1)
+    If ComIsBlankText(Issue.ModuleName) Then
+        Exit Sub
+    End If
+
+    For ModuleIndex = 1 To Modules.Count
+        Set ModuleInfo = Modules.Item(ModuleIndex)
+        If StrComp(CStr(ModuleInfo("ModuleName")), Issue.ModuleName, vbTextCompare) = 0 Then
+            SelectedModuleIndex = ModuleIndex
+            lstModules.ListIndex = ModuleIndex - 1
+            ShowSelectedModule
+            If Not ComIsBlankText(Issue.MemberName) Then
+                Set Members = ModuleInfo("Members")
+                For MemberIndex = 1 To Members.Count
+                    Set MemberInfo = Members.Item(MemberIndex)
+                    If StrComp(CStr(MemberInfo("Name")), Issue.MemberName, vbTextCompare) = 0 Then
+                        SelectedMemberIndex = MemberIndex
+                        lstMembers.ListIndex = MemberIndex - 1
+                        ShowSelectedMember
+                        Exit For
+                    End If
+                Next MemberIndex
+            End If
+            Exit For
+        End If
+    Next ModuleIndex
 End Sub
 Private Function CreateMemberFromFields() As Object
     Set CreateMemberFromFields = AppCreateManifestEditorMember( _

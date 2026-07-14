@@ -220,6 +220,38 @@ Public Function AppPreviewManifestEditorModule( _
     Set AppPreviewManifestEditorModule = PreviewService.AppPreviewManifestEditorModule(ManifestPath, ModuleInfo, PreviewText)
 End Function
 
+' Validates an editable Build manifest model.
+Public Function AppValidateManifestEditorModel( _
+    ByVal ManifestPath As String, _
+    ByVal Modules As Collection, _
+    ByRef Issues As Collection) As ComResult
+
+    Dim ValidationService As AppManifestValidationService
+
+    Set ValidationService = CreateCompositionRoot().AppCreateManifestValidationService()
+    Set AppValidateManifestEditorModel = ValidationService.AppValidateManifestEditorModel(ManifestPath, Modules, Issues)
+End Function
+
+' Validates one editable Build manifest module.
+Public Function AppValidateManifestEditorModule( _
+    ByVal ManifestPath As String, _
+    ByVal ModuleInfo As Object, _
+    ByRef Issues As Collection) As ComResult
+
+    Dim ValidationService As AppManifestValidationService
+
+    Set ValidationService = CreateCompositionRoot().AppCreateManifestValidationService()
+    Set AppValidateManifestEditorModule = ValidationService.AppValidateManifestEditorModule(ManifestPath, ModuleInfo, Issues)
+End Function
+
+' Returns True when validation issues contain at least one Error.
+Public Function AppValidationIssuesContainErrors(ByVal Issues As Collection) As Boolean
+    Dim ValidationService As AppManifestValidationService
+
+    Set ValidationService = CreateCompositionRoot().AppCreateManifestValidationService()
+    AppValidationIssuesContainErrors = ValidationService.AppIssuesContainErrors(Issues)
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================

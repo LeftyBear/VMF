@@ -18,11 +18,13 @@ Option Explicit
 
 Private Generator As InfGenerator
 Private ManifestEditorService As AppManifestEditorService
+Private ManifestValidationService As AppManifestValidationService
 
 ' Initializes the preview service with canonical generation collaborators.
 Public Sub AppInitialize( _
     ByVal ModuleGenerator As InfGenerator, _
-    ByVal EditorService As AppManifestEditorService)
+    ByVal EditorService As AppManifestEditorService, _
+    ByVal ValidationService As AppManifestValidationService)
 
     If ModuleGenerator Is Nothing Then
         Err.Raise ComErrInvalidArgument, "AppCodePreviewService.AppInitialize", "ModuleGenerator is required."
@@ -32,8 +34,13 @@ Public Sub AppInitialize( _
         Err.Raise ComErrInvalidArgument, "AppCodePreviewService.AppInitialize", "ManifestEditorService is required."
     End If
 
+    If ValidationService Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "AppCodePreviewService.AppInitialize", "ManifestValidationService is required."
+    End If
+
     Set Generator = ModuleGenerator
     Set ManifestEditorService = EditorService
+    Set ManifestValidationService = ValidationService
 End Sub
 
 ' Renders one unsaved manifest editor module without writing manifest or source files.
@@ -44,6 +51,8 @@ Public Function AppPreviewManifestEditorModule( _
 
     Dim Item As ManifestItem
     Dim CodeText As String
+    Dim Issues As Collection
+    Dim ValidationResult As ComResult
 
     On Error GoTo ErrHandler
 
@@ -54,7 +63,17 @@ Public Function AppPreviewManifestEditorModule( _
         Err.Raise ComErrInvalidState, "AppPreviewManifestEditorModule", "GeneratorService is not initialized."
     End If
 
-    ValidateModuleInfo ModuleInfo
+    Set ValidationResult = ManifestValidationService.AppValidateManifestEditorModule(ManifestPath, ModuleInfo, Issues)
+    If ValidationResult.IsFailure Then
+        Set AppPreviewManifestEditorModule = ValidationResult
+        Exit Function
+    End If
+
+    If ManifestValidationService.AppIssuesContainErrors(Issues) Then
+        Set AppPreviewManifestEditorModule = ManifestValidationService.AppCreateFailureFromIssues(Issues, "AppCodePreviewService.AppPreviewManifestEditorModule")
+        Exit Function
+    End If
+
     Set Item = CreateManifestItem(ManifestPath, ModuleInfo)
     CodeText = Generator.InfGenerateManifestItem(Item)
 
@@ -109,52 +128,6 @@ Private Function CreateManifestItem(ByVal ManifestPath As String, ByVal ModuleIn
 
     Set CreateManifestItem = Item
 End Function
-
-Private Sub ValidateModuleInfo(ByVal ModuleInfo As Object)
-    If ModuleInfo Is Nothing Then
-        Err.Raise ComErrInvalidArgument, "AppCodePreviewService.ValidateModuleInfo", "Manifest module is required."
-    End If
-
-    ValidateRequiredKey ModuleInfo, "ModuleName"
-    ValidateRequiredKey ModuleInfo, "Layer"
-    ValidateRequiredKey ModuleInfo, "ModuleType"
-    ValidateRequiredKey ModuleInfo, "TemplatePath"
-
-    ValidateIdentifier CStr(ModuleInfo("ModuleName")), "ModuleName"
-    ValidateIdentifier CStr(ModuleInfo("Layer")), "Layer"
-    Select Case CStr(ModuleInfo("ModuleType"))
-        Case "StandardModule", "ClassModule"
-        Case Else
-            Err.Raise ComErrInvalidArgument, "AppCodePreviewService.ValidateModuleInfo", "ModuleType must be StandardModule or ClassModule."
-    End Select
-End Sub
-
-Private Sub ValidateRequiredKey(ByVal Values As Object, ByVal KeyName As String)
-    If Not Values.Exists(KeyName) Then
-        Err.Raise ComErrInvalidArgument, "AppCodePreviewService.ValidateRequiredKey", KeyName & " is required."
-    End If
-
-    ComRequireText CStr(Values(KeyName)), KeyName, "AppCodePreviewService.ValidateRequiredKey"
-End Sub
-
-Private Sub ValidateIdentifier(ByVal Identifier As String, ByVal ValueName As String)
-    Dim Position As Long
-    Dim Character As String
-
-    ComRequireText Identifier, ValueName, "AppCodePreviewService.ValidateIdentifier"
-
-    Character = Mid$(Identifier, 1, 1)
-    If Not Character Like "[A-Za-z]" Then
-        Err.Raise ComErrInvalidArgument, "AppCodePreviewService.ValidateIdentifier", ValueName & " must start with a letter."
-    End If
-
-    For Position = 1 To Len(Identifier)
-        Character = Mid$(Identifier, Position, 1)
-        If Not (Character Like "[A-Za-z0-9_]") Then
-            Err.Raise ComErrInvalidArgument, "AppCodePreviewService.ValidateIdentifier", ValueName & " must contain only letters, numbers, or underscore."
-        End If
-    Next Position
-End Sub
 
 Private Function ClassifyPreviewError(ByVal ErrorSource As String, ByVal ErrorDescription As String) As String
     Dim SourceText As String

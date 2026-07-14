@@ -13,6 +13,8 @@ Private Const AppTestAssertErrorNumber As Long = vbObjectError + 9910
 Public Sub AppRunManifestEditorServiceTests()
     VerifyManifestEditorRoundTrip
     VerifyManifestEditorPreviewUsesUnsavedModel
+    VerifyManifestValidationFindsModuleAndMemberErrors
+    VerifyManifestValidationWarningsDoNotBlockSave
     VerifyManifestEditorRejectsDuplicateModules
 End Sub
 
@@ -118,7 +120,7 @@ Private Sub VerifyManifestEditorPreviewUsesUnsavedModel()
 
     ManifestBefore = FileProvider.InfReadText(ManifestPath)
     Set PreviewService = New AppCodePreviewService
-    PreviewService.AppInitialize InfCreateGenerator(), Service
+    PreviewService.AppInitialize InfCreateGenerator(), Service, New AppManifestValidationService
     Set Result = PreviewService.AppPreviewManifestEditorModule(ManifestPath, ModuleInfo, PreviewText)
     AssertTrue Result.IsSuccess, "Preview should render from unsaved module model."
     AssertTrue InStr(1, PreviewText, "Public Property Get Name()", vbTextCompare) > 0, "Preview should include unsaved member code."
@@ -133,6 +135,84 @@ Private Sub VerifyManifestEditorPreviewUsesUnsavedModel()
     Set ReloadedItems = InfCreateManifestProvider().InfLoadManifestItems(ManifestPath)
     GeneratedText = Generator.InfGenerateManifestItem(ReloadedItems.Item(1))
     AssertEquals GeneratedText, PreviewText, "Preview and saved generation should produce identical code."
+End Sub
+
+Private Sub VerifyManifestValidationFindsModuleAndMemberErrors()
+    Dim FileProvider As InfFileSystemProvider
+    Dim Service As AppManifestEditorService
+    Dim ValidationService As AppManifestValidationService
+    Dim PreviewService As AppCodePreviewService
+    Dim ManifestPath As String
+    Dim TemplatePath As String
+    Dim Modules As Collection
+    Dim ModuleInfo As Object
+    Dim Members As Collection
+    Dim Issues As Collection
+    Dim Result As ComResult
+    Dim PreviewText As String
+
+    ManifestPath = GetTestFolderPath() & "\ManifestValidationErrors.manifest"
+    TemplatePath = GetTestFolderPath() & "\templates\ClassTemplate.txt"
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText TemplatePath, ReadTemplateContent("ClassTemplate.txt")
+
+    Set Service = New AppManifestEditorService
+    Set ValidationService = New AppManifestValidationService
+    Set Modules = New Collection
+    Set ModuleInfo = Service.AppCreateManifestEditorModule("Invalid-Module", "Application", "ClassModule", "templates\ClassTemplate.txt")
+    Set Members = ModuleInfo("Members")
+    Members.Add Service.AppCreateManifestEditorMember("Child", "SampleChild", "GetLet", vbNullString, True)
+    Modules.Add ModuleInfo
+
+    Set Result = ValidationService.AppValidateManifestEditorModel(ManifestPath, Modules, Issues)
+    AssertTrue Result.IsSuccess, "Validation should return a result."
+    AssertTrue ValidationService.AppIssuesContainErrors(Issues), "Validation should find errors."
+    AssertIssueCode Issues, "VMF-MOD-002"
+    AssertIssueCode Issues, "VMF-MEM-009"
+
+    Set Result = Service.AppSaveManifestEditorModel(ManifestPath, Modules)
+    AssertTrue Result.IsFailure, "Save should stop when validation has errors."
+
+    Set PreviewService = New AppCodePreviewService
+    PreviewService.AppInitialize InfCreateGenerator(), Service, ValidationService
+    Set Result = PreviewService.AppPreviewManifestEditorModule(ManifestPath, ModuleInfo, PreviewText)
+    AssertTrue Result.IsFailure, "Preview should stop when validation has errors."
+End Sub
+
+Private Sub VerifyManifestValidationWarningsDoNotBlockSave()
+    Dim FileProvider As InfFileSystemProvider
+    Dim Service As AppManifestEditorService
+    Dim ValidationService As AppManifestValidationService
+    Dim ManifestPath As String
+    Dim TemplatePath As String
+    Dim Modules As Collection
+    Dim ModuleInfo As Object
+    Dim Members As Collection
+    Dim MemberInfo As Object
+    Dim Issues As Collection
+    Dim Result As ComResult
+
+    ManifestPath = GetTestFolderPath() & "\ManifestValidationWarnings.manifest"
+    TemplatePath = GetTestFolderPath() & "\templates\ClassTemplate.txt"
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText TemplatePath, ReadTemplateContent("ClassTemplate.txt")
+
+    Set Service = New AppManifestEditorService
+    Set ValidationService = New AppManifestValidationService
+    Set Modules = New Collection
+    Set ModuleInfo = Service.AppCreateManifestEditorModule("WarningService", "Application", "ClassModule", "templates\ClassTemplate.txt")
+    Set Members = ModuleInfo("Members")
+    Set MemberInfo = Service.AppCreateManifestEditorMember("Child", "SampleChild", "GetSet", "ExistingChild", True)
+    Members.Add MemberInfo
+    Modules.Add ModuleInfo
+
+    Set Result = ValidationService.AppValidateManifestEditorModel(ManifestPath, Modules, Issues)
+    AssertTrue Result.IsSuccess, "Warning validation should complete."
+    AssertFalse ValidationService.AppIssuesContainErrors(Issues), "Warnings should not count as errors."
+    AssertIssueCode Issues, "VMF-MEM-013"
+
+    Set Result = Service.AppSaveManifestEditorModel(ManifestPath, Modules)
+    AssertTrue Result.IsSuccess, "Warnings should not block save."
 End Sub
 
 Private Function ReadTemplateContent(ByVal TemplateFileName As String) As String
@@ -192,6 +272,26 @@ Private Sub AssertTrue(ByVal Condition As Boolean, ByVal Message As String)
     If Not Condition Then
         Err.Raise AppTestAssertErrorNumber, "AppManifestEditorServiceTests", Message
     End If
+End Sub
+
+Private Sub AssertFalse(ByVal Condition As Boolean, ByVal Message As String)
+    AssertTrue Not Condition, Message
+End Sub
+
+Private Sub AssertIssueCode(ByVal Issues As Collection, ByVal ExpectedCode As String)
+    Dim Issue As AppManifestValidationIssue
+
+    If Issues Is Nothing Then
+        Err.Raise AppTestAssertErrorNumber, "AppManifestEditorServiceTests", "Validation issues are required."
+    End If
+
+    For Each Issue In Issues
+        If Issue.Code = ExpectedCode Then
+            Exit Sub
+        End If
+    Next Issue
+
+    Err.Raise AppTestAssertErrorNumber, "AppManifestEditorServiceTests", "Expected validation code was not found: " & ExpectedCode
 End Sub
 
 Private Sub AssertEquals(ByVal Expected As String, ByVal Actual As String, ByVal Message As String)
