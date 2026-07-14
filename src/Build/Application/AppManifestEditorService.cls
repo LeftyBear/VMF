@@ -105,6 +105,12 @@ Public Function AppCreateManifestEditorMember( _
     Set AppCreateManifestEditorMember = MemberInfo
 End Function
 
+' Renders editable member definitions using the same format saved by Manifest Editor.
+Public Function AppRenderManifestEditorMemberDefinitions(ByVal Members As Collection) As String
+    SetRequiredMembers Members
+    AppRenderManifestEditorMemberDefinitions = RenderMemberDefinitions(Members)
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================
@@ -318,6 +324,12 @@ Private Sub ValidateMembers(ByVal ModuleInfo As Object)
 
         MemberNames.Add MemberKey, True
     Next MemberInfo
+End Sub
+
+Private Sub SetRequiredMembers(ByVal Members As Collection)
+    If Members Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "SetRequiredMembers", "Members are required."
+    End If
 End Sub
 
 Private Sub ValidateAccessor(ByVal Accessor As String)

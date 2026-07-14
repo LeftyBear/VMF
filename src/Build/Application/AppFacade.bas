@@ -208,6 +208,18 @@ Public Function AppCreateManifestEditorMember( _
         CreateInstance)
 End Function
 
+' Previews generated code from one unsaved Manifest Editor module.
+Public Function AppPreviewManifestEditorModule( _
+    ByVal ManifestPath As String, _
+    ByVal ModuleInfo As Object, _
+    ByRef PreviewText As String) As ComResult
+
+    Dim PreviewService As AppCodePreviewService
+
+    Set PreviewService = CreateCompositionRoot().AppCreateCodePreviewService()
+    Set AppPreviewManifestEditorModule = PreviewService.AppPreviewManifestEditorModule(ManifestPath, ModuleInfo, PreviewText)
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================

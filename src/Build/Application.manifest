@@ -2,6 +2,7 @@
 AppFacade,StandardModule,Application,..\..\templates\ModuleTemplate.txt
 Build_ProjectManifest,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppBuildService,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppCodePreviewService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppCompositionRoot,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppExportService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppGeneratorService,ClassModule,Application,..\..\templates\ClassTemplate.txt

@@ -64,6 +64,16 @@ Public Function AppCreateManifestEditorService() As AppManifestEditorService
     Set AppCreateManifestEditorService = New AppManifestEditorService
 End Function
 
+' Creates a code preview service.
+Public Function AppCreateCodePreviewService() As AppCodePreviewService
+    Dim PreviewService As AppCodePreviewService
+
+    Set PreviewService = New AppCodePreviewService
+    PreviewService.AppInitialize InfCreateGenerator(), AppCreateManifestEditorService()
+
+    Set AppCreateCodePreviewService = PreviewService
+End Function
+
 ' Creates the Build generation engine.
 Public Function AppCreateGenerationEngine() As BuildGenerationEngine
     Dim Engine As BuildGenerationEngine

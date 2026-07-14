@@ -188,12 +188,16 @@ Private Sub ApplyClassMemberSource(ByVal Manifest As Object, ByVal Item As Manif
         Err.Raise ComErrInvalidArgument, "ApplyClassMemberSource", "ManifestItem is required."
     End If
 
+    MemberSourceText = Item.InfGetMemberSourceText()
     MemberSourcePath = Item.InfGetMemberSourcePath()
-    If ComIsBlankText(MemberSourcePath) Then
+    If ComIsBlankText(MemberSourceText) And ComIsBlankText(MemberSourcePath) Then
         Exit Sub
     End If
 
-    MemberSourceText = ManifestProvider.InfLoadMemberSource(MemberSourcePath)
+    If ComIsBlankText(MemberSourceText) Then
+        MemberSourceText = ManifestProvider.InfLoadMemberSource(MemberSourcePath)
+    End If
+
     Set ClassCodeGenerator = New InfClassCodeGenerator
     Set ClassSections = ClassCodeGenerator.InfRenderClassMemberSections(MemberSourceText)
 

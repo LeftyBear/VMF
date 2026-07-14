@@ -24,6 +24,7 @@ Option Explicit
 Private Modules As Collection
 Private SelectedModuleIndex As Long
 Private SelectedMemberIndex As Long
+Private WithEvents PreviewButton As MSForms.CommandButton
 
 Public Sub PreOpenManifest(ByVal ManifestPath As String)
     txtManifestPath.Text = ManifestPath
@@ -44,6 +45,7 @@ Private Sub UserForm_Initialize()
     btnModuleDelete.Height = 22
     btnModuleApply.Height = 22
     btnLoad.Caption = "Browse..."
+    CreatePreviewButton
 
     cboModuleType.Clear
     cboModuleType.AddItem "ClassModule"
@@ -81,6 +83,7 @@ Private Sub btnSave_Click()
     Dim Result As ComResult
 
     ApplyModuleFieldsToSelection
+    ApplyMemberFieldsToSelection
     Set Result = AppSaveManifestEditorModel(txtManifestPath.Text, Modules)
     MsgBox Result.Message, IIf(Result.IsSuccess, vbInformation, vbExclamation), "Manifest Editor"
 End Sub
@@ -127,6 +130,23 @@ End Sub
 Private Sub btnModuleApply_Click()
     ApplyModuleFieldsToSelection
     RefreshModuleList
+End Sub
+
+Private Sub PreviewButton_Click()
+    Dim PreviewForm As PreCodePreviewForm
+    Dim ModuleInfo As Object
+
+    If SelectedModuleIndex <= 0 Then
+        MsgBox "Select a module first.", vbExclamation, "Manifest Editor"
+        Exit Sub
+    End If
+
+    ApplyModuleFieldsToSelection
+    ApplyMemberFieldsToSelection
+    Set ModuleInfo = Modules.Item(SelectedModuleIndex)
+    Set PreviewForm = New PreCodePreviewForm
+    PreviewForm.PreOpenPreview txtManifestPath.Text, ModuleInfo
+    PreviewForm.Show vbModal
 End Sub
 
 Private Sub btnModuleDelete_Click()
@@ -249,6 +269,46 @@ Private Sub ApplyModuleFieldsToSelection()
     ModuleInfo("Layer") = Trim$(txtLayer.Text)
     ModuleInfo("ModuleType") = Trim$(cboModuleType.Text)
     ModuleInfo("TemplatePath") = Trim$(txtTemplatePath.Text)
+End Sub
+
+Private Sub ApplyMemberFieldsToSelection()
+    Dim ModuleInfo As Object
+    Dim Members As Collection
+    Dim MemberInfo As Object
+
+    If SelectedModuleIndex <= 0 Or SelectedMemberIndex <= 0 Then
+        Exit Sub
+    End If
+
+    Set ModuleInfo = Modules.Item(SelectedModuleIndex)
+    Set Members = ModuleInfo("Members")
+    If SelectedMemberIndex > Members.Count Then
+        Exit Sub
+    End If
+
+    Set MemberInfo = CreateMemberFromFields()
+    Members.Remove SelectedMemberIndex
+    If SelectedMemberIndex > Members.Count Then
+        Members.Add MemberInfo
+    Else
+        Members.Add MemberInfo, , SelectedMemberIndex
+    End If
+End Sub
+
+Private Sub CreatePreviewButton()
+    On Error Resume Next
+    Set PreviewButton = Me.Controls("btnPreview")
+    On Error GoTo 0
+
+    If PreviewButton Is Nothing Then
+        Set PreviewButton = Me.Controls.Add("Forms.CommandButton.1", "btnPreview", True)
+    End If
+
+    PreviewButton.Caption = "Preview"
+    PreviewButton.Width = 72
+    PreviewButton.Height = 22
+    PreviewButton.Left = btnModuleApply.Left + btnModuleApply.Width + 8
+    PreviewButton.Top = btnModuleApply.Top
 End Sub
 
 Private Function CreateMemberFromFields() As Object

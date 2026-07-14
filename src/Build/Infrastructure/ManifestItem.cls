@@ -26,6 +26,7 @@ Private Type TMember
     TemplatePath As String
     BodySourcePath As String
     MemberSourcePath As String
+    MemberSourceText As String
 End Type
 
 Private This As TMember
@@ -50,6 +51,7 @@ Public Sub InfInitialize( _
     This.TemplatePath = Trim$(TemplatePath)
     This.BodySourcePath = Trim$(BodySourcePath)
     This.MemberSourcePath = vbNullString
+    This.MemberSourceText = vbNullString
     Set SectionSourcePaths = CreateObject("Scripting.Dictionary")
 
     If Not InfValidate() Then
@@ -81,6 +83,13 @@ Public Sub InfSetMemberSourcePath(ByVal MemberSourcePath As String)
     ComRequireText MemberSourcePath, "MemberSourcePath", "ManifestItem.InfSetMemberSourcePath"
 
     This.MemberSourcePath = Trim$(MemberSourcePath)
+End Sub
+
+' Sets optional in-memory class member definitions for preview generation.
+Public Sub InfSetMemberSourceText(ByVal MemberSourceText As String)
+    RequireValidState "InfSetMemberSourceText"
+
+    This.MemberSourceText = MemberSourceText
 End Sub
 
 ' Returns the target VBA module name.
@@ -117,6 +126,12 @@ End Function
 Public Function InfGetMemberSourcePath() As String
     RequireValidState "InfGetMemberSourcePath"
     InfGetMemberSourcePath = This.MemberSourcePath
+End Function
+
+' Returns optional in-memory class member definitions.
+Public Function InfGetMemberSourceText() As String
+    RequireValidState "InfGetMemberSourceText"
+    InfGetMemberSourceText = This.MemberSourceText
 End Function
 
 ' Returns optional section source paths keyed by section name.

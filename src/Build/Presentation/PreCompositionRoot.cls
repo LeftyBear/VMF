@@ -39,3 +39,8 @@ End Function
 Public Function PreCreateManifestEditorForm() As PreManifestEditorForm
     Set PreCreateManifestEditorForm = New PreManifestEditorForm
 End Function
+
+' Creates a code preview form.
+Public Function PreCreateCodePreviewForm() As PreCodePreviewForm
+    Set PreCreateCodePreviewForm = New PreCodePreviewForm
+End Function

@@ -12,6 +12,7 @@ Private Const AppTestAssertErrorNumber As Long = vbObjectError + 9910
 
 Public Sub AppRunManifestEditorServiceTests()
     VerifyManifestEditorRoundTrip
+    VerifyManifestEditorPreviewUsesUnsavedModel
     VerifyManifestEditorRejectsDuplicateModules
 End Sub
 
@@ -79,6 +80,59 @@ Private Sub VerifyManifestEditorRejectsDuplicateModules()
 
     Set Result = Service.AppSaveManifestEditorModel(GetTestFolderPath() & "\Duplicate.manifest", Modules)
     AssertTrue Result.IsFailure, "Duplicate module names should fail validation."
+End Sub
+
+Private Sub VerifyManifestEditorPreviewUsesUnsavedModel()
+    Dim FileProvider As InfFileSystemProvider
+    Dim Service As AppManifestEditorService
+    Dim PreviewService As AppCodePreviewService
+    Dim ManifestPath As String
+    Dim TemplatePath As String
+    Dim Modules As Collection
+    Dim Result As ComResult
+    Dim ModuleInfo As Object
+    Dim Members As Collection
+    Dim PreviewText As String
+    Dim ManifestBefore As String
+    Dim ManifestAfterPreview As String
+    Dim ReloadedItems As Collection
+    Dim GeneratedText As String
+    Dim Generator As InfGenerator
+
+    ManifestPath = GetTestFolderPath() & "\ManifestEditorPreview.manifest"
+    TemplatePath = GetTestFolderPath() & "\templates\ClassTemplate.txt"
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText TemplatePath, ReadTemplateContent("ClassTemplate.txt")
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath" & vbCrLf & _
+        "PreviewService,ClassModule,Application,templates\ClassTemplate.txt"
+
+    Set Service = New AppManifestEditorService
+    Set Result = Service.AppLoadManifestEditorModel(ManifestPath, Modules)
+    AssertTrue Result.IsSuccess, "Manifest should load for preview."
+
+    Set ModuleInfo = Modules.Item(1)
+    Set Members = ModuleInfo("Members")
+    Members.Add Service.AppCreateManifestEditorMember("Name", "String", "GetLet", "vbNullString", False)
+    Members.Add Service.AppCreateManifestEditorMember("Parent", "SampleParent", "GetSet", vbNullString, True)
+
+    ManifestBefore = FileProvider.InfReadText(ManifestPath)
+    Set PreviewService = New AppCodePreviewService
+    PreviewService.AppInitialize InfCreateGenerator(), Service
+    Set Result = PreviewService.AppPreviewManifestEditorModule(ManifestPath, ModuleInfo, PreviewText)
+    AssertTrue Result.IsSuccess, "Preview should render from unsaved module model."
+    AssertTrue InStr(1, PreviewText, "Public Property Get Name()", vbTextCompare) > 0, "Preview should include unsaved member code."
+
+    ManifestAfterPreview = FileProvider.InfReadText(ManifestPath)
+    AssertEquals ManifestBefore, ManifestAfterPreview, "Preview must not update the manifest file."
+
+    Set Result = Service.AppSaveManifestEditorModel(ManifestPath, Modules)
+    AssertTrue Result.IsSuccess, "Saving previewed model should succeed."
+
+    Set Generator = InfCreateGenerator()
+    Set ReloadedItems = InfCreateManifestProvider().InfLoadManifestItems(ManifestPath)
+    GeneratedText = Generator.InfGenerateManifestItem(ReloadedItems.Item(1))
+    AssertEquals GeneratedText, PreviewText, "Preview and saved generation should produce identical code."
 End Sub
 
 Private Function ReadTemplateContent(ByVal TemplateFileName As String) As String
