@@ -252,6 +252,58 @@ Public Function AppValidationIssuesContainErrors(ByVal Issues As Collection) As 
     AppValidationIssuesContainErrors = ValidationService.AppIssuesContainErrors(Issues)
 End Function
 
+' Creates a Manifest Editor generate request.
+Public Function AppCreateManifestGenerateRequest( _
+    ByVal TargetScope As String, _
+    ByVal SelectedModuleNames As Collection, _
+    ByVal OutputDirectory As String, _
+    ByVal OverwriteMode As String, _
+    ByVal ContinueOnError As Boolean) As AppGenerateRequest
+
+    Dim GenerateService As AppManifestGenerateService
+
+    Set GenerateService = CreateCompositionRoot().AppCreateManifestGenerateService()
+    Set AppCreateManifestGenerateRequest = GenerateService.AppCreateGenerateRequest( _
+        TargetScope, _
+        SelectedModuleNames, _
+        OutputDirectory, _
+        OverwriteMode, _
+        ContinueOnError)
+End Function
+
+' Generates source files from an editable Manifest Editor model.
+Public Function AppGenerateManifestEditorModel( _
+    ByVal ManifestPath As String, _
+    ByVal Modules As Collection, _
+    ByVal Request As AppGenerateRequest, _
+    ByRef GenerateResult As AppGenerateResult) As ComResult
+
+    Dim GenerateService As AppManifestGenerateService
+
+    Set GenerateService = CreateCompositionRoot().AppCreateManifestGenerateService()
+    Set AppGenerateManifestEditorModel = GenerateService.AppGenerateManifestEditorModel( _
+        ManifestPath, _
+        Modules, _
+        Request, _
+        GenerateResult)
+End Function
+
+' Renders a build log from structured generate results.
+Public Function AppRenderBuildLog(ByVal GenerateResult As AppGenerateResult) As String
+    Dim BuildLogService As AppBuildLogService
+
+    Set BuildLogService = CreateCompositionRoot().AppCreateBuildLogService()
+    AppRenderBuildLog = BuildLogService.AppRenderBuildLog(GenerateResult)
+End Function
+
+' Resolves the default Manifest Editor output directory.
+Public Function AppDefaultManifestGenerateOutputDirectory(ByVal ManifestPath As String) As String
+    Dim GenerateService As AppManifestGenerateService
+
+    Set GenerateService = CreateCompositionRoot().AppCreateManifestGenerateService()
+    AppDefaultManifestGenerateOutputDirectory = GenerateService.AppDefaultOutputDirectory(ManifestPath)
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================

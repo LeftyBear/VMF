@@ -34,6 +34,14 @@ Private WithEvents ValidationButton As MSForms.CommandButton
 Private WithEvents ValidationListBox As MSForms.ListBox
 Private WithEvents ValidationCloseButton As MSForms.CommandButton
 Private ValidationIssues As Collection
+Private WithEvents GenerateAllButton As MSForms.CommandButton
+Private WithEvents GenerateSelectedButton As MSForms.CommandButton
+Private WithEvents BuildLogClearButton As MSForms.CommandButton
+Private WithEvents BuildLogOpenFolderButton As MSForms.CommandButton
+Private BuildLogListBox As MSForms.ListBox
+Private BuildLogSummaryLabel As MSForms.Label
+Private LastGenerateResult As AppGenerateResult
+Private GenerateInProgress As Boolean
 Public Sub PreOpenManifest(ByVal ManifestPath As String)
     txtManifestPath.Text = ManifestPath
     LoadManifest
@@ -55,6 +63,7 @@ Private Sub UserForm_Initialize()
     btnLoad.Caption = "Browse..."
     CreatePreviewButton
     CreateValidationButton
+    CreateGenerateButtons
 
     cboModuleType.Clear
     cboModuleType.AddItem "ClassModule"
@@ -185,6 +194,28 @@ Private Sub ValidationListBox_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
     NavigateToValidationIssue
 End Sub
 
+Private Sub GenerateAllButton_Click()
+    GenerateFromEditor "AllModules"
+End Sub
+
+Private Sub GenerateSelectedButton_Click()
+    GenerateFromEditor "CurrentModule"
+End Sub
+
+Private Sub BuildLogClearButton_Click()
+    EnsureBuildLogControls
+    BuildLogListBox.Clear
+    BuildLogSummaryLabel.Caption = "Success: 0  Warning: 0  Failed: 0"
+End Sub
+
+Private Sub BuildLogOpenFolderButton_Click()
+    If LastGenerateResult Is Nothing Then
+        MsgBox "No output folder is available.", vbInformation, "Manifest Editor"
+        Exit Sub
+    End If
+
+    Shell "explorer.exe " & Chr$(34) & LastGenerateResult.OutputDirectory & Chr$(34), vbNormalFocus
+End Sub
 Private Sub PreviewRefreshButton_Click()
     RefreshPreviewPane
 End Sub
@@ -375,8 +406,125 @@ Private Sub CreateValidationButton()
     ValidationButton.Top = PreviewButton.Top
 End Sub
 
+Private Sub CreateGenerateButtons()
+    On Error Resume Next
+    Set GenerateAllButton = Me.Controls("btnGenerateAll")
+    Set GenerateSelectedButton = Me.Controls("btnGenerateSelected")
+    On Error GoTo 0
+
+    If GenerateAllButton Is Nothing Then
+        Set GenerateAllButton = Me.Controls.Add("Forms.CommandButton.1", "btnGenerateAll", True)
+    End If
+    GenerateAllButton.Caption = "Generate All"
+    GenerateAllButton.Width = 92
+    GenerateAllButton.Height = 22
+    GenerateAllButton.Left = ValidationButton.Left + ValidationButton.Width + 8
+    GenerateAllButton.Top = ValidationButton.Top
+
+    If GenerateSelectedButton Is Nothing Then
+        Set GenerateSelectedButton = Me.Controls.Add("Forms.CommandButton.1", "btnGenerateSelected", True)
+    End If
+    GenerateSelectedButton.Caption = "Generate Selected"
+    GenerateSelectedButton.Width = 118
+    GenerateSelectedButton.Height = 22
+    GenerateSelectedButton.Left = GenerateAllButton.Left + GenerateAllButton.Width + 8
+    GenerateSelectedButton.Top = GenerateAllButton.Top
+End Sub
+
+Private Sub GenerateFromEditor(ByVal TargetScope As String)
+    Dim SelectedNames As Collection
+    Dim Request As AppGenerateRequest
+    Dim Result As ComResult
+    Dim GenerateResult As AppGenerateResult
+    Dim OutputDirectory As String
+    Dim OverwriteMode As String
+
+    If GenerateInProgress Then
+        MsgBox "Generation is already running.", vbInformation, "Manifest Editor"
+        Exit Sub
+    End If
+
+    If TargetScope <> "AllModules" And SelectedModuleIndex <= 0 Then
+        MsgBox "Select a module first.", vbExclamation, "Manifest Editor"
+        Exit Sub
+    End If
+
+    If MsgBox("Generate from the current editor values? Unsaved edits are included, but the manifest file is not saved.", vbOKCancel + vbQuestion, "Manifest Editor") <> vbOK Then
+        Exit Sub
+    End If
+
+    ApplyModuleFieldsToSelection
+    ApplyMemberFieldsToSelection
+    Set Result = ValidateProjectModel()
+    If AppValidationIssuesContainErrors(ValidationIssues) Then
+        ShowValidationPane ValidationIssues
+        MsgBox Result.Message, vbExclamation, "Manifest Editor"
+        Exit Sub
+    End If
+
+    OverwriteMode = ResolveOverwriteMode()
+    If ComIsBlankText(OverwriteMode) Then
+        Exit Sub
+    End If
+
+    OutputDirectory = AppDefaultManifestGenerateOutputDirectory(txtManifestPath.Text)
+    Set SelectedNames = CreateSelectedModuleNames(TargetScope)
+    Set Request = AppCreateManifestGenerateRequest(TargetScope, SelectedNames, OutputDirectory, OverwriteMode, False)
+
+    GenerateInProgress = True
+    SetGenerateButtonsEnabled False
+    On Error GoTo GenerateFailed
+    Set Result = AppGenerateManifestEditorModel(txtManifestPath.Text, Modules, Request, GenerateResult)
+    Set LastGenerateResult = GenerateResult
+    ShowBuildLogPane GenerateResult
+    MsgBox Result.Message, IIf(Result.IsSuccess, vbInformation, vbExclamation), "Manifest Editor"
+
+GenerateDone:
+    GenerateInProgress = False
+    SetGenerateButtonsEnabled True
+    Exit Sub
+
+GenerateFailed:
+    MsgBox Err.Description, vbExclamation, "Manifest Editor"
+    Resume GenerateDone
+End Sub
+
+Private Function ResolveOverwriteMode() As String
+    Dim Answer As VbMsgBoxResult
+
+    Answer = MsgBox("Overwrite existing generated files?" & vbCrLf & "Yes: overwrite" & vbCrLf & "No: skip existing files" & vbCrLf & "Cancel: abort", vbYesNoCancel + vbQuestion, "Manifest Editor")
+    Select Case Answer
+        Case vbYes
+            ResolveOverwriteMode = "Overwrite"
+        Case vbNo
+            ResolveOverwriteMode = "Skip"
+        Case Else
+            ResolveOverwriteMode = vbNullString
+    End Select
+End Function
+
+Private Function CreateSelectedModuleNames(ByVal TargetScope As String) As Collection
+    Dim SelectedNames As Collection
+
+    Set SelectedNames = New Collection
+    If TargetScope <> "AllModules" And SelectedModuleIndex > 0 Then
+        SelectedNames.Add CStr(Modules.Item(SelectedModuleIndex)("ModuleName"))
+    End If
+
+    Set CreateSelectedModuleNames = SelectedNames
+End Function
+
+Private Sub SetGenerateButtonsEnabled(ByVal IsEnabled As Boolean)
+    If Not GenerateAllButton Is Nothing Then
+        GenerateAllButton.Enabled = IsEnabled
+    End If
+    If Not GenerateSelectedButton Is Nothing Then
+        GenerateSelectedButton.Enabled = IsEnabled
+    End If
+End Sub
 Private Sub ShowPreviewPane()
     HideValidationPane
+    HideBuildLogPane
     EnsurePreviewControls
     Me.Width = 980
     PreviewCodeTextBox.Visible = True
@@ -508,6 +656,7 @@ End Function
 
 Private Sub ShowValidationPane(ByVal Issues As Collection)
     HidePreviewPane
+    HideBuildLogPane
     EnsureValidationControls
     Me.Width = 980
     ValidationListBox.Visible = True
@@ -515,6 +664,104 @@ Private Sub ShowValidationPane(ByVal Issues As Collection)
     RenderValidationIssues Issues
 End Sub
 
+Private Sub ShowBuildLogPane(ByVal GenerateResult As AppGenerateResult)
+    HidePreviewPane
+    HideValidationPane
+    EnsureBuildLogControls
+    Me.Width = 980
+    BuildLogListBox.Visible = True
+    BuildLogClearButton.Visible = True
+    BuildLogOpenFolderButton.Visible = True
+    BuildLogSummaryLabel.Visible = True
+    RenderBuildLog GenerateResult
+End Sub
+
+Private Sub HideBuildLogPane()
+    If BuildLogListBox Is Nothing Then
+        Exit Sub
+    End If
+
+    BuildLogListBox.Visible = False
+    BuildLogClearButton.Visible = False
+    BuildLogOpenFolderButton.Visible = False
+    BuildLogSummaryLabel.Visible = False
+End Sub
+
+Private Sub EnsureBuildLogControls()
+    If Not BuildLogListBox Is Nothing Then
+        Exit Sub
+    End If
+
+    Set BuildLogListBox = Me.Controls.Add("Forms.ListBox.1", "lstBuildLog", True)
+    BuildLogListBox.Left = 620
+    BuildLogListBox.Top = 30
+    BuildLogListBox.Width = 330
+    BuildLogListBox.Height = 330
+    BuildLogListBox.ColumnCount = 6
+    BuildLogListBox.ColumnWidths = "50 pt;58 pt;86 pt;70 pt;150 pt;220 pt"
+    BuildLogListBox.Visible = False
+
+    Set BuildLogSummaryLabel = Me.Controls.Add("Forms.Label.1", "lblBuildLogSummary", True)
+    BuildLogSummaryLabel.Left = 620
+    BuildLogSummaryLabel.Top = 366
+    BuildLogSummaryLabel.Width = 330
+    BuildLogSummaryLabel.Height = 18
+    BuildLogSummaryLabel.Caption = "Success: 0  Warning: 0  Failed: 0"
+    BuildLogSummaryLabel.Visible = False
+
+    Set BuildLogClearButton = Me.Controls.Add("Forms.CommandButton.1", "btnBuildLogClear", True)
+    BuildLogClearButton.Caption = "Clear Log"
+    BuildLogClearButton.Left = 620
+    BuildLogClearButton.Top = 406
+    BuildLogClearButton.Width = 86
+    BuildLogClearButton.Height = 24
+    BuildLogClearButton.Visible = False
+
+    Set BuildLogOpenFolderButton = Me.Controls.Add("Forms.CommandButton.1", "btnBuildLogOpenFolder", True)
+    BuildLogOpenFolderButton.Caption = "Open Output"
+    BuildLogOpenFolderButton.Left = 716
+    BuildLogOpenFolderButton.Top = 406
+    BuildLogOpenFolderButton.Width = 100
+    BuildLogOpenFolderButton.Height = 24
+    BuildLogOpenFolderButton.Visible = False
+End Sub
+
+Private Sub RenderBuildLog(ByVal GenerateResult As AppGenerateResult)
+    Dim ModuleResult As AppModuleGenerateResult
+
+    EnsureBuildLogControls
+    BuildLogListBox.Clear
+    If GenerateResult Is Nothing Then
+        BuildLogSummaryLabel.Caption = "Success: 0  Warning: 0  Failed: 0"
+        Exit Sub
+    End If
+
+    For Each ModuleResult In GenerateResult.ModuleResults
+        BuildLogListBox.AddItem Format$(ModuleResult.LoggedAt, "hh:nn:ss")
+        BuildLogListBox.List(BuildLogListBox.ListCount - 1, 1) = SeverityForGenerateStatus(ModuleResult.Status)
+        BuildLogListBox.List(BuildLogListBox.ListCount - 1, 2) = ModuleResult.ModuleName
+        BuildLogListBox.List(BuildLogListBox.ListCount - 1, 3) = ModuleResult.Status
+        BuildLogListBox.List(BuildLogListBox.ListCount - 1, 4) = ModuleResult.Message
+        BuildLogListBox.List(BuildLogListBox.ListCount - 1, 5) = ModuleResult.OutputPath
+    Next ModuleResult
+
+    BuildLogSummaryLabel.Caption = "Success: " & CStr(GenerateResult.SuccessCount) & _
+        "  Warning: " & CStr(GenerateResult.WarningCount) & _
+        "  Failed: " & CStr(GenerateResult.FailureCount)
+End Sub
+
+Private Function SeverityForGenerateStatus(ByVal Status As String) As String
+    Select Case Status
+        Case "Generated"
+            SeverityForGenerateStatus = "INFO"
+        Case "Skipped"
+            SeverityForGenerateStatus = "WARNING"
+        Case "Failed"
+            SeverityForGenerateStatus = "ERROR"
+        Case Else
+            SeverityForGenerateStatus = "INFO"
+    End Select
+End Function
 Private Sub HideValidationPane()
     If ValidationListBox Is Nothing Then
         Exit Sub
@@ -717,5 +964,6 @@ Private Sub ClearMemberFields()
     txtInitialValue.Text = vbNullString
     chkCreateInstance.Value = False
 End Sub
+
 
 

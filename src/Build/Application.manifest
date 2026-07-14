@@ -1,15 +1,20 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
 AppFacade,StandardModule,Application,..\..\templates\ModuleTemplate.txt
+AppBuildLogService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 Build_ProjectManifest,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppBuildService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppCodePreviewService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppCompositionRoot,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppExportService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppGeneratorService,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppGenerateRequest,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppGenerateResult,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppImportService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppManifestEditorService,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppManifestGenerateService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppManifestValidationIssue,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppManifestValidationService,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppModuleGenerateResult,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppValidationService,ClassModule,Application,..\..\templates\ClassTemplate.txt,BodySource\Application\AppValidationService.body.txt
 AttributeWriter,ClassModule,Application,..\..\templates\ClassTemplate.txt
 Build_BlueprintParser,ClassModule,Application,..\..\templates\ClassTemplate.txt

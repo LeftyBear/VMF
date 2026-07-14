@@ -84,6 +84,25 @@ Public Function AppCreateCodePreviewService() As AppCodePreviewService
     Set AppCreateCodePreviewService = PreviewService
 End Function
 
+' Creates a manifest generate service.
+Public Function AppCreateManifestGenerateService() As AppManifestGenerateService
+    Dim GenerateService As AppManifestGenerateService
+
+    Set GenerateService = New AppManifestGenerateService
+    GenerateService.AppInitialize _
+        InfCreateGenerator(), _
+        AppCreateManifestEditorService(), _
+        AppCreateManifestValidationService(), _
+        New InfFileSystemProvider
+
+    Set AppCreateManifestGenerateService = GenerateService
+End Function
+
+' Creates a build log service.
+Public Function AppCreateBuildLogService() As AppBuildLogService
+    Set AppCreateBuildLogService = New AppBuildLogService
+End Function
+
 ' Creates the Build generation engine.
 Public Function AppCreateGenerationEngine() As BuildGenerationEngine
     Dim Engine As BuildGenerationEngine

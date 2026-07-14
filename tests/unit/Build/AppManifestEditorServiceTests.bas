@@ -15,6 +15,7 @@ Public Sub AppRunManifestEditorServiceTests()
     VerifyManifestEditorPreviewUsesUnsavedModel
     VerifyManifestValidationFindsModuleAndMemberErrors
     VerifyManifestValidationWarningsDoNotBlockSave
+    VerifyManifestGenerateSelectedWritesPreviewEquivalentFile
     VerifyManifestEditorRejectsDuplicateModules
 End Sub
 
@@ -213,6 +214,72 @@ Private Sub VerifyManifestValidationWarningsDoNotBlockSave()
 
     Set Result = Service.AppSaveManifestEditorModel(ManifestPath, Modules)
     AssertTrue Result.IsSuccess, "Warnings should not block save."
+End Sub
+
+Private Sub VerifyManifestGenerateSelectedWritesPreviewEquivalentFile()
+    Dim FileProvider As InfFileSystemProvider
+    Dim Service As AppManifestEditorService
+    Dim PreviewService As AppCodePreviewService
+    Dim GenerateService As AppManifestGenerateService
+    Dim ManifestPath As String
+    Dim TemplatePath As String
+    Dim OutputDirectory As String
+    Dim Modules As Collection
+    Dim ModuleInfo As Object
+    Dim Members As Collection
+    Dim SelectedNames As Collection
+    Dim Request As AppGenerateRequest
+    Dim GenerateResult As AppGenerateResult
+    Dim Result As ComResult
+    Dim PreviewText As String
+    Dim OutputPath As String
+    Dim GeneratedText As String
+
+    ManifestPath = GetTestFolderPath() & "\ManifestGenerateSelected.manifest"
+    TemplatePath = GetTestFolderPath() & "\templates\ClassTemplate.txt"
+    OutputDirectory = GetTestFolderPath() & "\generated"
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText TemplatePath, ReadTemplateContent("ClassTemplate.txt")
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath" & vbCrLf & _
+        "GenerateOne,ClassModule,Application,templates\ClassTemplate.txt" & vbCrLf & _
+        "GenerateTwo,ClassModule,Application,templates\ClassTemplate.txt"
+
+    Set Service = New AppManifestEditorService
+    Set Result = Service.AppLoadManifestEditorModel(ManifestPath, Modules)
+    AssertTrue Result.IsSuccess, "Manifest should load for generate."
+
+    Set ModuleInfo = Modules.Item(2)
+    Set Members = ModuleInfo("Members")
+    Members.Add Service.AppCreateManifestEditorMember("Name", "String", "GetLet", "vbNullString", False)
+
+    Set PreviewService = New AppCodePreviewService
+    PreviewService.AppInitialize InfCreateGenerator(), Service, New AppManifestValidationService
+    Set Result = PreviewService.AppPreviewManifestEditorModule(ManifestPath, ModuleInfo, PreviewText)
+    AssertTrue Result.IsSuccess, "Preview should render selected module."
+
+    Set SelectedNames = New Collection
+    SelectedNames.Add "GenerateTwo"
+    Set GenerateService = New AppManifestGenerateService
+    GenerateService.AppInitialize InfCreateGenerator(), Service, New AppManifestValidationService, FileProvider
+    Set Request = GenerateService.AppCreateGenerateRequest("CurrentModule", SelectedNames, OutputDirectory, "Overwrite", False)
+    Set Result = GenerateService.AppGenerateManifestEditorModel(ManifestPath, Modules, Request, GenerateResult)
+    AssertTrue Result.IsSuccess, "Selected generate should succeed."
+    AssertEquals "1", CStr(GenerateResult.SuccessCount), "Selected generate should write one module."
+    AssertEquals "0", CStr(GenerateResult.FailureCount), "Selected generate should have no failures."
+
+    OutputPath = OutputDirectory & "\GenerateTwo.cls"
+    AssertTrue FileProvider.InfFileExists(OutputPath), "Selected module output should exist."
+    GeneratedText = FileProvider.InfReadText(OutputPath)
+    AssertEquals PreviewText, GeneratedText, "Generated file should match preview text."
+    AssertFalse FileProvider.InfFileExists(OutputDirectory & "\GenerateOne.cls"), "Unselected module should not be generated."
+
+    Set Request = GenerateService.AppCreateGenerateRequest("CurrentModule", SelectedNames, OutputDirectory, "Skip", False)
+    Set Result = GenerateService.AppGenerateManifestEditorModel(ManifestPath, Modules, Request, GenerateResult)
+    AssertTrue Result.IsSuccess, "Skip existing generate should complete."
+    AssertEquals "0", CStr(GenerateResult.SuccessCount), "Skip should not count as success."
+    AssertEquals "1", CStr(GenerateResult.WarningCount), "Skip should count as warning."
+    AssertEquals "1", CStr(GenerateResult.SkippedCount), "Skip should count skipped module."
 End Sub
 
 Private Function ReadTemplateContent(ByVal TemplateFileName As String) As String
