@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} PreManifestEditorForm 
-   Caption         =   "Manifest Editor"
+   Caption         =   "VMF Studio"
    ClientHeight    =   6300
    ClientLeft      =   110
    ClientTop       =   450
@@ -42,6 +42,11 @@ Private BuildLogListBox As MSForms.ListBox
 Private BuildLogSummaryLabel As MSForms.Label
 Private LastGenerateResult As AppGenerateResult
 Private GenerateInProgress As Boolean
+Private IsDirty As Boolean
+Private SuppressDirtyEvents As Boolean
+Private CurrentUiState As String
+Private ValidationStatusByModule As Object
+Private GenerateTargetByModule As Object
 Public Sub PreOpenManifest(ByVal ManifestPath As String)
     txtManifestPath.Text = ManifestPath
     LoadManifest
@@ -51,9 +56,13 @@ Private Sub UserForm_Initialize()
     SelectedModuleIndex = 0
     SelectedMemberIndex = 0
     Set Modules = New Collection
+    Set ValidationStatusByModule = CreateObject("Scripting.Dictionary")
+    Set GenerateTargetByModule = CreateObject("Scripting.Dictionary")
+    CurrentUiState = "NoProject"
+    IsDirty = False
 
-    Me.Width = 620
-    Me.Height = 460
+    Me.Width = 980
+    Me.Height = 520
     lblTemplatePath.Width = 78
     txtTemplatePath.Left = lblTemplatePath.Left + lblTemplatePath.Width + 8
     txtTemplatePath.Width = 196
@@ -74,10 +83,11 @@ Private Sub UserForm_Initialize()
     cboAccessor.AddItem "GetSet"
     cboAccessor.AddItem "GetOnly"
 
-    lstModules.ColumnCount = 3
-    lstModules.ColumnWidths = "150 pt;90 pt;110 pt"
+    lstModules.ColumnCount = 6
+    lstModules.ColumnWidths = "42 pt;80 pt;140 pt;90 pt;48 pt;58 pt"
     lstMembers.ColumnCount = 5
     lstMembers.ColumnWidths = "110 pt;110 pt;80 pt;110 pt;80 pt"
+    RefreshCommandState
 End Sub
 
 Private Sub btnLoad_Click()
@@ -110,6 +120,12 @@ Private Sub btnSave_Click()
     End If
 
     Set Result = AppSaveManifestEditorModel(txtManifestPath.Text, Modules)
+    If Result.IsSuccess Then
+        IsDirty = False
+        CurrentUiState = "Ready"
+        RefreshProjectExplorer
+        RefreshCommandState
+    End If
     MsgBox Result.Message, IIf(Result.IsSuccess, vbInformation, vbExclamation), "Manifest Editor"
 End Sub
 
@@ -122,9 +138,7 @@ Private Sub lstModules_Click()
         Exit Sub
     End If
 
-    SelectedModuleIndex = lstModules.ListIndex + 1
-    SelectedMemberIndex = 0
-    ShowSelectedModule
+    SelectModuleFromExplorer lstModules.ListIndex + 1
 End Sub
 
 Private Sub lstMembers_Click()
@@ -147,14 +161,17 @@ Private Sub btnModuleAdd_Click()
 
     Modules.Add ModuleInfo
     SelectedModuleIndex = Modules.Count
-    RefreshModuleList
+    SetSingleGenerateTarget CStr(ModuleInfo("ModuleName"))
+    MarkDirty
+    RefreshProjectExplorer
     lstModules.ListIndex = SelectedModuleIndex - 1
     ShowSelectedModule
 End Sub
 
 Private Sub btnModuleApply_Click()
     ApplyModuleFieldsToSelection
-    RefreshModuleList
+    MarkDirty
+    RefreshProjectExplorer
 End Sub
 
 Private Sub PreviewButton_Click()
@@ -239,7 +256,7 @@ Private Sub btnModuleDelete_Click()
         SelectedModuleIndex = Modules.Count
     End If
 
-    RefreshModuleList
+    RefreshProjectExplorer
     If SelectedModuleIndex > 0 Then
         lstModules.ListIndex = SelectedModuleIndex - 1
         ShowSelectedModule
@@ -320,19 +337,22 @@ End Sub
 Private Sub LoadManifest()
     Dim Result As ComResult
 
+    SetUiState "Loading"
     SelectedModuleIndex = 0
     SelectedMemberIndex = 0
     Set Result = AppLoadManifestEditorModel(txtManifestPath.Text, Modules)
     If Result.IsFailure Then
+        SetUiState "Error"
         MsgBox Result.Message, vbExclamation, "Manifest Editor"
         Exit Sub
     End If
 
-    RefreshModuleList
+    IsDirty = False
+    ResetStudioState
+    RefreshProjectExplorer
     If Modules.Count > 0 Then
-        SelectedModuleIndex = 1
         lstModules.ListIndex = 0
-        ShowSelectedModule
+        SelectModuleFromExplorer 1
     End If
 End Sub
 
@@ -472,6 +492,7 @@ Private Sub GenerateFromEditor(ByVal TargetScope As String)
     Set Request = AppCreateManifestGenerateRequest(TargetScope, SelectedNames, OutputDirectory, OverwriteMode, False)
 
     GenerateInProgress = True
+    SetUiState "Generating"
     SetGenerateButtonsEnabled False
     On Error GoTo GenerateFailed
     Set Result = AppGenerateManifestEditorModel(txtManifestPath.Text, Modules, Request, GenerateResult)
@@ -481,6 +502,7 @@ Private Sub GenerateFromEditor(ByVal TargetScope As String)
 
 GenerateDone:
     GenerateInProgress = False
+    SetUiState IIf(IsDirty, "Dirty", "Ready")
     SetGenerateButtonsEnabled True
     Exit Sub
 
@@ -505,10 +527,17 @@ End Function
 
 Private Function CreateSelectedModuleNames(ByVal TargetScope As String) As Collection
     Dim SelectedNames As Collection
+    Dim Key As Variant
 
     Set SelectedNames = New Collection
-    If TargetScope <> "AllModules" And SelectedModuleIndex > 0 Then
-        SelectedNames.Add CStr(Modules.Item(SelectedModuleIndex)("ModuleName"))
+    If TargetScope <> "AllModules" Then
+        If Not GenerateTargetByModule Is Nothing Then
+            For Each Key In GenerateTargetByModule.Keys
+                SelectedNames.Add CStr(Key)
+            Next Key
+        ElseIf SelectedModuleIndex > 0 Then
+            SelectedNames.Add CStr(Modules.Item(SelectedModuleIndex)("ModuleName"))
+        End If
     End If
 
     Set CreateSelectedModuleNames = SelectedNames
@@ -641,7 +670,10 @@ Private Sub EnsurePreviewControls()
     PreviewCloseButton.Visible = False
 End Sub
 Private Function ValidateProjectModel() As ComResult
+    SetUiState "Validating"
     Set ValidateProjectModel = AppValidateManifestEditorModel(txtManifestPath.Text, Modules, ValidationIssues)
+    UpdateValidationStatusFromIssues ValidationIssues, vbNullString
+    SetUiState IIf(IsDirty, "Dirty", "Ready")
 End Function
 
 Private Function ValidateSelectedModule() As ComResult
@@ -651,7 +683,10 @@ Private Function ValidateSelectedModule() As ComResult
         Exit Function
     End If
 
+    SetUiState "Validating"
     Set ValidateSelectedModule = AppValidateManifestEditorModule(txtManifestPath.Text, Modules.Item(SelectedModuleIndex), ValidationIssues)
+    UpdateValidationStatusFromIssues ValidationIssues, CStr(Modules.Item(SelectedModuleIndex)("ModuleName"))
+    SetUiState IIf(IsDirty, "Dirty", "Ready")
 End Function
 
 Private Sub ShowValidationPane(ByVal Issues As Collection)
@@ -882,15 +917,170 @@ Private Function CreateMemberFromFields() As Object
         chkCreateInstance.Value)
 End Function
 
-Private Sub RefreshModuleList()
+Private Sub SelectModuleFromExplorer(ByVal ModuleIndex As Long)
+    If ModuleIndex <= 0 Or ModuleIndex > Modules.Count Then
+        SetUiState "Error"
+        MsgBox "Module selection failed.", vbExclamation, "Manifest Editor"
+        Exit Sub
+    End If
+
+    ApplyModuleFieldsToSelection
+    ApplyMemberFieldsToSelection
+    SelectedModuleIndex = ModuleIndex
+    SelectedMemberIndex = 0
+    SetSingleGenerateTarget CStr(Modules.Item(SelectedModuleIndex)("ModuleName"))
+    RefreshProjectExplorer
+    ShowSelectedModule
+    If Not PreviewCodeTextBox Is Nothing Then
+        If PreviewCodeTextBox.Visible Then RefreshPreviewPane
+    End If
+End Sub
+
+Private Sub ResetStudioState()
+    Set ValidationStatusByModule = CreateObject("Scripting.Dictionary")
+    Set GenerateTargetByModule = CreateObject("Scripting.Dictionary")
+    CurrentUiState = "Ready"
+End Sub
+
+Private Sub SetUiState(ByVal StateName As String)
+    CurrentUiState = StateName
+    RefreshCommandState
+End Sub
+
+Private Sub MarkDirty()
+    If SuppressDirtyEvents Then Exit Sub
+    IsDirty = True
+    CurrentUiState = "Dirty"
+    RefreshProjectExplorer
+    RefreshCommandState
+End Sub
+
+Private Sub RefreshCommandState()
+    Dim HasProject As Boolean
+    Dim HasModule As Boolean
+    Dim Busy As Boolean
+    Dim HasErrors As Boolean
+
+    HasProject = False
+    If Not Modules Is Nothing Then HasProject = (Modules.Count > 0)
+    HasModule = (SelectedModuleIndex > 0 And HasProject)
+    Busy = (CurrentUiState = "Loading" Or CurrentUiState = "Validating" Or CurrentUiState = "Generating" Or GenerateInProgress)
+    HasErrors = HasValidationErrors()
+
+    btnSave.Enabled = HasProject And Not Busy
+    btnModuleAdd.Enabled = Not Busy
+    btnModuleApply.Enabled = HasModule And Not Busy
+    btnModuleDelete.Enabled = HasModule And Not Busy
+    btnMemberAdd.Enabled = HasModule And Not Busy
+    btnMemberEdit.Enabled = HasModule And SelectedMemberIndex > 0 And Not Busy
+    btnMemberDelete.Enabled = HasModule And SelectedMemberIndex > 0 And Not Busy
+    If Not PreviewButton Is Nothing Then PreviewButton.Enabled = HasModule And Not Busy
+    If Not ValidationButton Is Nothing Then ValidationButton.Enabled = HasProject And Not Busy
+    If Not GenerateAllButton Is Nothing Then GenerateAllButton.Enabled = HasProject And Not Busy And Not HasErrors
+    If Not GenerateSelectedButton Is Nothing Then GenerateSelectedButton.Enabled = HasModule And Not Busy And Not HasErrors
+
+    txtModuleName.Enabled = HasModule And Not Busy
+    txtLayer.Enabled = HasModule And Not Busy
+    cboModuleType.Enabled = HasModule And Not Busy
+    txtTemplatePath.Enabled = HasModule And Not Busy
+    lstModules.Enabled = Not Busy
+    lstMembers.Enabled = HasModule And Not Busy
+End Sub
+
+Private Function HasValidationErrors() As Boolean
+    Dim Key As Variant
+    If ValidationStatusByModule Is Nothing Then Exit Function
+    For Each Key In ValidationStatusByModule.Keys
+        If CStr(ValidationStatusByModule.Item(CStr(Key))) = "Error" Then
+            HasValidationErrors = True
+            Exit Function
+        End If
+    Next Key
+End Function
+
+Private Sub UpdateValidationStatusFromIssues(ByVal Issues As Collection, ByVal ScopeModuleName As String)
     Dim ModuleInfo As Object
+    Dim Issue As AppManifestValidationIssue
+    Dim ModuleName As String
+
+    If ValidationStatusByModule Is Nothing Then Set ValidationStatusByModule = CreateObject("Scripting.Dictionary")
+    If ComIsBlankText(ScopeModuleName) Then
+        For Each ModuleInfo In Modules
+            ValidationStatusByModule(CStr(ModuleInfo("ModuleName"))) = "Valid"
+        Next ModuleInfo
+    Else
+        ValidationStatusByModule(ScopeModuleName) = "Valid"
+    End If
+
+    If Not Issues Is Nothing Then
+        For Each Issue In Issues
+            ModuleName = Issue.ModuleName
+            If ComIsBlankText(ModuleName) Then ModuleName = ScopeModuleName
+            If Not ComIsBlankText(ModuleName) Then
+                If Issue.SeverityText = "Error" Then
+                    ValidationStatusByModule(ModuleName) = "Error"
+                ElseIf Issue.SeverityText = "Warning" Then
+                    If Not ValidationStatusByModule.Exists(ModuleName) Then
+                        ValidationStatusByModule(ModuleName) = "Warning"
+                    ElseIf ValidationStatusByModule(ModuleName) <> "Error" Then
+                        ValidationStatusByModule(ModuleName) = "Warning"
+                    End If
+                End If
+            End If
+        Next Issue
+    End If
+    RefreshProjectExplorer
+End Sub
+
+Private Function ValidationMarker(ByVal ModuleName As String) As String
+    Dim StatusText As String
+    StatusText = "NotValidated"
+    If Not ValidationStatusByModule Is Nothing Then
+        If ValidationStatusByModule.Exists(ModuleName) Then StatusText = CStr(ValidationStatusByModule(ModuleName))
+    End If
+
+    Select Case StatusText
+        Case "Error"
+            ValidationMarker = "[E]"
+        Case "Warning"
+            ValidationMarker = "[W]"
+        Case "Valid"
+            ValidationMarker = "[V]"
+        Case Else
+            ValidationMarker = "[-]"
+    End Select
+End Function
+
+Private Sub SetSingleGenerateTarget(ByVal ModuleName As String)
+    Set GenerateTargetByModule = CreateObject("Scripting.Dictionary")
+    If Not ComIsBlankText(ModuleName) Then GenerateTargetByModule(ModuleName) = True
+End Sub
+
+Private Function IsGenerateTarget(ByVal ModuleName As String) As Boolean
+    If GenerateTargetByModule Is Nothing Then Exit Function
+    IsGenerateTarget = GenerateTargetByModule.Exists(ModuleName)
+End Function
+
+Private Function IsDirtyModule(ByVal ModuleName As String) As Boolean
+    IsDirtyModule = IsDirty
+End Function
+Private Sub RefreshProjectExplorer()
+    Dim ModuleInfo As Object
+    Dim ModuleName As String
+    Dim RowIndex As Long
 
     lstModules.Clear
     For Each ModuleInfo In Modules
-        lstModules.AddItem CStr(ModuleInfo("ModuleName"))
-        lstModules.List(lstModules.ListCount - 1, 1) = CStr(ModuleInfo("Layer"))
-        lstModules.List(lstModules.ListCount - 1, 2) = CStr(ModuleInfo("ModuleType"))
+        ModuleName = CStr(ModuleInfo("ModuleName"))
+        lstModules.AddItem ValidationMarker(ModuleName)
+        RowIndex = lstModules.ListCount - 1
+        lstModules.List(RowIndex, 1) = CStr(ModuleInfo("Layer"))
+        lstModules.List(RowIndex, 2) = ModuleName & IIf(IsDirtyModule(ModuleName), " *", vbNullString)
+        lstModules.List(RowIndex, 3) = CStr(ModuleInfo("ModuleType"))
+        lstModules.List(RowIndex, 4) = IIf(IsDirtyModule(ModuleName), "Dirty", vbNullString)
+        lstModules.List(RowIndex, 5) = IIf(IsGenerateTarget(ModuleName), "Target", vbNullString)
     Next ModuleInfo
+    RefreshCommandState
 End Sub
 
 Private Sub RefreshMemberList(ByVal ModuleInfo As Object)
@@ -915,9 +1105,12 @@ End Sub
 Private Sub ShowSelectedModule()
     Dim ModuleInfo As Object
 
+    SuppressDirtyEvents = True
     If SelectedModuleIndex <= 0 Then
         ClearModuleFields
         RefreshMemberList Nothing
+        SuppressDirtyEvents = False
+        RefreshCommandState
         Exit Sub
     End If
 
@@ -928,6 +1121,8 @@ Private Sub ShowSelectedModule()
     txtTemplatePath.Text = CStr(ModuleInfo("TemplatePath"))
     ClearMemberFields
     RefreshMemberList ModuleInfo
+    SuppressDirtyEvents = False
+    RefreshCommandState
 End Sub
 
 Private Sub ShowSelectedMember()
@@ -935,8 +1130,12 @@ Private Sub ShowSelectedMember()
     Dim Members As Collection
     Dim MemberInfo As Object
 
+    SuppressDirtyEvents = True
+
     If SelectedModuleIndex <= 0 Or SelectedMemberIndex <= 0 Then
         ClearMemberFields
+        SuppressDirtyEvents = False
+        RefreshCommandState
         Exit Sub
     End If
 
@@ -948,8 +1147,45 @@ Private Sub ShowSelectedMember()
     cboAccessor.Text = CStr(MemberInfo("Accessor"))
     txtInitialValue.Text = CStr(MemberInfo("InitialValue"))
     chkCreateInstance.Value = (StrComp(CStr(MemberInfo("CreateInstance")), "True", vbTextCompare) = 0)
+    SuppressDirtyEvents = False
+    RefreshCommandState
 End Sub
 
+Private Sub txtModuleName_Change()
+    MarkDirty
+End Sub
+
+Private Sub txtLayer_Change()
+    MarkDirty
+End Sub
+
+Private Sub cboModuleType_Change()
+    MarkDirty
+End Sub
+
+Private Sub txtTemplatePath_Change()
+    MarkDirty
+End Sub
+
+Private Sub txtMemberName_Change()
+    MarkDirty
+End Sub
+
+Private Sub txtMemberTypeName_Change()
+    MarkDirty
+End Sub
+
+Private Sub cboAccessor_Change()
+    MarkDirty
+End Sub
+
+Private Sub txtInitialValue_Change()
+    MarkDirty
+End Sub
+
+Private Sub chkCreateInstance_Click()
+    MarkDirty
+End Sub
 Private Sub ClearModuleFields()
     txtModuleName.Text = vbNullString
     txtLayer.Text = vbNullString
@@ -964,6 +1200,11 @@ Private Sub ClearMemberFields()
     txtInitialValue.Text = vbNullString
     chkCreateInstance.Value = False
 End Sub
+
+
+
+
+
 
 
 
