@@ -37,6 +37,9 @@ Private Sub UserForm_Initialize()
 
     Me.Width = 620
     Me.Height = 460
+    lblTemplatePath.Width = 78
+    btnModuleApply.Height = 22
+    btnLoad.Caption = "Browse..."
 
     cboModuleType.Clear
     cboModuleType.AddItem "ClassModule"
@@ -54,6 +57,19 @@ Private Sub UserForm_Initialize()
 End Sub
 
 Private Sub btnLoad_Click()
+    Dim SelectedPath As Variant
+
+    SelectedPath = Application.GetOpenFilename( _
+        "Manifest Files (*.manifest),*.manifest,All Files (*.*),*.*", _
+        , _
+        "Select Manifest")
+    If VarType(SelectedPath) = vbBoolean Then
+        If Not CBool(SelectedPath) Then
+            Exit Sub
+        End If
+    End If
+
+    txtManifestPath.Text = CStr(SelectedPath)
     LoadManifest
 End Sub
 
