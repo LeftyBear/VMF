@@ -24,7 +24,7 @@ function Resolve-VmfRepositoryRoot {
 }
 
 $root = Resolve-VmfRepositoryRoot -StartPath $scriptDir
-$buildPath = Join-Path $root "dist\release\Build\v1.0.2\Build.xlam"
+$buildPath = Join-Path $root "dist\release\Build\v1.1\Build.xlam"
 $runnerPath = Join-Path $root "tools\test\runner\VMFTestRunner.xlam"
 $targetDir = Join-Path $root "dist\debug\test-target"
 $targetPath = Join-Path $targetDir "VMF.xlam"

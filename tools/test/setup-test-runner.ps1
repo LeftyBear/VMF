@@ -85,7 +85,7 @@ $root = Resolve-VmfRepositoryRoot -StartPath $scriptDir
 $runnerDir = Join-Path $root "tools\test\runner"
 $runnerSourcePath = Join-Path $runnerDir "VMFTestRunner.bas"
 $runnerWorkbookPath = Join-Path $runnerDir "VMFTestRunner.xlam"
-$buildPath = Join-Path $root "dist\release\Build\v1.0.2\Build.xlam"
+$buildPath = Join-Path $root "dist\release\Build\v1.1\Build.xlam"
 $testRoot = Join-Path $root "tests"
 
 if (-not (Test-Path $runnerSourcePath)) {

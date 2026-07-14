@@ -3,7 +3,7 @@
 
 param(
     [string]$OutputPath,
-    [string]$BuildVersion = "1.0.2",
+    [string]$BuildVersion = "1.1.0",
     [string]$ReleaseType = "Release"
 )
 
@@ -33,7 +33,7 @@ function Resolve-VmfRepositoryRoot {
 $workspaceRoot = Resolve-VmfRepositoryRoot -StartPath $scriptDir
 $srcDir = Join-Path $workspaceRoot "src\Build"
 if ([string]::IsNullOrWhiteSpace($OutputPath)) {
-    $output = Join-Path $workspaceRoot "dist\release\Build\v1.0.2\Build.xlam"
+    $output = Join-Path $workspaceRoot "dist\release\Build\v1.1\Build.xlam"
 }
 else {
     $output = [IO.Path]::GetFullPath($OutputPath)
