@@ -38,6 +38,10 @@ Private Sub UserForm_Initialize()
     Me.Width = 620
     Me.Height = 460
     lblTemplatePath.Width = 78
+    txtTemplatePath.Left = lblTemplatePath.Left + lblTemplatePath.Width + 8
+    txtTemplatePath.Width = 196
+    btnModuleAdd.Height = 22
+    btnModuleDelete.Height = 22
     btnModuleApply.Height = 22
     btnLoad.Caption = "Browse..."
 
