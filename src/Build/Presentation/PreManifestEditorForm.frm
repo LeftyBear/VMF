@@ -25,7 +25,11 @@ Private Modules As Collection
 Private SelectedModuleIndex As Long
 Private SelectedMemberIndex As Long
 Private WithEvents PreviewButton As MSForms.CommandButton
-
+Private PreviewCodeTextBox As MSForms.TextBox
+Private PreviewErrorTextBox As MSForms.TextBox
+Private WithEvents PreviewRefreshButton As MSForms.CommandButton
+Private WithEvents PreviewCopyButton As MSForms.CommandButton
+Private WithEvents PreviewCloseButton As MSForms.CommandButton
 Public Sub PreOpenManifest(ByVal ManifestPath As String)
     txtManifestPath.Text = ManifestPath
     LoadManifest
@@ -133,20 +137,24 @@ Private Sub btnModuleApply_Click()
 End Sub
 
 Private Sub PreviewButton_Click()
-    Dim PreviewForm As PreCodePreviewForm
-    Dim ModuleInfo As Object
-
     If SelectedModuleIndex <= 0 Then
         MsgBox "Select a module first.", vbExclamation, "Manifest Editor"
         Exit Sub
     End If
 
-    ApplyModuleFieldsToSelection
-    ApplyMemberFieldsToSelection
-    Set ModuleInfo = Modules.Item(SelectedModuleIndex)
-    Set PreviewForm = New PreCodePreviewForm
-    PreviewForm.PreOpenPreview txtManifestPath.Text, ModuleInfo
-    PreviewForm.Show vbModal
+    ShowPreviewPane
+End Sub
+
+Private Sub PreviewRefreshButton_Click()
+    RefreshPreviewPane
+End Sub
+
+Private Sub PreviewCopyButton_Click()
+    CopyPreviewText
+End Sub
+
+Private Sub PreviewCloseButton_Click()
+    HidePreviewPane
 End Sub
 
 Private Sub btnModuleDelete_Click()
@@ -311,6 +319,122 @@ Private Sub CreatePreviewButton()
     PreviewButton.Top = btnModuleApply.Top
 End Sub
 
+Private Sub ShowPreviewPane()
+    EnsurePreviewControls
+    Me.Width = 980
+    PreviewCodeTextBox.Visible = True
+    PreviewErrorTextBox.Visible = True
+    PreviewRefreshButton.Visible = True
+    PreviewCopyButton.Visible = True
+    PreviewCloseButton.Visible = True
+    RefreshPreviewPane
+End Sub
+
+Private Sub HidePreviewPane()
+    If PreviewCodeTextBox Is Nothing Then
+        Exit Sub
+    End If
+
+    PreviewCodeTextBox.Visible = False
+    PreviewErrorTextBox.Visible = False
+    PreviewRefreshButton.Visible = False
+    PreviewCopyButton.Visible = False
+    PreviewCloseButton.Visible = False
+    Me.Width = 620
+End Sub
+
+Private Sub RefreshPreviewPane()
+    Dim Result As ComResult
+    Dim PreviewText As String
+    Dim ModuleInfo As Object
+
+    EnsurePreviewControls
+    PreviewCodeTextBox.Text = vbNullString
+    PreviewErrorTextBox.Text = vbNullString
+
+    If SelectedModuleIndex <= 0 Then
+        PreviewErrorTextBox.Text = "Manifest input invalid: select a module first."
+        Exit Sub
+    End If
+
+    ApplyModuleFieldsToSelection
+    ApplyMemberFieldsToSelection
+    Set ModuleInfo = Modules.Item(SelectedModuleIndex)
+    Set Result = AppPreviewManifestEditorModule(txtManifestPath.Text, ModuleInfo, PreviewText)
+    If Result.IsSuccess Then
+        PreviewCodeTextBox.Text = PreviewText
+    Else
+        PreviewErrorTextBox.Text = Result.Message
+    End If
+End Sub
+
+Private Sub CopyPreviewText()
+    Dim Clipboard As Object
+
+    EnsurePreviewControls
+    If ComIsBlankText(PreviewCodeTextBox.Text) Then
+        PreviewErrorTextBox.Text = "No preview code to copy."
+        Exit Sub
+    End If
+
+    Set Clipboard = CreateObject("Forms.DataObject.1")
+    Clipboard.SetText PreviewCodeTextBox.Text
+    Clipboard.PutInClipboard
+    PreviewErrorTextBox.Text = "Preview copied."
+End Sub
+
+Private Sub EnsurePreviewControls()
+    If Not PreviewCodeTextBox Is Nothing Then
+        Exit Sub
+    End If
+
+    Set PreviewCodeTextBox = Me.Controls.Add("Forms.TextBox.1", "txtCodePreview", True)
+    PreviewCodeTextBox.Left = 620
+    PreviewCodeTextBox.Top = 30
+    PreviewCodeTextBox.Width = 330
+    PreviewCodeTextBox.Height = 310
+    PreviewCodeTextBox.MultiLine = True
+    PreviewCodeTextBox.ScrollBars = fmScrollBarsBoth
+    PreviewCodeTextBox.WordWrap = False
+    PreviewCodeTextBox.Locked = True
+    PreviewCodeTextBox.Font.Name = "Consolas"
+    PreviewCodeTextBox.Font.Size = 9
+    PreviewCodeTextBox.Visible = False
+
+    Set PreviewErrorTextBox = Me.Controls.Add("Forms.TextBox.1", "txtCodePreviewError", True)
+    PreviewErrorTextBox.Left = 620
+    PreviewErrorTextBox.Top = 350
+    PreviewErrorTextBox.Width = 330
+    PreviewErrorTextBox.Height = 46
+    PreviewErrorTextBox.MultiLine = True
+    PreviewErrorTextBox.ScrollBars = fmScrollBarsVertical
+    PreviewErrorTextBox.Locked = True
+    PreviewErrorTextBox.Visible = False
+
+    Set PreviewRefreshButton = Me.Controls.Add("Forms.CommandButton.1", "btnCodePreviewRefresh", True)
+    PreviewRefreshButton.Caption = "Refresh"
+    PreviewRefreshButton.Left = 620
+    PreviewRefreshButton.Top = 406
+    PreviewRefreshButton.Width = 78
+    PreviewRefreshButton.Height = 24
+    PreviewRefreshButton.Visible = False
+
+    Set PreviewCopyButton = Me.Controls.Add("Forms.CommandButton.1", "btnCodePreviewCopy", True)
+    PreviewCopyButton.Caption = "Copy"
+    PreviewCopyButton.Left = 708
+    PreviewCopyButton.Top = 406
+    PreviewCopyButton.Width = 72
+    PreviewCopyButton.Height = 24
+    PreviewCopyButton.Visible = False
+
+    Set PreviewCloseButton = Me.Controls.Add("Forms.CommandButton.1", "btnCodePreviewClose", True)
+    PreviewCloseButton.Caption = "Close"
+    PreviewCloseButton.Left = 790
+    PreviewCloseButton.Top = 406
+    PreviewCloseButton.Width = 78
+    PreviewCloseButton.Height = 24
+    PreviewCloseButton.Visible = False
+End Sub
 Private Function CreateMemberFromFields() As Object
     Set CreateMemberFromFields = AppCreateManifestEditorMember( _
         txtMemberName.Text, _
