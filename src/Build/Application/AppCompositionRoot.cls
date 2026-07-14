@@ -59,6 +59,11 @@ Public Function AppCreateGeneratorService() As AppGeneratorService
     Set AppCreateGeneratorService = GeneratorService
 End Function
 
+' Creates a manifest editor service.
+Public Function AppCreateManifestEditorService() As AppManifestEditorService
+    Set AppCreateManifestEditorService = New AppManifestEditorService
+End Function
+
 ' Creates the Build generation engine.
 Public Function AppCreateGenerationEngine() As BuildGenerationEngine
     Dim Engine As BuildGenerationEngine

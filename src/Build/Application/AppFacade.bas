@@ -154,6 +154,60 @@ Public Function AppPreviewBuildLayer(ByVal LayerName As String, ByRef PreviewTex
     Set AppPreviewBuildLayer = GeneratorService.AppPreviewBuildLayer(LayerName, PreviewText)
 End Function
 
+' Loads an editable Build manifest model.
+Public Function AppLoadManifestEditorModel( _
+    ByVal ManifestPath As String, _
+    ByRef Modules As Collection) As ComResult
+
+    Dim ManifestEditorService As AppManifestEditorService
+
+    Set ManifestEditorService = CreateCompositionRoot().AppCreateManifestEditorService()
+    Set AppLoadManifestEditorModel = ManifestEditorService.AppLoadManifestEditorModel(ManifestPath, Modules)
+End Function
+
+' Saves an editable Build manifest model.
+Public Function AppSaveManifestEditorModel( _
+    ByVal ManifestPath As String, _
+    ByVal Modules As Collection) As ComResult
+
+    Dim ManifestEditorService As AppManifestEditorService
+
+    Set ManifestEditorService = CreateCompositionRoot().AppCreateManifestEditorService()
+    Set AppSaveManifestEditorModel = ManifestEditorService.AppSaveManifestEditorModel(ManifestPath, Modules)
+End Function
+
+' Creates an editable manifest module model.
+Public Function AppCreateManifestEditorModule( _
+    ByVal ModuleName As String, _
+    ByVal LayerName As String, _
+    ByVal ModuleType As String, _
+    Optional ByVal TemplatePath As String = vbNullString) As Object
+
+    Dim ManifestEditorService As AppManifestEditorService
+
+    Set ManifestEditorService = CreateCompositionRoot().AppCreateManifestEditorService()
+    Set AppCreateManifestEditorModule = ManifestEditorService.AppCreateManifestEditorModule(ModuleName, LayerName, ModuleType, TemplatePath)
+End Function
+
+' Creates an editable manifest member model.
+Public Function AppCreateManifestEditorMember( _
+    ByVal MemberName As String, _
+    ByVal TypeName As String, _
+    ByVal Accessor As String, _
+    ByVal InitialValue As String, _
+    ByVal CreateInstance As Boolean) As Object
+
+    Dim ManifestEditorService As AppManifestEditorService
+
+    Set ManifestEditorService = CreateCompositionRoot().AppCreateManifestEditorService()
+    Set AppCreateManifestEditorMember = ManifestEditorService.AppCreateManifestEditorMember( _
+        MemberName, _
+        TypeName, _
+        Accessor, _
+        InitialValue, _
+        CreateInstance)
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================

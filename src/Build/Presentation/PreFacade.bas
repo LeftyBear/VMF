@@ -75,6 +75,15 @@ Public Function PreGenerateModuleMessage() As String
     PreGenerateModuleMessage = PreShowGenerateModuleResult(Result)
 End Function
 
+' Opens the manifest editor form for a Build manifest file.
+Public Sub PreOpenManifestEditor(ByVal ManifestPath As String)
+    Dim EditorForm As PreManifestEditorForm
+
+    Set EditorForm = CreateCompositionRoot().PreCreateManifestEditorForm()
+    EditorForm.PreOpenManifest ManifestPath
+    EditorForm.Show
+End Sub
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================

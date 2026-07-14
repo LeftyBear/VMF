@@ -34,3 +34,8 @@ End Sub
 Public Function PreCreateNotificationPresenter() As PreNotificationPresenter
     Set PreCreateNotificationPresenter = New PreNotificationPresenter
 End Function
+
+' Creates a manifest editor form.
+Public Function PreCreateManifestEditorForm() As PreManifestEditorForm
+    Set PreCreateManifestEditorForm = New PreManifestEditorForm
+End Function

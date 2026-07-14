@@ -38,6 +38,7 @@ $runners = @(
     'AppRunGeneratorPhase1NegativeTests',
     'AppRunGeneratorPhase2Tests',
     'AppRunProjectManifestParseTests',
+    'AppRunManifestEditorServiceTests',
     'AppRunGenerateCommonPhase3_1Tests',
     'AppRunGenerateManifestPhase3_2Tests',
     'AppRunGenerateInfrastructurePhase3_3Tests',
@@ -108,7 +109,7 @@ foreach ($m in $testModules) {
 # Also import project source modules so tests can early-bind to project types
 $srcDir = Join-Path $root "src\Build"
 if (Test-Path $srcDir) {
-    $srcFiles = Get-ChildItem -Path $srcDir -Recurse -Include *.bas, *.cls -File | Sort-Object FullName
+    $srcFiles = Get-ChildItem -Path $srcDir -Recurse -Include *.bas, *.cls, *.frm -File | Sort-Object FullName
     foreach ($s in $srcFiles) {
         Write-Host "Importing source module: $($s.FullName)"
         try {
