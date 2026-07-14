@@ -1,5 +1,5 @@
 # Build.xlam creation script (ASCII-only messages)
-# Uses Excel COM automation to import .bas/.cls from src and save as an XLAM add-in.
+# Uses Excel COM automation to import .bas/.cls/.frm from src and save as an XLAM add-in.
 
 param(
     [string]$OutputPath,
@@ -84,7 +84,7 @@ catch {
     exit 1
 }
 
-# Import modules and classes
+# Import modules, classes, and forms
 function Sanitize-VbaFile {
     param([string]$Path)
     $content = Get-Content -Raw -Encoding UTF8 $Path
@@ -115,14 +115,19 @@ function Sanitize-VbaFile {
     return $tmp
 }
 
-$files = Get-ChildItem -Path $srcDir -Recurse -Include *.bas, *.cls -File | Sort-Object FullName
-if ($files.Count -eq 0) { Write-Warning "No .bas/.cls files found to import." }
+$files = Get-ChildItem -Path $srcDir -Recurse -Include *.bas, *.cls, *.frm -File | Sort-Object FullName
+if ($files.Count -eq 0) { Write-Warning "No .bas/.cls/.frm files found to import." }
 foreach ($f in $files) {
     Write-Host "Importing: $($f.FullName)"
     try {
-        $tmp = Sanitize-VbaFile -Path $f.FullName
-        $wb.VBProject.VBComponents.Import($tmp) | Out-Null
-        Remove-Item $tmp -ErrorAction SilentlyContinue
+        if ($f.Extension -eq ".frm") {
+            $wb.VBProject.VBComponents.Import($f.FullName) | Out-Null
+        }
+        else {
+            $tmp = Sanitize-VbaFile -Path $f.FullName
+            $wb.VBProject.VBComponents.Import($tmp) | Out-Null
+            Remove-Item $tmp -ErrorAction SilentlyContinue
+        }
     }
     catch {
         Write-Warning "Failed to import: $($f.FullName) - $_"
