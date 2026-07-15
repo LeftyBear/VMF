@@ -93,7 +93,8 @@ Public Function AppCreateManifestGenerateService() As AppManifestGenerateService
         InfCreateGenerator(), _
         AppCreateManifestEditorService(), _
         AppCreateManifestValidationService(), _
-        New InfFileSystemProvider
+        New InfFileSystemProvider, _
+        AppCreateStudioSettingsService()
 
     Set AppCreateManifestGenerateService = GenerateService
 End Function
@@ -108,9 +109,19 @@ Public Function AppCreateTemplateService() As AppTemplateService
     Dim TemplateService As AppTemplateService
 
     Set TemplateService = New AppTemplateService
-    TemplateService.AppInitialize InfCreateGenerator(), AppCreateManifestEditorService(), New InfFileSystemProvider
+    TemplateService.AppInitialize InfCreateGenerator(), AppCreateManifestEditorService(), New InfFileSystemProvider, AppCreateStudioSettingsService()
 
     Set AppCreateTemplateService = TemplateService
+End Function
+
+' Creates a Studio settings service.
+Public Function AppCreateStudioSettingsService() As AppStudioSettingsService
+    Dim SettingsService As AppStudioSettingsService
+
+    Set SettingsService = New AppStudioSettingsService
+    SettingsService.AppInitialize New InfFileSystemProvider
+
+    Set AppCreateStudioSettingsService = SettingsService
 End Function
 
 ' Creates the Build generation engine.

@@ -20,6 +20,8 @@ Public Sub AppRunManifestEditorServiceTests()
     VerifyTemplateManagerLoadsAndValidatesTemplates
     VerifyTemplateManagerPreviewsUnsavedTemplateContent
     VerifyTemplateManagerRejectsInvalidSave
+    VerifyStudioSettingsDefaultsAndValidation
+    VerifyStudioSettingsLoadWarnings
 End Sub
 
 Private Sub VerifyManifestEditorRoundTrip()
@@ -388,6 +390,68 @@ Private Sub VerifyTemplateManagerRejectsInvalidSave()
     AssertEquals TemplateBefore, FileProvider.InfReadText(TemplatePath), "Invalid template save should preserve the existing file."
 End Sub
 
+Private Sub VerifyStudioSettingsDefaultsAndValidation()
+    Dim Service As AppStudioSettingsService
+    Dim FileProvider As InfFileSystemProvider
+    Dim Settings As AppStudioSettings
+    Dim Issues As Collection
+    Dim Result As ComResult
+
+    Set FileProvider = New InfFileSystemProvider
+    Set Service = New AppStudioSettingsService
+    Service.AppInitialize FileProvider, GetTestFolderPath() & "\StudioSettingsValidation.ini"
+    Set Settings = Service.AppCreateDefaultSettings()
+
+    AssertTrue Len(Settings.TemplateDirectory) > 0, "Default settings should define TemplateDirectory."
+    AssertEquals "Confirm", Settings.DefaultOverwriteMode, "Default overwrite mode should be Confirm."
+
+    Set Result = Service.AppValidateSettings(Settings, Issues)
+    AssertTrue Result.IsSuccess, "Default settings validation should complete."
+    AssertFalse Service.AppIssuesContainErrors(Issues), "Default settings should not contain errors."
+
+    Settings.PreviewFontSize = 99
+    Set Result = Service.AppValidateSettings(Settings, Issues)
+    AssertTrue Service.AppIssuesContainErrors(Issues), "Invalid font size should be an error."
+    AssertStudioSettingIssueCode Issues, "VMF-SET-EDT-002"
+End Sub
+
+Private Sub VerifyStudioSettingsLoadWarnings()
+    Dim Service As AppStudioSettingsService
+    Dim FileProvider As InfFileSystemProvider
+    Dim Settings As AppStudioSettings
+    Dim Issues As Collection
+    Dim Result As ComResult
+    Dim HasUnknownKeyWarning As Boolean
+    Dim HasDuplicateWarning As Boolean
+    Dim Issue As AppStudioSettingsIssue
+
+    Set FileProvider = New InfFileSystemProvider
+    Set Service = New AppStudioSettingsService
+    Service.AppInitialize FileProvider, GetTestFolderPath() & "\StudioSettingsLoad.ini"
+
+    Set Settings = Service.AppCreateDefaultSettings()
+    Settings.DefaultOverwriteMode = "Skip"
+    Set Result = Service.AppSaveSettings(Settings, Issues)
+    AssertTrue Result.IsSuccess, "Settings save should succeed."
+
+    FileProvider.InfWriteText Service.AppGetSettingsFilePath(), _
+        "DefaultOverwriteMode=Overwrite" & vbCrLf & _
+        "UnknownFutureKey=FutureValue" & vbCrLf & _
+        "DefaultOverwriteMode=Skip" & vbCrLf & _
+        "PreviewFontSize=bad"
+
+    Set Result = Service.AppLoadSettings(Settings, Issues)
+    AssertTrue Result.IsSuccess, "Settings load should survive unknown and bad values."
+    AssertEquals "Overwrite", Settings.DefaultOverwriteMode, "First known setting value should be applied."
+
+    For Each Issue In Issues
+        If Issue.Code = "VMF-SET-PARSE-003" Then HasUnknownKeyWarning = True
+        If Issue.Code = "VMF-SET-PARSE-002" Then HasDuplicateWarning = True
+    Next Issue
+    AssertTrue HasUnknownKeyWarning, "Unknown settings key should be reported as warning."
+    AssertTrue HasDuplicateWarning, "Duplicate settings key should be reported as warning."
+End Sub
+
 Private Function ReadTemplateContent(ByVal TemplateFileName As String) As String
     Dim AddinWorkbook As Object
     Dim FileSystem As Object
@@ -465,6 +529,22 @@ Private Sub AssertIssueCode(ByVal Issues As Collection, ByVal ExpectedCode As St
     Next Issue
 
     Err.Raise AppTestAssertErrorNumber, "AppManifestEditorServiceTests", "Expected validation code was not found: " & ExpectedCode
+End Sub
+
+Private Sub AssertStudioSettingIssueCode(ByVal Issues As Collection, ByVal ExpectedCode As String)
+    Dim Issue As AppStudioSettingsIssue
+
+    If Issues Is Nothing Then
+        Err.Raise AppTestAssertErrorNumber, "AppManifestEditorServiceTests", "Studio setting issues are required."
+    End If
+
+    For Each Issue In Issues
+        If Issue.Code = ExpectedCode Then
+            Exit Sub
+        End If
+    Next Issue
+
+    Err.Raise AppTestAssertErrorNumber, "AppManifestEditorServiceTests", "Expected studio setting code was not found: " & ExpectedCode
 End Sub
 
 Private Sub AssertEquals(ByVal Expected As String, ByVal Actual As String, ByVal Message As String)

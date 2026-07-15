@@ -23,11 +23,13 @@ Private Const SeverityInformation As Long = 3
 Private Generator As InfGenerator
 Private ManifestEditorService As AppManifestEditorService
 Private FileProvider As InfFileSystemProvider
+Private SettingsService As AppStudioSettingsService
 
 Public Sub AppInitialize( _
     ByVal ModuleGenerator As InfGenerator, _
     ByVal EditorService As AppManifestEditorService, _
-    ByVal ProviderFileSystem As InfFileSystemProvider)
+    ByVal ProviderFileSystem As InfFileSystemProvider, _
+    Optional ByVal ProviderSettings As AppStudioSettingsService = Nothing)
 
     If ModuleGenerator Is Nothing Then
         Err.Raise ComErrInvalidArgument, "AppTemplateService.AppInitialize", "ModuleGenerator is required."
@@ -42,6 +44,7 @@ Public Sub AppInitialize( _
     Set Generator = ModuleGenerator
     Set ManifestEditorService = EditorService
     Set FileProvider = ProviderFileSystem
+    Set SettingsService = ProviderSettings
 End Sub
 
 Public Function AppLoadTemplates(ByVal ManifestPath As String, ByVal Modules As Collection, ByRef Templates As Collection) As ComResult
@@ -56,10 +59,10 @@ Public Function AppLoadTemplates(ByVal ManifestPath As String, ByVal Modules As 
     Set Templates = New Collection
     Set TemplatePaths = CreateObject("Scripting.Dictionary")
 
-    FileName = Dir$(BuildPathResolver.CombinePath(BuildPathResolver.TemplatesDirectoryPath(), "*.txt"))
+    FileName = Dir$(BuildPathResolver.CombinePath(ResolveTemplateDirectory(), "*.txt"))
     Do While Len(FileName) > 0
-        TemplatePaths(LCase$(BuildPathResolver.CombinePath(BuildPathResolver.TemplatesDirectoryPath(), FileName))) = _
-            BuildPathResolver.CombinePath(BuildPathResolver.TemplatesDirectoryPath(), FileName)
+        TemplatePaths(LCase$(BuildPathResolver.CombinePath(ResolveTemplateDirectory(), FileName))) = _
+            BuildPathResolver.CombinePath(ResolveTemplateDirectory(), FileName)
         FileName = Dir$()
     Loop
 
@@ -274,6 +277,10 @@ Private Function LoadTemplateModel(ByVal FilePath As String) As AppTemplateModel
     Set Template = New AppTemplateModel
     Template.AppInitialize GetTemplateName(FilePath), DetectTemplateType(FilePath, Content), FilePath, Content
     Set LoadTemplateModel = Template
+End Function
+
+Public Function AppDefaultTemplateFilePath(ByVal TemplateFileName As String) As String
+    AppDefaultTemplateFilePath = BuildPathResolver.CombinePath(ResolveTemplateDirectory(), TemplateFileName)
 End Function
 
 Private Sub AnalyzeTemplate(ByVal Template As AppTemplateModel)
@@ -541,6 +548,19 @@ Private Function DetectTemplateType(ByVal FilePath As String, ByVal Content As S
     Else
         DetectTemplateType = "Standard Module"
     End If
+End Function
+
+Private Function ResolveTemplateDirectory() As String
+    Dim Settings As AppStudioSettings
+    Dim Issues As Collection
+    If Not SettingsService Is Nothing Then
+        SettingsService.AppLoadSettings Settings, Issues
+        If Not Settings Is Nothing Then
+            ResolveTemplateDirectory = SettingsService.AppResolvePath(BuildPathResolver.RepositoryRootPath(), Settings.TemplateDirectory)
+            Exit Function
+        End If
+    End If
+    ResolveTemplateDirectory = BuildPathResolver.TemplatesDirectoryPath()
 End Function
 
 Private Function GetTemplateName(ByVal FilePath As String) As String

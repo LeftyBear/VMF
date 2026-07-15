@@ -20,6 +20,7 @@ Private Generator As InfGenerator
 Private ManifestEditorService As AppManifestEditorService
 Private ManifestValidationService As AppManifestValidationService
 Private FileProvider As InfFileSystemProvider
+Private SettingsService As AppStudioSettingsService
 
 Private Const TargetScopeAllModules As String = "AllModules"
 Private Const TargetScopeSelectedModules As String = "SelectedModules"
@@ -32,7 +33,8 @@ Public Sub AppInitialize( _
     ByVal ModuleGenerator As InfGenerator, _
     ByVal EditorService As AppManifestEditorService, _
     ByVal ValidationService As AppManifestValidationService, _
-    ByVal ProviderFileSystem As InfFileSystemProvider)
+    ByVal ProviderFileSystem As InfFileSystemProvider, _
+    Optional ByVal ProviderSettings As AppStudioSettingsService = Nothing)
 
     If ModuleGenerator Is Nothing Then
         Err.Raise ComErrInvalidArgument, "AppManifestGenerateService.AppInitialize", "ModuleGenerator is required."
@@ -51,6 +53,7 @@ Public Sub AppInitialize( _
     Set ManifestEditorService = EditorService
     Set ManifestValidationService = ValidationService
     Set FileProvider = ProviderFileSystem
+    Set SettingsService = ProviderSettings
 End Sub
 
 Public Function AppCreateGenerateRequest( _
@@ -150,6 +153,15 @@ Public Function AppRenderManifestEditorModule(ByVal ManifestPath As String, ByVa
 End Function
 
 Public Function AppDefaultOutputDirectory(ByVal ManifestPath As String) As String
+    Dim Settings As AppStudioSettings
+    Dim Issues As Collection
+    If Not SettingsService Is Nothing Then
+        SettingsService.AppLoadSettings Settings, Issues
+        If Not Settings Is Nothing Then
+            AppDefaultOutputDirectory = SettingsService.AppResolvePath(GetParentFolderPath(ManifestPath), Settings.OutputDirectory)
+            Exit Function
+        End If
+    End If
     AppDefaultOutputDirectory = BuildPathResolver.CombinePath(GetParentFolderPath(ManifestPath), "GeneratedSource")
 End Function
 

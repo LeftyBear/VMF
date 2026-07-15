@@ -64,6 +64,21 @@ Private WithEvents TemplateCloseButton As MSForms.CommandButton
 Private TemplateAnalysisListBox As MSForms.ListBox
 Private TemplateValidationListBox As MSForms.ListBox
 Private SuppressTemplateEvents As Boolean
+Private StudioSettings As AppStudioSettings
+Private EditingStudioSettings As AppStudioSettings
+Private SettingsIssues As Collection
+Private WithEvents SettingsButton As MSForms.CommandButton
+Private WithEvents SettingsPageListBox As MSForms.ListBox
+Private WithEvents SettingsListBox As MSForms.ListBox
+Private WithEvents SettingsValueTextBox As MSForms.TextBox
+Private WithEvents SettingsBooleanCheckBox As MSForms.CheckBox
+Private WithEvents SettingsOkButton As MSForms.CommandButton
+Private WithEvents SettingsApplyButton As MSForms.CommandButton
+Private WithEvents SettingsCancelButton As MSForms.CommandButton
+Private WithEvents SettingsDefaultsButton As MSForms.CommandButton
+Private WithEvents SettingsBrowseButton As MSForms.CommandButton
+Private SettingsIssueListBox As MSForms.ListBox
+Private SuppressSettingsEvents As Boolean
 Public Sub PreOpenManifest(ByVal ManifestPath As String)
     txtManifestPath.Text = ManifestPath
     LoadManifest
@@ -77,11 +92,12 @@ Private Sub UserForm_Initialize()
     Set GenerateTargetByModule = CreateObject("Scripting.Dictionary")
     Set Templates = New Collection
     SelectedTemplateIndex = 0
+    LoadStudioSettingsState
     CurrentUiState = "NoProject"
     IsDirty = False
 
-    Me.Width = 980
-    Me.Height = 520
+    Me.Width = StudioSettings.WindowWidth
+    Me.Height = StudioSettings.WindowHeight
     lblTemplatePath.Width = 78
     txtTemplatePath.Left = lblTemplatePath.Left + lblTemplatePath.Width + 8
     txtTemplatePath.Width = 196
@@ -93,6 +109,7 @@ Private Sub UserForm_Initialize()
     CreateValidationButton
     CreateGenerateButtons
     CreateTemplateManagerButton
+    CreateSettingsButton
 
     cboModuleType.Clear
     cboModuleType.AddItem "ClassModule"
@@ -508,7 +525,7 @@ Private Sub TemplateNewButton_Click()
     Dim Template As AppTemplateModel
     Dim FilePath As String
 
-    FilePath = BuildPathResolver.CombinePath(BuildPathResolver.TemplatesDirectoryPath(), "NewTemplate.txt")
+    FilePath = AppDefaultTemplateManagerFilePath("NewTemplate.txt")
     Set Template = AppCreateTemplateManagerTemplate("NewTemplate", "Class", FilePath, _
         "Option Explicit" & vbCrLf & _
         "' Class: {{ModuleName}}" & vbCrLf & _
@@ -567,6 +584,402 @@ Private Sub TemplateCloseButton_Click()
     HideTemplateManagerPane
 End Sub
 
+Private Sub LoadStudioSettingsState()
+    Dim Result As ComResult
+    Set Result = AppLoadStudioSettings(StudioSettings, SettingsIssues)
+    If StudioSettings Is Nothing Then Set StudioSettings = AppCreateDefaultStudioSettings()
+End Sub
+
+Private Sub CreateSettingsButton()
+    On Error Resume Next
+    Set SettingsButton = Me.Controls("btnSettings")
+    On Error GoTo 0
+
+    If SettingsButton Is Nothing Then
+        Set SettingsButton = Me.Controls.Add("Forms.CommandButton.1", "btnSettings", True)
+    End If
+
+    SettingsButton.Caption = "Settings"
+    SettingsButton.Width = 74
+    SettingsButton.Height = 22
+    SettingsButton.Left = TemplateManagerButton.Left + TemplateManagerButton.Width + 8
+    SettingsButton.Top = TemplateManagerButton.Top
+End Sub
+
+Private Sub SettingsButton_Click()
+    ShowSettingsPane
+End Sub
+
+Private Sub SettingsPageListBox_Click()
+    RenderSettingsList
+End Sub
+
+Private Sub SettingsListBox_Click()
+    ShowSelectedSettingValue
+End Sub
+
+Private Sub SettingsValueTextBox_Change()
+    If SuppressSettingsEvents Then Exit Sub
+    ApplySelectedSettingValue SettingsValueTextBox.Text
+End Sub
+
+Private Sub SettingsBooleanCheckBox_Click()
+    If SuppressSettingsEvents Then Exit Sub
+    ApplySelectedSettingValue CStr(SettingsBooleanCheckBox.Value)
+End Sub
+
+Private Sub SettingsOkButton_Click()
+    If ApplySettingsChanges() Then HideSettingsPane
+End Sub
+
+Private Sub SettingsApplyButton_Click()
+    ApplySettingsChanges
+End Sub
+
+Private Sub SettingsCancelButton_Click()
+    HideSettingsPane
+End Sub
+
+Private Sub SettingsDefaultsButton_Click()
+    Set EditingStudioSettings = AppCreateDefaultStudioSettings()
+    RenderSettingsList
+End Sub
+
+Private Sub SettingsBrowseButton_Click()
+    BrowseSelectedSettingPath
+End Sub
+
+Private Sub ShowSettingsPane()
+    HidePreviewPane
+    HideValidationPane
+    HideBuildLogPane
+    HideTemplateManagerPane
+    EnsureSettingsControls
+    Set EditingStudioSettings = StudioSettings.AppClone()
+    Me.Width = 1120
+    SettingsPageListBox.Visible = True
+    SettingsListBox.Visible = True
+    SettingsValueTextBox.Visible = True
+    SettingsBooleanCheckBox.Visible = True
+    SettingsIssueListBox.Visible = True
+    SettingsOkButton.Visible = True
+    SettingsApplyButton.Visible = True
+    SettingsCancelButton.Visible = True
+    SettingsDefaultsButton.Visible = True
+    SettingsBrowseButton.Visible = True
+    If SettingsPageListBox.ListIndex < 0 Then SettingsPageListBox.ListIndex = 0
+    RenderSettingsList
+End Sub
+
+Private Sub HideSettingsPane()
+    If SettingsPageListBox Is Nothing Then Exit Sub
+    SettingsPageListBox.Visible = False
+    SettingsListBox.Visible = False
+    SettingsValueTextBox.Visible = False
+    SettingsBooleanCheckBox.Visible = False
+    SettingsIssueListBox.Visible = False
+    SettingsOkButton.Visible = False
+    SettingsApplyButton.Visible = False
+    SettingsCancelButton.Visible = False
+    SettingsDefaultsButton.Visible = False
+    SettingsBrowseButton.Visible = False
+    Me.Width = 620
+End Sub
+
+Private Sub EnsureSettingsControls()
+    If Not SettingsPageListBox Is Nothing Then Exit Sub
+
+    Set SettingsPageListBox = Me.Controls.Add("Forms.ListBox.1", "lstSettingsPages", True)
+    SettingsPageListBox.Left = 620
+    SettingsPageListBox.Top = 30
+    SettingsPageListBox.Width = 86
+    SettingsPageListBox.Height = 100
+    SettingsPageListBox.AddItem "Paths"
+    SettingsPageListBox.AddItem "Generate"
+    SettingsPageListBox.AddItem "Editor"
+    SettingsPageListBox.AddItem "Studio"
+    SettingsPageListBox.Visible = False
+
+    Set SettingsListBox = Me.Controls.Add("Forms.ListBox.1", "lstStudioSettings", True)
+    SettingsListBox.Left = 714
+    SettingsListBox.Top = 30
+    SettingsListBox.Width = 376
+    SettingsListBox.Height = 220
+    SettingsListBox.ColumnCount = 3
+    SettingsListBox.ColumnWidths = "130 pt;190 pt;54 pt"
+    SettingsListBox.Visible = False
+
+    Set SettingsValueTextBox = Me.Controls.Add("Forms.TextBox.1", "txtStudioSettingValue", True)
+    SettingsValueTextBox.Left = 714
+    SettingsValueTextBox.Top = 260
+    SettingsValueTextBox.Width = 296
+    SettingsValueTextBox.Height = 22
+    SettingsValueTextBox.Visible = False
+
+    Set SettingsBooleanCheckBox = Me.Controls.Add("Forms.CheckBox.1", "chkStudioSettingValue", True)
+    SettingsBooleanCheckBox.Left = 714
+    SettingsBooleanCheckBox.Top = 260
+    SettingsBooleanCheckBox.Width = 120
+    SettingsBooleanCheckBox.Height = 22
+    SettingsBooleanCheckBox.Caption = "Enabled"
+    SettingsBooleanCheckBox.Visible = False
+
+    Set SettingsBrowseButton = Me.Controls.Add("Forms.CommandButton.1", "btnStudioSettingsBrowse", True)
+    SettingsBrowseButton.Caption = "Browse"
+    SettingsBrowseButton.Left = 1018
+    SettingsBrowseButton.Top = 258
+    SettingsBrowseButton.Width = 72
+    SettingsBrowseButton.Height = 24
+    SettingsBrowseButton.Visible = False
+
+    Set SettingsIssueListBox = Me.Controls.Add("Forms.ListBox.1", "lstStudioSettingsIssues", True)
+    SettingsIssueListBox.Left = 714
+    SettingsIssueListBox.Top = 292
+    SettingsIssueListBox.Width = 376
+    SettingsIssueListBox.Height = 120
+    SettingsIssueListBox.ColumnCount = 4
+    SettingsIssueListBox.ColumnWidths = "58 pt;90 pt;110 pt;200 pt"
+    SettingsIssueListBox.Visible = False
+
+    Set SettingsOkButton = Me.Controls.Add("Forms.CommandButton.1", "btnStudioSettingsOk", True)
+    SettingsOkButton.Caption = "OK"
+    SettingsOkButton.Left = 714
+    SettingsOkButton.Top = 426
+    SettingsOkButton.Width = 62
+    SettingsOkButton.Height = 24
+    SettingsOkButton.Visible = False
+
+    Set SettingsApplyButton = Me.Controls.Add("Forms.CommandButton.1", "btnStudioSettingsApply", True)
+    SettingsApplyButton.Caption = "Apply"
+    SettingsApplyButton.Left = 784
+    SettingsApplyButton.Top = 426
+    SettingsApplyButton.Width = 62
+    SettingsApplyButton.Height = 24
+    SettingsApplyButton.Visible = False
+
+    Set SettingsDefaultsButton = Me.Controls.Add("Forms.CommandButton.1", "btnStudioSettingsDefaults", True)
+    SettingsDefaultsButton.Caption = "Restore Defaults"
+    SettingsDefaultsButton.Left = 854
+    SettingsDefaultsButton.Top = 426
+    SettingsDefaultsButton.Width = 110
+    SettingsDefaultsButton.Height = 24
+    SettingsDefaultsButton.Visible = False
+
+    Set SettingsCancelButton = Me.Controls.Add("Forms.CommandButton.1", "btnStudioSettingsCancel", True)
+    SettingsCancelButton.Caption = "Cancel"
+    SettingsCancelButton.Left = 972
+    SettingsCancelButton.Top = 426
+    SettingsCancelButton.Width = 70
+    SettingsCancelButton.Height = 24
+    SettingsCancelButton.Visible = False
+End Sub
+
+Private Sub RenderSettingsList()
+    Dim PageName As String
+    If EditingStudioSettings Is Nothing Then Exit Sub
+    If SettingsPageListBox.ListIndex < 0 Then SettingsPageListBox.ListIndex = 0
+    PageName = SettingsPageListBox.List(SettingsPageListBox.ListIndex)
+    SettingsListBox.Clear
+    Select Case PageName
+        Case "Paths"
+            AddSettingRow "ManifestDirectory", EditingStudioSettings.ManifestDirectory, "Path"
+            AddSettingRow "TemplateDirectory", EditingStudioSettings.TemplateDirectory, "Path"
+            AddSettingRow "OutputDirectory", EditingStudioSettings.OutputDirectory, "Path"
+            AddSettingRow "LogDirectory", EditingStudioSettings.LogDirectory, "Path"
+            AddSettingRow "BackupDirectory", EditingStudioSettings.BackupDirectory, "Path"
+        Case "Generate"
+            AddSettingRow "DefaultTargetScope", EditingStudioSettings.DefaultTargetScope, "Text"
+            AddSettingRow "DefaultOverwriteMode", EditingStudioSettings.DefaultOverwriteMode, "Text"
+            AddSettingRow "ContinueOnError", CStr(EditingStudioSettings.ContinueOnError), "Bool"
+            AddSettingRow "CreateBackup", CStr(EditingStudioSettings.CreateBackup), "Bool"
+            AddSettingRow "OpenOutputAfterGenerate", CStr(EditingStudioSettings.OpenOutputAfterGenerate), "Bool"
+            AddSettingRow "ValidateBeforeGenerate", CStr(EditingStudioSettings.ValidateBeforeGenerate), "Bool"
+        Case "Editor"
+            AddSettingRow "PreviewFontName", EditingStudioSettings.PreviewFontName, "Text"
+            AddSettingRow "PreviewFontSize", CStr(EditingStudioSettings.PreviewFontSize), "Text"
+            AddSettingRow "ShowLineNumbers", CStr(EditingStudioSettings.ShowLineNumbers), "Bool"
+            AddSettingRow "PreserveBlankLines", CStr(EditingStudioSettings.PreserveBlankLines), "Bool"
+            AddSettingRow "ConfirmOnUnsavedChanges", CStr(EditingStudioSettings.ConfirmOnUnsavedChanges), "Bool"
+        Case "Studio"
+            AddSettingRow "LastProjectPath", EditingStudioSettings.LastProjectPath, "Path"
+            AddSettingRow "LastSelectedModule", EditingStudioSettings.LastSelectedModule, "Text"
+            AddSettingRow "LastSelectedTemplate", EditingStudioSettings.LastSelectedTemplate, "Text"
+            AddSettingRow "WindowWidth", CStr(EditingStudioSettings.WindowWidth), "Text"
+            AddSettingRow "WindowHeight", CStr(EditingStudioSettings.WindowHeight), "Text"
+            AddSettingRow "ActivePage", EditingStudioSettings.ActivePage, "Text"
+    End Select
+    If SettingsListBox.ListCount > 0 Then SettingsListBox.ListIndex = 0
+    ShowSelectedSettingValue
+    RenderSettingsIssues SettingsIssues
+End Sub
+
+Private Sub AddSettingRow(ByVal KeyName As String, ByVal ValueText As String, ByVal ValueType As String)
+    SettingsListBox.AddItem KeyName
+    SettingsListBox.List(SettingsListBox.ListCount - 1, 1) = ValueText
+    SettingsListBox.List(SettingsListBox.ListCount - 1, 2) = ValueType
+End Sub
+
+Private Sub ShowSelectedSettingValue()
+    Dim ValueType As String
+    Dim ValueText As String
+    If SettingsListBox.ListIndex < 0 Then Exit Sub
+    ValueText = SettingsListBox.List(SettingsListBox.ListIndex, 1)
+    ValueType = SettingsListBox.List(SettingsListBox.ListIndex, 2)
+    SuppressSettingsEvents = True
+    SettingsValueTextBox.Visible = (ValueType <> "Bool")
+    SettingsBooleanCheckBox.Visible = (ValueType = "Bool")
+    SettingsBrowseButton.Visible = (ValueType = "Path")
+    If ValueType = "Bool" Then
+        SettingsBooleanCheckBox.Value = (StrComp(ValueText, "True", vbTextCompare) = 0)
+    Else
+        SettingsValueTextBox.Text = ValueText
+    End If
+    SuppressSettingsEvents = False
+End Sub
+
+Private Sub ApplySelectedSettingValue(ByVal ValueText As String)
+    Dim KeyName As String
+    If SettingsListBox.ListIndex < 0 Then Exit Sub
+    KeyName = SettingsListBox.List(SettingsListBox.ListIndex, 0)
+    SetStudioSettingValue EditingStudioSettings, KeyName, ValueText
+    SettingsListBox.List(SettingsListBox.ListIndex, 1) = GetStudioSettingValue(EditingStudioSettings, KeyName)
+End Sub
+
+Private Function ApplySettingsChanges() As Boolean
+    Dim Result As ComResult
+    CaptureSelectedSettingValue
+    Set Result = AppSaveStudioSettings(EditingStudioSettings, SettingsIssues)
+    RenderSettingsIssues SettingsIssues
+    If Result.IsFailure Or AppStudioSettingsIssuesContainErrors(SettingsIssues) Then
+        MsgBox Result.Message, vbExclamation, "Studio Settings"
+        ApplySettingsChanges = False
+        Exit Function
+    End If
+
+    Set StudioSettings = EditingStudioSettings.AppClone()
+    ApplyStudioSettingsToUi
+    MsgBox Result.Message, vbInformation, "Studio Settings"
+    ApplySettingsChanges = True
+End Function
+
+Private Sub CaptureSelectedSettingValue()
+    If SettingsListBox.ListIndex < 0 Then Exit Sub
+    If SettingsListBox.List(SettingsListBox.ListIndex, 2) = "Bool" Then
+        ApplySelectedSettingValue CStr(SettingsBooleanCheckBox.Value)
+    Else
+        ApplySelectedSettingValue SettingsValueTextBox.Text
+    End If
+End Sub
+
+Private Sub BrowseSelectedSettingPath()
+    Dim Dialog As Object
+    Dim SelectedPath As String
+    If SettingsListBox.ListIndex < 0 Then Exit Sub
+    If SettingsListBox.List(SettingsListBox.ListIndex, 2) <> "Path" Then Exit Sub
+
+    Set Dialog = Application.FileDialog(4)
+    Dialog.Title = "Select Folder"
+    Dialog.AllowMultiSelect = False
+    If Len(SettingsValueTextBox.Text) > 0 Then
+        On Error Resume Next
+        Dialog.InitialFileName = SettingsValueTextBox.Text
+        On Error GoTo 0
+    End If
+
+    If Dialog.Show <> -1 Then Exit Sub
+    SelectedPath = CStr(Dialog.SelectedItems(1))
+    SettingsValueTextBox.Text = SelectedPath
+    ApplySelectedSettingValue SelectedPath
+End Sub
+
+Private Sub RenderSettingsIssues(ByVal Issues As Collection)
+    Dim Issue As AppStudioSettingsIssue
+    SettingsIssueListBox.Clear
+    If Issues Is Nothing Or Issues.Count = 0 Then
+        SettingsIssueListBox.AddItem "Information"
+        SettingsIssueListBox.List(0, 1) = "VMF-SET-OK"
+        SettingsIssueListBox.List(0, 2) = vbNullString
+        SettingsIssueListBox.List(0, 3) = "Studio settings are valid."
+        Exit Sub
+    End If
+    For Each Issue In Issues
+        SettingsIssueListBox.AddItem Issue.SeverityText
+        SettingsIssueListBox.List(SettingsIssueListBox.ListCount - 1, 1) = Issue.Code
+        SettingsIssueListBox.List(SettingsIssueListBox.ListCount - 1, 2) = Issue.SettingKey
+        SettingsIssueListBox.List(SettingsIssueListBox.ListCount - 1, 3) = Issue.Message
+    Next Issue
+End Sub
+
+Private Sub ApplyStudioSettingsToUi()
+    If StudioSettings Is Nothing Then Exit Sub
+    Me.Width = StudioSettings.WindowWidth
+    Me.Height = StudioSettings.WindowHeight
+    If Not PreviewCodeTextBox Is Nothing Then
+        PreviewCodeTextBox.Font.Name = StudioSettings.PreviewFontName
+        PreviewCodeTextBox.Font.Size = StudioSettings.PreviewFontSize
+    End If
+    If Not TemplateContentTextBox Is Nothing Then
+        TemplateContentTextBox.Font.Name = StudioSettings.PreviewFontName
+        TemplateContentTextBox.Font.Size = StudioSettings.PreviewFontSize
+    End If
+End Sub
+
+Private Function GetStudioSettingValue(ByVal Settings As AppStudioSettings, ByVal KeyName As String) As String
+    Select Case KeyName
+        Case "ManifestDirectory": GetStudioSettingValue = Settings.ManifestDirectory
+        Case "TemplateDirectory": GetStudioSettingValue = Settings.TemplateDirectory
+        Case "OutputDirectory": GetStudioSettingValue = Settings.OutputDirectory
+        Case "LogDirectory": GetStudioSettingValue = Settings.LogDirectory
+        Case "BackupDirectory": GetStudioSettingValue = Settings.BackupDirectory
+        Case "DefaultTargetScope": GetStudioSettingValue = Settings.DefaultTargetScope
+        Case "DefaultOverwriteMode": GetStudioSettingValue = Settings.DefaultOverwriteMode
+        Case "ContinueOnError": GetStudioSettingValue = CStr(Settings.ContinueOnError)
+        Case "CreateBackup": GetStudioSettingValue = CStr(Settings.CreateBackup)
+        Case "OpenOutputAfterGenerate": GetStudioSettingValue = CStr(Settings.OpenOutputAfterGenerate)
+        Case "ValidateBeforeGenerate": GetStudioSettingValue = CStr(Settings.ValidateBeforeGenerate)
+        Case "PreviewFontName": GetStudioSettingValue = Settings.PreviewFontName
+        Case "PreviewFontSize": GetStudioSettingValue = CStr(Settings.PreviewFontSize)
+        Case "ShowLineNumbers": GetStudioSettingValue = CStr(Settings.ShowLineNumbers)
+        Case "PreserveBlankLines": GetStudioSettingValue = CStr(Settings.PreserveBlankLines)
+        Case "ConfirmOnUnsavedChanges": GetStudioSettingValue = CStr(Settings.ConfirmOnUnsavedChanges)
+        Case "LastProjectPath": GetStudioSettingValue = Settings.LastProjectPath
+        Case "LastSelectedModule": GetStudioSettingValue = Settings.LastSelectedModule
+        Case "LastSelectedTemplate": GetStudioSettingValue = Settings.LastSelectedTemplate
+        Case "WindowWidth": GetStudioSettingValue = CStr(Settings.WindowWidth)
+        Case "WindowHeight": GetStudioSettingValue = CStr(Settings.WindowHeight)
+        Case "ActivePage": GetStudioSettingValue = Settings.ActivePage
+    End Select
+End Function
+
+Private Sub SetStudioSettingValue(ByVal Settings As AppStudioSettings, ByVal KeyName As String, ByVal ValueText As String)
+    On Error Resume Next
+    Select Case KeyName
+        Case "ManifestDirectory": Settings.ManifestDirectory = ValueText
+        Case "TemplateDirectory": Settings.TemplateDirectory = ValueText
+        Case "OutputDirectory": Settings.OutputDirectory = ValueText
+        Case "LogDirectory": Settings.LogDirectory = ValueText
+        Case "BackupDirectory": Settings.BackupDirectory = ValueText
+        Case "DefaultTargetScope": Settings.DefaultTargetScope = ValueText
+        Case "DefaultOverwriteMode": Settings.DefaultOverwriteMode = ValueText
+        Case "ContinueOnError": Settings.ContinueOnError = (StrComp(ValueText, "True", vbTextCompare) = 0)
+        Case "CreateBackup": Settings.CreateBackup = (StrComp(ValueText, "True", vbTextCompare) = 0)
+        Case "OpenOutputAfterGenerate": Settings.OpenOutputAfterGenerate = (StrComp(ValueText, "True", vbTextCompare) = 0)
+        Case "ValidateBeforeGenerate": Settings.ValidateBeforeGenerate = (StrComp(ValueText, "True", vbTextCompare) = 0)
+        Case "PreviewFontName": Settings.PreviewFontName = ValueText
+        Case "PreviewFontSize": Settings.PreviewFontSize = CLng(ValueText)
+        Case "ShowLineNumbers": Settings.ShowLineNumbers = (StrComp(ValueText, "True", vbTextCompare) = 0)
+        Case "PreserveBlankLines": Settings.PreserveBlankLines = (StrComp(ValueText, "True", vbTextCompare) = 0)
+        Case "ConfirmOnUnsavedChanges": Settings.ConfirmOnUnsavedChanges = (StrComp(ValueText, "True", vbTextCompare) = 0)
+        Case "LastProjectPath": Settings.LastProjectPath = ValueText
+        Case "LastSelectedModule": Settings.LastSelectedModule = ValueText
+        Case "LastSelectedTemplate": Settings.LastSelectedTemplate = ValueText
+        Case "WindowWidth": Settings.WindowWidth = CLng(ValueText)
+        Case "WindowHeight": Settings.WindowHeight = CLng(ValueText)
+        Case "ActivePage": Settings.ActivePage = ValueText
+    End Select
+    On Error GoTo 0
+End Sub
+
 Private Sub GenerateFromEditor(ByVal TargetScope As String)
     Dim SelectedNames As Collection
     Dim Request As AppGenerateRequest
@@ -585,17 +998,21 @@ Private Sub GenerateFromEditor(ByVal TargetScope As String)
         Exit Sub
     End If
 
-    If MsgBox("Generate from the current editor values? Unsaved edits are included, but the manifest file is not saved.", vbOKCancel + vbQuestion, "Manifest Editor") <> vbOK Then
-        Exit Sub
+    If StudioSettings.ConfirmOnUnsavedChanges Then
+        If MsgBox("Generate from the current editor values? Unsaved edits are included, but the manifest file is not saved.", vbOKCancel + vbQuestion, "Manifest Editor") <> vbOK Then
+            Exit Sub
+        End If
     End If
 
     ApplyModuleFieldsToSelection
     ApplyMemberFieldsToSelection
-    Set Result = ValidateProjectModel()
-    If AppValidationIssuesContainErrors(ValidationIssues) Then
-        ShowValidationPane ValidationIssues
-        MsgBox Result.Message, vbExclamation, "Manifest Editor"
-        Exit Sub
+    If StudioSettings.ValidateBeforeGenerate Then
+        Set Result = ValidateProjectModel()
+        If AppValidationIssuesContainErrors(ValidationIssues) Then
+            ShowValidationPane ValidationIssues
+            MsgBox Result.Message, vbExclamation, "Manifest Editor"
+            Exit Sub
+        End If
     End If
 
     OverwriteMode = ResolveOverwriteMode()
@@ -605,7 +1022,7 @@ Private Sub GenerateFromEditor(ByVal TargetScope As String)
 
     OutputDirectory = AppDefaultManifestGenerateOutputDirectory(txtManifestPath.Text)
     Set SelectedNames = CreateSelectedModuleNames(TargetScope)
-    Set Request = AppCreateManifestGenerateRequest(TargetScope, SelectedNames, OutputDirectory, OverwriteMode, False)
+    Set Request = AppCreateManifestGenerateRequest(TargetScope, SelectedNames, OutputDirectory, OverwriteMode, StudioSettings.ContinueOnError)
 
     GenerateInProgress = True
     SetUiState "Generating"
@@ -615,6 +1032,9 @@ Private Sub GenerateFromEditor(ByVal TargetScope As String)
     Set LastGenerateResult = GenerateResult
     ShowBuildLogPane GenerateResult
     MsgBox Result.Message, IIf(Result.IsSuccess, vbInformation, vbExclamation), "Manifest Editor"
+    If Result.IsSuccess And StudioSettings.OpenOutputAfterGenerate Then
+        Shell "explorer.exe " & Chr$(34) & GenerateResult.OutputDirectory & Chr$(34), vbNormalFocus
+    End If
 
 GenerateDone:
     GenerateInProgress = False
@@ -629,6 +1049,11 @@ End Sub
 
 Private Function ResolveOverwriteMode() As String
     Dim Answer As VbMsgBoxResult
+
+    If StudioSettings.DefaultOverwriteMode <> "Confirm" Then
+        ResolveOverwriteMode = StudioSettings.DefaultOverwriteMode
+        Exit Function
+    End If
 
     Answer = MsgBox("Overwrite existing generated files?" & vbCrLf & "Yes: overwrite" & vbCrLf & "No: skip existing files" & vbCrLf & "Cancel: abort", vbYesNoCancel + vbQuestion, "Manifest Editor")
     Select Case Answer
@@ -668,6 +1093,7 @@ Private Sub SetGenerateButtonsEnabled(ByVal IsEnabled As Boolean)
     End If
 End Sub
 Private Sub ShowPreviewPane()
+    HideSettingsPane
     HideTemplateManagerPane
     HideValidationPane
     HideBuildLogPane
@@ -748,8 +1174,8 @@ Private Sub EnsurePreviewControls()
     PreviewCodeTextBox.ScrollBars = fmScrollBarsBoth
     PreviewCodeTextBox.WordWrap = False
     PreviewCodeTextBox.Locked = True
-    PreviewCodeTextBox.Font.Name = "Consolas"
-    PreviewCodeTextBox.Font.Size = 9
+    PreviewCodeTextBox.Font.Name = StudioSettings.PreviewFontName
+    PreviewCodeTextBox.Font.Size = StudioSettings.PreviewFontSize
     PreviewCodeTextBox.Visible = False
 
     Set PreviewErrorTextBox = Me.Controls.Add("Forms.TextBox.1", "txtCodePreviewError", True)
@@ -1126,6 +1552,7 @@ Private Function ValidateSelectedModule() As ComResult
 End Function
 
 Private Sub ShowValidationPane(ByVal Issues As Collection)
+    HideSettingsPane
     HideTemplateManagerPane
     HidePreviewPane
     HideBuildLogPane
@@ -1137,6 +1564,7 @@ Private Sub ShowValidationPane(ByVal Issues As Collection)
 End Sub
 
 Private Sub ShowBuildLogPane(ByVal GenerateResult As AppGenerateResult)
+    HideSettingsPane
     HideTemplateManagerPane
     HidePreviewPane
     HideValidationPane
@@ -1417,6 +1845,7 @@ Private Sub RefreshCommandState()
     If Not GenerateAllButton Is Nothing Then GenerateAllButton.Enabled = HasProject And Not Busy And Not HasErrors
     If Not GenerateSelectedButton Is Nothing Then GenerateSelectedButton.Enabled = HasModule And Not Busy And Not HasErrors
     If Not TemplateManagerButton Is Nothing Then TemplateManagerButton.Enabled = HasProject And Not Busy
+    If Not SettingsButton Is Nothing Then SettingsButton.Enabled = Not Busy
 
     txtModuleName.Enabled = HasModule And Not Busy
     txtLayer.Enabled = HasModule And Not Busy
@@ -1639,6 +2068,10 @@ Private Sub ClearMemberFields()
     txtInitialValue.Text = vbNullString
     chkCreateInstance.Value = False
 End Sub
+
+
+
+
 
 
 

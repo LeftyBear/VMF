@@ -340,6 +340,14 @@ Public Function AppCreateTemplateManagerTemplate( _
     Set AppCreateTemplateManagerTemplate = TemplateService.AppCreateTemplateModel(TemplateName, TemplateType, FilePath, Content)
 End Function
 
+' Resolves the default template file path from Studio settings.
+Public Function AppDefaultTemplateManagerFilePath(ByVal TemplateFileName As String) As String
+    Dim TemplateService As AppTemplateService
+
+    Set TemplateService = CreateCompositionRoot().AppCreateTemplateService()
+    AppDefaultTemplateManagerFilePath = TemplateService.AppDefaultTemplateFilePath(TemplateFileName)
+End Function
+
 ' Analyzes one template model.
 Public Function AppAnalyzeTemplateModel(ByVal Template As AppTemplateModel) As ComResult
     Dim TemplateService As AppTemplateService
@@ -395,6 +403,54 @@ Public Function AppTemplateIssuesContainErrors(ByVal Issues As Collection) As Bo
 
     Set TemplateService = CreateCompositionRoot().AppCreateTemplateService()
     AppTemplateIssuesContainErrors = TemplateService.AppIssuesContainErrors(Issues)
+End Function
+
+' Loads VMF Studio settings.
+Public Function AppLoadStudioSettings(ByRef Settings As AppStudioSettings, ByRef Issues As Collection) As ComResult
+    Dim SettingsService As AppStudioSettingsService
+
+    Set SettingsService = CreateCompositionRoot().AppCreateStudioSettingsService()
+    Set AppLoadStudioSettings = SettingsService.AppLoadSettings(Settings, Issues)
+End Function
+
+' Saves VMF Studio settings.
+Public Function AppSaveStudioSettings(ByVal Settings As AppStudioSettings, ByRef Issues As Collection) As ComResult
+    Dim SettingsService As AppStudioSettingsService
+
+    Set SettingsService = CreateCompositionRoot().AppCreateStudioSettingsService()
+    Set AppSaveStudioSettings = SettingsService.AppSaveSettings(Settings, Issues)
+End Function
+
+' Validates VMF Studio settings.
+Public Function AppValidateStudioSettings(ByVal Settings As AppStudioSettings, ByRef Issues As Collection) As ComResult
+    Dim SettingsService As AppStudioSettingsService
+
+    Set SettingsService = CreateCompositionRoot().AppCreateStudioSettingsService()
+    Set AppValidateStudioSettings = SettingsService.AppValidateSettings(Settings, Issues)
+End Function
+
+' Creates default VMF Studio settings.
+Public Function AppCreateDefaultStudioSettings() As AppStudioSettings
+    Dim SettingsService As AppStudioSettingsService
+
+    Set SettingsService = CreateCompositionRoot().AppCreateStudioSettingsService()
+    Set AppCreateDefaultStudioSettings = SettingsService.AppCreateDefaultSettings()
+End Function
+
+' Returns True when Studio settings issues contain at least one Error.
+Public Function AppStudioSettingsIssuesContainErrors(ByVal Issues As Collection) As Boolean
+    Dim SettingsService As AppStudioSettingsService
+
+    Set SettingsService = CreateCompositionRoot().AppCreateStudioSettingsService()
+    AppStudioSettingsIssuesContainErrors = SettingsService.AppIssuesContainErrors(Issues)
+End Function
+
+' Resolves a Studio settings path against a base directory.
+Public Function AppResolveStudioSettingsPath(ByVal BasePath As String, ByVal PathValue As String) As String
+    Dim SettingsService As AppStudioSettingsService
+
+    Set SettingsService = CreateCompositionRoot().AppCreateStudioSettingsService()
+    AppResolveStudioSettingsPath = SettingsService.AppResolvePath(BasePath, PathValue)
 End Function
 
 '=========================================================================

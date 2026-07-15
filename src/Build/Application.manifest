@@ -15,6 +15,9 @@ AppManifestGenerateService,ClassModule,Application,..\..\templates\ClassTemplate
 AppManifestValidationIssue,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppManifestValidationService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppModuleGenerateResult,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppStudioSettings,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppStudioSettingsIssue,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppStudioSettingsService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppTemplateModel,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppTemplateService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppTemplateValidationIssue,ClassModule,Application,..\..\templates\ClassTemplate.txt
