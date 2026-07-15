@@ -17,6 +17,9 @@ Public Sub AppRunManifestEditorServiceTests()
     VerifyManifestValidationWarningsDoNotBlockSave
     VerifyManifestGenerateSelectedWritesPreviewEquivalentFile
     VerifyManifestEditorRejectsDuplicateModules
+    VerifyTemplateManagerLoadsAndValidatesTemplates
+    VerifyTemplateManagerPreviewsUnsavedTemplateContent
+    VerifyTemplateManagerRejectsInvalidSave
 End Sub
 
 Private Sub VerifyManifestEditorRoundTrip()
@@ -280,6 +283,109 @@ Private Sub VerifyManifestGenerateSelectedWritesPreviewEquivalentFile()
     AssertEquals "0", CStr(GenerateResult.SuccessCount), "Skip should not count as success."
     AssertEquals "1", CStr(GenerateResult.WarningCount), "Skip should count as warning."
     AssertEquals "1", CStr(GenerateResult.SkippedCount), "Skip should count skipped module."
+End Sub
+
+Private Sub VerifyTemplateManagerLoadsAndValidatesTemplates()
+    Dim FileProvider As InfFileSystemProvider
+    Dim EditorService As AppManifestEditorService
+    Dim TemplateService As AppTemplateService
+    Dim ManifestPath As String
+    Dim TemplatePath As String
+    Dim Modules As Collection
+    Dim Templates As Collection
+    Dim Issues As Collection
+    Dim Result As ComResult
+    Dim Template As AppTemplateModel
+
+    ManifestPath = GetTestFolderPath() & "\TemplateManagerLoad.manifest"
+    TemplatePath = GetTestFolderPath() & "\templates\ClassTemplate.txt"
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText TemplatePath, ReadTemplateContent("ClassTemplate.txt")
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath" & vbCrLf & _
+        "TemplateLoad,ClassModule,Application,templates\ClassTemplate.txt"
+
+    Set EditorService = New AppManifestEditorService
+    Set Result = EditorService.AppLoadManifestEditorModel(ManifestPath, Modules)
+    AssertTrue Result.IsSuccess, "Manifest should load for Template Manager."
+
+    Set TemplateService = New AppTemplateService
+    TemplateService.AppInitialize InfCreateGenerator(), EditorService, FileProvider
+    Set Result = TemplateService.AppLoadTemplates(ManifestPath, Modules, Templates)
+    AssertTrue Result.IsSuccess, "Template Manager should load templates."
+    AssertTrue Templates.Count > 0, "Template Manager should expose templates."
+
+    Set Template = Templates.Item(1)
+    AssertTrue Template.Placeholders.Count > 0, "Template analysis should find placeholders."
+    AssertTrue Template.Sections.Count > 0, "Template analysis should find sections."
+
+    Set Result = TemplateService.AppValidateTemplate(Template, Issues)
+    AssertTrue Result.IsSuccess, "Template validation should return a result."
+    AssertFalse TemplateService.AppIssuesContainErrors(Issues), "ClassTemplate should not have template errors."
+End Sub
+
+Private Sub VerifyTemplateManagerPreviewsUnsavedTemplateContent()
+    Dim FileProvider As InfFileSystemProvider
+    Dim EditorService As AppManifestEditorService
+    Dim TemplateService As AppTemplateService
+    Dim ManifestPath As String
+    Dim TemplatePath As String
+    Dim ManifestBefore As String
+    Dim TemplateBefore As String
+    Dim Modules As Collection
+    Dim Template As AppTemplateModel
+    Dim PreviewText As String
+    Dim Result As ComResult
+
+    ManifestPath = GetTestFolderPath() & "\TemplateManagerPreview.manifest"
+    TemplatePath = GetTestFolderPath() & "\templates\ClassTemplate.txt"
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText TemplatePath, ReadTemplateContent("ClassTemplate.txt")
+    FileProvider.InfWriteText ManifestPath, _
+        "# ModuleName,ModuleType,LayerName,TemplatePath" & vbCrLf & _
+        "TemplatePreview,ClassModule,Application,templates\ClassTemplate.txt"
+
+    Set EditorService = New AppManifestEditorService
+    Set Result = EditorService.AppLoadManifestEditorModel(ManifestPath, Modules)
+    AssertTrue Result.IsSuccess, "Manifest should load for template preview."
+
+    Set Template = New AppTemplateModel
+    Template.AppInitialize "UnsavedClassTemplate", "Class", TemplatePath, ReadTemplateContent("ClassTemplate.txt") & vbCrLf & "' UnsavedTemplateMarker"
+    ManifestBefore = FileProvider.InfReadText(ManifestPath)
+    TemplateBefore = FileProvider.InfReadText(TemplatePath)
+
+    Set TemplateService = New AppTemplateService
+    TemplateService.AppInitialize InfCreateGenerator(), EditorService, FileProvider
+    Set Result = TemplateService.AppPreviewTemplateWithModule(ManifestPath, Template, Modules.Item(1), PreviewText)
+    AssertTrue Result.IsSuccess, "Template Manager should preview unsaved template content."
+    AssertTrue InStr(1, PreviewText, "UnsavedTemplateMarker", vbTextCompare) > 0, "Preview should include unsaved template edits."
+    AssertEquals ManifestBefore, FileProvider.InfReadText(ManifestPath), "Template preview must not save manifest."
+    AssertEquals TemplateBefore, FileProvider.InfReadText(TemplatePath), "Template preview must not save template."
+End Sub
+
+Private Sub VerifyTemplateManagerRejectsInvalidSave()
+    Dim FileProvider As InfFileSystemProvider
+    Dim EditorService As AppManifestEditorService
+    Dim TemplateService As AppTemplateService
+    Dim TemplatePath As String
+    Dim TemplateBefore As String
+    Dim Template As AppTemplateModel
+    Dim Result As ComResult
+
+    TemplatePath = GetTestFolderPath() & "\templates\InvalidSaveClassTemplate.txt"
+    Set FileProvider = New InfFileSystemProvider
+    FileProvider.InfWriteText TemplatePath, ReadTemplateContent("ClassTemplate.txt")
+    TemplateBefore = FileProvider.InfReadText(TemplatePath)
+
+    Set Template = New AppTemplateModel
+    Template.AppInitialize "InvalidSaveClassTemplate", "Class", TemplatePath, "Option Explicit" & vbCrLf & "{{UnknownPlaceholder}}"
+
+    Set EditorService = New AppManifestEditorService
+    Set TemplateService = New AppTemplateService
+    TemplateService.AppInitialize InfCreateGenerator(), EditorService, FileProvider
+    Set Result = TemplateService.AppSaveTemplate(Template)
+    AssertTrue Result.IsFailure, "Invalid template should not be saved."
+    AssertEquals TemplateBefore, FileProvider.InfReadText(TemplatePath), "Invalid template save should preserve the existing file."
 End Sub
 
 Private Function ReadTemplateContent(ByVal TemplateFileName As String) As String

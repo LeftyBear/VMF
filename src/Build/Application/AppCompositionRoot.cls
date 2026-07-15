@@ -103,6 +103,16 @@ Public Function AppCreateBuildLogService() As AppBuildLogService
     Set AppCreateBuildLogService = New AppBuildLogService
 End Function
 
+' Creates a template manager service.
+Public Function AppCreateTemplateService() As AppTemplateService
+    Dim TemplateService As AppTemplateService
+
+    Set TemplateService = New AppTemplateService
+    TemplateService.AppInitialize InfCreateGenerator(), AppCreateManifestEditorService(), New InfFileSystemProvider
+
+    Set AppCreateTemplateService = TemplateService
+End Function
+
 ' Creates the Build generation engine.
 Public Function AppCreateGenerationEngine() As BuildGenerationEngine
     Dim Engine As BuildGenerationEngine

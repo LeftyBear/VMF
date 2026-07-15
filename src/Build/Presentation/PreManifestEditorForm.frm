@@ -47,6 +47,23 @@ Private SuppressDirtyEvents As Boolean
 Private CurrentUiState As String
 Private ValidationStatusByModule As Object
 Private GenerateTargetByModule As Object
+Private Templates As Collection
+Private SelectedTemplateIndex As Long
+Private TemplateIssues As Collection
+Private WithEvents TemplateManagerButton As MSForms.CommandButton
+Private WithEvents TemplateListBox As MSForms.ListBox
+Private WithEvents TemplateContentTextBox As MSForms.TextBox
+Private WithEvents TemplateNewButton As MSForms.CommandButton
+Private WithEvents TemplateOpenButton As MSForms.CommandButton
+Private WithEvents TemplateSaveButton As MSForms.CommandButton
+Private WithEvents TemplateSaveAsButton As MSForms.CommandButton
+Private WithEvents TemplateReloadButton As MSForms.CommandButton
+Private WithEvents TemplateValidateButton As MSForms.CommandButton
+Private WithEvents TemplatePreviewButton As MSForms.CommandButton
+Private WithEvents TemplateCloseButton As MSForms.CommandButton
+Private TemplateAnalysisListBox As MSForms.ListBox
+Private TemplateValidationListBox As MSForms.ListBox
+Private SuppressTemplateEvents As Boolean
 Public Sub PreOpenManifest(ByVal ManifestPath As String)
     txtManifestPath.Text = ManifestPath
     LoadManifest
@@ -58,6 +75,8 @@ Private Sub UserForm_Initialize()
     Set Modules = New Collection
     Set ValidationStatusByModule = CreateObject("Scripting.Dictionary")
     Set GenerateTargetByModule = CreateObject("Scripting.Dictionary")
+    Set Templates = New Collection
+    SelectedTemplateIndex = 0
     CurrentUiState = "NoProject"
     IsDirty = False
 
@@ -73,6 +92,7 @@ Private Sub UserForm_Initialize()
     CreatePreviewButton
     CreateValidationButton
     CreateGenerateButtons
+    CreateTemplateManagerButton
 
     cboModuleType.Clear
     cboModuleType.AddItem "ClassModule"
@@ -451,6 +471,102 @@ Private Sub CreateGenerateButtons()
     GenerateSelectedButton.Top = GenerateAllButton.Top
 End Sub
 
+Private Sub CreateTemplateManagerButton()
+    On Error Resume Next
+    Set TemplateManagerButton = Me.Controls("btnTemplateManager")
+    On Error GoTo 0
+
+    If TemplateManagerButton Is Nothing Then
+        Set TemplateManagerButton = Me.Controls.Add("Forms.CommandButton.1", "btnTemplateManager", True)
+    End If
+
+    TemplateManagerButton.Caption = "Templates"
+    TemplateManagerButton.Width = 82
+    TemplateManagerButton.Height = 22
+    TemplateManagerButton.Left = GenerateSelectedButton.Left + GenerateSelectedButton.Width + 8
+    TemplateManagerButton.Top = GenerateSelectedButton.Top
+End Sub
+
+Private Sub TemplateManagerButton_Click()
+    ShowTemplateManagerPane
+End Sub
+
+Private Sub TemplateListBox_Click()
+    If TemplateListBox.ListIndex < 0 Then Exit Sub
+    SelectTemplate TemplateListBox.ListIndex + 1
+End Sub
+
+Private Sub TemplateContentTextBox_Change()
+    If SuppressTemplateEvents Then Exit Sub
+    If SelectedTemplateIndex <= 0 Then Exit Sub
+
+    Templates.Item(SelectedTemplateIndex).Content = TemplateContentTextBox.Text
+    RenderTemplateList
+End Sub
+
+Private Sub TemplateNewButton_Click()
+    Dim Template As AppTemplateModel
+    Dim FilePath As String
+
+    FilePath = BuildPathResolver.CombinePath(BuildPathResolver.TemplatesDirectoryPath(), "NewTemplate.txt")
+    Set Template = AppCreateTemplateManagerTemplate("NewTemplate", "Class", FilePath, _
+        "Option Explicit" & vbCrLf & _
+        "' Class: {{ModuleName}}" & vbCrLf & _
+        "' Layer: {{Layer}}" & vbCrLf & _
+        "{{BODY}}")
+    Templates.Add Template
+    RenderTemplateList
+    TemplateListBox.ListIndex = Templates.Count - 1
+    SelectTemplate Templates.Count
+End Sub
+
+Private Sub TemplateOpenButton_Click()
+    Dim SelectedPath As Variant
+    Dim Template As AppTemplateModel
+    Dim Result As ComResult
+
+    SelectedPath = Application.GetOpenFilename("Template Files (*.txt),*.txt,All Files (*.*),*.*", , "Open Template")
+    If VarType(SelectedPath) = vbBoolean Then
+        If Not CBool(SelectedPath) Then Exit Sub
+    End If
+
+    Set Result = AppLoadTemplateManagerTemplateFile(CStr(SelectedPath), Template)
+    If Result.IsFailure Then
+        MsgBox Result.Message, vbExclamation, "Template Manager"
+        Exit Sub
+    End If
+
+    Templates.Add Template
+    RenderTemplateList
+    TemplateListBox.ListIndex = Templates.Count - 1
+    SelectTemplate Templates.Count
+End Sub
+
+Private Sub TemplateSaveButton_Click()
+    SaveSelectedTemplate False
+End Sub
+
+Private Sub TemplateSaveAsButton_Click()
+    SaveSelectedTemplate True
+End Sub
+
+Private Sub TemplateReloadButton_Click()
+    If SelectedTemplateIndex <= 0 Then Exit Sub
+    LoadTemplateManagerTemplates
+End Sub
+
+Private Sub TemplateValidateButton_Click()
+    ValidateSelectedTemplate
+End Sub
+
+Private Sub TemplatePreviewButton_Click()
+    PreviewSelectedTemplate
+End Sub
+
+Private Sub TemplateCloseButton_Click()
+    HideTemplateManagerPane
+End Sub
+
 Private Sub GenerateFromEditor(ByVal TargetScope As String)
     Dim SelectedNames As Collection
     Dim Request As AppGenerateRequest
@@ -552,6 +668,7 @@ Private Sub SetGenerateButtonsEnabled(ByVal IsEnabled As Boolean)
     End If
 End Sub
 Private Sub ShowPreviewPane()
+    HideTemplateManagerPane
     HideValidationPane
     HideBuildLogPane
     EnsurePreviewControls
@@ -669,6 +786,325 @@ Private Sub EnsurePreviewControls()
     PreviewCloseButton.Height = 24
     PreviewCloseButton.Visible = False
 End Sub
+Private Sub ShowTemplateManagerPane()
+    HidePreviewPane
+    HideValidationPane
+    HideBuildLogPane
+    EnsureTemplateManagerControls
+    Me.Width = 1120
+    TemplateListBox.Visible = True
+    TemplateContentTextBox.Visible = True
+    TemplateAnalysisListBox.Visible = True
+    TemplateValidationListBox.Visible = True
+    TemplateSaveButton.Visible = True
+    TemplateSaveAsButton.Visible = True
+    TemplateReloadButton.Visible = True
+    TemplateValidateButton.Visible = True
+    TemplatePreviewButton.Visible = True
+    TemplateCloseButton.Visible = True
+    LoadTemplateManagerTemplates
+End Sub
+
+Private Sub HideTemplateManagerPane()
+    If TemplateListBox Is Nothing Then Exit Sub
+
+    TemplateListBox.Visible = False
+    TemplateContentTextBox.Visible = False
+    TemplateAnalysisListBox.Visible = False
+    TemplateValidationListBox.Visible = False
+    TemplateSaveButton.Visible = False
+    TemplateSaveAsButton.Visible = False
+    TemplateReloadButton.Visible = False
+    TemplateValidateButton.Visible = False
+    TemplatePreviewButton.Visible = False
+    TemplateCloseButton.Visible = False
+    Me.Width = 620
+End Sub
+
+Private Sub EnsureTemplateManagerControls()
+    If Not TemplateListBox Is Nothing Then Exit Sub
+
+    Set TemplateListBox = Me.Controls.Add("Forms.ListBox.1", "lstTemplates", True)
+    TemplateListBox.Left = 620
+    TemplateListBox.Top = 30
+    TemplateListBox.Width = 470
+    TemplateListBox.Height = 92
+    TemplateListBox.ColumnCount = 5
+    TemplateListBox.ColumnWidths = "110 pt;90 pt;160 pt;58 pt;46 pt"
+    TemplateListBox.Visible = False
+
+    Set TemplateContentTextBox = Me.Controls.Add("Forms.TextBox.1", "txtTemplateContent", True)
+    TemplateContentTextBox.Left = 620
+    TemplateContentTextBox.Top = 128
+    TemplateContentTextBox.Width = 470
+    TemplateContentTextBox.Height = 250
+    TemplateContentTextBox.MultiLine = True
+    TemplateContentTextBox.ScrollBars = fmScrollBarsBoth
+    TemplateContentTextBox.WordWrap = False
+    TemplateContentTextBox.Font.Name = "Consolas"
+    TemplateContentTextBox.Font.Size = 9
+    TemplateContentTextBox.Visible = False
+
+    Set TemplateAnalysisListBox = Me.Controls.Add("Forms.ListBox.1", "lstTemplateAnalysis", True)
+    TemplateAnalysisListBox.Left = 620
+    TemplateAnalysisListBox.Top = 384
+    TemplateAnalysisListBox.Width = 232
+    TemplateAnalysisListBox.Height = 90
+    TemplateAnalysisListBox.ColumnCount = 4
+    TemplateAnalysisListBox.ColumnWidths = "76 pt;38 pt;40 pt;54 pt"
+    TemplateAnalysisListBox.Visible = False
+
+    Set TemplateValidationListBox = Me.Controls.Add("Forms.ListBox.1", "lstTemplateValidation", True)
+    TemplateValidationListBox.Left = 858
+    TemplateValidationListBox.Top = 384
+    TemplateValidationListBox.Width = 232
+    TemplateValidationListBox.Height = 90
+    TemplateValidationListBox.ColumnCount = 4
+    TemplateValidationListBox.ColumnWidths = "54 pt;74 pt;36 pt;150 pt"
+    TemplateValidationListBox.Visible = False
+
+    Set TemplateSaveButton = Me.Controls.Add("Forms.CommandButton.1", "btnTemplateSave", True)
+    TemplateSaveButton.Caption = "Save"
+    TemplateSaveButton.Left = 620
+    TemplateSaveButton.Top = 484
+    TemplateSaveButton.Width = 58
+    TemplateSaveButton.Height = 24
+    TemplateSaveButton.Visible = False
+
+    Set TemplateSaveAsButton = Me.Controls.Add("Forms.CommandButton.1", "btnTemplateSaveAs", True)
+    TemplateSaveAsButton.Caption = "Save As"
+    TemplateSaveAsButton.Left = 804
+    TemplateSaveAsButton.Top = 484
+    TemplateSaveAsButton.Width = 70
+    TemplateSaveAsButton.Height = 24
+    TemplateSaveAsButton.Visible = False
+
+    Set TemplateReloadButton = Me.Controls.Add("Forms.CommandButton.1", "btnTemplateReload", True)
+    TemplateReloadButton.Caption = "Reload"
+    TemplateReloadButton.Left = 880
+    TemplateReloadButton.Top = 484
+    TemplateReloadButton.Width = 66
+    TemplateReloadButton.Height = 24
+    TemplateReloadButton.Visible = False
+
+    Set TemplateValidateButton = Me.Controls.Add("Forms.CommandButton.1", "btnTemplateValidate", True)
+    TemplateValidateButton.Caption = "Validate"
+    TemplateValidateButton.Left = 952
+    TemplateValidateButton.Top = 484
+    TemplateValidateButton.Width = 72
+    TemplateValidateButton.Height = 24
+    TemplateValidateButton.Visible = False
+
+    Set TemplatePreviewButton = Me.Controls.Add("Forms.CommandButton.1", "btnTemplatePreview", True)
+    TemplatePreviewButton.Caption = "Preview"
+    TemplatePreviewButton.Left = 1030
+    TemplatePreviewButton.Top = 484
+    TemplatePreviewButton.Width = 72
+    TemplatePreviewButton.Height = 24
+    TemplatePreviewButton.Visible = False
+
+    Set TemplateCloseButton = Me.Controls.Add("Forms.CommandButton.1", "btnTemplateClose", True)
+    TemplateCloseButton.Caption = "Close"
+    TemplateCloseButton.Left = 1030
+    TemplateCloseButton.Top = 454
+    TemplateCloseButton.Width = 72
+    TemplateCloseButton.Height = 24
+    TemplateCloseButton.Visible = False
+End Sub
+
+Private Sub LoadTemplateManagerTemplates()
+    Dim Result As ComResult
+
+    EnsureTemplateManagerControls
+    ApplyModuleFieldsToSelection
+    ApplyMemberFieldsToSelection
+    Set Result = AppLoadTemplateManagerTemplates(txtManifestPath.Text, Modules, Templates)
+    If Result.IsFailure Then
+        TemplateValidationListBox.Clear
+        TemplateValidationListBox.AddItem "Error"
+        TemplateValidationListBox.List(0, 1) = "VMF-TPL-LOAD"
+        TemplateValidationListBox.List(0, 2) = "0"
+        TemplateValidationListBox.List(0, 3) = Result.Message
+        Exit Sub
+    End If
+
+    RenderTemplateList
+    If Templates.Count > 0 Then
+        TemplateListBox.ListIndex = 0
+        SelectTemplate 1
+    End If
+End Sub
+
+Private Sub SelectTemplate(ByVal TemplateIndex As Long)
+    If TemplateIndex <= 0 Or TemplateIndex > Templates.Count Then Exit Sub
+    SelectedTemplateIndex = TemplateIndex
+    RenderSelectedTemplate
+End Sub
+
+Private Sub RenderTemplateList()
+    Dim Template As AppTemplateModel
+    Dim RowIndex As Long
+
+    EnsureTemplateManagerControls
+    TemplateListBox.Clear
+    For Each Template In Templates
+        TemplateListBox.AddItem Template.TemplateName
+        RowIndex = TemplateListBox.ListCount - 1
+        TemplateListBox.List(RowIndex, 1) = Template.TemplateType
+        TemplateListBox.List(RowIndex, 2) = Template.FilePath
+        TemplateListBox.List(RowIndex, 3) = TemplateValidationState(Template)
+        TemplateListBox.List(RowIndex, 4) = IIf(Template.IsDirty, "Dirty", vbNullString)
+    Next Template
+End Sub
+
+Private Sub RenderSelectedTemplate()
+    Dim Template As AppTemplateModel
+    Dim Result As ComResult
+
+    If SelectedTemplateIndex <= 0 Then Exit Sub
+    Set Template = Templates.Item(SelectedTemplateIndex)
+    Set Result = AppAnalyzeTemplateModel(Template)
+
+    SuppressTemplateEvents = True
+    TemplateContentTextBox.Text = Template.Content
+    SuppressTemplateEvents = False
+    RenderTemplateAnalysis Template
+    RenderTemplateValidation Template.ValidationResults
+End Sub
+
+Private Sub RenderTemplateAnalysis(ByVal Template As AppTemplateModel)
+    Dim Placeholder As Object
+    Dim SectionInfo As Object
+
+    TemplateAnalysisListBox.Clear
+    For Each Placeholder In Template.Placeholders
+        TemplateAnalysisListBox.AddItem CStr(Placeholder("Name"))
+        TemplateAnalysisListBox.List(TemplateAnalysisListBox.ListCount - 1, 1) = CStr(Placeholder("OccurrenceCount"))
+        TemplateAnalysisListBox.List(TemplateAnalysisListBox.ListCount - 1, 2) = CStr(Placeholder("LineNumber"))
+        TemplateAnalysisListBox.List(TemplateAnalysisListBox.ListCount - 1, 3) = IIf(CBool(Placeholder("IsKnown")), "Known", "Unknown")
+    Next Placeholder
+
+    For Each SectionInfo In Template.Sections
+        TemplateAnalysisListBox.AddItem "@" & CStr(SectionInfo("Name"))
+        TemplateAnalysisListBox.List(TemplateAnalysisListBox.ListCount - 1, 1) = "Section"
+        TemplateAnalysisListBox.List(TemplateAnalysisListBox.ListCount - 1, 2) = CStr(SectionInfo("LineNumber"))
+        TemplateAnalysisListBox.List(TemplateAnalysisListBox.ListCount - 1, 3) = IIf(CBool(SectionInfo("IsValid")), "Valid", "Error")
+    Next SectionInfo
+End Sub
+
+Private Sub RenderTemplateValidation(ByVal Issues As Collection)
+    Dim Issue As AppTemplateValidationIssue
+
+    TemplateValidationListBox.Clear
+    If Issues Is Nothing Then
+        TemplateValidationListBox.AddItem "Information"
+        TemplateValidationListBox.List(0, 1) = "VMF-TPL-OK"
+        TemplateValidationListBox.List(0, 2) = "0"
+        TemplateValidationListBox.List(0, 3) = "Template validation not run."
+        Exit Sub
+    End If
+
+    If Issues.Count = 0 Then
+        TemplateValidationListBox.AddItem "Information"
+        TemplateValidationListBox.List(0, 1) = "VMF-TPL-OK"
+        TemplateValidationListBox.List(0, 2) = "0"
+        TemplateValidationListBox.List(0, 3) = "Template validation passed."
+        Exit Sub
+    End If
+
+    For Each Issue In Issues
+        TemplateValidationListBox.AddItem Issue.SeverityText
+        TemplateValidationListBox.List(TemplateValidationListBox.ListCount - 1, 1) = Issue.Code
+        TemplateValidationListBox.List(TemplateValidationListBox.ListCount - 1, 2) = CStr(Issue.LineNumber)
+        TemplateValidationListBox.List(TemplateValidationListBox.ListCount - 1, 3) = Issue.Message
+    Next Issue
+End Sub
+
+Private Function TemplateValidationState(ByVal Template As AppTemplateModel) As String
+    If Template.ValidationResults Is Nothing Then
+        TemplateValidationState = "[-]"
+    ElseIf Template.ValidationResults.Count = 0 Then
+        TemplateValidationState = "[V]"
+    ElseIf AppTemplateIssuesContainErrors(Template.ValidationResults) Then
+        TemplateValidationState = "[E]"
+    Else
+        TemplateValidationState = "[W]"
+    End If
+End Function
+
+Private Sub ValidateSelectedTemplate()
+    Dim Template As AppTemplateModel
+    Dim Result As ComResult
+
+    If SelectedTemplateIndex <= 0 Then Exit Sub
+    Set Template = Templates.Item(SelectedTemplateIndex)
+    Template.Content = TemplateContentTextBox.Text
+    Set Result = AppValidateTemplateModel(Template, TemplateIssues)
+    RenderTemplateAnalysis Template
+    RenderTemplateValidation TemplateIssues
+    RenderTemplateList
+    TemplateListBox.ListIndex = SelectedTemplateIndex - 1
+End Sub
+
+Private Sub SaveSelectedTemplate(ByVal SaveAsNew As Boolean)
+    Dim Template As AppTemplateModel
+    Dim Result As ComResult
+    Dim SelectedPath As Variant
+    Dim TemplateName As String
+
+    If SelectedTemplateIndex <= 0 Then Exit Sub
+    Set Template = Templates.Item(SelectedTemplateIndex)
+    Template.Content = TemplateContentTextBox.Text
+
+    If SaveAsNew Then
+        SelectedPath = Application.GetSaveAsFilename(Template.FilePath, "Template Files (*.txt),*.txt,All Files (*.*),*.*", , "Save Template As")
+        If VarType(SelectedPath) = vbBoolean Then
+            If Not CBool(SelectedPath) Then Exit Sub
+        End If
+        TemplateName = Mid$(CStr(SelectedPath), InStrRev(CStr(SelectedPath), Application.PathSeparator) + 1)
+        If InStrRev(TemplateName, ".") > 0 Then TemplateName = Left$(TemplateName, InStrRev(TemplateName, ".") - 1)
+        Set Result = AppSaveTemplateModelAs(Template, TemplateName, CStr(SelectedPath))
+    Else
+        Set Result = AppSaveTemplateModel(Template)
+    End If
+
+    If Result.IsFailure Then
+        RenderTemplateValidation Template.ValidationResults
+        MsgBox Result.Message, vbExclamation, "Template Manager"
+    Else
+        MsgBox Result.Message, vbInformation, "Template Manager"
+    End If
+    RenderTemplateList
+    TemplateListBox.ListIndex = SelectedTemplateIndex - 1
+End Sub
+
+Private Sub PreviewSelectedTemplate()
+    Dim Template As AppTemplateModel
+    Dim Result As ComResult
+    Dim PreviewText As String
+
+    If SelectedTemplateIndex <= 0 Then Exit Sub
+    If SelectedModuleIndex <= 0 Then
+        MsgBox "Select a module first.", vbExclamation, "Template Manager"
+        Exit Sub
+    End If
+
+    ApplyModuleFieldsToSelection
+    ApplyMemberFieldsToSelection
+    Set Template = Templates.Item(SelectedTemplateIndex)
+    Template.Content = TemplateContentTextBox.Text
+    Set Result = AppPreviewTemplateModelWithModule(txtManifestPath.Text, Template, Modules.Item(SelectedModuleIndex), PreviewText)
+    RenderTemplateValidation Template.ValidationResults
+    If Result.IsFailure Then
+        MsgBox Result.Message, vbExclamation, "Template Manager"
+        Exit Sub
+    End If
+
+    ShowPreviewPane
+    PreviewCodeTextBox.Text = PreviewText
+    PreviewErrorTextBox.Text = "Template preview generated from unsaved template content."
+End Sub
+
 Private Function ValidateProjectModel() As ComResult
     SetUiState "Validating"
     Set ValidateProjectModel = AppValidateManifestEditorModel(txtManifestPath.Text, Modules, ValidationIssues)
@@ -690,6 +1126,7 @@ Private Function ValidateSelectedModule() As ComResult
 End Function
 
 Private Sub ShowValidationPane(ByVal Issues As Collection)
+    HideTemplateManagerPane
     HidePreviewPane
     HideBuildLogPane
     EnsureValidationControls
@@ -700,6 +1137,7 @@ Private Sub ShowValidationPane(ByVal Issues As Collection)
 End Sub
 
 Private Sub ShowBuildLogPane(ByVal GenerateResult As AppGenerateResult)
+    HideTemplateManagerPane
     HidePreviewPane
     HideValidationPane
     EnsureBuildLogControls
@@ -978,6 +1416,7 @@ Private Sub RefreshCommandState()
     If Not ValidationButton Is Nothing Then ValidationButton.Enabled = HasProject And Not Busy
     If Not GenerateAllButton Is Nothing Then GenerateAllButton.Enabled = HasProject And Not Busy And Not HasErrors
     If Not GenerateSelectedButton Is Nothing Then GenerateSelectedButton.Enabled = HasModule And Not Busy And Not HasErrors
+    If Not TemplateManagerButton Is Nothing Then TemplateManagerButton.Enabled = HasProject And Not Busy
 
     txtModuleName.Enabled = HasModule And Not Busy
     txtLayer.Enabled = HasModule And Not Busy
@@ -1200,6 +1639,12 @@ Private Sub ClearMemberFields()
     txtInitialValue.Text = vbNullString
     chkCreateInstance.Value = False
 End Sub
+
+
+
+
+
+
 
 
 

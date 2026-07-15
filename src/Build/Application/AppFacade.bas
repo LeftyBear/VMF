@@ -304,6 +304,99 @@ Public Function AppDefaultManifestGenerateOutputDirectory(ByVal ManifestPath As 
     AppDefaultManifestGenerateOutputDirectory = GenerateService.AppDefaultOutputDirectory(ManifestPath)
 End Function
 
+' Loads templates available to Template Manager.
+Public Function AppLoadTemplateManagerTemplates( _
+    ByVal ManifestPath As String, _
+    ByVal Modules As Collection, _
+    ByRef Templates As Collection) As ComResult
+
+    Dim TemplateService As AppTemplateService
+
+    Set TemplateService = CreateCompositionRoot().AppCreateTemplateService()
+    Set AppLoadTemplateManagerTemplates = TemplateService.AppLoadTemplates(ManifestPath, Modules, Templates)
+End Function
+
+' Loads one template file for Template Manager.
+Public Function AppLoadTemplateManagerTemplateFile( _
+    ByVal FilePath As String, _
+    ByRef Template As AppTemplateModel) As ComResult
+
+    Dim TemplateService As AppTemplateService
+
+    Set TemplateService = CreateCompositionRoot().AppCreateTemplateService()
+    Set AppLoadTemplateManagerTemplateFile = TemplateService.AppLoadTemplateFile(FilePath, Template)
+End Function
+
+' Creates a new editable Template Manager model.
+Public Function AppCreateTemplateManagerTemplate( _
+    ByVal TemplateName As String, _
+    ByVal TemplateType As String, _
+    ByVal FilePath As String, _
+    ByVal Content As String) As AppTemplateModel
+
+    Dim TemplateService As AppTemplateService
+
+    Set TemplateService = CreateCompositionRoot().AppCreateTemplateService()
+    Set AppCreateTemplateManagerTemplate = TemplateService.AppCreateTemplateModel(TemplateName, TemplateType, FilePath, Content)
+End Function
+
+' Analyzes one template model.
+Public Function AppAnalyzeTemplateModel(ByVal Template As AppTemplateModel) As ComResult
+    Dim TemplateService As AppTemplateService
+
+    Set TemplateService = CreateCompositionRoot().AppCreateTemplateService()
+    Set AppAnalyzeTemplateModel = TemplateService.AppAnalyzeTemplate(Template)
+End Function
+
+' Validates one template model.
+Public Function AppValidateTemplateModel(ByVal Template As AppTemplateModel, ByRef Issues As Collection) As ComResult
+    Dim TemplateService As AppTemplateService
+
+    Set TemplateService = CreateCompositionRoot().AppCreateTemplateService()
+    Set AppValidateTemplateModel = TemplateService.AppValidateTemplate(Template, Issues)
+End Function
+
+' Saves a template model after validation and verification.
+Public Function AppSaveTemplateModel(ByVal Template As AppTemplateModel) As ComResult
+    Dim TemplateService As AppTemplateService
+
+    Set TemplateService = CreateCompositionRoot().AppCreateTemplateService()
+    Set AppSaveTemplateModel = TemplateService.AppSaveTemplate(Template)
+End Function
+
+' Saves a template model with a new name and path.
+Public Function AppSaveTemplateModelAs( _
+    ByVal Template As AppTemplateModel, _
+    ByVal TemplateName As String, _
+    ByVal FilePath As String) As ComResult
+
+    Dim TemplateService As AppTemplateService
+
+    Set TemplateService = CreateCompositionRoot().AppCreateTemplateService()
+    Set AppSaveTemplateModelAs = TemplateService.AppSaveTemplateAs(Template, TemplateName, FilePath)
+End Function
+
+' Previews code using the unsaved Template Manager content and selected module.
+Public Function AppPreviewTemplateModelWithModule( _
+    ByVal ManifestPath As String, _
+    ByVal Template As AppTemplateModel, _
+    ByVal ModuleInfo As Object, _
+    ByRef PreviewText As String) As ComResult
+
+    Dim TemplateService As AppTemplateService
+
+    Set TemplateService = CreateCompositionRoot().AppCreateTemplateService()
+    Set AppPreviewTemplateModelWithModule = TemplateService.AppPreviewTemplateWithModule(ManifestPath, Template, ModuleInfo, PreviewText)
+End Function
+
+' Returns True when template validation issues contain at least one Error.
+Public Function AppTemplateIssuesContainErrors(ByVal Issues As Collection) As Boolean
+    Dim TemplateService As AppTemplateService
+
+    Set TemplateService = CreateCompositionRoot().AppCreateTemplateService()
+    AppTemplateIssuesContainErrors = TemplateService.AppIssuesContainErrors(Issues)
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================
