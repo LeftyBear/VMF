@@ -99,6 +99,7 @@ Private WithEvents SelfCheckCloseButton As MSForms.CommandButton
 Private SelfCheckDetailTextBox As MSForms.TextBox
 Private SelfCheckResults As Collection
 Private SelfCheckInProgress As Boolean
+Private SuppressModuleSelectionEvents As Boolean
 Public Sub PreOpenManifest(ByVal ManifestPath As String)
     txtManifestPath.Text = ManifestPath
     LoadManifest
@@ -116,8 +117,7 @@ Private Sub UserForm_Initialize()
     CurrentUiState = "NoProject"
     IsDirty = False
 
-    Me.Width = StudioSettings.WindowWidth
-    Me.Height = StudioSettings.WindowHeight
+    MaximizeStudioWindow
     lblTemplatePath.Width = 78
     txtTemplatePath.Left = lblTemplatePath.Left + lblTemplatePath.Width + 8
     txtTemplatePath.Width = 196
@@ -142,12 +142,56 @@ Private Sub UserForm_Initialize()
     cboAccessor.AddItem "GetSet"
     cboAccessor.AddItem "GetOnly"
 
+    ConfigureProjectExplorerList
     lstModules.ColumnCount = 6
     lstModules.ColumnWidths = "42 pt;80 pt;140 pt;90 pt;48 pt;58 pt"
     lstMembers.ColumnCount = 5
     lstMembers.ColumnWidths = "110 pt;110 pt;80 pt;110 pt;80 pt"
     RefreshCommandState
 End Sub
+
+Private Sub MaximizeStudioWindow()
+    On Error Resume Next
+    Me.StartUpPosition = 0
+    Me.Left = Application.Left
+    Me.Top = Application.Top
+    Me.Width = Application.UsableWidth
+    Me.Height = Application.UsableHeight
+    If Me.Width < 980 Then Me.Width = 980
+    If Me.Height < 520 Then Me.Height = 520
+    On Error GoTo 0
+End Sub
+
+Private Sub ConfigureProjectExplorerList()
+    On Error Resume Next
+    lstModules.MultiSelect = fmMultiSelectSingle
+    lstModules.ListStyle = fmListStylePlain
+    lstModules.IntegralHeight = False
+    lstModules.ColumnHeads = False
+    lstModules.ZOrder 0
+    On Error GoTo 0
+End Sub
+
+Private Sub RestoreProjectExplorerSelection(ByVal PreferredTopIndex As Long)
+    On Error Resume Next
+    SuppressModuleSelectionEvents = True
+    If SelectedModuleIndex > 0 And SelectedModuleIndex <= lstModules.ListCount Then
+        lstModules.ListIndex = SelectedModuleIndex - 1
+    Else
+        lstModules.ListIndex = -1
+    End If
+    If PreferredTopIndex >= 0 Then lstModules.TopIndex = PreferredTopIndex
+    SuppressModuleSelectionEvents = False
+    On Error GoTo 0
+End Sub
+
+Private Function CurrentProjectExplorerTopIndex() As Long
+    On Error GoTo NoTopIndex
+    CurrentProjectExplorerTopIndex = lstModules.TopIndex
+    Exit Function
+NoTopIndex:
+    CurrentProjectExplorerTopIndex = 0
+End Function
 
 Private Sub btnLoad_Click()
     Dim SelectedPath As Variant
@@ -193,6 +237,7 @@ Private Sub btnClose_Click()
 End Sub
 
 Private Sub lstModules_Click()
+    If SuppressModuleSelectionEvents Then Exit Sub
     If lstModules.ListIndex < 0 Then
         Exit Sub
     End If
@@ -2271,18 +2316,22 @@ Private Function CreateMemberFromFields() As Object
 End Function
 
 Private Sub SelectModuleFromExplorer(ByVal ModuleIndex As Long)
+    Dim PreviousTopIndex As Long
+
     If ModuleIndex <= 0 Or ModuleIndex > Modules.Count Then
         SetUiState "Error"
         MsgBox "Module selection failed.", vbExclamation, "Manifest Editor"
         Exit Sub
     End If
 
+    PreviousTopIndex = CurrentProjectExplorerTopIndex()
     ApplyModuleFieldsToSelection
     ApplyMemberFieldsToSelection
     SelectedModuleIndex = ModuleIndex
     SelectedMemberIndex = 0
     SetSingleGenerateTarget CStr(Modules.Item(SelectedModuleIndex)("ModuleName"))
     RefreshProjectExplorer
+    RestoreProjectExplorerSelection PreviousTopIndex
     ShowSelectedModule
     If Not PreviewCodeTextBox Is Nothing Then
         If PreviewCodeTextBox.Visible Then RefreshPreviewPane
@@ -2425,7 +2474,10 @@ Private Sub RefreshProjectExplorer()
     Dim ModuleInfo As Object
     Dim ModuleName As String
     Dim RowIndex As Long
+    Dim PreviousTopIndex As Long
 
+    PreviousTopIndex = CurrentProjectExplorerTopIndex()
+    SuppressModuleSelectionEvents = True
     lstModules.Clear
     For Each ModuleInfo In Modules
         ModuleName = CStr(ModuleInfo("ModuleName"))
@@ -2437,6 +2489,8 @@ Private Sub RefreshProjectExplorer()
         lstModules.List(RowIndex, 4) = IIf(IsDirtyModule(ModuleName), "Dirty", vbNullString)
         lstModules.List(RowIndex, 5) = IIf(IsGenerateTarget(ModuleName), "Target", vbNullString)
     Next ModuleInfo
+    SuppressModuleSelectionEvents = False
+    RestoreProjectExplorerSelection PreviousTopIndex
     RefreshCommandState
 End Sub
 
@@ -2557,26 +2611,4 @@ Private Sub ClearMemberFields()
     txtInitialValue.Text = vbNullString
     chkCreateInstance.Value = False
 End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
