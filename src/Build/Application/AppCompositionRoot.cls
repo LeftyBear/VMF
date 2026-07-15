@@ -66,7 +66,12 @@ End Function
 
 ' Creates a manifest editor service.
 Public Function AppCreateManifestEditorService() As AppManifestEditorService
-    Set AppCreateManifestEditorService = New AppManifestEditorService
+    Dim EditorService As AppManifestEditorService
+
+    Set EditorService = New AppManifestEditorService
+    EditorService.AppInitialize AppCreateBackupService()
+
+    Set AppCreateManifestEditorService = EditorService
 End Function
 
 ' Creates a manifest validation service.
@@ -122,6 +127,29 @@ Public Function AppCreateStudioSettingsService() As AppStudioSettingsService
     SettingsService.AppInitialize New InfFileSystemProvider
 
     Set AppCreateStudioSettingsService = SettingsService
+End Function
+
+' Creates a backup and safe save service.
+Public Function AppCreateBackupService() As AppBackupService
+    Dim BackupService As AppBackupService
+    Dim FileProvider As InfFileSystemProvider
+    Dim SettingsService As AppStudioSettingsService
+    Dim EditorService As AppManifestEditorService
+    Dim ValidationService As AppManifestValidationService
+    Dim TemplateService As AppTemplateService
+
+    Set FileProvider = New InfFileSystemProvider
+    Set SettingsService = New AppStudioSettingsService
+    SettingsService.AppInitialize FileProvider
+    Set EditorService = New AppManifestEditorService
+    Set ValidationService = New AppManifestValidationService
+    Set TemplateService = New AppTemplateService
+    TemplateService.AppInitialize InfCreateGenerator(), EditorService, FileProvider, SettingsService
+
+    Set BackupService = New AppBackupService
+    BackupService.AppInitialize FileProvider, SettingsService, EditorService, ValidationService, TemplateService
+
+    Set AppCreateBackupService = BackupService
 End Function
 
 ' Creates the Build generation engine.

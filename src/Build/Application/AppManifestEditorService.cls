@@ -20,6 +20,12 @@ Option Explicit
 ' Public API
 '=========================================================================
 
+Private BackupService As AppBackupService
+
+Public Sub AppInitialize(Optional ByVal ProviderBackup As AppBackupService = Nothing)
+    Set BackupService = ProviderBackup
+End Sub
+
 Public Function AppLoadManifestEditorModel( _
     ByVal ManifestPath As String, _
     ByRef Modules As Collection) As ComResult
@@ -307,9 +313,18 @@ End Sub
 
 Private Sub WriteManifestContent(ByVal ManifestPath As String, ByVal Modules As Collection)
     Dim FileProvider As InfFileSystemProvider
+    Dim BackupPath As String
+    Dim Result As ComResult
 
     Set FileProvider = New InfFileSystemProvider
-    FileProvider.InfWriteText ManifestPath, RenderManifestContent(Modules)
+    If BackupService Is Nothing Then
+        FileProvider.InfWriteText ManifestPath, RenderManifestContent(Modules)
+    Else
+        Set Result = BackupService.AppSafeSaveText("Manifest", ManifestPath, RenderManifestContent(Modules), "Update", BackupPath)
+        If Result.IsFailure Then
+            Err.Raise ComErrInvalidState, "WriteManifestContent", Result.Message
+        End If
+    End If
 End Sub
 
 Private Function RenderManifestContent(ByVal Modules As Collection) As String

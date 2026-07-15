@@ -79,6 +79,15 @@ Private WithEvents SettingsDefaultsButton As MSForms.CommandButton
 Private WithEvents SettingsBrowseButton As MSForms.CommandButton
 Private SettingsIssueListBox As MSForms.ListBox
 Private SuppressSettingsEvents As Boolean
+Private WithEvents BackupButton As MSForms.CommandButton
+Private WithEvents BackupTypeListBox As MSForms.ListBox
+Private WithEvents BackupListBox As MSForms.ListBox
+Private WithEvents BackupHistoryListBox As MSForms.ListBox
+Private WithEvents BackupRestoreButton As MSForms.CommandButton
+Private WithEvents BackupDeleteButton As MSForms.CommandButton
+Private WithEvents BackupOpenFolderButton As MSForms.CommandButton
+Private WithEvents BackupRefreshButton As MSForms.CommandButton
+Private WithEvents BackupCloseButton As MSForms.CommandButton
 Public Sub PreOpenManifest(ByVal ManifestPath As String)
     txtManifestPath.Text = ManifestPath
     LoadManifest
@@ -110,6 +119,7 @@ Private Sub UserForm_Initialize()
     CreateGenerateButtons
     CreateTemplateManagerButton
     CreateSettingsButton
+    CreateBackupButton
 
     cboModuleType.Clear
     cboModuleType.AddItem "ClassModule"
@@ -584,6 +594,221 @@ Private Sub TemplateCloseButton_Click()
     HideTemplateManagerPane
 End Sub
 
+Private Sub CreateBackupButton()
+    On Error Resume Next
+    Set BackupButton = Me.Controls("btnBackups")
+    On Error GoTo 0
+
+    If BackupButton Is Nothing Then
+        Set BackupButton = Me.Controls.Add("Forms.CommandButton.1", "btnBackups", True)
+    End If
+
+    BackupButton.Caption = "Backups"
+    BackupButton.Width = 74
+    BackupButton.Height = 22
+    BackupButton.Left = SettingsButton.Left + SettingsButton.Width + 8
+    BackupButton.Top = SettingsButton.Top
+End Sub
+
+Private Sub BackupButton_Click()
+    ShowBackupPane
+End Sub
+
+Private Sub BackupTypeListBox_Click()
+    RenderBackupList
+End Sub
+
+Private Sub BackupRefreshButton_Click()
+    RenderBackupList
+    RenderBackupHistory
+End Sub
+
+Private Sub BackupRestoreButton_Click()
+    RestoreSelectedBackup
+End Sub
+
+Private Sub BackupDeleteButton_Click()
+    DeleteSelectedBackup
+End Sub
+
+Private Sub BackupOpenFolderButton_Click()
+    Shell "explorer.exe " & Chr$(34) & AppResolveStudioSettingsPath(BuildPathResolver.RepositoryRootPath(), StudioSettings.BackupDirectory) & Chr$(34), vbNormalFocus
+End Sub
+
+Private Sub BackupCloseButton_Click()
+    HideBackupPane
+End Sub
+
+Private Sub ShowBackupPane()
+    HideSettingsPane
+    HideTemplateManagerPane
+    HidePreviewPane
+    HideValidationPane
+    HideBuildLogPane
+    EnsureBackupControls
+    Me.Width = 1120
+    BackupTypeListBox.Visible = True
+    BackupListBox.Visible = True
+    BackupHistoryListBox.Visible = True
+    BackupRestoreButton.Visible = True
+    BackupDeleteButton.Visible = True
+    BackupOpenFolderButton.Visible = True
+    BackupRefreshButton.Visible = True
+    BackupCloseButton.Visible = True
+    If BackupTypeListBox.ListIndex < 0 Then BackupTypeListBox.ListIndex = 0
+    RenderBackupList
+    RenderBackupHistory
+End Sub
+
+Private Sub HideBackupPane()
+    If BackupTypeListBox Is Nothing Then Exit Sub
+    BackupTypeListBox.Visible = False
+    BackupListBox.Visible = False
+    BackupHistoryListBox.Visible = False
+    BackupRestoreButton.Visible = False
+    BackupDeleteButton.Visible = False
+    BackupOpenFolderButton.Visible = False
+    BackupRefreshButton.Visible = False
+    BackupCloseButton.Visible = False
+    Me.Width = 620
+End Sub
+
+Private Sub EnsureBackupControls()
+    If Not BackupTypeListBox Is Nothing Then Exit Sub
+
+    Set BackupTypeListBox = Me.Controls.Add("Forms.ListBox.1", "lstBackupTypes", True)
+    BackupTypeListBox.Left = 620
+    BackupTypeListBox.Top = 30
+    BackupTypeListBox.Width = 86
+    BackupTypeListBox.Height = 92
+    BackupTypeListBox.AddItem "All"
+    BackupTypeListBox.AddItem "Manifest"
+    BackupTypeListBox.AddItem "Template"
+    BackupTypeListBox.AddItem "Settings"
+    BackupTypeListBox.Visible = False
+
+    Set BackupListBox = Me.Controls.Add("Forms.ListBox.1", "lstBackups", True)
+    BackupListBox.Left = 714
+    BackupListBox.Top = 30
+    BackupListBox.Width = 376
+    BackupListBox.Height = 190
+    BackupListBox.ColumnCount = 6
+    BackupListBox.ColumnWidths = "70 pt;62 pt;110 pt;90 pt;54 pt;220 pt"
+    BackupListBox.Visible = False
+
+    Set BackupHistoryListBox = Me.Controls.Add("Forms.ListBox.1", "lstBackupHistory", True)
+    BackupHistoryListBox.Left = 714
+    BackupHistoryListBox.Top = 228
+    BackupHistoryListBox.Width = 376
+    BackupHistoryListBox.Height = 180
+    BackupHistoryListBox.ColumnCount = 6
+    BackupHistoryListBox.ColumnWidths = "70 pt;62 pt;72 pt;78 pt;58 pt;180 pt"
+    BackupHistoryListBox.Visible = False
+
+    Set BackupRestoreButton = Me.Controls.Add("Forms.CommandButton.1", "btnBackupRestore", True)
+    BackupRestoreButton.Caption = "Restore"
+    BackupRestoreButton.Left = 714
+    BackupRestoreButton.Top = 420
+    BackupRestoreButton.Width = 72
+    BackupRestoreButton.Height = 24
+    BackupRestoreButton.Visible = False
+
+    Set BackupDeleteButton = Me.Controls.Add("Forms.CommandButton.1", "btnBackupDelete", True)
+    BackupDeleteButton.Caption = "Delete"
+    BackupDeleteButton.Left = 794
+    BackupDeleteButton.Top = 420
+    BackupDeleteButton.Width = 66
+    BackupDeleteButton.Height = 24
+    BackupDeleteButton.Visible = False
+
+    Set BackupOpenFolderButton = Me.Controls.Add("Forms.CommandButton.1", "btnBackupOpenFolder", True)
+    BackupOpenFolderButton.Caption = "Open Folder"
+    BackupOpenFolderButton.Left = 868
+    BackupOpenFolderButton.Top = 420
+    BackupOpenFolderButton.Width = 92
+    BackupOpenFolderButton.Height = 24
+    BackupOpenFolderButton.Visible = False
+
+    Set BackupRefreshButton = Me.Controls.Add("Forms.CommandButton.1", "btnBackupRefresh", True)
+    BackupRefreshButton.Caption = "Refresh"
+    BackupRefreshButton.Left = 968
+    BackupRefreshButton.Top = 420
+    BackupRefreshButton.Width = 68
+    BackupRefreshButton.Height = 24
+    BackupRefreshButton.Visible = False
+
+    Set BackupCloseButton = Me.Controls.Add("Forms.CommandButton.1", "btnBackupClose", True)
+    BackupCloseButton.Caption = "Close"
+    BackupCloseButton.Left = 1042
+    BackupCloseButton.Top = 420
+    BackupCloseButton.Width = 58
+    BackupCloseButton.Height = 24
+    BackupCloseButton.Visible = False
+End Sub
+
+Private Sub RenderBackupList()
+    Dim FilterText As String
+    Dim Backups As Collection
+    Dim Backup As AppBackupEntry
+    Dim RowIndex As Long
+
+    EnsureBackupControls
+    BackupListBox.Clear
+    If BackupTypeListBox.ListIndex < 0 Or BackupTypeListBox.List(BackupTypeListBox.ListIndex) = "All" Then
+        FilterText = vbNullString
+    Else
+        FilterText = BackupTypeListBox.List(BackupTypeListBox.ListIndex)
+    End If
+    Set Backups = AppListBackups(FilterText)
+    For Each Backup In Backups
+        BackupListBox.AddItem Backup.BackupID
+        RowIndex = BackupListBox.ListCount - 1
+        BackupListBox.List(RowIndex, 1) = Backup.TargetType
+        BackupListBox.List(RowIndex, 2) = Backup.TargetName
+        BackupListBox.List(RowIndex, 3) = Format$(Backup.CreatedAt, "yyyy/mm/dd hh:nn:ss")
+        BackupListBox.List(RowIndex, 4) = CStr(Backup.SizeBytes)
+        BackupListBox.List(RowIndex, 5) = Backup.BackupPath
+    Next Backup
+End Sub
+
+Private Sub RenderBackupHistory()
+    Dim HistoryItems As Collection
+    Dim Item As AppBackupHistoryEntry
+    Dim RowIndex As Long
+    EnsureBackupControls
+    BackupHistoryListBox.Clear
+    Set HistoryItems = AppListBackupHistory()
+    For Each Item In HistoryItems
+        BackupHistoryListBox.AddItem Format$(Item.Timestamp, "yyyy/mm/dd hh:nn:ss")
+        RowIndex = BackupHistoryListBox.ListCount - 1
+        BackupHistoryListBox.List(RowIndex, 1) = Item.TargetType
+        BackupHistoryListBox.List(RowIndex, 2) = Item.TargetName
+        BackupHistoryListBox.List(RowIndex, 3) = Item.Action
+        BackupHistoryListBox.List(RowIndex, 4) = Item.Result
+        BackupHistoryListBox.List(RowIndex, 5) = Item.Message
+    Next Item
+End Sub
+
+Private Sub RestoreSelectedBackup()
+    Dim Result As ComResult
+    If BackupListBox.ListIndex < 0 Then Exit Sub
+    If MsgBox("Restore selected backup? Current file will be backed up first.", vbOKCancel + vbQuestion, "Backups") <> vbOK Then Exit Sub
+    Set Result = AppRestoreBackup(BackupListBox.List(BackupListBox.ListIndex, 5))
+    MsgBox Result.Message, IIf(Result.IsSuccess, vbInformation, vbExclamation), "Backups"
+    RenderBackupList
+    RenderBackupHistory
+End Sub
+
+Private Sub DeleteSelectedBackup()
+    Dim Result As ComResult
+    If BackupListBox.ListIndex < 0 Then Exit Sub
+    If MsgBox("Delete selected backup?", vbOKCancel + vbQuestion, "Backups") <> vbOK Then Exit Sub
+    Set Result = AppDeleteBackup(BackupListBox.List(BackupListBox.ListIndex, 5))
+    MsgBox Result.Message, IIf(Result.IsSuccess, vbInformation, vbExclamation), "Backups"
+    RenderBackupList
+    RenderBackupHistory
+End Sub
+
 Private Sub LoadStudioSettingsState()
     Dim Result As ComResult
     Set Result = AppLoadStudioSettings(StudioSettings, SettingsIssues)
@@ -787,6 +1012,8 @@ Private Sub RenderSettingsList()
             AddSettingRow "OutputDirectory", EditingStudioSettings.OutputDirectory, "Path"
             AddSettingRow "LogDirectory", EditingStudioSettings.LogDirectory, "Path"
             AddSettingRow "BackupDirectory", EditingStudioSettings.BackupDirectory, "Path"
+            AddSettingRow "MaxBackupCountPerFile", CStr(EditingStudioSettings.MaxBackupCountPerFile), "Text"
+            AddSettingRow "MaxBackupAgeDays", CStr(EditingStudioSettings.MaxBackupAgeDays), "Text"
         Case "Generate"
             AddSettingRow "DefaultTargetScope", EditingStudioSettings.DefaultTargetScope, "Text"
             AddSettingRow "DefaultOverwriteMode", EditingStudioSettings.DefaultOverwriteMode, "Text"
@@ -931,6 +1158,8 @@ Private Function GetStudioSettingValue(ByVal Settings As AppStudioSettings, ByVa
         Case "OutputDirectory": GetStudioSettingValue = Settings.OutputDirectory
         Case "LogDirectory": GetStudioSettingValue = Settings.LogDirectory
         Case "BackupDirectory": GetStudioSettingValue = Settings.BackupDirectory
+        Case "MaxBackupCountPerFile": GetStudioSettingValue = CStr(Settings.MaxBackupCountPerFile)
+        Case "MaxBackupAgeDays": GetStudioSettingValue = CStr(Settings.MaxBackupAgeDays)
         Case "DefaultTargetScope": GetStudioSettingValue = Settings.DefaultTargetScope
         Case "DefaultOverwriteMode": GetStudioSettingValue = Settings.DefaultOverwriteMode
         Case "ContinueOnError": GetStudioSettingValue = CStr(Settings.ContinueOnError)
@@ -959,6 +1188,8 @@ Private Sub SetStudioSettingValue(ByVal Settings As AppStudioSettings, ByVal Key
         Case "OutputDirectory": Settings.OutputDirectory = ValueText
         Case "LogDirectory": Settings.LogDirectory = ValueText
         Case "BackupDirectory": Settings.BackupDirectory = ValueText
+        Case "MaxBackupCountPerFile": Settings.MaxBackupCountPerFile = CLng(ValueText)
+        Case "MaxBackupAgeDays": Settings.MaxBackupAgeDays = CLng(ValueText)
         Case "DefaultTargetScope": Settings.DefaultTargetScope = ValueText
         Case "DefaultOverwriteMode": Settings.DefaultOverwriteMode = ValueText
         Case "ContinueOnError": Settings.ContinueOnError = (StrComp(ValueText, "True", vbTextCompare) = 0)
@@ -1846,6 +2077,7 @@ Private Sub RefreshCommandState()
     If Not GenerateSelectedButton Is Nothing Then GenerateSelectedButton.Enabled = HasModule And Not Busy And Not HasErrors
     If Not TemplateManagerButton Is Nothing Then TemplateManagerButton.Enabled = HasProject And Not Busy
     If Not SettingsButton Is Nothing Then SettingsButton.Enabled = Not Busy
+    If Not BackupButton Is Nothing Then BackupButton.Enabled = Not Busy
 
     txtModuleName.Enabled = HasModule And Not Busy
     txtLayer.Enabled = HasModule And Not Busy
@@ -2068,6 +2300,9 @@ Private Sub ClearMemberFields()
     txtInitialValue.Text = vbNullString
     chkCreateInstance.Value = False
 End Sub
+
+
+
 
 
 

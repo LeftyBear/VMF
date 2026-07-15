@@ -22,6 +22,7 @@ Public Sub AppRunManifestEditorServiceTests()
     VerifyTemplateManagerRejectsInvalidSave
     VerifyStudioSettingsDefaultsAndValidation
     VerifyStudioSettingsLoadWarnings
+    VerifyBackupSafeSaveAndRestore
 End Sub
 
 Private Sub VerifyManifestEditorRoundTrip()
@@ -431,6 +432,7 @@ Private Sub VerifyStudioSettingsLoadWarnings()
 
     Set Settings = Service.AppCreateDefaultSettings()
     Settings.DefaultOverwriteMode = "Skip"
+    Settings.BackupDirectory = GetTestFolderPath() & "\settings-backups"
     Set Result = Service.AppSaveSettings(Settings, Issues)
     AssertTrue Result.IsSuccess, "Settings save should succeed."
 
@@ -450,6 +452,53 @@ Private Sub VerifyStudioSettingsLoadWarnings()
     Next Issue
     AssertTrue HasUnknownKeyWarning, "Unknown settings key should be reported as warning."
     AssertTrue HasDuplicateWarning, "Duplicate settings key should be reported as warning."
+End Sub
+
+Private Sub VerifyBackupSafeSaveAndRestore()
+    Dim FileProvider As InfFileSystemProvider
+    Dim SettingsService As AppStudioSettingsService
+    Dim Settings As AppStudioSettings
+    Dim BackupService As AppBackupService
+    Dim TemplateService As AppTemplateService
+    Dim EditorService As AppManifestEditorService
+    Dim FilePath As String
+    Dim BackupPath As String
+    Dim Result As ComResult
+    Dim Issues As Collection
+    Dim Backups As Collection
+    Dim HistoryItems As Collection
+
+    Set FileProvider = New InfFileSystemProvider
+    Set SettingsService = New AppStudioSettingsService
+    SettingsService.AppInitialize FileProvider, GetTestFolderPath() & "\BackupSettings.ini"
+    Set Settings = SettingsService.AppCreateDefaultSettings()
+    Settings.BackupDirectory = GetTestFolderPath() & "\backups"
+    Settings.MaxBackupCountPerFile = 20
+    Set Result = SettingsService.AppSaveSettings(Settings, Issues)
+    AssertTrue Result.IsSuccess, "Backup test settings should save."
+
+    FilePath = GetTestFolderPath() & "\BackupTemplate.txt"
+    FileProvider.InfWriteText FilePath, ReadTemplateContent("ClassTemplate.txt")
+
+    Set EditorService = New AppManifestEditorService
+    Set TemplateService = New AppTemplateService
+    TemplateService.AppInitialize InfCreateGenerator(), EditorService, FileProvider, SettingsService
+    Set BackupService = New AppBackupService
+    BackupService.AppInitialize FileProvider, SettingsService, EditorService, New AppManifestValidationService, TemplateService
+
+    Set Result = BackupService.AppSafeSaveText("Template", FilePath, ReadTemplateContent("ClassTemplate.txt") & vbCrLf & "' BackupSafeSaveMarker", "Update", BackupPath)
+    AssertTrue Result.IsSuccess, "Safe save should succeed."
+    AssertTrue FileProvider.InfFileExists(BackupPath), "Safe save should create a backup."
+    AssertTrue InStr(1, FileProvider.InfReadText(FilePath), "BackupSafeSaveMarker", vbTextCompare) > 0, "Safe save should replace file content."
+
+    Set Backups = BackupService.AppListBackups("Template")
+    AssertTrue Backups.Count > 0, "Backup list should include template backups."
+    Set HistoryItems = BackupService.AppListHistory()
+    AssertTrue HistoryItems.Count > 0, "History should record safe save."
+
+    Set Result = BackupService.AppRestoreBackup(BackupPath)
+    AssertTrue Result.IsSuccess, "Restore should succeed."
+    AssertTrue InStr(1, FileProvider.InfReadText(FilePath), "BackupSafeSaveMarker", vbTextCompare) = 0, "Restore should restore original content."
 End Sub
 
 Private Function ReadTemplateContent(ByVal TemplateFileName As String) As String

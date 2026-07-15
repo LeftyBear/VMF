@@ -453,6 +453,26 @@ Public Function AppResolveStudioSettingsPath(ByVal BasePath As String, ByVal Pat
     AppResolveStudioSettingsPath = SettingsService.AppResolvePath(BasePath, PathValue)
 End Function
 
+' Lists available backups.
+Public Function AppListBackups(Optional ByVal TargetTypeFilter As String = vbNullString) As Collection
+    Set AppListBackups = CreateCompositionRoot().AppCreateBackupService().AppListBackups(TargetTypeFilter)
+End Function
+
+' Lists backup and restore history.
+Public Function AppListBackupHistory() As Collection
+    Set AppListBackupHistory = CreateCompositionRoot().AppCreateBackupService().AppListHistory()
+End Function
+
+' Restores one backup after validation.
+Public Function AppRestoreBackup(ByVal BackupPath As String) As ComResult
+    Set AppRestoreBackup = CreateCompositionRoot().AppCreateBackupService().AppRestoreBackup(BackupPath)
+End Function
+
+' Deletes one backup.
+Public Function AppDeleteBackup(ByVal BackupPath As String) As ComResult
+    Set AppDeleteBackup = CreateCompositionRoot().AppCreateBackupService().AppDeleteBackup(BackupPath)
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================

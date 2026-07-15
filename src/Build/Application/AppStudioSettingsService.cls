@@ -81,6 +81,28 @@ ErrHandler:
     Set AppLoadSettings = ComCreateSuccess("Studio settings loaded from defaults.")
 End Function
 
+Public Function AppLoadSettingsFromPath(ByVal SettingsPath As String, ByRef Settings As AppStudioSettings, ByRef Issues As Collection) As ComResult
+    Dim Content As String
+    On Error GoTo ErrHandler
+    Set Issues = New Collection
+    Set Settings = AppCreateDefaultSettings()
+    If Not FileProvider.InfFileExists(SettingsPath) Then
+        AddIssue Issues, SeverityError, "VMF-SET-LOAD-002", "Settings file does not exist: " & SettingsPath, "SettingsFile", 1
+        Set AppLoadSettingsFromPath = ComCreateSuccess("Studio settings loaded from defaults.")
+        Exit Function
+    End If
+    Content = FileProvider.InfReadText(SettingsPath)
+    ApplySettingsText Settings, Content, Issues
+    ValidateSettings Settings, Issues
+    Set AppLoadSettingsFromPath = ComCreateSuccess("Studio settings loaded.")
+    Exit Function
+ErrHandler:
+    Set Settings = AppCreateDefaultSettings()
+    Set Issues = New Collection
+    AddIssue Issues, SeverityWarning, "VMF-SET-LOAD-001", "Settings file could not be loaded. Defaults were used: " & Err.Description, "SettingsFile", 1
+    Set AppLoadSettingsFromPath = ComCreateSuccess("Studio settings loaded from defaults.")
+End Function
+
 Public Function AppValidateSettings(ByVal Settings As AppStudioSettings, ByRef Issues As Collection) As ComResult
     On Error GoTo ErrHandler
     Set Issues = New Collection
@@ -97,10 +119,10 @@ End Function
 Public Function AppSaveSettings(ByVal Settings As AppStudioSettings, ByRef Issues As Collection) As ComResult
     Dim SettingsPath As String
     Dim SettingsFolder As String
-    Dim TempPath As String
     Dim TextValue As String
-    Dim Reloaded As String
     Dim Result As ComResult
+    Dim BackupPath As String
+    Dim BackupService As AppBackupService
 
     On Error GoTo ErrHandler
     Set Issues = New Collection
@@ -120,34 +142,32 @@ Public Function AppSaveSettings(ByVal Settings As AppStudioSettings, ByRef Issue
     End If
 
     TextValue = Settings.AppToText()
-    TempPath = SettingsPath & ".tmp"
-    Set Result = FileProvider.InfWriteText(TempPath, TextValue)
+    Set BackupService = CreateBackupService(Settings.BackupDirectory)
+    Set Result = BackupService.AppSafeSaveText("Settings", SettingsPath, TextValue, "Update", BackupPath)
     If Result.IsFailure Then
-        AddIssue Issues, SeverityError, "VMF-SET-SAVE-002", "Settings file could not be written: " & Result.Message, "SettingsFile", 901
         Set AppSaveSettings = Result
         Exit Function
     End If
-
-    Reloaded = FileProvider.InfReadText(TempPath)
-    If Reloaded <> TextValue Then
-        Kill TempPath
-        AddIssue Issues, SeverityError, "VMF-SET-SAVE-003", "Settings save verification failed.", "SettingsFile", 902
-        Set AppSaveSettings = ComCreateFailure(ComCreateErrorInfo(ComErrInvalidState, "AppStudioSettingsService.AppSaveSettings", "Settings save verification failed."))
-        Exit Function
-    End If
-
-    If FileProvider.InfFileExists(SettingsPath) Then Kill SettingsPath
-    Name TempPath As SettingsPath
     Set AppSaveSettings = ComCreateSuccess("Studio settings saved.")
     Exit Function
 
 ErrHandler:
-    On Error Resume Next
-    If Len(TempPath) > 0 Then
-        If FileProvider.InfFileExists(TempPath) Then Kill TempPath
-    End If
-    On Error GoTo 0
     Set AppSaveSettings = ComCreateFailureFromErr("AppStudioSettingsService.AppSaveSettings", Err.Description, "Error", False)
+End Function
+
+Private Function CreateBackupService(ByVal BackupDirectory As String) As AppBackupService
+    Dim BackupService As AppBackupService
+    Dim LocalSettings As AppStudioSettingsService
+    Dim EditorService As AppManifestEditorService
+    Dim TemplateService As AppTemplateService
+    Set LocalSettings = New AppStudioSettingsService
+    LocalSettings.AppInitialize FileProvider, SettingsFilePathOverride
+    Set EditorService = New AppManifestEditorService
+    Set TemplateService = New AppTemplateService
+    TemplateService.AppInitialize InfCreateGenerator(), EditorService, FileProvider, LocalSettings
+    Set BackupService = New AppBackupService
+    BackupService.AppInitialize FileProvider, LocalSettings, EditorService, New AppManifestValidationService, TemplateService, BackupDirectory
+    Set CreateBackupService = BackupService
 End Function
 
 Public Function AppRestoreDefaults() As AppStudioSettings
@@ -227,6 +247,8 @@ Private Sub ApplySetting(ByVal Settings As AppStudioSettings, ByVal KeyName As S
         Case "OutputDirectory": Settings.OutputDirectory = KeyValue
         Case "LogDirectory": Settings.LogDirectory = KeyValue
         Case "BackupDirectory": Settings.BackupDirectory = KeyValue
+        Case "MaxBackupCountPerFile": Settings.MaxBackupCountPerFile = CLng(KeyValue)
+        Case "MaxBackupAgeDays": Settings.MaxBackupAgeDays = CLng(KeyValue)
         Case "DefaultTargetScope": Settings.DefaultTargetScope = KeyValue
         Case "DefaultOverwriteMode": Settings.DefaultOverwriteMode = KeyValue
         Case "ContinueOnError": Settings.ContinueOnError = ParseBoolean(KeyValue)
@@ -264,6 +286,12 @@ Private Sub ValidateSettings(ByVal Settings As AppStudioSettings, ByVal Issues A
     ValidateOutputDirectory Settings.OutputDirectory, "OutputDirectory", Issues, 30
     ValidateOutputDirectory Settings.LogDirectory, "LogDirectory", Issues, 40
     ValidateOutputDirectory Settings.BackupDirectory, "BackupDirectory", Issues, 50
+    If Settings.MaxBackupCountPerFile < 1 Or Settings.MaxBackupCountPerFile > 999 Then
+        AddIssue Issues, SeverityError, "VMF-SET-BKP-001", "MaxBackupCountPerFile must be between 1 and 999.", "MaxBackupCountPerFile", 60
+    End If
+    If Settings.MaxBackupAgeDays < 1 Or Settings.MaxBackupAgeDays > 3650 Then
+        AddIssue Issues, SeverityError, "VMF-SET-BKP-002", "MaxBackupAgeDays must be between 1 and 3650.", "MaxBackupAgeDays", 61
+    End If
 
     If Not IsSupportedTargetScope(Settings.DefaultTargetScope) Then
         AddIssue Issues, SeverityError, "VMF-SET-GEN-001", "DefaultTargetScope is not supported.", "DefaultTargetScope", 100

@@ -22,6 +22,8 @@ Private Type TMember
     OutputDirectory As String
     LogDirectory As String
     BackupDirectory As String
+    MaxBackupCountPerFile As Long
+    MaxBackupAgeDays As Long
     DefaultTargetScope As String
     DefaultOverwriteMode As String
     ContinueOnError As Boolean
@@ -49,6 +51,8 @@ Public Sub AppLoadDefaults()
     This.OutputDirectory = "GeneratedSource"
     This.LogDirectory = "Logs"
     This.BackupDirectory = "Backups"
+    This.MaxBackupCountPerFile = 20
+    This.MaxBackupAgeDays = 90
     This.DefaultTargetScope = "CurrentModule"
     This.DefaultOverwriteMode = "Confirm"
     This.ContinueOnError = False
@@ -76,6 +80,8 @@ Public Function AppClone() As AppStudioSettings
     Settings.OutputDirectory = This.OutputDirectory
     Settings.LogDirectory = This.LogDirectory
     Settings.BackupDirectory = This.BackupDirectory
+    Settings.MaxBackupCountPerFile = This.MaxBackupCountPerFile
+    Settings.MaxBackupAgeDays = This.MaxBackupAgeDays
     Settings.DefaultTargetScope = This.DefaultTargetScope
     Settings.DefaultOverwriteMode = This.DefaultOverwriteMode
     Settings.ContinueOnError = This.ContinueOnError
@@ -103,6 +109,8 @@ Public Function AppToText() As String
         "OutputDirectory=" & This.OutputDirectory & vbCrLf & _
         "LogDirectory=" & This.LogDirectory & vbCrLf & _
         "BackupDirectory=" & This.BackupDirectory & vbCrLf & _
+        "MaxBackupCountPerFile=" & CStr(This.MaxBackupCountPerFile) & vbCrLf & _
+        "MaxBackupAgeDays=" & CStr(This.MaxBackupAgeDays) & vbCrLf & _
         "DefaultTargetScope=" & This.DefaultTargetScope & vbCrLf & _
         "DefaultOverwriteMode=" & This.DefaultOverwriteMode & vbCrLf & _
         "ContinueOnError=" & CStr(This.ContinueOnError) & vbCrLf & _
@@ -132,6 +140,10 @@ Public Property Get LogDirectory() As String: LogDirectory = This.LogDirectory: 
 Public Property Let LogDirectory(ByVal Value As String): This.LogDirectory = Trim$(Value): End Property
 Public Property Get BackupDirectory() As String: BackupDirectory = This.BackupDirectory: End Property
 Public Property Let BackupDirectory(ByVal Value As String): This.BackupDirectory = Trim$(Value): End Property
+Public Property Get MaxBackupCountPerFile() As Long: MaxBackupCountPerFile = This.MaxBackupCountPerFile: End Property
+Public Property Let MaxBackupCountPerFile(ByVal Value As Long): This.MaxBackupCountPerFile = Value: End Property
+Public Property Get MaxBackupAgeDays() As Long: MaxBackupAgeDays = This.MaxBackupAgeDays: End Property
+Public Property Let MaxBackupAgeDays(ByVal Value As Long): This.MaxBackupAgeDays = Value: End Property
 Public Property Get DefaultTargetScope() As String: DefaultTargetScope = This.DefaultTargetScope: End Property
 Public Property Let DefaultTargetScope(ByVal Value As String): This.DefaultTargetScope = Trim$(Value): End Property
 Public Property Get DefaultOverwriteMode() As String: DefaultOverwriteMode = This.DefaultOverwriteMode: End Property

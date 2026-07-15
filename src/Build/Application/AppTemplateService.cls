@@ -147,8 +147,8 @@ End Function
 Public Function AppSaveTemplate(ByVal Template As AppTemplateModel) As ComResult
     Dim Issues As Collection
     Dim Result As ComResult
-    Dim TempPath As String
-    Dim Reloaded As String
+    Dim BackupPath As String
+    Dim BackupService As AppBackupService
 
     On Error GoTo ErrHandler
 
@@ -162,35 +162,29 @@ Public Function AppSaveTemplate(ByVal Template As AppTemplateModel) As ComResult
         Exit Function
     End If
 
-    TempPath = Template.FilePath & ".tmp"
-    Set Result = FileProvider.InfWriteText(TempPath, Template.Content)
+    Set BackupService = CreateBackupService()
+    Set Result = BackupService.AppSafeSaveText("Template", Template.FilePath, Template.Content, "Update", BackupPath)
     If Result.IsFailure Then
-        AddIssue Issues, SeverityError, "VMF-TPL-005", "Template file save failed: " & Result.Message, Template.TemplateName, Template.FilePath, 0, 900
-        Set AppSaveTemplate = ComCreateFailure(ComCreateErrorInfo(ComErrInvalidState, "AppTemplateService.AppSaveTemplate", Result.Message))
+        Set AppSaveTemplate = Result
         Exit Function
     End If
 
-    Reloaded = FileProvider.InfReadText(TempPath)
-    If Reloaded <> Template.Content Then
-        Kill TempPath
-        AddIssue Issues, SeverityError, "VMF-TPL-006", "Template save verification failed.", Template.TemplateName, Template.FilePath, 0, 901
-        Set AppSaveTemplate = ComCreateFailure(ComCreateErrorInfo(ComErrInvalidState, "AppTemplateService.AppSaveTemplate", "Template save verification failed."))
-        Exit Function
-    End If
-
-    If FileProvider.InfFileExists(Template.FilePath) Then Kill Template.FilePath
-    Name TempPath As Template.FilePath
     Template.IsDirty = False
     Set AppSaveTemplate = ComCreateSuccess("Template saved.")
     Exit Function
 
 ErrHandler:
-    On Error Resume Next
-    If Len(TempPath) > 0 Then
-        If FileProvider.InfFileExists(TempPath) Then Kill TempPath
-    End If
-    On Error GoTo 0
     Set AppSaveTemplate = ComCreateFailureFromErr("AppTemplateService.AppSaveTemplate", Err.Description, "Error", False)
+End Function
+
+Private Function CreateBackupService() As AppBackupService
+    Dim BackupService As AppBackupService
+    Dim LocalSettings As AppStudioSettingsService
+    Set LocalSettings = New AppStudioSettingsService
+    LocalSettings.AppInitialize FileProvider
+    Set BackupService = New AppBackupService
+    BackupService.AppInitialize FileProvider, LocalSettings, ManifestEditorService, New AppManifestValidationService, Me
+    Set CreateBackupService = BackupService
 End Function
 
 Public Function AppSaveTemplateAs( _

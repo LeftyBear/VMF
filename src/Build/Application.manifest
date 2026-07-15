@@ -1,5 +1,8 @@
 # ModuleName,ModuleType,LayerName,TemplatePath
 AppFacade,StandardModule,Application,..\..\templates\ModuleTemplate.txt
+AppBackupEntry,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppBackupHistoryEntry,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppBackupService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppBuildLogService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 Build_ProjectManifest,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppBuildService,ClassModule,Application,..\..\templates\ClassTemplate.txt
