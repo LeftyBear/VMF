@@ -88,6 +88,17 @@ Private WithEvents BackupDeleteButton As MSForms.CommandButton
 Private WithEvents BackupOpenFolderButton As MSForms.CommandButton
 Private WithEvents BackupRefreshButton As MSForms.CommandButton
 Private WithEvents BackupCloseButton As MSForms.CommandButton
+Private WithEvents SelfCheckButton As MSForms.CommandButton
+Private WithEvents SelfCheckRunAllButton As MSForms.CommandButton
+Private WithEvents SelfCheckRunSelectedButton As MSForms.CommandButton
+Private WithEvents SelfCheckCategoryListBox As MSForms.ListBox
+Private WithEvents SelfCheckResultListBox As MSForms.ListBox
+Private WithEvents SelfCheckCopyButton As MSForms.CommandButton
+Private WithEvents SelfCheckClearButton As MSForms.CommandButton
+Private WithEvents SelfCheckCloseButton As MSForms.CommandButton
+Private SelfCheckDetailTextBox As MSForms.TextBox
+Private SelfCheckResults As Collection
+Private SelfCheckInProgress As Boolean
 Public Sub PreOpenManifest(ByVal ManifestPath As String)
     txtManifestPath.Text = ManifestPath
     LoadManifest
@@ -120,6 +131,7 @@ Private Sub UserForm_Initialize()
     CreateTemplateManagerButton
     CreateSettingsButton
     CreateBackupButton
+    CreateSelfCheckButton
 
     cboModuleType.Clear
     cboModuleType.AddItem "ClassModule"
@@ -592,6 +604,250 @@ End Sub
 
 Private Sub TemplateCloseButton_Click()
     HideTemplateManagerPane
+End Sub
+
+Private Sub CreateSelfCheckButton()
+    On Error Resume Next
+    Set SelfCheckButton = Me.Controls("btnSelfCheck")
+    On Error GoTo 0
+
+    If SelfCheckButton Is Nothing Then
+        Set SelfCheckButton = Me.Controls.Add("Forms.CommandButton.1", "btnSelfCheck", True)
+    End If
+
+    SelfCheckButton.Caption = "Self Check"
+    SelfCheckButton.Width = 84
+    SelfCheckButton.Height = 22
+    SelfCheckButton.Left = BackupButton.Left + BackupButton.Width + 8
+    SelfCheckButton.Top = BackupButton.Top
+End Sub
+
+Private Sub SelfCheckButton_Click()
+    ShowSelfCheckPane
+End Sub
+
+Private Sub SelfCheckRunAllButton_Click()
+    RunSelfChecks False
+End Sub
+
+Private Sub SelfCheckRunSelectedButton_Click()
+    RunSelfChecks True
+End Sub
+
+Private Sub SelfCheckResultListBox_Click()
+    ShowSelectedSelfCheckDetail
+End Sub
+
+Private Sub SelfCheckCopyButton_Click()
+    CopySelfCheckResults
+End Sub
+
+Private Sub SelfCheckClearButton_Click()
+    Set SelfCheckResults = New Collection
+    RenderSelfCheckResults
+    SelfCheckDetailTextBox.Text = vbNullString
+End Sub
+
+Private Sub SelfCheckCloseButton_Click()
+    HideSelfCheckPane
+End Sub
+
+Private Sub ShowSelfCheckPane()
+    HideBackupPane
+    HideSettingsPane
+    HideTemplateManagerPane
+    HidePreviewPane
+    HideValidationPane
+    HideBuildLogPane
+    EnsureSelfCheckControls
+    Me.Width = 1120
+    SelfCheckCategoryListBox.Visible = True
+    SelfCheckResultListBox.Visible = True
+    SelfCheckDetailTextBox.Visible = True
+    SelfCheckRunAllButton.Visible = True
+    SelfCheckRunSelectedButton.Visible = True
+    SelfCheckCopyButton.Visible = True
+    SelfCheckClearButton.Visible = True
+    SelfCheckCloseButton.Visible = True
+    If SelfCheckCategoryListBox.ListIndex < 0 Then SelfCheckCategoryListBox.ListIndex = 0
+    RenderSelfCheckResults
+End Sub
+
+Private Sub HideSelfCheckPane()
+    If SelfCheckCategoryListBox Is Nothing Then Exit Sub
+    SelfCheckCategoryListBox.Visible = False
+    SelfCheckResultListBox.Visible = False
+    SelfCheckDetailTextBox.Visible = False
+    SelfCheckRunAllButton.Visible = False
+    SelfCheckRunSelectedButton.Visible = False
+    SelfCheckCopyButton.Visible = False
+    SelfCheckClearButton.Visible = False
+    SelfCheckCloseButton.Visible = False
+    Me.Width = 620
+End Sub
+
+Private Sub EnsureSelfCheckControls()
+    If Not SelfCheckCategoryListBox Is Nothing Then Exit Sub
+
+    Set SelfCheckCategoryListBox = Me.Controls.Add("Forms.ListBox.1", "lstSelfCheckCategories", True)
+    SelfCheckCategoryListBox.Left = 620
+    SelfCheckCategoryListBox.Top = 30
+    SelfCheckCategoryListBox.Width = 112
+    SelfCheckCategoryListBox.Height = 138
+    SelfCheckCategoryListBox.AddItem "All"
+    SelfCheckCategoryListBox.AddItem "Self Check"
+    SelfCheckCategoryListBox.AddItem "Manifest"
+    SelfCheckCategoryListBox.AddItem "Template"
+    SelfCheckCategoryListBox.AddItem "Preview/Generate"
+    SelfCheckCategoryListBox.AddItem "Validation"
+    SelfCheckCategoryListBox.AddItem "Settings"
+    SelfCheckCategoryListBox.AddItem "Backup/Restore"
+    SelfCheckCategoryListBox.Visible = False
+
+    Set SelfCheckResultListBox = Me.Controls.Add("Forms.ListBox.1", "lstSelfCheckResults", True)
+    SelfCheckResultListBox.Left = 740
+    SelfCheckResultListBox.Top = 30
+    SelfCheckResultListBox.Width = 350
+    SelfCheckResultListBox.Height = 230
+    SelfCheckResultListBox.ColumnCount = 6
+    SelfCheckResultListBox.ColumnWidths = "48 pt;82 pt;120 pt;58 pt;180 pt;54 pt"
+    SelfCheckResultListBox.Visible = False
+
+    Set SelfCheckDetailTextBox = Me.Controls.Add("Forms.TextBox.1", "txtSelfCheckDetail", True)
+    SelfCheckDetailTextBox.Left = 740
+    SelfCheckDetailTextBox.Top = 268
+    SelfCheckDetailTextBox.Width = 350
+    SelfCheckDetailTextBox.Height = 132
+    SelfCheckDetailTextBox.MultiLine = True
+    SelfCheckDetailTextBox.ScrollBars = fmScrollBarsVertical
+    SelfCheckDetailTextBox.Locked = True
+    SelfCheckDetailTextBox.Visible = False
+
+    Set SelfCheckRunAllButton = Me.Controls.Add("Forms.CommandButton.1", "btnSelfCheckRunAll", True)
+    SelfCheckRunAllButton.Caption = "Run All"
+    SelfCheckRunAllButton.Left = 740
+    SelfCheckRunAllButton.Top = 414
+    SelfCheckRunAllButton.Width = 70
+    SelfCheckRunAllButton.Height = 24
+    SelfCheckRunAllButton.Visible = False
+
+    Set SelfCheckRunSelectedButton = Me.Controls.Add("Forms.CommandButton.1", "btnSelfCheckRunSelected", True)
+    SelfCheckRunSelectedButton.Caption = "Run Selected"
+    SelfCheckRunSelectedButton.Left = 818
+    SelfCheckRunSelectedButton.Top = 414
+    SelfCheckRunSelectedButton.Width = 96
+    SelfCheckRunSelectedButton.Height = 24
+    SelfCheckRunSelectedButton.Visible = False
+
+    Set SelfCheckCopyButton = Me.Controls.Add("Forms.CommandButton.1", "btnSelfCheckCopy", True)
+    SelfCheckCopyButton.Caption = "Copy"
+    SelfCheckCopyButton.Left = 922
+    SelfCheckCopyButton.Top = 414
+    SelfCheckCopyButton.Width = 58
+    SelfCheckCopyButton.Height = 24
+    SelfCheckCopyButton.Visible = False
+
+    Set SelfCheckClearButton = Me.Controls.Add("Forms.CommandButton.1", "btnSelfCheckClear", True)
+    SelfCheckClearButton.Caption = "Clear"
+    SelfCheckClearButton.Left = 988
+    SelfCheckClearButton.Top = 414
+    SelfCheckClearButton.Width = 56
+    SelfCheckClearButton.Height = 24
+    SelfCheckClearButton.Visible = False
+
+    Set SelfCheckCloseButton = Me.Controls.Add("Forms.CommandButton.1", "btnSelfCheckClose", True)
+    SelfCheckCloseButton.Caption = "Close"
+    SelfCheckCloseButton.Left = 1050
+    SelfCheckCloseButton.Top = 414
+    SelfCheckCloseButton.Width = 56
+    SelfCheckCloseButton.Height = 24
+    SelfCheckCloseButton.Visible = False
+
+    Set SelfCheckResults = New Collection
+End Sub
+
+Private Sub RunSelfChecks(ByVal SelectedOnly As Boolean)
+    Dim CategoryName As String
+    If SelfCheckInProgress Then
+        MsgBox "Self Check is already running.", vbInformation, "Self Check"
+        Exit Sub
+    End If
+
+    SelfCheckInProgress = True
+    SelfCheckRunAllButton.Enabled = False
+    SelfCheckRunSelectedButton.Enabled = False
+    On Error GoTo RunFailed
+    If SelectedOnly Then
+        If SelfCheckCategoryListBox.ListIndex < 0 Or SelfCheckCategoryListBox.List(SelfCheckCategoryListBox.ListIndex) = "All" Then
+            Set SelfCheckResults = AppRunStudioSelfChecks()
+        Else
+            CategoryName = SelfCheckCategoryListBox.List(SelfCheckCategoryListBox.ListIndex)
+            Set SelfCheckResults = AppRunStudioSelfChecksByCategory(CategoryName)
+        End If
+    Else
+        Set SelfCheckResults = AppRunStudioSelfChecks()
+    End If
+    RenderSelfCheckResults
+
+RunDone:
+    SelfCheckInProgress = False
+    SelfCheckRunAllButton.Enabled = True
+    SelfCheckRunSelectedButton.Enabled = True
+    Exit Sub
+
+RunFailed:
+    MsgBox Err.Description, vbExclamation, "Self Check"
+    Resume RunDone
+End Sub
+
+Private Sub RenderSelfCheckResults()
+    Dim Result As AppSelfCheckResult
+    Dim RowIndex As Long
+    EnsureSelfCheckControls
+    SelfCheckResultListBox.Clear
+    If SelfCheckResults Is Nothing Then Set SelfCheckResults = New Collection
+    For Each Result In SelfCheckResults
+        SelfCheckResultListBox.AddItem Result.TestID
+        RowIndex = SelfCheckResultListBox.ListCount - 1
+        SelfCheckResultListBox.List(RowIndex, 1) = Result.Category
+        SelfCheckResultListBox.List(RowIndex, 2) = Result.TestName
+        SelfCheckResultListBox.List(RowIndex, 3) = Result.Status
+        SelfCheckResultListBox.List(RowIndex, 4) = Result.Message
+        SelfCheckResultListBox.List(RowIndex, 5) = Format$(Result.ElapsedTime, "0.0")
+    Next Result
+    If SelfCheckResultListBox.ListCount > 0 Then SelfCheckResultListBox.ListIndex = 0
+    ShowSelectedSelfCheckDetail
+End Sub
+
+Private Sub ShowSelectedSelfCheckDetail()
+    Dim Result As AppSelfCheckResult
+    If SelfCheckResults Is Nothing Then Exit Sub
+    If SelfCheckResultListBox.ListIndex < 0 Then Exit Sub
+    If SelfCheckResultListBox.ListIndex + 1 > SelfCheckResults.Count Then Exit Sub
+    Set Result = SelfCheckResults.Item(SelfCheckResultListBox.ListIndex + 1)
+    SelfCheckDetailTextBox.Text = _
+        "TestID: " & Result.TestID & vbCrLf & _
+        "Category: " & Result.Category & vbCrLf & _
+        "Name: " & Result.TestName & vbCrLf & _
+        "Status: " & Result.Status & vbCrLf & _
+        "Message: " & Result.Message & vbCrLf & _
+        "Expected: " & Result.Expected & vbCrLf & _
+        "Actual: " & Result.Actual & vbCrLf & _
+        "ErrorCode: " & Result.ErrorCode
+End Sub
+
+Private Sub CopySelfCheckResults()
+    Dim Clipboard As Object
+    Dim Result As AppSelfCheckResult
+    Dim TextValue As String
+    If SelfCheckResults Is Nothing Then Exit Sub
+    For Each Result In SelfCheckResults
+        TextValue = TextValue & Result.TestID & vbTab & Result.Category & vbTab & Result.TestName & vbTab & Result.Status & vbTab & Result.Message & vbCrLf
+    Next Result
+    Set Clipboard = CreateObject("Forms.DataObject.1")
+    Clipboard.SetText TextValue
+    Clipboard.PutInClipboard
+    SelfCheckDetailTextBox.Text = "Self Check results copied."
 End Sub
 
 Private Sub CreateBackupButton()
@@ -2078,6 +2334,7 @@ Private Sub RefreshCommandState()
     If Not TemplateManagerButton Is Nothing Then TemplateManagerButton.Enabled = HasProject And Not Busy
     If Not SettingsButton Is Nothing Then SettingsButton.Enabled = Not Busy
     If Not BackupButton Is Nothing Then BackupButton.Enabled = Not Busy
+    If Not SelfCheckButton Is Nothing Then SelfCheckButton.Enabled = Not Busy
 
     txtModuleName.Enabled = HasModule And Not Busy
     txtLayer.Enabled = HasModule And Not Busy
@@ -2300,6 +2557,8 @@ Private Sub ClearMemberFields()
     txtInitialValue.Text = vbNullString
     chkCreateInstance.Value = False
 End Sub
+
+
 
 
 

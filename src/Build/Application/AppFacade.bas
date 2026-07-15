@@ -473,6 +473,16 @@ Public Function AppDeleteBackup(ByVal BackupPath As String) As ComResult
     Set AppDeleteBackup = CreateCompositionRoot().AppCreateBackupService().AppDeleteBackup(BackupPath)
 End Function
 
+' Runs all VMF Studio self checks.
+Public Function AppRunStudioSelfChecks() As Collection
+    Set AppRunStudioSelfChecks = CreateCompositionRoot().AppCreateSelfCheckService().AppRunAllSelfChecks()
+End Function
+
+' Runs VMF Studio self checks for one category.
+Public Function AppRunStudioSelfChecksByCategory(ByVal CategoryName As String) As Collection
+    Set AppRunStudioSelfChecksByCategory = CreateCompositionRoot().AppCreateSelfCheckService().AppRunSelfChecksByCategory(CategoryName)
+End Function
+
 '=========================================================================
 ' Private Helper Functions
 '=========================================================================

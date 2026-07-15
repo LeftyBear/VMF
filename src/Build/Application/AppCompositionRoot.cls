@@ -152,6 +152,16 @@ Public Function AppCreateBackupService() As AppBackupService
     Set AppCreateBackupService = BackupService
 End Function
 
+' Creates a VMF Studio self check service.
+Public Function AppCreateSelfCheckService() As AppSelfCheckService
+    Dim SelfCheckService As AppSelfCheckService
+
+    Set SelfCheckService = New AppSelfCheckService
+    SelfCheckService.AppInitialize New InfFileSystemProvider
+
+    Set AppCreateSelfCheckService = SelfCheckService
+End Function
+
 ' Creates the Build generation engine.
 Public Function AppCreateGenerationEngine() As BuildGenerationEngine
     Dim Engine As BuildGenerationEngine

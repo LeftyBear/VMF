@@ -23,6 +23,7 @@ Public Sub AppRunManifestEditorServiceTests()
     VerifyStudioSettingsDefaultsAndValidation
     VerifyStudioSettingsLoadWarnings
     VerifyBackupSafeSaveAndRestore
+    VerifyStudioSelfCheckRuns
 End Sub
 
 Private Sub VerifyManifestEditorRoundTrip()
@@ -499,6 +500,29 @@ Private Sub VerifyBackupSafeSaveAndRestore()
     Set Result = BackupService.AppRestoreBackup(BackupPath)
     AssertTrue Result.IsSuccess, "Restore should succeed."
     AssertTrue InStr(1, FileProvider.InfReadText(FilePath), "BackupSafeSaveMarker", vbTextCompare) = 0, "Restore should restore original content."
+End Sub
+
+Private Sub VerifyStudioSelfCheckRuns()
+    Dim Service As AppSelfCheckService
+    Dim FileProvider As InfFileSystemProvider
+    Dim Results As Collection
+    Dim Result As AppSelfCheckResult
+    Dim PassedCount As Long
+    Dim FailedCount As Long
+
+    Set FileProvider = New InfFileSystemProvider
+    Set Service = New AppSelfCheckService
+    Service.AppInitialize FileProvider
+    Set Results = Service.AppRunSelfChecksByCategory("Manifest")
+    AssertTrue Results.Count > 0, "Self Check should return manifest results."
+
+    For Each Result In Results
+        If Result.Status = "Passed" Then PassedCount = PassedCount + 1
+        If Result.Status = "Failed" Then FailedCount = FailedCount + 1
+    Next Result
+
+    AssertTrue PassedCount > 0, "Self Check should pass at least one manifest check."
+    AssertEquals "0", CStr(FailedCount), "Manifest Self Check should not fail."
 End Sub
 
 Private Function ReadTemplateContent(ByVal TemplateFileName As String) As String
