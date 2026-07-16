@@ -79,9 +79,15 @@ End Function
 Public Sub PreOpenManifestEditor(ByVal ManifestPath As String)
     Dim EditorForm As PreManifestEditorForm
 
+    On Error GoTo ErrHandler
     Set EditorForm = CreateCompositionRoot().PreCreateManifestEditorForm()
     EditorForm.PreOpenManifest ManifestPath
     EditorForm.Show
+    Exit Sub
+
+ErrHandler:
+    MsgBox "Manifest Editor could not be opened." & vbCrLf & _
+        Err.Source & ": " & Err.Description, vbExclamation, "VMF Studio"
 End Sub
 
 '=========================================================================

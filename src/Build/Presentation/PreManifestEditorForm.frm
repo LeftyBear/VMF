@@ -100,9 +100,16 @@ Private SelfCheckDetailTextBox As MSForms.TextBox
 Private SelfCheckResults As Collection
 Private SelfCheckInProgress As Boolean
 Private SuppressModuleSelectionEvents As Boolean
+Private IsFormActivated As Boolean
+Private HasPendingManifest As Boolean
+Private PendingManifestPath As String
 Public Sub PreOpenManifest(ByVal ManifestPath As String)
+    PendingManifestPath = ManifestPath
+    HasPendingManifest = Not ComIsBlankText(ManifestPath)
     txtManifestPath.Text = ManifestPath
-    LoadManifest
+    If Me.Visible Then
+        LoadPendingManifest
+    End If
 End Sub
 
 Private Sub UserForm_Initialize()
@@ -116,8 +123,10 @@ Private Sub UserForm_Initialize()
     LoadStudioSettingsState
     CurrentUiState = "NoProject"
     IsDirty = False
+    IsFormActivated = False
+    HasPendingManifest = False
+    PendingManifestPath = vbNullString
 
-    MaximizeStudioWindow
     lblTemplatePath.Width = 78
     txtTemplatePath.Left = lblTemplatePath.Left + lblTemplatePath.Width + 8
     txtTemplatePath.Width = 196
@@ -148,6 +157,22 @@ Private Sub UserForm_Initialize()
     lstMembers.ColumnCount = 5
     lstMembers.ColumnWidths = "110 pt;110 pt;80 pt;110 pt;80 pt"
     RefreshCommandState
+End Sub
+
+Private Sub UserForm_Activate()
+    If Not IsFormActivated Then
+        IsFormActivated = True
+        MaximizeStudioWindow
+    End If
+    LoadPendingManifest
+End Sub
+
+Private Sub LoadPendingManifest()
+    If Not HasPendingManifest Then Exit Sub
+    HasPendingManifest = False
+    txtManifestPath.Text = PendingManifestPath
+    PendingManifestPath = vbNullString
+    LoadManifest
 End Sub
 
 Private Sub MaximizeStudioWindow()
