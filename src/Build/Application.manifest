@@ -18,6 +18,7 @@ AppManifestGenerateService,ClassModule,Application,..\..\templates\ClassTemplate
 AppManifestValidationIssue,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppManifestValidationService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppModuleGenerateResult,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppReleaseInfo,StandardModule,Application,..\..\templates\ModuleTemplate.txt
 AppSelfCheckResult,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppSelfCheckService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppStudioSettings,ClassModule,Application,..\..\templates\ClassTemplate.txt

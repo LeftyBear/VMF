@@ -1,0 +1,47 @@
+Option Explicit
+@section ModuleDeclaration
+{{ModuleDeclaration}}
+@endsection
+
+'=========================================================================
+' Class: {{ModuleName}}
+' Layer: {{Layer}}
+' Responsibility:
+'=========================================================================
+
+@section MemberBlock
+{{MemberBlock}}
+@endsection
+
+@section DeclarationSectionEnd
+{{DeclarationSectionEnd}}
+@endsection
+Private Sub Class_Initialize()
+@section InitializeBody
+{{InitializeBody}}
+@endsection
+End Sub
+
+Private Sub Class_Terminate()
+@section TerminateBody
+{{TerminateBody}}
+@endsection
+End Sub
+
+@section PropertyGroupStart
+{{PropertyGroupStart}}
+@endsection
+@section Properties
+{{Properties}}
+@endsection
+@section PropertyGroupEnd
+{{PropertyGroupEnd}}
+@endsection
+
+@section ProcedureGroupStart
+{{ProcedureGroupStart}}
+@endsection
+{{BODY}}
+@section ProcedureGroupEnd
+{{ProcedureGroupEnd}}
+@endsection

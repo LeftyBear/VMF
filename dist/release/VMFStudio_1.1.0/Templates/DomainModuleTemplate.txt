@@ -1,0 +1,21 @@
+Option Explicit
+@section ModuleDeclaration
+{{ModuleDeclaration}}
+@endsection
+
+'=========================================================================
+' Module: {{ModuleName}}
+' Layer: {{Layer}}
+' Responsibility:
+'=========================================================================
+
+@section DeclarationSectionEnd
+{{DeclarationSectionEnd}}
+@endsection
+@section ProcedureGroupStart
+{{ProcedureGroupStart}}
+@endsection
+{{BODY}}
+@section ProcedureGroupEnd
+{{ProcedureGroupEnd}}
+@endsection

@@ -3,7 +3,7 @@
 
 param(
     [string]$OutputPath,
-    [string]$BuildVersion = "1.1.0",
+    [string]$BuildVersion,
     [string]$ReleaseType = "Release"
 )
 
@@ -32,8 +32,38 @@ function Resolve-VmfRepositoryRoot {
 
 $workspaceRoot = Resolve-VmfRepositoryRoot -StartPath $scriptDir
 $srcDir = Join-Path $workspaceRoot "src\Build"
+
+function Get-ReleaseInfoValue {
+    param(
+        [string]$SourcePath,
+        [string]$ConstantName
+    )
+
+    $text = Get-Content -LiteralPath $SourcePath -Raw -Encoding Default
+    $pattern = "Private Const $ConstantName As String = `"([^`"]+)`""
+    $match = [regex]::Match($text, $pattern)
+    if (-not $match.Success) {
+        throw "Release info constant not found: $ConstantName"
+    }
+
+    return $match.Groups[1].Value
+}
+
+$releaseInfoPath = Join-Path $srcDir "Application\AppReleaseInfo.bas"
+$productName = Get-ReleaseInfoValue -SourcePath $releaseInfoPath -ConstantName "RELEASE_PRODUCT_NAME"
+$productVersion = Get-ReleaseInfoValue -SourcePath $releaseInfoPath -ConstantName "RELEASE_PRODUCT_VERSION"
+$manifestSchemaVersion = Get-ReleaseInfoValue -SourcePath $releaseInfoPath -ConstantName "RELEASE_MANIFEST_SCHEMA_VERSION"
+$templateSchemaVersion = Get-ReleaseInfoValue -SourcePath $releaseInfoPath -ConstantName "RELEASE_TEMPLATE_SCHEMA_VERSION"
+$minimumSupportedVersion = Get-ReleaseInfoValue -SourcePath $releaseInfoPath -ConstantName "RELEASE_MINIMUM_SUPPORTED_VERSION"
+$buildDate = Get-ReleaseInfoValue -SourcePath $releaseInfoPath -ConstantName "RELEASE_BUILD_DATE"
+
+if ([string]::IsNullOrWhiteSpace($BuildVersion)) {
+    $BuildVersion = $productVersion
+}
+
 if ([string]::IsNullOrWhiteSpace($OutputPath)) {
-    $output = Join-Path $workspaceRoot "dist\release\Build\v1.1\Build.xlam"
+    $versionFolder = $productVersion -replace '^(\d+\.\d+).*$', 'v$1'
+    $output = Join-Path $workspaceRoot "dist\release\Build\$versionFolder\Build.xlam"
 }
 else {
     $output = [IO.Path]::GetFullPath($OutputPath)
@@ -42,6 +72,7 @@ else {
 Write-Host "Workspace: $workspaceRoot"
 Write-Host "Source dir: $srcDir"
 Write-Host "Output: $output"
+Write-Host "Product: $productName $productVersion"
 
 if (-not (Test-Path $srcDir)) {
     Write-Error "Build source directory not found: $srcDir"
@@ -169,8 +200,14 @@ if (-not $saveSucceeded) {
 function Set-AddInReleaseMetadata {
     param(
         [string]$Path,
+        [string]$ProductName,
+        [string]$ProductVersion,
         [string]$BuildVersion,
-        [string]$ReleaseType
+        [string]$ReleaseType,
+        [string]$ManifestSchemaVersion,
+        [string]$TemplateSchemaVersion,
+        [string]$MinimumSupportedVersion,
+        [string]$BuildDate
     )
 
     Add-Type -AssemblyName System.IO.Compression
@@ -179,7 +216,7 @@ function Set-AddInReleaseMetadata {
     try {
         $customXml = @"
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="2" name="Build Version"><vt:lpwstr>$BuildVersion</vt:lpwstr></property><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="3" name="Release Type"><vt:lpwstr>$ReleaseType</vt:lpwstr></property></Properties>
+<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="2" name="Product Name"><vt:lpwstr>$ProductName</vt:lpwstr></property><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="3" name="Product Version"><vt:lpwstr>$ProductVersion</vt:lpwstr></property><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="4" name="Build Version"><vt:lpwstr>$BuildVersion</vt:lpwstr></property><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="5" name="Release Type"><vt:lpwstr>$ReleaseType</vt:lpwstr></property><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="6" name="Manifest Schema Version"><vt:lpwstr>$ManifestSchemaVersion</vt:lpwstr></property><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="7" name="Template Schema Version"><vt:lpwstr>$TemplateSchemaVersion</vt:lpwstr></property><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="8" name="Minimum Supported Version"><vt:lpwstr>$MinimumSupportedVersion</vt:lpwstr></property><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="9" name="Build Date"><vt:lpwstr>$BuildDate</vt:lpwstr></property></Properties>
 "@
         $customEntry = $zip.GetEntry("docProps/custom.xml")
         if ($customEntry -ne $null) { $customEntry.Delete() }
@@ -215,12 +252,21 @@ function Set-AddInReleaseMetadata {
 }
 
 try {
-    Set-AddInReleaseMetadata -Path $output -BuildVersion $BuildVersion -ReleaseType $ReleaseType
+    Set-AddInReleaseMetadata `
+        -Path $output `
+        -ProductName $productName `
+        -ProductVersion $productVersion `
+        -BuildVersion $BuildVersion `
+        -ReleaseType $ReleaseType `
+        -ManifestSchemaVersion $manifestSchemaVersion `
+        -TemplateSchemaVersion $templateSchemaVersion `
+        -MinimumSupportedVersion $minimumSupportedVersion `
+        -BuildDate $buildDate
 }
 catch {
     Write-Error "Failed to record release metadata: $_"
     exit 1
 }
-Write-Host "Recorded release metadata: Build Version=$BuildVersion; Release Type=$ReleaseType"
+Write-Host "Recorded release metadata: Product=$productName; Product Version=$productVersion; Build Version=$BuildVersion; Release Type=$ReleaseType"
 
 Write-Host "Build script finished."
