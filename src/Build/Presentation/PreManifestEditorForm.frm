@@ -479,10 +479,8 @@ Private Sub LoadManifest()
     IsDirty = False
     ResetStudioState
     RefreshProjectExplorer
-    If Modules.Count > 0 Then
-        lstModules.ListIndex = 0
-        SelectModuleFromExplorer 1
-    End If
+    ClearModuleFields
+    RefreshMemberList Nothing
 End Sub
 
 Private Sub ApplyModuleFieldsToSelection()
