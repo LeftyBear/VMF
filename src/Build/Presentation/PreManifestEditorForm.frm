@@ -2339,22 +2339,18 @@ Private Function CreateMemberFromFields() As Object
 End Function
 
 Private Sub SelectModuleFromExplorer(ByVal ModuleIndex As Long)
-    Dim PreviousTopIndex As Long
-
     If ModuleIndex <= 0 Or ModuleIndex > Modules.Count Then
         SetUiState "Error"
         MsgBox "Module selection failed.", vbExclamation, "Manifest Editor"
         Exit Sub
     End If
 
-    PreviousTopIndex = CurrentProjectExplorerTopIndex()
     ApplyModuleFieldsToSelection
     ApplyMemberFieldsToSelection
     SelectedModuleIndex = ModuleIndex
     SelectedMemberIndex = 0
     SetSingleGenerateTarget CStr(Modules.Item(SelectedModuleIndex)("ModuleName"))
-    RefreshProjectExplorer
-    RestoreProjectExplorerSelection PreviousTopIndex
+    RefreshGenerateTargetMarkers
     ShowSelectedModule
     If Not PreviewCodeTextBox Is Nothing Then
         If PreviewCodeTextBox.Visible Then RefreshPreviewPane
@@ -2489,6 +2485,21 @@ Private Function IsGenerateTarget(ByVal ModuleName As String) As Boolean
     If GenerateTargetByModule Is Nothing Then Exit Function
     IsGenerateTarget = GenerateTargetByModule.Exists(ModuleName)
 End Function
+
+Private Sub RefreshGenerateTargetMarkers()
+    Dim RowIndex As Long
+    Dim ModuleInfo As Object
+    Dim ModuleName As String
+
+    If Modules Is Nothing Then Exit Sub
+    If lstModules.ListCount <> Modules.Count Then Exit Sub
+
+    For RowIndex = 0 To lstModules.ListCount - 1
+        Set ModuleInfo = Modules.Item(RowIndex + 1)
+        ModuleName = CStr(ModuleInfo("ModuleName"))
+        lstModules.List(RowIndex, 5) = IIf(IsGenerateTarget(ModuleName), "Target", vbNullString)
+    Next RowIndex
+End Sub
 
 Private Function IsDirtyModule(ByVal ModuleName As String) As Boolean
     IsDirtyModule = IsDirty
