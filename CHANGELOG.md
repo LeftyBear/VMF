@@ -4,6 +4,24 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ---
 
+# 2026-07-20
+
+## Added
+
+- Added `specs/studio/VMF-Studio-v2.0-Specification-v1.0-Frozen.md`, exported from the frozen Google Docs master specification.
+- Added `RELEASE_NOTES_v1.0.md` for the VMF Studio v2.0 Specification v1.0 Frozen Edition.
+
+## Changed
+
+- Established the Git repository copy of the Frozen Edition as the official version-controlled specification artifact.
+- Advanced the project milestone from Specification Voyage to Implementation Voyage.
+
+## Released
+
+- Released VMF Studio v2.0 Specification v1.0.0 (Frozen Edition).
+
+---
+
 # 2026-07-16
 
 ## Added
