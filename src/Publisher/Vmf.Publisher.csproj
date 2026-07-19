@@ -6,4 +6,8 @@
     <RootNamespace>Vmf.Publisher</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.Auth" Version="1.75.0" />
+  </ItemGroup>
+
 </Project>
