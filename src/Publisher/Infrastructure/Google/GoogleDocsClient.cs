@@ -46,10 +46,10 @@ public sealed class GoogleDocsClient : IGoogleDocsClient
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credential.AccessToken);
         request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
         using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
         {
-            throw new HttpRequestException(
-                $"Google Docs batch update failed with HTTP {(int)response.StatusCode}.");
+            throw GoogleApiError.Create("Google Docs API", response.StatusCode, responseBody);
         }
     }
 }

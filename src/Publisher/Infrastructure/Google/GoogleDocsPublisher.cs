@@ -24,6 +24,12 @@ public sealed class GoogleDocsPublisher : IGoogleDocsPublisher
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(document);
+        if (string.IsNullOrWhiteSpace(options.FolderId))
+        {
+            throw new InvalidOperationException(
+                "GoogleApi:FolderId is required and must identify a folder accessible to the authenticated identity.");
+        }
+
         var driveClient = serviceFactory.CreateDriveClient();
         var docsClient = serviceFactory.CreateDocsClient();
         var driveFile = await driveClient.CreateDocumentAsync(

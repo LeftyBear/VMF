@@ -39,7 +39,7 @@ public sealed class GoogleDriveClient : IGoogleDriveClient
 
         using var request = new HttpRequestMessage(
             HttpMethod.Post,
-            "https://www.googleapis.com/drive/v3/files?fields=id%2CwebViewLink");
+            "https://www.googleapis.com/drive/v3/files?fields=id%2CwebViewLink&supportsAllDrives=true");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credential.AccessToken);
         request.Content = new StringContent(
             JsonSerializer.Serialize(metadata),
@@ -49,8 +49,7 @@ public sealed class GoogleDriveClient : IGoogleDriveClient
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
         {
-            throw new HttpRequestException(
-                $"Google Drive document creation failed with HTTP {(int)response.StatusCode}.");
+            throw GoogleApiError.Create("Google Drive API", response.StatusCode, responseBody);
         }
 
         using var document = JsonDocument.Parse(responseBody);

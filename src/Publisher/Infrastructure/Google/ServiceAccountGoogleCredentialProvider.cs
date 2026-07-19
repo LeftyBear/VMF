@@ -44,7 +44,7 @@ public sealed class ServiceAccountGoogleCredentialProvider : IGoogleCredentialPr
             if (string.IsNullOrWhiteSpace(options.CredentialsPath))
             {
                 throw new InvalidOperationException(
-                    "Google:CredentialsPath is required. Keep the credential file outside the repository.");
+                    "GoogleApi:CredentialsPath is required. Keep the credential file outside the repository.");
             }
 
             var json = await File.ReadAllTextAsync(options.CredentialsPath, cancellationToken)
@@ -75,8 +75,7 @@ public sealed class ServiceAccountGoogleCredentialProvider : IGoogleCredentialPr
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException(
-                    $"Google OAuth token request failed with HTTP {(int)response.StatusCode}.");
+                throw GoogleApiError.Create("Google OAuth API", response.StatusCode, responseBody);
             }
 
             using var tokenDocument = JsonDocument.Parse(responseBody);
