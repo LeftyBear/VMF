@@ -73,4 +73,28 @@ src/VMF/**
 # --------------------------------------------------
 __pycache__/
 *.pyc
+
+# --------------------------------------------------
+# .NET SDK and build artifacts
+# --------------------------------------------------
+.dotnet/
+.dotnet-home/
+.nuget/
+dotnet-install.ps1
+**/bin/
+**/obj/
+.vs/
+
+# --------------------------------------------------
+# Publisher local configuration and Google secrets
+# --------------------------------------------------
+appsettings.local.json
+appsettings.*.local.json
+credentials.json
+credentials.*.json
+client_secret*.json
+service-account*.json
+token-store/
+tokens/
+*.token.json
 ```

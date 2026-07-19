@@ -8,6 +8,8 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Started VMF Studio v2.0 Publisher PoC v0.1 with a .NET solution, layered Publisher library, CLI, unit tests, and integration tests.
+- Added minimal Markdown publication support for headings, paragraphs, and unordered-list items through separated Google Drive and Google Docs REST clients.
 - Added `specs/studio/VMF-Studio-v2.0-Specification-v1.0-Frozen.md`, exported from the frozen Google Docs master specification.
 - Added `RELEASE_NOTES_v1.0.md` for the VMF Studio v2.0 Specification v1.0 Frozen Edition.
 
