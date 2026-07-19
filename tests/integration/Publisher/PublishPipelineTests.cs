@@ -1,0 +1,57 @@
+using Vmf.Publisher.Application;
+using Vmf.Publisher.Domain;
+using Vmf.Publisher.Infrastructure;
+
+namespace Vmf.Publisher.IntegrationTests;
+
+public sealed class PublishPipelineTests
+{
+    [Fact]
+    public async Task PublishAsync_LoadsParsesCompilesAndPublishesDocument()
+    {
+        var tempPath = Path.Combine(Path.GetTempPath(), $"vmf-publisher-{Guid.NewGuid():N}.md");
+        await File.WriteAllTextAsync(tempPath, "# Sample\n\nParagraph.\n\n- Item\n");
+        var target = new RecordingPublisher();
+        var service = new PublishService(
+            new MarkdownFileDocumentLoader(),
+            new SimpleMarkdownParser(),
+            new DocumentCompiler(),
+            target);
+
+        try
+        {
+            var result = await service.PublishAsync(new PublishRequest(tempPath), CancellationToken.None);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal("document-id", result.DocumentId);
+            Assert.NotNull(target.Document);
+            Assert.Equal(Path.GetFileNameWithoutExtension(tempPath), target.Document.Title);
+            Assert.Contains(
+                target.Document.Operations,
+                operation => operation.Kind == DocumentOperationKind.ApplyHeading);
+            Assert.Contains(
+                target.Document.Operations,
+                operation => operation.Kind == DocumentOperationKind.CreateBullet);
+        }
+        finally
+        {
+            File.Delete(tempPath);
+        }
+    }
+
+    private sealed class RecordingPublisher : IGoogleDocsPublisher
+    {
+        internal CompiledDocument? Document { get; private set; }
+
+        public Task<PublishedDocument> PublishAsync(
+            CompiledDocument document,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Document = document;
+            return Task.FromResult(new PublishedDocument(
+                "document-id",
+                "https://docs.google.com/document/d/document-id/edit"));
+        }
+    }
+}
