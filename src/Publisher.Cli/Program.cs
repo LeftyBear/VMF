@@ -59,7 +59,7 @@ internal static class CliApplication
 
         var options = LoadOptions();
         using var httpClient = new HttpClient();
-        var credentialProvider = new ServiceAccountGoogleCredentialProvider(options, httpClient);
+        var credentialProvider = GoogleCredentialProviderFactory.Create(options, httpClient);
         var requestMapper = new GoogleDocsRequestMapper();
         var serviceFactory = new GoogleServiceFactory(credentialProvider, requestMapper, httpClient);
         var googlePublisher = new GoogleDocsPublisher(serviceFactory, options);
@@ -80,7 +80,10 @@ internal static class CliApplication
                 return 1;
             }
 
-            Console.WriteLine($"Published: {result.DocumentUrl}");
+            Console.WriteLine("Google Drive API: success");
+            Console.WriteLine("Google Docs API: success");
+            Console.WriteLine($"Document ID: {result.DocumentId}");
+            Console.WriteLine($"Document URL: {result.DocumentUrl}");
             return 0;
         }
         catch (OperationCanceledException)
@@ -98,6 +101,9 @@ internal static class CliApplication
         ApplySettings(options, Path.Combine(AppContext.BaseDirectory, "appsettings.json"));
         ApplySettings(options, Path.Combine(AppContext.BaseDirectory, "appsettings.local.json"));
 
+        options.AuthenticationMode = ParseAuthenticationMode(
+            Environment.GetEnvironmentVariable("VMF_PUBLISHER_AUTHENTICATION_MODE"),
+            options.AuthenticationMode);
         options.CredentialsPath = Environment.GetEnvironmentVariable("VMF_PUBLISHER_CREDENTIALS_PATH")
             ?? options.CredentialsPath;
         options.TokenStorePath = Environment.GetEnvironmentVariable("VMF_PUBLISHER_TOKEN_STORE_PATH")
@@ -112,14 +118,41 @@ internal static class CliApplication
         if (File.Exists(settingsPath))
         {
             using var document = JsonDocument.Parse(File.ReadAllText(settingsPath));
-            if (document.RootElement.TryGetProperty("Google", out var google))
+            if (document.RootElement.TryGetProperty("Google", out var legacyGoogle))
             {
-                options.CredentialsPath = GetString(google, "CredentialsPath") ?? options.CredentialsPath;
-                options.TokenStorePath = GetString(google, "TokenStorePath") ?? options.TokenStorePath;
-                options.FolderId = GetString(google, "FolderId") ?? options.FolderId;
-                options.ApplicationName = GetString(google, "ApplicationName") ?? options.ApplicationName;
+                ApplyGoogleSettings(options, legacyGoogle);
+            }
+
+            if (document.RootElement.TryGetProperty("GoogleApi", out var googleApi))
+            {
+                ApplyGoogleSettings(options, googleApi);
             }
         }
+    }
+
+    private static void ApplyGoogleSettings(GooglePublisherOptions options, JsonElement settings)
+    {
+        options.AuthenticationMode = ParseAuthenticationMode(
+            GetString(settings, "AuthenticationMode"),
+            options.AuthenticationMode);
+        options.CredentialsPath = GetString(settings, "CredentialsPath") ?? options.CredentialsPath;
+        options.TokenStorePath = GetString(settings, "TokenStorePath") ?? options.TokenStorePath;
+        options.FolderId = GetString(settings, "FolderId") ?? options.FolderId;
+        options.ApplicationName = GetString(settings, "ApplicationName") ?? options.ApplicationName;
+    }
+
+    private static GoogleAuthenticationMode ParseAuthenticationMode(
+        string? value,
+        GoogleAuthenticationMode fallback)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return fallback;
+        }
+
+        return Enum.TryParse<GoogleAuthenticationMode>(value, ignoreCase: true, out var mode)
+            ? mode
+            : throw new InvalidOperationException($"Unsupported GoogleApi:AuthenticationMode: {value}");
     }
 
     private static string? GetString(JsonElement element, string propertyName) =>
