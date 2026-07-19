@@ -90,10 +90,17 @@ dotnet-install.ps1
 # --------------------------------------------------
 appsettings.local.json
 appsettings.*.local.json
+appsettings.Local.json
+appsettings.*.Local.json
 credentials.json
 credentials.*.json
 client_secret*.json
+*oauth-client*.json
+*oauth_client*.json
 service-account*.json
+secrets/
+*.pem
+*.p12
 token-store/
 tokens/
 *.token.json

@@ -64,28 +64,111 @@ The four projects are:
 - `tests/unit/Publisher/` — parser, compiler, and request-mapper tests
 - `tests/integration/Publisher/` — file-to-publication-pipeline integration test
 
-Build and test:
+### Build and test
 
 ```powershell
 dotnet restore VMF.Publisher.sln
 dotnet build VMF.Publisher.sln --no-restore
 dotnet test VMF.Publisher.sln --no-build
 dotnet run --project src/Publisher.Cli -- --help
-dotnet run --project src/Publisher.Cli -- publish path/to/document.md
+dotnet run --project src/Publisher.Cli -- publish samples/publisher-poc.md
 ```
 
-The PoC authenticates with a Google service-account JSON file. Set
-`Google:CredentialsPath` in a local settings copy or use the
-`VMF_PUBLISHER_CREDENTIALS_PATH` environment variable. `Google:FolderId` can
-optionally select a destination folder. The `TokenStorePath` setting is reserved
-for a future installed-application OAuth flow and is not used in v0.1.
+### Authentication modes
 
-Credential JSON, token stores, and local appsettings files must remain outside
-version control. The checked-in `appsettings.json` contains no secrets.
+`GoogleApi:AuthenticationMode` selects one of two Infrastructure-only
+authentication providers:
+
+| Mode | Credential | Publication target |
+|---|---|---|
+| `OAuthDesktop` | OAuth client JSON for an application of type Desktop app | A folder in the authenticated user's My Drive |
+| `ServiceAccount` | Service-account JSON key | A folder in a Shared Drive accessible to the service account |
+
+The legacy `Google` configuration section is still accepted for service-account
+compatibility. New configuration should use `GoogleApi`.
+
+### OAuth Desktop setup for a personal Gmail account
+
+1. Create or select a Google Cloud project, then enable both the
+   [Google Drive API](https://console.cloud.google.com/apis/library/drive.googleapis.com)
+   and [Google Docs API](https://console.cloud.google.com/apis/library/docs.googleapis.com).
+2. Configure the OAuth consent screen. If the app remains in Testing status, add
+   the Gmail account that will publish documents as a test user.
+3. Create an OAuth 2.0 Client ID with application type **Desktop app**. Download
+   its JSON file and store it outside this repository.
+4. Copy `src/Publisher.Cli/appsettings.Local.json.example` to
+   `src/Publisher.Cli/appsettings.local.json`. Set `CredentialsPath` to the
+   absolute OAuth client JSON path, `TokenStorePath` to a protected directory
+   outside the repository, and `FolderId` to the final path segment of the
+   destination My Drive folder URL.
+5. Run `dotnet run --project src/Publisher.Cli -- publish samples/publisher-poc.md`.
+   On first use, the system browser opens Google's authorization page. Sign in
+   with the target Gmail account and grant the requested access.
+6. The resulting access and refresh tokens are persisted under `TokenStorePath`.
+   Later runs load that token and refresh it when needed, without opening the
+   browser again unless consent is revoked or the stored token is removed.
+
+OAuth Desktop requests these scopes:
+
+- `https://www.googleapis.com/auth/documents`
+- `https://www.googleapis.com/auth/drive`
+
+The Drive scope is required because the CLI receives an existing My Drive
+folder ID directly rather than through Google Picker. The authorization flow is
+implemented with Google's supported installed-application broker and file data
+store. See the [Google .NET OAuth guide](https://developers.google.com/api-client-library/dotnet/guide/aaa_oauth).
+
+Environment variables can be used instead of local settings:
+
+```powershell
+$env:VMF_PUBLISHER_AUTHENTICATION_MODE = 'OAuthDesktop'
+$env:VMF_PUBLISHER_CREDENTIALS_PATH = 'C:\Secrets\vmf-publisher-oauth-client.json'
+$env:VMF_PUBLISHER_TOKEN_STORE_PATH = 'C:\Secrets\vmf-publisher-token-store'
+$env:VMF_PUBLISHER_FOLDER_ID = 'YOUR_MY_DRIVE_FOLDER_ID'
+dotnet run --project src/Publisher.Cli -- publish samples/publisher-poc.md
+```
+
+### Service-account compatibility
+
+Set `AuthenticationMode` to `ServiceAccount`, provide the existing
+service-account JSON key, and use a Shared Drive folder shared with the service
+account. Service accounts cannot own files in My Drive. The CLI retains
+`supportsAllDrives=true` for this mode. See Google's
+[folder creation guidance](https://developers.google.com/workspace/drive/api/guides/folder)
+and [service-account key guidance](https://cloud.google.com/iam/docs/keys-create-delete).
+
+On success, the CLI prints separate Google Drive and Google Docs API success
+lines followed by `Document ID` and `Document URL`. On failure, it reports only
+the API name, HTTP status, and sanitized Google error code; access tokens,
+private keys, response bodies, and credential contents are never logged.
+
+### Secret-management requirements
+
+OAuth client JSON, service-account JSON, token stores, and local appsettings
+files must remain outside version control. The checked-in `appsettings.json` and
+`appsettings.Local.json.example` contain placeholders only. Before committing,
+run `git status --short --ignored` and confirm that the real local settings,
+credential, and token-store paths are ignored or located outside the repository.
+Never print or copy access tokens, refresh tokens, client secrets, or private
+keys into logs, issues, commits, or chat.
+
+### Live verification
+
+Publish `samples/publisher-poc.md`, open the returned Document URL, and confirm:
+
+- the Drive and Docs API calls both report success;
+- the returned Document ID matches the ID embedded in the Document URL;
+- level 1 and level 2 headings appear with heading styles;
+- the paragraph appears as a normal paragraph;
+- all three checklist items appear as an unordered list.
+
+Live verification evidence is recorded here after execution. Current status:
+**Pending local OAuth Desktop client credentials and My Drive Folder ID.**
+
+### PoC scope
 
 Not implemented in v0.1: tables, images, footnotes, embedded HTML, ordered
-lists, nested lists, inline emphasis/link styling, and installed-application
-OAuth/token-store persistence.
+lists, nested lists, and inline emphasis/link styling.
 
 The current official VMF Studio release artifact is:
 

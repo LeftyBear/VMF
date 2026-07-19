@@ -10,11 +10,18 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 - Started VMF Studio v2.0 Publisher PoC v0.1 with a .NET solution, layered Publisher library, CLI, unit tests, and integration tests.
 - Added minimal Markdown publication support for headings, paragraphs, and unordered-list items through separated Google Drive and Google Docs REST clients.
+- Added the Publisher live-validation Markdown sample and local OAuth Desktop configuration example.
+- Added installed-application OAuth 2.0 browser authorization for personal Gmail users, including persistent token-store reuse.
+- Added configuration-based selection between OAuth Desktop and the existing service-account authentication flow.
+- Added OAuth credential validation, cached-token reuse, persisted-token reuse, and authentication-mode unit coverage.
 - Added `specs/studio/VMF-Studio-v2.0-Specification-v1.0-Frozen.md`, exported from the frozen Google Docs master specification.
 - Added `RELEASE_NOTES_v1.0.md` for the VMF Studio v2.0 Specification v1.0 Frozen Edition.
 
 ## Changed
 
+- Enabled Shared Drive document creation and safe Google API failure reporting using only the API name, HTTP status, and sanitized error code.
+- Enabled OAuth-authenticated document creation in an existing My Drive folder while preserving service-account Shared Drive support.
+- Documented OAuth Desktop setup, browser consent, token persistence, service-account compatibility, secret management, and live verification for Publisher PoC v0.1.
 - Established the Git repository copy of the Frozen Edition as the official version-controlled specification artifact.
 - Advanced the project milestone from Specification Voyage to Implementation Voyage.
 
