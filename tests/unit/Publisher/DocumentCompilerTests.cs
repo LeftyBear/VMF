@@ -47,4 +47,35 @@ public sealed class DocumentCompilerTests
                 Assert.Equal(12, operation.EndIndex);
             });
     }
+
+    [Fact]
+    public void Compile_RendersNestedListWithoutShiftingFollowingParagraph()
+    {
+        var document = new DocumentModel(
+        [
+            new DocumentBlock(new ListBlock(
+            [
+                new ListItem(
+                    ListKind.Unordered,
+                    [new InlineElement(InlineElementKind.Text, "Root")],
+                    0),
+                new ListItem(
+                    ListKind.Ordered,
+                    [new InlineElement(InlineElementKind.Text, "Nested")],
+                    1),
+            ])),
+            new DocumentBlock(
+                DocumentBlockKind.Paragraph,
+                [new InlineElement(InlineElementKind.Text, "After")]),
+        ]);
+
+        var compiled = new DocumentCompiler().Compile(document, "Sample");
+
+        Assert.Equal("Root\n\tNested\n", compiled.Operations[0].Text);
+        Assert.Equal(ListKind.Unordered, compiled.Operations[1].ListKind);
+        Assert.Equal(ListKind.Ordered, compiled.Operations[2].ListKind);
+        Assert.Equal(DocumentOperationKind.InsertText, compiled.Operations[3].Kind);
+        Assert.Equal(13, compiled.Operations[3].StartIndex);
+        Assert.Equal("After\n", compiled.Operations[3].Text);
+    }
 }

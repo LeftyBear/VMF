@@ -10,7 +10,9 @@ public sealed class PublishPipelineTests
     public async Task PublishAsync_LoadsParsesCompilesAndPublishesDocument()
     {
         var tempPath = Path.Combine(Path.GetTempPath(), $"vmf-publisher-{Guid.NewGuid():N}.md");
-        await File.WriteAllTextAsync(tempPath, "# Sample\n\nParagraph.\n\n- Item\n");
+        await File.WriteAllTextAsync(
+            tempPath,
+            "# Sample\n\n- First\n  1. Ordered\n    - Deep\n\nAfter list.\n");
         var target = new RecordingPublisher();
         var service = new PublishService(
             new MarkdownFileDocumentLoader(),
@@ -32,6 +34,15 @@ public sealed class PublishPipelineTests
             Assert.Contains(
                 target.Document.Operations,
                 operation => operation.Kind == DocumentOperationKind.CreateBullet);
+            Assert.Contains(
+                target.Document.Operations,
+                operation => operation.Kind == DocumentOperationKind.CreateBullet
+                    && operation.ListKind == ListKind.Ordered);
+            Assert.Contains(
+                target.Document.Operations,
+                operation => operation.Kind == DocumentOperationKind.InsertText
+                    && operation.StartIndex == 27
+                    && operation.Text == "After list.\n");
         }
         finally
         {
