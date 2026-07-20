@@ -11,6 +11,8 @@ public enum DocumentBlockKind
     BulletListItem,
     /// <summary>A contiguous ordered, unordered, or mixed list block.</summary>
     List,
+    /// <summary>A table block with a header row.</summary>
+    Table,
 }
 
 /// <summary>Represents a paragraph and its inline content.</summary>
@@ -71,10 +73,10 @@ public sealed class DocumentBlock
     /// <param name="level">The heading level, or zero for non-headings.</param>
     public DocumentBlock(DocumentBlockKind kind, IEnumerable<InlineContent> content, int level = 0)
     {
-        if (kind == DocumentBlockKind.List)
+        if (kind is DocumentBlockKind.List or DocumentBlockKind.Table)
         {
             throw new ArgumentException(
-                "Use the ListBlock constructor for list document blocks.",
+                "Use the strongly typed constructor for structured document blocks.",
                 nameof(kind));
         }
 
@@ -120,6 +122,15 @@ public sealed class DocumentBlock
         Content = Array.Empty<InlineContent>();
     }
 
+    /// <summary>Initializes a table document block.</summary>
+    /// <param name="table">The table content.</param>
+    public DocumentBlock(TableBlock table)
+    {
+        Table = table ?? throw new ArgumentNullException(nameof(table));
+        Kind = DocumentBlockKind.Table;
+        Content = Array.Empty<InlineContent>();
+    }
+
     /// <summary>Gets the block kind.</summary>
     public DocumentBlockKind Kind { get; }
 
@@ -134,4 +145,7 @@ public sealed class DocumentBlock
 
     /// <summary>Gets the list content when <see cref="Kind"/> is <see cref="DocumentBlockKind.List"/>.</summary>
     public ListBlock? List { get; }
+
+    /// <summary>Gets the table content when <see cref="Kind"/> is <see cref="DocumentBlockKind.Table"/>.</summary>
+    public TableBlock? Table { get; }
 }
