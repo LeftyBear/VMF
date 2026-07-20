@@ -8,7 +8,8 @@ namespace Vmf.Publisher.Infrastructure;
 public sealed partial class SimpleMarkdownParser : IMarkdownParser
 {
     private readonly MarkdownListParser _listParser;
-    private readonly MarkdownInlineParser inlineParser;
+    private readonly MarkdownTableParser tableParser;
+    private readonly IMarkdownInlineParser inlineParser;
 
     /// <summary>Initializes a parser with the default block parsers.</summary>
     public SimpleMarkdownParser()
@@ -18,9 +19,10 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
 
     /// <summary>Initializes a parser with an explicitly registered inline parser.</summary>
     /// <param name="inlineParser">The Markdown inline parser.</param>
-    public SimpleMarkdownParser(MarkdownInlineParser inlineParser)
+    public SimpleMarkdownParser(IMarkdownInlineParser inlineParser)
         : this(
             new MarkdownListParser(new MarkdownListParserOptions(), inlineParser),
+            new MarkdownTableParser(inlineParser),
             inlineParser)
     {
     }
@@ -37,9 +39,22 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
     /// <param name="inlineParser">The Markdown inline parser.</param>
     public SimpleMarkdownParser(
         MarkdownListParser listParser,
-        MarkdownInlineParser inlineParser)
+        IMarkdownInlineParser inlineParser)
+        : this(listParser, new MarkdownTableParser(inlineParser), inlineParser)
+    {
+    }
+
+    /// <summary>Initializes a parser with explicitly registered block and inline parsers.</summary>
+    /// <param name="listParser">The Markdown list parser.</param>
+    /// <param name="tableParser">The Markdown table parser.</param>
+    /// <param name="inlineParser">The Markdown inline parser.</param>
+    public SimpleMarkdownParser(
+        MarkdownListParser listParser,
+        MarkdownTableParser tableParser,
+        IMarkdownInlineParser inlineParser)
     {
         _listParser = listParser ?? throw new ArgumentNullException(nameof(listParser));
+        this.tableParser = tableParser ?? throw new ArgumentNullException(nameof(tableParser));
         this.inlineParser = inlineParser ?? throw new ArgumentNullException(nameof(inlineParser));
     }
 
@@ -78,12 +93,23 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
             listItems.Clear();
         }
 
-        foreach (var line in lines)
+        for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
         {
+            var line = lines[lineIndex];
             if (string.IsNullOrWhiteSpace(line))
             {
                 FlushParagraph();
                 FlushList();
+                continue;
+            }
+
+            if (tableParser.TryParse(lines, lineIndex, out var table, out var consumedLines))
+            {
+                FlushParagraph();
+                FlushList();
+                blocks.Add(new DocumentBlock(
+                    table ?? throw new InvalidOperationException("A parsed table requires table content.")));
+                lineIndex += consumedLines - 1;
                 continue;
             }
 

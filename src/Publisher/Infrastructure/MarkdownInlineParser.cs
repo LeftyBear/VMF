@@ -1,10 +1,11 @@
 using System.Text;
+using Vmf.Publisher.Application;
 using Vmf.Publisher.Domain;
 
 namespace Vmf.Publisher.Infrastructure;
 
 /// <summary>Parses supported Markdown emphasis and link syntax into inline content.</summary>
-public sealed class MarkdownInlineParser
+public sealed class MarkdownInlineParser : IMarkdownInlineParser
 {
     private readonly int maxInlineDepth;
 
@@ -206,7 +207,7 @@ public sealed class MarkdownInlineParser
     {
         if (markdown[index] != '\\' ||
             index + 1 >= markdown.Length ||
-            !char.IsPunctuation(markdown[index + 1]))
+            !IsEscapable(markdown[index + 1]))
         {
             return false;
         }
@@ -222,7 +223,7 @@ public sealed class MarkdownInlineParser
         {
             if (source[index] == '\\' &&
                 index + 1 < source.Length &&
-                char.IsPunctuation(source[index + 1]))
+                IsEscapable(source[index + 1]))
             {
                 index++;
                 continue;
@@ -244,7 +245,7 @@ public sealed class MarkdownInlineParser
         {
             if (source[index] == '\\' &&
                 index + 1 < source.Length &&
-                char.IsPunctuation(source[index + 1]))
+                IsEscapable(source[index + 1]))
             {
                 index++;
                 continue;
@@ -270,7 +271,7 @@ public sealed class MarkdownInlineParser
         {
             if (value[index] == '\\' &&
                 index + 1 < value.Length &&
-                char.IsPunctuation(value[index + 1]))
+                IsEscapable(value[index + 1]))
             {
                 index++;
             }
@@ -297,6 +298,8 @@ public sealed class MarkdownInlineParser
 
     private static bool StartsWith(string source, int index, string value) =>
         source.AsSpan(index).StartsWith(value, StringComparison.Ordinal);
+
+    private static bool IsEscapable(char value) => char.IsPunctuation(value) || value == '|';
 
     private static int CountRun(string source, int index, char marker)
     {

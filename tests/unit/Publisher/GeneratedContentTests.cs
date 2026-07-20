@@ -51,6 +51,25 @@ public sealed class GeneratedContentTests
         Assert.Equal("Item", item.Inlines[0].Text);
     }
 
+    [Fact]
+    public void TableBlock_PreservesHeaderAndAllowsEmptyCells()
+    {
+        var table = new TableBlock(
+            [new TableColumn(TableAlignment.Left), new TableColumn(TableAlignment.Right)],
+            new TableRow([
+                new TableCell([new TextInline("Name")]),
+                new TableCell([new TextInline("Value")]),
+            ]),
+            [new TableRow([
+                new TableCell([new TextInline("Empty")]),
+                TableCell.Empty(),
+            ])]);
+
+        Assert.Equal(2, table.Columns.Count);
+        Assert.Equal(2, table.AllRows.Count);
+        Assert.Empty(table.Rows[0].Cells[1].Content);
+    }
+
     private static ListItem Item(ListKind kind, int depth, string text) =>
         new(kind, [new InlineElement(InlineElementKind.Text, text)], depth);
 }

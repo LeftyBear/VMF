@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Vmf.Publisher.Application;
 using Vmf.Publisher.Domain;
 
 namespace Vmf.Publisher.Infrastructure;
@@ -8,7 +9,7 @@ public sealed partial class MarkdownListParser
 {
     private readonly int _listIndentSize;
     private readonly int _maxListDepth;
-    private readonly MarkdownInlineParser inlineParser;
+    private readonly IMarkdownInlineParser inlineParser;
 
     /// <summary>Initializes a parser with the default list settings.</summary>
     public MarkdownListParser()
@@ -28,7 +29,7 @@ public sealed partial class MarkdownListParser
     /// <param name="inlineParser">The Markdown inline parser.</param>
     public MarkdownListParser(
         MarkdownListParserOptions options,
-        MarkdownInlineParser inlineParser)
+        IMarkdownInlineParser inlineParser)
     {
         ArgumentNullException.ThrowIfNull(options);
         options.Validate();
