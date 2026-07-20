@@ -1,5 +1,6 @@
 using Vmf.Publisher.Application;
 using Vmf.Publisher.Domain;
+using Vmf.Publisher.Infrastructure;
 using Vmf.Publisher.Infrastructure.Google;
 
 namespace Vmf.Publisher.UnitTests;
@@ -155,6 +156,107 @@ public sealed class PublishPlanExecutorTests
         Assert.Equal(PublishErrorCodes.TableContentUpdateFailed, exception.Code);
     }
 
+    [Fact]
+    public async Task ExecuteAsync_ImageUsesReadbackParagraphEndIndexForFollowingBatch()
+    {
+        var size = new ImageSize(450, 225);
+        var snapshot = new GoogleDocumentSnapshot([], [new GoogleInlineImageSnapshot(
+            8, 10, 8, 9, "inline-object-id", size)]);
+        var client = new RecordingDocsClient(snapshot);
+        var logger = new RecordingLogger();
+        PublishStep[] steps =
+        [
+            new BatchUpdateStep(
+                [new DocumentOperation(DocumentOperationKind.InsertText, 1, text: "Before\n")],
+                7),
+            new InsertImageStep(new ImageBlock(
+                "Alt text",
+                new RemoteImageSource(new Uri("https://example.com/image.png")),
+                size)),
+            new BatchUpdateStep(
+                [new DocumentOperation(DocumentOperationKind.InsertText, 1, text: "After\n")],
+                6),
+        ];
+
+        await new PublishPlanExecutor(client, new InlineContentRenderer(), null, logger)
+            .ExecuteAsync("document-id", steps, CancellationToken.None);
+
+        Assert.Equal(8, client.InsertedImage?.Index);
+        Assert.Equal(10, client.Applied[1][0].StartIndex);
+        Assert.Contains(logger.Warnings, warning =>
+            warning.Code == PublishErrorCodes.ImageAltTextUpdateFailed);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_LocalImageIsDeletedAfterSuccessfulReadback()
+    {
+        var size = new ImageSize(300, 200);
+        var client = new RecordingDocsClient(new GoogleDocumentSnapshot([], [
+            new GoogleInlineImageSnapshot(1, 3, 1, 2, "inline-object-id", size),
+        ]));
+        var host = new RecordingTemporaryImageHost();
+
+        await new PublishPlanExecutor(client, new InlineContentRenderer(), host, null)
+            .ExecuteAsync(
+                "document-id",
+                [new InsertImageStep(new ImageBlock(
+                    string.Empty,
+                    new LocalImageSource("image.png"),
+                    size))],
+                CancellationToken.None);
+
+        Assert.True(host.Hosted);
+        Assert.True(host.Deleted);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_MissingImageStopsFollowingBatchAndStillDeletesTemporaryFile()
+    {
+        var size = new ImageSize(300, 200);
+        var client = new RecordingDocsClient(new GoogleDocumentSnapshot([]));
+        var host = new RecordingTemporaryImageHost();
+
+        var exception = await Assert.ThrowsAsync<PublishPipelineException>(() =>
+            new PublishPlanExecutor(client, new InlineContentRenderer(), host, null).ExecuteAsync(
+                "document-id",
+                [
+                    new InsertImageStep(new ImageBlock(
+                        string.Empty,
+                        new LocalImageSource("image.png"),
+                        size)),
+                    new BatchUpdateStep(
+                        [new DocumentOperation(DocumentOperationKind.InsertText, 1, text: "Never\n")],
+                        6),
+                ],
+                CancellationToken.None));
+
+        Assert.Equal(PublishErrorCodes.ImageNotFoundAfterInsert, exception.Code);
+        Assert.True(host.Deleted);
+        Assert.Empty(client.Applied);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_CleanupFailureDoesNotHideInsertionFailure()
+    {
+        var size = new ImageSize(300, 200);
+        var client = new RecordingDocsClient { FailImageInsert = true };
+        var host = new RecordingTemporaryImageHost { FailDelete = true };
+        var logger = new RecordingLogger();
+
+        var exception = await Assert.ThrowsAsync<PublishPipelineException>(() =>
+            new PublishPlanExecutor(client, new InlineContentRenderer(), host, logger).ExecuteAsync(
+                "document-id",
+                [new InsertImageStep(new ImageBlock(
+                    string.Empty,
+                    new LocalImageSource("image.png"),
+                    size))],
+                CancellationToken.None));
+
+        Assert.Equal(PublishErrorCodes.ImageInsertFailed, exception.Code);
+        Assert.Contains(logger.Warnings, warning =>
+            warning.Code == PublishErrorCodes.ImageTempFileDeleteFailed);
+    }
+
     private static TableBlock CreateTable() => new(
         [
             new TableColumn(TableAlignment.Left),
@@ -200,7 +302,11 @@ public sealed class PublishPlanExecutorTests
 
         internal (int Rows, int Columns, int Index)? InsertedTable { get; private set; }
 
+        internal (Uri Uri, ImageSize Size, int Index)? InsertedImage { get; private set; }
+
         internal bool FailApply { get; init; }
+
+        internal bool FailImageInsert { get; init; }
 
         public Task ApplyOperationsAsync(
             string documentId,
@@ -229,6 +335,23 @@ public sealed class PublishPlanExecutorTests
             return Task.CompletedTask;
         }
 
+        public Task InsertInlineImageAsync(
+            string documentId,
+            Uri imageUri,
+            ImageSize size,
+            int index,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (FailImageInsert)
+            {
+                throw new HttpRequestException("image failure");
+            }
+
+            InsertedImage = (imageUri, size, index);
+            return Task.CompletedTask;
+        }
+
         public Task<GoogleDocumentSnapshot> GetDocumentAsync(
             string documentId,
             CancellationToken cancellationToken)
@@ -236,5 +359,44 @@ public sealed class PublishPlanExecutorTests
             cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(snapshots.Dequeue());
         }
+    }
+
+    private sealed class RecordingTemporaryImageHost : ITemporaryImageHost
+    {
+        internal bool Hosted { get; private set; }
+
+        internal bool Deleted { get; private set; }
+
+        internal bool FailDelete { get; init; }
+
+        public Task<TemporaryHostedImage> HostAsync(
+            LocalImageSource source,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Hosted = true;
+            return Task.FromResult(new TemporaryHostedImage(
+                "temporary-id",
+                new Uri("https://drive.google.com/public-image")));
+        }
+
+        public Task DeleteAsync(
+            TemporaryHostedImage image,
+            CancellationToken cancellationToken)
+        {
+            Deleted = true;
+            return FailDelete
+                ? Task.FromException(new PublishPipelineException(
+                    PublishErrorCodes.ImageTempFileDeleteFailed,
+                    "cleanup failed"))
+                : Task.CompletedTask;
+        }
+    }
+
+    private sealed class RecordingLogger : IPublisherLogger
+    {
+        internal List<(string Code, string Message)> Warnings { get; } = [];
+
+        public void Warning(string code, string message) => Warnings.Add((code, message));
     }
 }
