@@ -23,13 +23,18 @@ public sealed class GoogleDocsRequestMapperTests
                 11,
                 inlineStyle: InlineTextStyle.Link,
                 url: new Uri("https://example.com/")),
+            new(
+                DocumentOperationKind.UpdateParagraphAlignment,
+                12,
+                20,
+                tableAlignment: TableAlignment.Right),
         ];
 
         var json = new GoogleDocsRequestMapper().MapBatchUpdate(operations);
 
         using var document = JsonDocument.Parse(json);
         var requests = document.RootElement.GetProperty("requests");
-        Assert.Equal(7, requests.GetArrayLength());
+        Assert.Equal(8, requests.GetArrayLength());
         Assert.Equal("Heading\n", requests[0].GetProperty("insertText").GetProperty("text").GetString());
         Assert.Equal(
             "HEADING_1",
@@ -48,6 +53,11 @@ public sealed class GoogleDocsRequestMapperTests
         Assert.Equal(
             "https://example.com/",
             linkRequest.GetProperty("textStyle").GetProperty("link").GetProperty("url").GetString());
+        var alignmentRequest = requests[7].GetProperty("updateParagraphStyle");
+        Assert.Equal("alignment", alignmentRequest.GetProperty("fields").GetString());
+        Assert.Equal(
+            "END",
+            alignmentRequest.GetProperty("paragraphStyle").GetProperty("alignment").GetString());
     }
 
     private static void AssertTextStyle(

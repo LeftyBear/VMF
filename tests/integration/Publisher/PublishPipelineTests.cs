@@ -69,6 +69,81 @@ public sealed class PublishPipelineTests
         }
     }
 
+    [Fact]
+    public async Task PublishAsync_CompilesTableBetweenIndependentOrdinaryBatches()
+    {
+        var tempPath = Path.Combine(Path.GetTempPath(), $"vmf-publisher-table-{Guid.NewGuid():N}.md");
+        await File.WriteAllTextAsync(
+            tempPath,
+            "Before.\n\n" +
+            "Name | Status | Note\n" +
+            "--- | :---: | ---:\n" +
+            "**Publisher** | Active | *v1.0*\n" +
+            "[Renderer](https://example.com) | Ready |\n\n" +
+            "After.\n");
+        var target = new RecordingPublisher();
+        var service = new PublishService(
+            new MarkdownFileDocumentLoader(),
+            new SimpleMarkdownParser(),
+            new DocumentCompiler(),
+            target);
+
+        try
+        {
+            var result = await service.PublishAsync(new PublishRequest(tempPath), CancellationToken.None);
+
+            Assert.True(result.IsSuccess);
+            var document = Assert.IsType<CompiledDocument>(target.Document);
+            Assert.Collection(
+                document.Steps,
+                step => Assert.IsType<BatchUpdateStep>(step),
+                step =>
+                {
+                    var table = Assert.IsType<InsertTableStep>(step).Table;
+                    Assert.Equal(
+                        [TableAlignment.Left, TableAlignment.Center, TableAlignment.Right],
+                        table.Columns.Select(column => column.Alignment));
+                    Assert.IsType<BoldInline>(table.Rows[0].Cells[0].Content[0]);
+                    Assert.IsType<ItalicInline>(table.Rows[0].Cells[2].Content[0]);
+                    Assert.IsType<LinkInline>(table.Rows[1].Cells[0].Content[0]);
+                    Assert.Empty(table.Rows[1].Cells[2].Content);
+                },
+                step =>
+                {
+                    var batch = Assert.IsType<BatchUpdateStep>(step);
+                    Assert.Equal(1, Assert.Single(batch.Operations).StartIndex);
+                });
+        }
+        finally
+        {
+            File.Delete(tempPath);
+        }
+    }
+
+    [Fact]
+    public async Task PublishAsync_PreservesPublishPipelineErrorCode()
+    {
+        var tempPath = Path.Combine(Path.GetTempPath(), $"vmf-publisher-error-{Guid.NewGuid():N}.md");
+        await File.WriteAllTextAsync(tempPath, "Paragraph.\n");
+        var service = new PublishService(
+            new MarkdownFileDocumentLoader(),
+            new SimpleMarkdownParser(),
+            new DocumentCompiler(),
+            new FailingPublisher());
+
+        try
+        {
+            var result = await service.PublishAsync(new PublishRequest(tempPath), CancellationToken.None);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(PublishErrorCodes.TableContentUpdateFailed, result.Error?.Code);
+        }
+        finally
+        {
+            File.Delete(tempPath);
+        }
+    }
+
     private sealed class RecordingPublisher : IGoogleDocsPublisher
     {
         internal CompiledDocument? Document { get; private set; }
@@ -83,5 +158,14 @@ public sealed class PublishPipelineTests
                 "document-id",
                 "https://docs.google.com/document/d/document-id/edit"));
         }
+    }
+
+    private sealed class FailingPublisher : IGoogleDocsPublisher
+    {
+        public Task<PublishedDocument> PublishAsync(
+            CompiledDocument document,
+            CancellationToken cancellationToken) => throw new PublishPipelineException(
+                PublishErrorCodes.TableContentUpdateFailed,
+                "Table update failed.");
     }
 }
