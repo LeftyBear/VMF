@@ -21,6 +21,7 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
                 DocumentOperationKind.CreateBullet => MapBullet(operation),
                 DocumentOperationKind.UpdateTextStyle => MapTextStyle(operation),
                 DocumentOperationKind.UpdateParagraphAlignment => MapParagraphAlignment(operation),
+                DocumentOperationKind.ApplyCodeBlockStyle => MapCodeBlockStyle(operation),
                 _ => throw new InvalidOperationException($"Unsupported operation: {operation.Kind}"),
             });
         }
@@ -97,6 +98,17 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
         {
             InlineTextStyle.Bold => (object)new { bold = true },
             InlineTextStyle.Italic => new { italic = true },
+            InlineTextStyle.Code => new
+            {
+                weightedFontFamily = new { fontFamily = "Roboto Mono" },
+                backgroundColor = new
+                {
+                    color = new
+                    {
+                        rgbColor = new { red = 0.95, green = 0.95, blue = 0.95 },
+                    },
+                },
+            },
             InlineTextStyle.Link when operation.Url is not null => new
             {
                 link = new { url = operation.Url.AbsoluteUri },
@@ -111,6 +123,7 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
         {
             InlineTextStyle.Bold => "bold",
             InlineTextStyle.Italic => "italic",
+            InlineTextStyle.Code => "weightedFontFamily,backgroundColor",
             InlineTextStyle.Link => "link",
             _ => throw new InvalidOperationException(
                 $"Unsupported inline text style: {operation.InlineStyle}"),
@@ -123,6 +136,30 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
                 range = new { startIndex = operation.StartIndex, endIndex = operation.EndIndex.Value },
                 textStyle,
                 fields,
+            },
+        };
+    }
+
+    private static object MapCodeBlockStyle(DocumentOperation operation)
+    {
+        if (operation.EndIndex is null)
+        {
+            throw new InvalidOperationException("ApplyCodeBlockStyle requires a range.");
+        }
+
+        return new
+        {
+            updateParagraphStyle = new
+            {
+                range = new { startIndex = operation.StartIndex, endIndex = operation.EndIndex.Value },
+                paragraphStyle = new
+                {
+                    indentStart = Dimension(18),
+                    indentEnd = Dimension(18),
+                    spaceAbove = Dimension(6),
+                    spaceBelow = Dimension(6),
+                },
+                fields = "indentStart,indentEnd,spaceAbove,spaceBelow",
             },
         };
     }
@@ -155,4 +192,6 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
             },
         };
     }
+
+    private static object Dimension(double magnitude) => new { magnitude, unit = "PT" };
 }

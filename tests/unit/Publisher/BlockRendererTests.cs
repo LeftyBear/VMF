@@ -53,6 +53,34 @@ public sealed class BlockRendererTests
             operation => AssertStyle(operation, 1, 6, InlineTextStyle.Italic));
     }
 
+    [Theory]
+    [InlineData("line", 5, 10, 3)]
+    [InlineData("", 1, 2, 2)]
+    public void CodeBlockRenderer_StylesBodyButExcludesRequiredTrailingNewlineFromBackground(
+        string text,
+        int startIndex,
+        int expectedNextIndex,
+        int expectedOperationCount)
+    {
+        var operations = new List<DocumentOperation>();
+
+        var nextIndex = new CodeBlockRenderer().Render(
+            new CodeBlock(text, "csharp"),
+            startIndex,
+            operations);
+
+        Assert.Equal(expectedNextIndex, nextIndex);
+        Assert.Equal(text + "\n", operations[0].Text);
+        Assert.Equal(DocumentOperationKind.ApplyCodeBlockStyle, operations[1].Kind);
+        Assert.Equal(startIndex, operations[1].StartIndex);
+        Assert.Equal(expectedNextIndex, operations[1].EndIndex);
+        Assert.Equal(expectedOperationCount, operations.Count);
+        if (text.Length > 0)
+        {
+            AssertStyle(operations[2], startIndex, expectedNextIndex - 1, InlineTextStyle.Code);
+        }
+    }
+
     private static void AssertStyle(
         DocumentOperation operation,
         int startIndex,

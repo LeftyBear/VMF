@@ -17,6 +17,7 @@ public sealed class GoogleDocsRequestMapperTests
             new(DocumentOperationKind.CreateBullet, 14, 20, listKind: ListKind.Ordered),
             new(DocumentOperationKind.UpdateTextStyle, 1, 4, inlineStyle: InlineTextStyle.Bold),
             new(DocumentOperationKind.UpdateTextStyle, 4, 7, inlineStyle: InlineTextStyle.Italic),
+            new(DocumentOperationKind.UpdateTextStyle, 7, 11, inlineStyle: InlineTextStyle.Code),
             new(
                 DocumentOperationKind.UpdateTextStyle,
                 7,
@@ -28,13 +29,14 @@ public sealed class GoogleDocsRequestMapperTests
                 12,
                 20,
                 tableAlignment: TableAlignment.Right),
+            new(DocumentOperationKind.ApplyCodeBlockStyle, 20, 30),
         ];
 
         var json = new GoogleDocsRequestMapper().MapBatchUpdate(operations);
 
         using var document = JsonDocument.Parse(json);
         var requests = document.RootElement.GetProperty("requests");
-        Assert.Equal(8, requests.GetArrayLength());
+        Assert.Equal(10, requests.GetArrayLength());
         Assert.Equal("Heading\n", requests[0].GetProperty("insertText").GetProperty("text").GetString());
         Assert.Equal(
             "HEADING_1",
@@ -48,16 +50,31 @@ public sealed class GoogleDocsRequestMapperTests
             requests[3].GetProperty("createParagraphBullets").GetProperty("bulletPreset").GetString());
         AssertTextStyle(requests[4], "bold", JsonValueKind.True, "bold");
         AssertTextStyle(requests[5], "italic", JsonValueKind.True, "italic");
-        var linkRequest = requests[6].GetProperty("updateTextStyle");
+        var codeRequest = requests[6].GetProperty("updateTextStyle");
+        Assert.Equal("weightedFontFamily,backgroundColor", codeRequest.GetProperty("fields").GetString());
+        Assert.Equal(
+            "Roboto Mono",
+            codeRequest.GetProperty("textStyle").GetProperty("weightedFontFamily")
+                .GetProperty("fontFamily").GetString());
+        Assert.True(codeRequest.GetProperty("textStyle").TryGetProperty("backgroundColor", out _));
+        var linkRequest = requests[7].GetProperty("updateTextStyle");
         Assert.Equal("link", linkRequest.GetProperty("fields").GetString());
         Assert.Equal(
             "https://example.com/",
             linkRequest.GetProperty("textStyle").GetProperty("link").GetProperty("url").GetString());
-        var alignmentRequest = requests[7].GetProperty("updateParagraphStyle");
+        var alignmentRequest = requests[8].GetProperty("updateParagraphStyle");
         Assert.Equal("alignment", alignmentRequest.GetProperty("fields").GetString());
         Assert.Equal(
             "END",
             alignmentRequest.GetProperty("paragraphStyle").GetProperty("alignment").GetString());
+        var codeBlockRequest = requests[9].GetProperty("updateParagraphStyle");
+        Assert.Equal(
+            "indentStart,indentEnd,spaceAbove,spaceBelow",
+            codeBlockRequest.GetProperty("fields").GetString());
+        Assert.Equal(
+            18,
+            codeBlockRequest.GetProperty("paragraphStyle").GetProperty("indentStart")
+                .GetProperty("magnitude").GetDouble());
     }
 
     private static void AssertTextStyle(

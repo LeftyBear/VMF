@@ -53,6 +53,24 @@ public sealed class InlineContentRendererTests
             range => AssertRange(range, 2, 3, InlineTextStyle.Link, second));
     }
 
+    [Fact]
+    public void Render_PreservesCodeRangesOverlappingOuterStyles()
+    {
+        InlineContent[] content =
+        [
+            new BoldInline([new CodeInline("one")]),
+            new CodeInline("two"),
+        ];
+
+        var rendered = new InlineContentRenderer().Render(content);
+
+        Assert.Equal("onetwo", rendered.Text);
+        Assert.Collection(
+            rendered.StyleRanges,
+            range => AssertRange(range, 0, 3, InlineTextStyle.Bold),
+            range => AssertRange(range, 0, 6, InlineTextStyle.Code));
+    }
+
     private static void AssertRange(
         InlineStyleRange range,
         int start,

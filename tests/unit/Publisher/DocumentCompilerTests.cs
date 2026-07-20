@@ -156,4 +156,22 @@ public sealed class DocumentCompilerTests
         Assert.Equal(2, compiled.Steps.Count);
         Assert.All(compiled.Steps, step => Assert.IsType<InsertTableStep>(step));
     }
+
+    [Fact]
+    public void Compile_RendersCodeBeforeFollowingParagraphWithoutIndexDrift()
+    {
+        var document = new DocumentModel([
+            new DocumentBlock(new CodeBlock("var x = 1;", "csharp")),
+            new DocumentBlock(ParagraphBlock.FromText("After")),
+        ]);
+
+        var compiled = new DocumentCompiler().Compile(document, "Sample");
+
+        Assert.Equal("var x = 1;\n", compiled.Operations[0].Text);
+        Assert.Equal(DocumentOperationKind.ApplyCodeBlockStyle, compiled.Operations[1].Kind);
+        Assert.Equal(1, compiled.Operations[2].StartIndex);
+        Assert.Equal(11, compiled.Operations[2].EndIndex);
+        Assert.Equal(12, compiled.Operations[3].StartIndex);
+        Assert.Equal("After\n", compiled.Operations[3].Text);
+    }
 }

@@ -32,6 +32,10 @@ public sealed class InlineContentRenderer
                     text.Append(plainText.Text);
                     break;
 
+                case CodeInline code:
+                    RenderCode(code, text, ranges);
+                    break;
+
                 case BoldInline bold:
                     RenderStyledContent(bold.Content, InlineTextStyle.Bold, url: null, text, ranges);
                     break;
@@ -49,6 +53,16 @@ public sealed class InlineContentRenderer
                         $"Unsupported inline content: {inline.GetType().Name}");
             }
         }
+    }
+
+    private static void RenderCode(
+        CodeInline code,
+        StringBuilder text,
+        ICollection<InlineStyleRange> ranges)
+    {
+        var start = text.Length;
+        text.Append(code.Text);
+        ranges.Add(new InlineStyleRange(start, text.Length, InlineTextStyle.Code));
     }
 
     private static void RenderStyledContent(

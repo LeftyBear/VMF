@@ -13,6 +13,8 @@ public enum DocumentOperationKind
     UpdateTextStyle,
     /// <summary>Applies a table column's paragraph alignment.</summary>
     UpdateParagraphAlignment,
+    /// <summary>Applies fenced-code paragraph formatting.</summary>
+    ApplyCodeBlockStyle,
 }
 
 /// <summary>Represents one target-neutral document operation.</summary>
