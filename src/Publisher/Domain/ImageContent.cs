@@ -66,6 +66,45 @@ public sealed class ImageSize
     public double HeightPoints { get; }
 }
 
+/// <summary>Contains decoded image metadata.</summary>
+public sealed class ImageMetadata
+{
+    /// <summary>Initializes image metadata.</summary>
+    public ImageMetadata(
+        ImageSource source,
+        int pixelWidth,
+        int pixelHeight,
+        double horizontalDpi,
+        double verticalDpi,
+        string mimeType)
+    {
+        Source = source ?? throw new ArgumentNullException(nameof(source));
+        PixelWidth = pixelWidth;
+        PixelHeight = pixelHeight;
+        HorizontalDpi = horizontalDpi;
+        VerticalDpi = verticalDpi;
+        MimeType = mimeType ?? throw new ArgumentNullException(nameof(mimeType));
+    }
+
+    /// <summary>Gets the final validated source, including any safe redirect target.</summary>
+    public ImageSource Source { get; }
+
+    /// <summary>Gets the pixel width.</summary>
+    public int PixelWidth { get; }
+
+    /// <summary>Gets the pixel height.</summary>
+    public int PixelHeight { get; }
+
+    /// <summary>Gets the horizontal DPI.</summary>
+    public double HorizontalDpi { get; }
+
+    /// <summary>Gets the vertical DPI.</summary>
+    public double VerticalDpi { get; }
+
+    /// <summary>Gets the detected MIME type.</summary>
+    public string MimeType { get; }
+}
+
 /// <summary>Represents one standalone Markdown image.</summary>
 public sealed class ImageBlock
 {
