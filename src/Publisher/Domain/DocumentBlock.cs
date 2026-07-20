@@ -9,6 +9,8 @@ public enum DocumentBlockKind
     Paragraph,
     /// <summary>An unordered list item block.</summary>
     BulletListItem,
+    /// <summary>A contiguous ordered, unordered, or mixed list block.</summary>
+    List,
 }
 
 /// <summary>Represents one block in a document.</summary>
@@ -21,9 +23,25 @@ public sealed class DocumentBlock
     public DocumentBlock(DocumentBlockKind kind, IEnumerable<InlineElement> inlines, int level = 0)
     {
         ArgumentNullException.ThrowIfNull(inlines);
+        if (kind == DocumentBlockKind.List)
+        {
+            throw new ArgumentException(
+                "Use the ListBlock constructor for list document blocks.",
+                nameof(kind));
+        }
+
         Kind = kind;
         Level = level;
         Inlines = Array.AsReadOnly(inlines.ToArray());
+    }
+
+    /// <summary>Initializes a list document block.</summary>
+    /// <param name="list">The list content.</param>
+    public DocumentBlock(ListBlock list)
+    {
+        List = list ?? throw new ArgumentNullException(nameof(list));
+        Kind = DocumentBlockKind.List;
+        Inlines = Array.Empty<InlineElement>();
     }
 
     /// <summary>Gets the block kind.</summary>
@@ -34,4 +52,7 @@ public sealed class DocumentBlock
 
     /// <summary>Gets the inline content.</summary>
     public IReadOnlyList<InlineElement> Inlines { get; }
+
+    /// <summary>Gets the list content when <see cref="Kind"/> is <see cref="DocumentBlockKind.List"/>.</summary>
+    public ListBlock? List { get; }
 }
