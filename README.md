@@ -175,8 +175,9 @@ Publish `samples/publisher-poc.md`, open the returned Document URL, and confirm:
 Live verification evidence is recorded here after execution. Current status:
 **Verified on 2026-07-20 through Google Drive and Docs API publication plus Docs
 API readback of list presets, paragraph indentation, and the post-list paragraph.
-Phase 2-2 inline TextStyle publication/readback is pending local OAuth or service
-account configuration.**
+Phase 2-2 inline TextStyle publication/readback and Google Docs visual comparison
+are complete. See the
+[Publisher v1.0 Implementation Voyage Log](docs/development/Publisher_v1.0_Implementation_Voyage_Log.md).**
 
 ### PoC scope
 
