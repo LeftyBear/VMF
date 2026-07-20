@@ -19,6 +19,7 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
                 DocumentOperationKind.InsertText => MapInsertText(operation),
                 DocumentOperationKind.ApplyHeading => MapHeading(operation),
                 DocumentOperationKind.CreateBullet => MapBullet(operation),
+                DocumentOperationKind.UpdateTextStyle => MapTextStyle(operation),
                 _ => throw new InvalidOperationException($"Unsupported operation: {operation.Kind}"),
             });
         }
@@ -80,6 +81,47 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
                     ListKind.Unordered or null => "BULLET_DISC_CIRCLE_SQUARE",
                     _ => throw new InvalidOperationException($"Unsupported list kind: {operation.ListKind}"),
                 },
+            },
+        };
+    }
+
+    private static object MapTextStyle(DocumentOperation operation)
+    {
+        if (operation.EndIndex is null || operation.InlineStyle is null)
+        {
+            throw new InvalidOperationException("UpdateTextStyle requires a range and inline style.");
+        }
+
+        var textStyle = operation.InlineStyle switch
+        {
+            InlineTextStyle.Bold => (object)new { bold = true },
+            InlineTextStyle.Italic => new { italic = true },
+            InlineTextStyle.Link when operation.Url is not null => new
+            {
+                link = new { url = operation.Url.AbsoluteUri },
+            },
+            InlineTextStyle.Link => throw new InvalidOperationException(
+                "A link text style requires a URL."),
+            _ => throw new InvalidOperationException(
+                $"Unsupported inline text style: {operation.InlineStyle}"),
+        };
+
+        var fields = operation.InlineStyle switch
+        {
+            InlineTextStyle.Bold => "bold",
+            InlineTextStyle.Italic => "italic",
+            InlineTextStyle.Link => "link",
+            _ => throw new InvalidOperationException(
+                $"Unsupported inline text style: {operation.InlineStyle}"),
+        };
+
+        return new
+        {
+            updateTextStyle = new
+            {
+                range = new { startIndex = operation.StartIndex, endIndex = operation.EndIndex.Value },
+                textStyle,
+                fields,
             },
         };
     }
