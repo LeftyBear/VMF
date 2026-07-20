@@ -4,9 +4,24 @@ using Vmf.Publisher.Domain;
 
 namespace Vmf.Publisher.Infrastructure;
 
-/// <summary>Parses the PoC subset of Markdown: headings, paragraphs, and unordered lists.</summary>
+/// <summary>Parses headings, paragraphs, and ordered, unordered, or mixed lists.</summary>
 public sealed partial class SimpleMarkdownParser : IMarkdownParser
 {
+    private readonly MarkdownListParser _listParser;
+
+    /// <summary>Initializes a parser with the default block parsers.</summary>
+    public SimpleMarkdownParser()
+        : this(new MarkdownListParser())
+    {
+    }
+
+    /// <summary>Initializes a parser with an explicitly registered list parser.</summary>
+    /// <param name="listParser">The Markdown list parser.</param>
+    public SimpleMarkdownParser(MarkdownListParser listParser)
+    {
+        _listParser = listParser ?? throw new ArgumentNullException(nameof(listParser));
+    }
+
     /// <inheritdoc />
     public DocumentModel Parse(string markdown)
     {
@@ -17,6 +32,7 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
         var lines = normalized.Split('\n');
         var blocks = new List<DocumentBlock>();
         var paragraph = new List<string>();
+        var listItems = new List<ListItem>();
 
         void FlushParagraph()
         {
@@ -29,11 +45,33 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
             paragraph.Clear();
         }
 
+        void FlushList()
+        {
+            if (listItems.Count == 0)
+            {
+                return;
+            }
+
+            blocks.Add(new DocumentBlock(new ListBlock(listItems)));
+            listItems.Clear();
+        }
+
         foreach (var line in lines)
         {
             if (string.IsNullOrWhiteSpace(line))
             {
                 FlushParagraph();
+                FlushList();
+                continue;
+            }
+
+            var listItem = _listParser.ParseLine(
+                line,
+                listItems.Count == 0 ? null : listItems[^1].Depth);
+            if (listItem is not null)
+            {
+                FlushParagraph();
+                listItems.Add(listItem);
                 continue;
             }
 
@@ -41,6 +79,7 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
             if (headingMatch.Success)
             {
                 FlushParagraph();
+                FlushList();
                 blocks.Add(new DocumentBlock(
                     DocumentBlockKind.Heading,
                     [new InlineElement(InlineElementKind.Text, headingMatch.Groups[2].Value.Trim())],
@@ -48,18 +87,12 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
                 continue;
             }
 
-            var bulletMatch = BulletPattern().Match(line);
-            if (bulletMatch.Success)
-            {
-                FlushParagraph();
-                blocks.Add(CreateBlock(DocumentBlockKind.BulletListItem, bulletMatch.Groups[1].Value.Trim()));
-                continue;
-            }
-
+            FlushList();
             paragraph.Add(line.Trim());
         }
 
         FlushParagraph();
+        FlushList();
         return new DocumentModel(blocks);
     }
 
@@ -68,7 +101,4 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
 
     [GeneratedRegex("^(#{1,6})[ \\t]+(.+?)\\s*$", RegexOptions.CultureInvariant)]
     private static partial Regex HeadingPattern();
-
-    [GeneratedRegex("^[ \\t]{0,3}[-+*][ \\t]+(.+?)\\s*$", RegexOptions.CultureInvariant)]
-    private static partial Regex BulletPattern();
 }
