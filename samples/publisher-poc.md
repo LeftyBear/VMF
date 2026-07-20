@@ -80,6 +80,21 @@ Console.WriteLine(text);
 
 After quote.
 
+## Image publishing verification
+
+The paragraph before the local image verifies that the ordinary batch is closed
+before local-image hosting and insertion.
+
+![Local Publisher pipeline sample](images/publisher-image-sample.png)
+
+This paragraph follows the local image and verifies that its position comes from
+the image paragraph EndIndex returned by Google Docs.
+
+![Remote Markdown sample](https://raw.githubusercontent.com/github/explore/main/topics/markdown/markdown.png)
+
+This paragraph follows the remote image and verifies that redirect-safe remote
+metadata inspection and the image paragraph EndIndex preserve subsequent text.
+
 Malformed constructs remain literal text: **unclosed bold, [](https://example.com),
 and [invalid URL](relative/path). Empty inline code `` and `unclosed inline code
 remain ordinary text without terminating publication.

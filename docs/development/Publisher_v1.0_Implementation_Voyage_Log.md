@@ -300,3 +300,57 @@ quote.` returned to the normal paragraph position and style.
 
 No credential contents, access tokens, refresh tokens, or client secrets were
 captured in this record.
+
+## Phase 2-5: Markdown Image Implementation and Verification
+
+| Field | Value |
+|---|---|
+| Date | 2026-07-20 |
+| Implementation status | COMPLETE |
+| Automated verification | PASS |
+| Live Google Docs publication | PENDING explicit approval for external sample/image upload |
+| Source | `samples/publisher-poc.md` and `samples/images/publisher-image-sample.png` |
+
+### Implemented behavior
+
+Standalone Markdown image lines now compile to isolated image publish steps.
+Inline images and image-looking lines with trailing content remain ordinary
+paragraphs. Empty Alt Text and escaped `\]` are accepted.
+
+Local paths are normalized relative to the Markdown file and restricted to PNG,
+JPEG, and GIF with matching extensions and signatures. Remote sources require
+absolute HTTP(S) URIs without credentials. Host names, every DNS result, and
+each manual redirect target are checked to reject localhost, loopback, private,
+link-local, and unique-local destinations.
+
+Metadata inspection reads pixel dimensions, DPI, and MIME type, defaulting to
+96 DPI. Output is capped at 450 pt, retains pixel aspect ratio, and is not
+enlarged by default. Local images use a short-lived Drive file with a generated
+`publisher-temp-{guid}` name, SHA-256 appProperty, and `anyone/reader` permission
+only through insertion/readback. Cleanup runs in `finally`; cleanup failure is
+logged without hiding an earlier exception.
+
+Google Docs insertion requests specify calculated width/height and START
+paragraph alignment. Each insertion is read back to verify its
+`InlineObjectElement`, `InlineObjectId`, and actual size. The containing image
+paragraph's returned `EndIndex`, rather than inferred structural length, becomes
+the following insertion index. Alt Text remains in the publish model and emits
+`IMAGE_ALT_TEXT_UPDATE_FAILED` as a warning because
+`InsertInlineImageRequest` exposes no Title or Description update field.
+
+### Automated evidence
+
+| Check | Result |
+|---|---|
+| Release solution build | PASS - 0 warnings, 0 errors |
+| Publisher Unit Tests | PASS - 132/132 |
+| Publisher Integration Tests | PASS - 6/6 |
+| Image-focused Unit Tests | PASS - 33/33 |
+| `dotnet format --verify-no-changes` | PASS |
+| `git diff --check` | PASS |
+
+The attempted live publication was stopped by the execution safety review
+before any external write occurred. It requires explicit approval acknowledging
+that the checked-in PoC Markdown and sample PNG will be sent to Google and that
+the PNG will briefly receive public `anyone/reader` access. Google Docs API
+readback and Chrome visual verification remain pending until that approval.

@@ -128,8 +128,17 @@ $env:VMF_PUBLISHER_AUTHENTICATION_MODE = 'OAuthDesktop'
 $env:VMF_PUBLISHER_CREDENTIALS_PATH = 'C:\Secrets\vmf-publisher-oauth-client.json'
 $env:VMF_PUBLISHER_TOKEN_STORE_PATH = 'C:\Secrets\vmf-publisher-token-store'
 $env:VMF_PUBLISHER_FOLDER_ID = 'YOUR_MY_DRIVE_FOLDER_ID'
+$env:VMF_PUBLISHER_TEMPORARY_IMAGE_FOLDER_ID = 'YOUR_TEMPORARY_IMAGE_FOLDER_ID'
+$env:VMF_PUBLISHER_ALLOW_TEMPORARY_PUBLIC_IMAGE_HOSTING = 'true'
 dotnet run --project src/Publisher.Cli -- publish samples/publisher-poc.md
 ```
+
+Local PNG, JPEG, and GIF images are resolved relative to the Markdown file. They
+are uploaded to `GoogleApi:TemporaryImageFolderId`, made public only while the
+Docs insertion and readback complete, and then deleted in `finally`. Keep
+`Publisher:AllowTemporaryPublicImageHosting=false` unless this temporary public
+flow is explicitly acceptable. Images are capped at 450 pt by default, preserve
+their pixel aspect ratio, and are not enlarged.
 
 ### Service-account compatibility
 
@@ -189,6 +198,11 @@ Publish `samples/publisher-poc.md`, open the returned Document URL, and confirm:
   and whole-quote italics while preserving nested inline styles;
 - empty quote lines remain present, excess quote depth normalizes to level 6,
   and the paragraph after a quote has no quote indentation or italic leakage.
+- the local PNG sample is temporarily hosted, inserted at no more than 450 pt,
+  preserves its aspect ratio, and leaves no temporary Drive file;
+- the remote HTTPS PNG is inserted after DNS and redirect validation;
+- each image is START-aligned in its own paragraph and the following paragraph
+  begins at the containing image paragraph's API-returned `EndIndex`.
 
 Live verification evidence is recorded here after execution. Current status:
 **Verified on 2026-07-20 through Google Drive and Docs API publication plus Docs
@@ -200,7 +214,9 @@ Google Docs visual comparison are complete. See the
 
 ### PoC scope
 
-Not implemented in v0.1: images, footnotes, and embedded HTML.
+Not implemented in v0.1: footnotes and embedded HTML. Image Alt Text is retained
+in the publish model and logged as not reflected because the Google Docs
+`InsertInlineImageRequest` API does not expose Title or Description fields.
 
 The current official VMF Studio release artifact is:
 
