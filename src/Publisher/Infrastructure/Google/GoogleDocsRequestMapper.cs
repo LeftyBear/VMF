@@ -20,6 +20,7 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
                 DocumentOperationKind.ApplyHeading => MapHeading(operation),
                 DocumentOperationKind.CreateBullet => MapBullet(operation),
                 DocumentOperationKind.UpdateTextStyle => MapTextStyle(operation),
+                DocumentOperationKind.UpdateParagraphAlignment => MapParagraphAlignment(operation),
                 _ => throw new InvalidOperationException($"Unsupported operation: {operation.Kind}"),
             });
         }
@@ -122,6 +123,35 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
                 range = new { startIndex = operation.StartIndex, endIndex = operation.EndIndex.Value },
                 textStyle,
                 fields,
+            },
+        };
+    }
+
+    private static object MapParagraphAlignment(DocumentOperation operation)
+    {
+        if (operation.EndIndex is null || operation.TableAlignment is null)
+        {
+            throw new InvalidOperationException(
+                "UpdateParagraphAlignment requires a range and table alignment.");
+        }
+
+        return new
+        {
+            updateParagraphStyle = new
+            {
+                range = new { startIndex = operation.StartIndex, endIndex = operation.EndIndex.Value },
+                paragraphStyle = new
+                {
+                    alignment = operation.TableAlignment switch
+                    {
+                        TableAlignment.Left => "START",
+                        TableAlignment.Center => "CENTER",
+                        TableAlignment.Right => "END",
+                        _ => throw new InvalidOperationException(
+                            $"Unsupported table alignment: {operation.TableAlignment}"),
+                    },
+                },
+                fields = "alignment",
             },
         };
     }

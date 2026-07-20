@@ -61,6 +61,10 @@ public sealed class PublishService : IPublishService
         {
             return PublishResult.Failure(new PublishError("PUBLISH_FILE_NOT_FOUND", exception.Message));
         }
+        catch (PublishPipelineException exception)
+        {
+            return PublishResult.Failure(new PublishError(exception.Code, exception.Message));
+        }
         catch (Exception exception)
         {
             return PublishResult.Failure(new PublishError("PUBLISH_FAILED", exception.Message));

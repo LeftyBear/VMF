@@ -62,7 +62,6 @@ internal static class CliApplication
         var credentialProvider = GoogleCredentialProviderFactory.Create(options, httpClient);
         var requestMapper = new GoogleDocsRequestMapper();
         var serviceFactory = new GoogleServiceFactory(credentialProvider, requestMapper, httpClient);
-        var googlePublisher = new GoogleDocsPublisher(serviceFactory, options);
         var inlineParser = new MarkdownInlineParser(new MarkdownInlineParserOptions
         {
             MaxInlineDepth = MarkdownInlineParserOptions.DefaultMaxInlineDepth,
@@ -72,17 +71,23 @@ internal static class CliApplication
             ListIndentSize = MarkdownListParserOptions.DefaultListIndentSize,
             MaxListDepth = MarkdownListParserOptions.DefaultMaxListDepth,
         }, inlineParser);
+        var markdownTableParser = new MarkdownTableParser(inlineParser);
         var inlineRenderer = new InlineContentRenderer();
         var paragraphBlockRenderer = new ParagraphBlockRenderer(inlineRenderer);
         var headingBlockRenderer = new HeadingBlockRenderer(inlineRenderer);
         var listBlockRenderer = new ListBlockRenderer(inlineRenderer);
+        IGeneratedBlockRenderer generatedBlockRenderer = new GeneratedBlockRenderer(
+            paragraphBlockRenderer,
+            headingBlockRenderer,
+            listBlockRenderer);
+        IPublishPlanExecutor publishPlanExecutor = new PublishPlanExecutor(
+            serviceFactory.CreateDocsClient(),
+            inlineRenderer);
+        var googlePublisher = new GoogleDocsPublisher(serviceFactory, options, publishPlanExecutor);
         IPublishService publishService = new PublishService(
             new MarkdownFileDocumentLoader(),
-            new SimpleMarkdownParser(markdownListParser, inlineParser),
-            new DocumentCompiler(
-                paragraphBlockRenderer,
-                headingBlockRenderer,
-                listBlockRenderer),
+            new SimpleMarkdownParser(markdownListParser, markdownTableParser, inlineParser),
+            new DocumentCompiler(generatedBlockRenderer),
             googlePublisher);
 
         try

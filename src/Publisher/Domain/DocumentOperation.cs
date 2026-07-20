@@ -11,6 +11,8 @@ public enum DocumentOperationKind
     CreateBullet,
     /// <summary>Applies an inline text style.</summary>
     UpdateTextStyle,
+    /// <summary>Applies a table column's paragraph alignment.</summary>
+    UpdateParagraphAlignment,
 }
 
 /// <summary>Represents one target-neutral document operation.</summary>
@@ -25,6 +27,7 @@ public sealed class DocumentOperation
     /// <param name="listKind">The marker kind used by a list operation.</param>
     /// <param name="inlineStyle">The style used by a text style operation.</param>
     /// <param name="url">The URL used by a link text style operation.</param>
+    /// <param name="tableAlignment">The alignment used by a table-cell paragraph operation.</param>
     public DocumentOperation(
         DocumentOperationKind kind,
         int startIndex,
@@ -33,7 +36,8 @@ public sealed class DocumentOperation
         int? level = null,
         ListKind? listKind = null,
         InlineTextStyle? inlineStyle = null,
-        Uri? url = null)
+        Uri? url = null,
+        TableAlignment? tableAlignment = null)
     {
         Kind = kind;
         StartIndex = startIndex;
@@ -43,6 +47,7 @@ public sealed class DocumentOperation
         ListKind = listKind;
         InlineStyle = inlineStyle;
         Url = url;
+        TableAlignment = tableAlignment;
     }
 
     /// <summary>Gets the operation kind.</summary>
@@ -68,4 +73,7 @@ public sealed class DocumentOperation
 
     /// <summary>Gets the URL used by a link text style operation.</summary>
     public Uri? Url { get; }
+
+    /// <summary>Gets the paragraph alignment used by a table cell.</summary>
+    public TableAlignment? TableAlignment { get; }
 }

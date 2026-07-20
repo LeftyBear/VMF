@@ -7,15 +7,33 @@ namespace Vmf.Publisher.Infrastructure.Google;
 public sealed class GoogleDocsPublisher : IGoogleDocsPublisher
 {
     private readonly IGoogleServiceFactory serviceFactory;
+    private readonly IPublishPlanExecutor planExecutor;
     private readonly GooglePublisherOptions options;
 
     /// <summary>Initializes the Google Docs publisher.</summary>
     /// <param name="serviceFactory">The Google service factory.</param>
     /// <param name="options">Google publisher settings.</param>
     public GoogleDocsPublisher(IGoogleServiceFactory serviceFactory, GooglePublisherOptions options)
+        : this(
+            serviceFactory,
+            options,
+            new PublishPlanExecutor(
+                (serviceFactory ?? throw new ArgumentNullException(nameof(serviceFactory))).CreateDocsClient()))
+    {
+    }
+
+    /// <summary>Initializes the Google Docs publisher with an explicit plan executor.</summary>
+    /// <param name="serviceFactory">The Google service factory.</param>
+    /// <param name="options">Google publisher settings.</param>
+    /// <param name="planExecutor">The publish-plan executor.</param>
+    public GoogleDocsPublisher(
+        IGoogleServiceFactory serviceFactory,
+        GooglePublisherOptions options,
+        IPublishPlanExecutor planExecutor)
     {
         this.serviceFactory = serviceFactory ?? throw new ArgumentNullException(nameof(serviceFactory));
         this.options = options ?? throw new ArgumentNullException(nameof(options));
+        this.planExecutor = planExecutor ?? throw new ArgumentNullException(nameof(planExecutor));
     }
 
     /// <inheritdoc />
@@ -31,14 +49,13 @@ public sealed class GoogleDocsPublisher : IGoogleDocsPublisher
         }
 
         var driveClient = serviceFactory.CreateDriveClient();
-        var docsClient = serviceFactory.CreateDocsClient();
         var driveFile = await driveClient.CreateDocumentAsync(
             document.Title,
             options.FolderId,
             cancellationToken).ConfigureAwait(false);
-        await docsClient.ApplyOperationsAsync(
+        await planExecutor.ExecuteAsync(
             driveFile.Id,
-            document.Operations,
+            document.Steps,
             cancellationToken).ConfigureAwait(false);
         return new PublishedDocument(driveFile.Id, driveFile.WebViewLink);
     }

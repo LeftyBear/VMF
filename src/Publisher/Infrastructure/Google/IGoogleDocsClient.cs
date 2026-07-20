@@ -14,4 +14,17 @@ public interface IGoogleDocsClient
         string documentId,
         IReadOnlyList<DocumentOperation> operations,
         CancellationToken cancellationToken);
+
+    /// <summary>Inserts an empty table at an exact document index.</summary>
+    Task InsertTableAsync(
+        string documentId,
+        int rows,
+        int columns,
+        int index,
+        CancellationToken cancellationToken);
+
+    /// <summary>Reads the current document table structure.</summary>
+    Task<GoogleDocumentSnapshot> GetDocumentAsync(
+        string documentId,
+        CancellationToken cancellationToken);
 }
