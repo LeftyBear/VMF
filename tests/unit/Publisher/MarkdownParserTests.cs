@@ -92,4 +92,41 @@ public sealed class MarkdownParserTests
         var link = Assert.IsType<LinkInline>(document.Blocks[2].List?.Items[0].Content[0]);
         Assert.IsType<BoldInline>(link.Content[0]);
     }
+
+    [Fact]
+    public void Parse_UsesCodeTableHeadingListQuoteParagraphBlockOrder()
+    {
+        const string markdown =
+            "```csharp\n# literal\n```\n" +
+            "\n| H |\n| --- |\n| C |\n" +
+            "\n# Heading\n- List\n> Quote\nAfter\n";
+
+        var document = new SimpleMarkdownParser().Parse(markdown);
+
+        Assert.Equal(
+            [
+                DocumentBlockKind.Code,
+                DocumentBlockKind.Table,
+                DocumentBlockKind.Heading,
+                DocumentBlockKind.List,
+                DocumentBlockKind.Quote,
+                DocumentBlockKind.Paragraph,
+            ],
+            document.Blocks.Select(block => block.Kind));
+        Assert.Equal("csharp", document.Blocks[0].Code?.Language);
+        Assert.Equal("# literal", document.Blocks[0].Code?.Text);
+        Assert.Equal("Quote", document.Blocks[4].Inlines[0].Text);
+        Assert.Equal("After", document.Blocks[5].Inlines[0].Text);
+    }
+
+    [Fact]
+    public void Parse_SplitsQuoteBlocksWhenNormalizedLevelChanges()
+    {
+        var document = new SimpleMarkdownParser().Parse(
+            "> One\n> Two\n>> Nested\n>>>>>>>> Deep\n>>>>>>> Still deep\n> Tail\n");
+
+        Assert.Equal([1, 2, 6, 1], document.Blocks.Select(block => block.Quote?.Level));
+        Assert.Equal("One\nTwo", string.Concat(document.Blocks[0].Inlines.Select(item => item.Text)));
+        Assert.Equal("Deep\nStill deep", string.Concat(document.Blocks[2].Inlines.Select(item => item.Text)));
+    }
 }
