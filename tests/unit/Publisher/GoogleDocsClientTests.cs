@@ -40,6 +40,7 @@ public sealed class GoogleDocsClientTests
         const string json =
             "{\"body\":{\"content\":[{\"startIndex\":1,\"endIndex\":8," +
             "\"table\":{\"tableRows\":[{\"tableCells\":[{" +
+            "\"startIndex\":2,\"endIndex\":5," +
             "\"content\":[{\"startIndex\":3,\"endIndex\":4,\"paragraph\":{}}]}]}]}}]}}";
         var handler = new SequenceHandler(new HttpResponseMessage(HttpStatusCode.OK)
         {

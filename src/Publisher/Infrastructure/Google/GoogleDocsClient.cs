@@ -178,8 +178,8 @@ public sealed class GoogleDocsClient : IGoogleDocsClient
                         foreach (var cell in tableCells.EnumerateArray())
                         {
                             cells.Add(new GoogleTableCellSnapshot(
-                                ReadIndex(cell, "startIndex", useFirstContentElement: true),
-                                ReadIndex(cell, "endIndex", useFirstContentElement: false)));
+                                ReadContentIndex(cell, "startIndex", useFirstContentElement: true),
+                                ReadContentIndex(cell, "endIndex", useFirstContentElement: false)));
                         }
                     }
 
@@ -196,15 +196,14 @@ public sealed class GoogleDocsClient : IGoogleDocsClient
         return new GoogleDocumentSnapshot(tables);
     }
 
-    private static int? ReadIndex(
+    private static int? ReadContentIndex(
         JsonElement cell,
         string propertyName,
         bool useFirstContentElement)
     {
-        var direct = ReadNullableInt(cell, propertyName);
-        if (direct is not null || !cell.TryGetProperty("content", out var content))
+        if (!cell.TryGetProperty("content", out var content))
         {
-            return direct;
+            return null;
         }
 
         var elements = content.EnumerateArray();
