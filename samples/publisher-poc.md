@@ -26,5 +26,26 @@ ___underscore bold italic__ syntax. Escaped markers remain plain characters:
 This **styled paragraph follows the list** and verifies that its position and
 inline ranges are preserved after leading list tabs are removed.
 
+## Markdown table verification
+
+The paragraph before this table verifies that the preceding ordinary batch is
+closed before table insertion.
+
+| Name                            | Status |   Note |
+| ------------------------------- | :----: | -----: |
+| **Publisher**                   | Active | *v1.0* |
+| [Renderer](https://example.com) |  Ready |   100% |
+| Empty                           |        |  Right |
+
+This **styled paragraph follows the table** and verifies that its position is
+derived from the table EndIndex returned by Google Docs.
+
+The following table omits its outer pipes:
+
+Name | Status | Note
+--- | :---: | ---:
+Parser | Ready | Right
+Escaped pipe | A \| B | Safe
+
 Malformed constructs remain literal text: **unclosed bold, [](https://example.com),
 and [invalid URL](relative/path).
