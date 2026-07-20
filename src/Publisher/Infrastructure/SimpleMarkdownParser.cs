@@ -11,6 +11,7 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
     private readonly MarkdownTableParser tableParser;
     private readonly MarkdownCodeBlockParser codeBlockParser;
     private readonly MarkdownQuoteParser quoteParser;
+    private readonly MarkdownImageParser imageParser;
     private readonly IMarkdownInlineParser inlineParser;
 
     /// <summary>Initializes a parser with the default block parsers.</summary>
@@ -27,6 +28,7 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
             new MarkdownListParser(new MarkdownListParserOptions(), inlineParser),
             new MarkdownTableParser(inlineParser),
             new MarkdownQuoteParser(inlineParser),
+            new MarkdownImageParser(),
             inlineParser)
     {
     }
@@ -61,6 +63,7 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
             listParser,
             tableParser,
             new MarkdownQuoteParser(inlineParser),
+            new MarkdownImageParser(),
             inlineParser)
     {
     }
@@ -77,12 +80,37 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
         MarkdownTableParser tableParser,
         MarkdownQuoteParser quoteParser,
         IMarkdownInlineParser inlineParser)
+        : this(
+            codeBlockParser,
+            listParser,
+            tableParser,
+            quoteParser,
+            new MarkdownImageParser(),
+            inlineParser)
+    {
+    }
+
+    /// <summary>Initializes a parser with explicitly registered block and inline parsers.</summary>
+    /// <param name="codeBlockParser">The fenced code-block parser.</param>
+    /// <param name="listParser">The Markdown list parser.</param>
+    /// <param name="tableParser">The Markdown table parser.</param>
+    /// <param name="quoteParser">The Markdown quote parser.</param>
+    /// <param name="imageParser">The standalone image parser.</param>
+    /// <param name="inlineParser">The Markdown inline parser.</param>
+    public SimpleMarkdownParser(
+        MarkdownCodeBlockParser codeBlockParser,
+        MarkdownListParser listParser,
+        MarkdownTableParser tableParser,
+        MarkdownQuoteParser quoteParser,
+        MarkdownImageParser imageParser,
+        IMarkdownInlineParser inlineParser)
     {
         this.codeBlockParser = codeBlockParser
             ?? throw new ArgumentNullException(nameof(codeBlockParser));
         _listParser = listParser ?? throw new ArgumentNullException(nameof(listParser));
         this.tableParser = tableParser ?? throw new ArgumentNullException(nameof(tableParser));
         this.quoteParser = quoteParser ?? throw new ArgumentNullException(nameof(quoteParser));
+        this.imageParser = imageParser ?? throw new ArgumentNullException(nameof(imageParser));
         this.inlineParser = inlineParser ?? throw new ArgumentNullException(nameof(inlineParser));
     }
 
@@ -148,6 +176,15 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
                 blocks.Add(new DocumentBlock(
                     table ?? throw new InvalidOperationException("A parsed table requires table content.")));
                 lineIndex += consumedLines - 1;
+                continue;
+            }
+
+            if (imageParser.TryParse(line, out var image))
+            {
+                FlushParagraph();
+                FlushList();
+                blocks.Add(new DocumentBlock(
+                    image ?? throw new InvalidOperationException("A parsed image requires image content.")));
                 continue;
             }
 

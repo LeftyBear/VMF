@@ -17,6 +17,8 @@ public enum DocumentBlockKind
     Code,
     /// <summary>A block quote.</summary>
     Quote,
+    /// <summary>A standalone image.</summary>
+    Image,
 }
 
 /// <summary>Represents a fenced code block.</summary>
@@ -128,7 +130,7 @@ public sealed class DocumentBlock
     public DocumentBlock(DocumentBlockKind kind, IEnumerable<InlineContent> content, int level = 0)
     {
         if (kind is DocumentBlockKind.List or DocumentBlockKind.Table or
-            DocumentBlockKind.Code or DocumentBlockKind.Quote)
+            DocumentBlockKind.Code or DocumentBlockKind.Quote or DocumentBlockKind.Image)
         {
             throw new ArgumentException(
                 "Use the strongly typed constructor for structured document blocks.",
@@ -205,6 +207,15 @@ public sealed class DocumentBlock
         Content = quote.Content;
     }
 
+    /// <summary>Initializes an image document block.</summary>
+    /// <param name="image">The image content.</param>
+    public DocumentBlock(ImageBlock image)
+    {
+        Image = image ?? throw new ArgumentNullException(nameof(image));
+        Kind = DocumentBlockKind.Image;
+        Content = Array.Empty<InlineContent>();
+    }
+
     /// <summary>Gets the block kind.</summary>
     public DocumentBlockKind Kind { get; }
 
@@ -228,4 +239,7 @@ public sealed class DocumentBlock
 
     /// <summary>Gets the quote content when <see cref="Kind"/> is <see cref="DocumentBlockKind.Quote"/>.</summary>
     public QuoteBlock? Quote { get; }
+
+    /// <summary>Gets the image content when <see cref="Kind"/> is <see cref="DocumentBlockKind.Image"/>.</summary>
+    public ImageBlock? Image { get; }
 }
