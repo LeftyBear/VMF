@@ -6,6 +6,21 @@ namespace Vmf.Publisher.Infrastructure;
 /// <summary>Compiles supported document blocks into Google-Docs-compatible neutral operations.</summary>
 public sealed class DocumentCompiler : IDocumentCompiler
 {
+    private readonly ListBlockRenderer _listBlockRenderer;
+
+    /// <summary>Initializes a compiler with the default block renderers.</summary>
+    public DocumentCompiler()
+        : this(new ListBlockRenderer())
+    {
+    }
+
+    /// <summary>Initializes a compiler with an explicitly registered list renderer.</summary>
+    /// <param name="listBlockRenderer">The list block renderer.</param>
+    public DocumentCompiler(ListBlockRenderer listBlockRenderer)
+    {
+        _listBlockRenderer = listBlockRenderer ?? throw new ArgumentNullException(nameof(listBlockRenderer));
+    }
+
     /// <inheritdoc />
     public CompiledDocument Compile(DocumentModel document, string title)
     {
@@ -17,6 +32,15 @@ public sealed class DocumentCompiler : IDocumentCompiler
 
         foreach (var block in document.Blocks)
         {
+            if (block.Kind == DocumentBlockKind.List)
+            {
+                index = _listBlockRenderer.Render(
+                    block.List ?? throw new InvalidOperationException("A list block requires list content."),
+                    index,
+                    operations);
+                continue;
+            }
+
             var text = string.Concat(block.Inlines.Select(element => element.Text)) + "\n";
             var start = index;
             var end = start + text.Length;

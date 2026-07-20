@@ -74,7 +74,12 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
             createParagraphBullets = new
             {
                 range = new { startIndex = operation.StartIndex, endIndex = operation.EndIndex.Value },
-                bulletPreset = "BULLET_DISC_CIRCLE_SQUARE",
+                bulletPreset = operation.ListKind switch
+                {
+                    ListKind.Ordered => "NUMBERED_DECIMAL_ALPHA_ROMAN",
+                    ListKind.Unordered or null => "BULLET_DISC_CIRCLE_SQUARE",
+                    _ => throw new InvalidOperationException($"Unsupported list kind: {operation.ListKind}"),
+                },
             },
         };
     }
