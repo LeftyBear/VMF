@@ -1,9 +1,15 @@
 {
+  "Publisher": {
+    "AllowTemporaryPublicImageHosting": false,
+    "ImageMaxWidthPoints": 450,
+    "AllowImageUpscale": false
+  },
   "GoogleApi": {
     "ApplicationName": "VMF Studio Publisher PoC",
     "AuthenticationMode": "OAuthDesktop",
     "CredentialsPath": "C:\\Secrets\\vmf-publisher-oauth-client.json",
     "TokenStorePath": "C:\\Secrets\\vmf-publisher-token-store",
-    "FolderId": "YOUR_MY_DRIVE_FOLDER_ID"
+    "FolderId": "YOUR_MY_DRIVE_FOLDER_ID",
+    "TemporaryImageFolderId": "YOUR_TEMPORARY_IMAGE_FOLDER_ID"
   }
 }

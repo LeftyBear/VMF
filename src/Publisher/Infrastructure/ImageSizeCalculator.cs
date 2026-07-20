@@ -4,7 +4,7 @@ using Vmf.Publisher.Domain;
 namespace Vmf.Publisher.Infrastructure;
 
 /// <summary>Calculates a Docs image size while preserving pixel aspect ratio.</summary>
-public sealed class ImageSizeCalculator
+public sealed class ImageSizeCalculator : IImageSizeCalculator
 {
     private readonly PublisherOptions options;
 

@@ -121,8 +121,9 @@ public sealed class ImageMetadataReader : IImageMetadataReader
     {
         for (var attempt = 1; attempt <= MaxAttempts; attempt++)
         {
+            using var request = new HttpRequestMessage(HttpMethod.Get, uri);
             var response = await httpClient.SendAsync(
-                new HttpRequestMessage(HttpMethod.Get, uri),
+                request,
                 HttpCompletionOption.ResponseHeadersRead,
                 cancellationToken).ConfigureAwait(false);
             if (!IsRetryable(response.StatusCode) || attempt == MaxAttempts)

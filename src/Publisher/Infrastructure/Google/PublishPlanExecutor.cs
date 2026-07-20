@@ -8,11 +8,13 @@ public sealed class PublishPlanExecutor : IPublishPlanExecutor
 {
     private readonly IGoogleDocsClient docsClient;
     private readonly InlineContentRenderer inlineRenderer;
+    private readonly ITemporaryImageHost? temporaryImageHost;
+    private readonly IPublisherLogger logger;
 
     /// <summary>Initializes a publish-plan executor.</summary>
     /// <param name="docsClient">The Google Docs client.</param>
     public PublishPlanExecutor(IGoogleDocsClient docsClient)
-        : this(docsClient, new InlineContentRenderer())
+        : this(docsClient, new InlineContentRenderer(), null, null)
     {
     }
 
@@ -22,9 +24,21 @@ public sealed class PublishPlanExecutor : IPublishPlanExecutor
     public PublishPlanExecutor(
         IGoogleDocsClient docsClient,
         InlineContentRenderer inlineRenderer)
+        : this(docsClient, inlineRenderer, null, null)
+    {
+    }
+
+    /// <summary>Initializes a publish-plan executor with image services.</summary>
+    public PublishPlanExecutor(
+        IGoogleDocsClient docsClient,
+        InlineContentRenderer inlineRenderer,
+        ITemporaryImageHost? temporaryImageHost,
+        IPublisherLogger? logger)
     {
         this.docsClient = docsClient ?? throw new ArgumentNullException(nameof(docsClient));
         this.inlineRenderer = inlineRenderer ?? throw new ArgumentNullException(nameof(inlineRenderer));
+        this.temporaryImageHost = temporaryImageHost;
+        this.logger = logger ?? new NullPublisherLogger();
     }
 
     /// <inheritdoc />
@@ -58,12 +72,153 @@ public sealed class PublishPlanExecutor : IPublishPlanExecutor
                         cancellationToken).ConfigureAwait(false);
                     break;
 
+                case InsertImageStep imageStep:
+                    currentIndex = await ExecuteImageAsync(
+                        documentId,
+                        imageStep.Image,
+                        currentIndex,
+                        cancellationToken).ConfigureAwait(false);
+                    break;
+
                 default:
                     throw new InvalidOperationException(
                         $"Unsupported publish step: {step.GetType().Name}");
             }
         }
     }
+
+    private async Task<int> ExecuteImageAsync(
+        string documentId,
+        ImageBlock image,
+        int insertionIndex,
+        CancellationToken cancellationToken)
+    {
+        var size = image.Size ?? throw new PublishPipelineException(
+            PublishErrorCodes.ImageSizeInvalid,
+            "Prepared image has no calculated size.");
+        TemporaryHostedImage? hostedImage = null;
+        Exception? primaryException = null;
+        try
+        {
+            var insertionUri = image.Source switch
+            {
+                RemoteImageSource remote => remote.Uri,
+                LocalImageSource local when temporaryImageHost is not null =>
+                    (hostedImage = await temporaryImageHost.HostAsync(local, cancellationToken)
+                        .ConfigureAwait(false)).PublicUri,
+                LocalImageSource => throw new PublishPipelineException(
+                    PublishErrorCodes.ImageUploadFailed,
+                    "Temporary image hosting is not configured."),
+                _ => throw new PublishPipelineException(
+                    PublishErrorCodes.ImageRemoteUriInvalid,
+                    "Prepared image source type is invalid."),
+            };
+
+            try
+            {
+                await docsClient.InsertInlineImageAsync(
+                    documentId,
+                    insertionUri,
+                    size,
+                    insertionIndex,
+                    cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                throw new PublishPipelineException(
+                    PublishErrorCodes.ImageInsertFailed,
+                    "Google Docs could not insert the image.",
+                    exception);
+            }
+
+            GoogleDocumentSnapshot document;
+            try
+            {
+                document = await docsClient.GetDocumentAsync(documentId, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                throw new PublishPipelineException(
+                    PublishErrorCodes.ImageInsertFailed,
+                    "Google Docs image readback failed.",
+                    exception);
+            }
+
+            var inserted = document.Images
+                .Where(candidate => candidate.ElementStartIndex is not null &&
+                    candidate.ElementStartIndex.Value >= insertionIndex &&
+                    candidate.ElementStartIndex.Value <= insertionIndex + 1)
+                .OrderBy(candidate => candidate.ElementStartIndex)
+                .FirstOrDefault();
+            if (inserted is null || string.IsNullOrWhiteSpace(inserted.InlineObjectId) ||
+                inserted.ActualSize is null)
+            {
+                throw new PublishPipelineException(
+                    PublishErrorCodes.ImageNotFoundAfterInsert,
+                    "The inserted inline image and its actual size were not found in the Google Docs readback.");
+            }
+
+            if (!ApproximatelyEqual(inserted.ActualSize.WidthPoints, size.WidthPoints) ||
+                !ApproximatelyEqual(inserted.ActualSize.HeightPoints, size.HeightPoints))
+            {
+                throw new PublishPipelineException(
+                    PublishErrorCodes.ImageInsertFailed,
+                    "The inserted image size did not match the publish plan.");
+            }
+
+            if (!string.IsNullOrEmpty(image.AltText))
+            {
+                logger.Warning(
+                    PublishErrorCodes.ImageAltTextUpdateFailed,
+                    "Google Docs InsertInlineImageRequest cannot set Title or Description; Alt Text remains in the publish model only.");
+            }
+
+            return inserted.ParagraphEndIndex is > 0 and var followingIndex &&
+                followingIndex > insertionIndex
+                ? followingIndex
+                : throw new PublishPipelineException(
+                    PublishErrorCodes.ImageFollowingIndexNotFound,
+                    "The image paragraph did not expose a valid EndIndex.");
+        }
+        catch (Exception exception)
+        {
+            primaryException = exception;
+            throw;
+        }
+        finally
+        {
+            if (hostedImage is not null && temporaryImageHost is not null)
+            {
+                try
+                {
+                    await temporaryImageHost.DeleteAsync(hostedImage, CancellationToken.None)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception)
+                {
+                    logger.Warning(
+                        PublishErrorCodes.ImageTempFileDeleteFailed,
+                        "Temporary Drive image cleanup failed.");
+                    if (primaryException is null)
+                    {
+                        throw;
+                    }
+                }
+            }
+        }
+    }
+
+    private static bool ApproximatelyEqual(double actual, double requested) =>
+        Math.Abs(actual - requested) <= 0.5d;
 
     private async Task<int> ExecuteTableAsync(
         string documentId,

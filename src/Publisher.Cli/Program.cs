@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Globalization;
 using Vmf.Publisher.Application;
 using Vmf.Publisher.Infrastructure;
 using Vmf.Publisher.Infrastructure.Google;
@@ -58,7 +59,12 @@ internal static class CliApplication
         }
 
         var options = LoadOptions();
+        var publisherOptions = LoadPublisherOptions();
         using var httpClient = new HttpClient();
+        using var imageHttpClient = new HttpClient(new HttpClientHandler
+        {
+            AllowAutoRedirect = false,
+        });
         var credentialProvider = GoogleCredentialProviderFactory.Create(options, httpClient);
         var requestMapper = new GoogleDocsRequestMapper();
         var serviceFactory = new GoogleServiceFactory(credentialProvider, requestMapper, httpClient);
@@ -74,6 +80,19 @@ internal static class CliApplication
         var markdownCodeBlockParser = new MarkdownCodeBlockParser();
         var markdownTableParser = new MarkdownTableParser(inlineParser);
         var markdownQuoteParser = new MarkdownQuoteParser(inlineParser);
+        var markdownImageParser = new MarkdownImageParser();
+        IImageSourceResolver imageSourceResolver = new ImageSourceResolver();
+        IImageMetadataReader imageMetadataReader = new ImageMetadataReader(
+            imageHttpClient,
+            imageSourceResolver);
+        IImageSizeCalculator imageSizeCalculator = new ImageSizeCalculator(publisherOptions);
+        IPublisherLogger logger = new ConsolePublisherLogger();
+        ITemporaryImageHost temporaryImageHost = new GoogleDriveTemporaryImageHost(
+            credentialProvider,
+            httpClient,
+            options,
+            publisherOptions,
+            logger);
         var inlineRenderer = new InlineContentRenderer();
         var paragraphBlockRenderer = new ParagraphBlockRenderer(inlineRenderer);
         var headingBlockRenderer = new HeadingBlockRenderer(inlineRenderer);
@@ -88,7 +107,9 @@ internal static class CliApplication
             quoteBlockRenderer);
         IPublishPlanExecutor publishPlanExecutor = new PublishPlanExecutor(
             serviceFactory.CreateDocsClient(),
-            inlineRenderer);
+            inlineRenderer,
+            temporaryImageHost,
+            logger);
         var googlePublisher = new GoogleDocsPublisher(serviceFactory, options, publishPlanExecutor);
         IPublishService publishService = new PublishService(
             new MarkdownFileDocumentLoader(),
@@ -97,9 +118,13 @@ internal static class CliApplication
                 markdownListParser,
                 markdownTableParser,
                 markdownQuoteParser,
+                markdownImageParser,
                 inlineParser),
             new DocumentCompiler(generatedBlockRenderer),
-            googlePublisher);
+            googlePublisher,
+            imageSourceResolver,
+            imageMetadataReader,
+            imageSizeCalculator);
 
         try
         {
@@ -142,6 +167,8 @@ internal static class CliApplication
             ?? options.TokenStorePath;
         options.FolderId = Environment.GetEnvironmentVariable("VMF_PUBLISHER_FOLDER_ID")
             ?? options.FolderId;
+        options.TemporaryImageFolderId = Environment.GetEnvironmentVariable(
+            "VMF_PUBLISHER_TEMPORARY_IMAGE_FOLDER_ID") ?? options.TemporaryImageFolderId;
         return options;
     }
 
@@ -170,8 +197,73 @@ internal static class CliApplication
         options.CredentialsPath = GetString(settings, "CredentialsPath") ?? options.CredentialsPath;
         options.TokenStorePath = GetString(settings, "TokenStorePath") ?? options.TokenStorePath;
         options.FolderId = GetString(settings, "FolderId") ?? options.FolderId;
+        options.TemporaryImageFolderId = GetString(settings, "TemporaryImageFolderId")
+            ?? options.TemporaryImageFolderId;
         options.ApplicationName = GetString(settings, "ApplicationName") ?? options.ApplicationName;
     }
+
+    private static PublisherOptions LoadPublisherOptions()
+    {
+        var options = new PublisherOptions();
+        ApplyPublisherSettings(options, Path.Combine(AppContext.BaseDirectory, "appsettings.json"));
+        ApplyPublisherSettings(options, Path.Combine(AppContext.BaseDirectory, "appsettings.local.json"));
+        options.AllowTemporaryPublicImageHosting = ParseBoolean(
+            Environment.GetEnvironmentVariable("VMF_PUBLISHER_ALLOW_TEMPORARY_PUBLIC_IMAGE_HOSTING"),
+            options.AllowTemporaryPublicImageHosting);
+        options.AllowImageUpscale = ParseBoolean(
+            Environment.GetEnvironmentVariable("VMF_PUBLISHER_ALLOW_IMAGE_UPSCALE"),
+            options.AllowImageUpscale);
+        options.ImageMaxWidthPoints = ParseDouble(
+            Environment.GetEnvironmentVariable("VMF_PUBLISHER_IMAGE_MAX_WIDTH_POINTS"),
+            options.ImageMaxWidthPoints);
+        return options;
+    }
+
+    private static void ApplyPublisherSettings(PublisherOptions options, string settingsPath)
+    {
+        if (!File.Exists(settingsPath))
+        {
+            return;
+        }
+
+        using var document = JsonDocument.Parse(File.ReadAllText(settingsPath));
+        if (!document.RootElement.TryGetProperty("Publisher", out var settings))
+        {
+            return;
+        }
+
+        if (settings.TryGetProperty("AllowTemporaryPublicImageHosting", out var publicHosting) &&
+            publicHosting.ValueKind is JsonValueKind.True or JsonValueKind.False)
+        {
+            options.AllowTemporaryPublicImageHosting = publicHosting.GetBoolean();
+        }
+
+        if (settings.TryGetProperty("AllowImageUpscale", out var upscale) &&
+            upscale.ValueKind is JsonValueKind.True or JsonValueKind.False)
+        {
+            options.AllowImageUpscale = upscale.GetBoolean();
+        }
+
+        if (settings.TryGetProperty("ImageMaxWidthPoints", out var maxWidth) &&
+            maxWidth.TryGetDouble(out var width))
+        {
+            options.ImageMaxWidthPoints = width;
+        }
+    }
+
+    private static bool ParseBoolean(string? value, bool fallback) =>
+        string.IsNullOrWhiteSpace(value)
+            ? fallback
+            : bool.TryParse(value, out var parsed)
+                ? parsed
+                : throw new InvalidOperationException($"Invalid Boolean setting value: {value}");
+
+    private static double ParseDouble(string? value, double fallback) =>
+        string.IsNullOrWhiteSpace(value)
+            ? fallback
+            : double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)
+                ? parsed
+                : throw new InvalidOperationException($"Invalid numeric setting value: {value}");
 
     private static GoogleAuthenticationMode ParseAuthenticationMode(
         string? value,
@@ -189,4 +281,10 @@ internal static class CliApplication
 
     private static string? GetString(JsonElement element, string propertyName) =>
         element.TryGetProperty(propertyName, out var property) ? property.GetString() : null;
+}
+
+internal sealed class ConsolePublisherLogger : IPublisherLogger
+{
+    public void Warning(string code, string message) =>
+        Console.Error.WriteLine($"{code}: {message}");
 }

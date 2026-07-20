@@ -95,6 +95,57 @@ public sealed class GoogleDocsClient : IGoogleDocsClient
     }
 
     /// <inheritdoc />
+    public async Task InsertInlineImageAsync(
+        string documentId,
+        Uri imageUri,
+        ImageSize size,
+        int index,
+        CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
+        ArgumentNullException.ThrowIfNull(imageUri);
+        ArgumentNullException.ThrowIfNull(size);
+        if (index < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        var requestBody = JsonSerializer.Serialize(new
+        {
+            requests = new object[]
+            {
+                new
+                {
+                    insertInlineImage = new
+                    {
+                        uri = imageUri.AbsoluteUri,
+                        objectSize = new
+                        {
+                            width = Dimension(size.WidthPoints),
+                            height = Dimension(size.HeightPoints),
+                        },
+                        location = new { index },
+                    },
+                },
+                new
+                {
+                    updateParagraphStyle = new
+                    {
+                        range = new { startIndex = index, endIndex = index + 1 },
+                        paragraphStyle = new { alignment = "START" },
+                        fields = "alignment",
+                    },
+                },
+            },
+        });
+        await SendAsync(
+            HttpMethod.Post,
+            $"https://docs.googleapis.com/v1/documents/{Uri.EscapeDataString(documentId)}:batchUpdate",
+            requestBody,
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public async Task<GoogleDocumentSnapshot> GetDocumentAsync(
         string documentId,
         CancellationToken cancellationToken)
@@ -154,14 +205,43 @@ public sealed class GoogleDocsClient : IGoogleDocsClient
     {
         using var document = JsonDocument.Parse(responseBody);
         var tables = new List<GoogleTableSnapshot>();
+        var images = new List<GoogleInlineImageSnapshot>();
+        var inlineObjects = ParseInlineObjects(document.RootElement);
         if (!document.RootElement.TryGetProperty("body", out var body) ||
             !body.TryGetProperty("content", out var content))
         {
-            return new GoogleDocumentSnapshot(tables);
+            return new GoogleDocumentSnapshot(tables, images);
         }
 
         foreach (var element in content.EnumerateArray())
         {
+            if (element.TryGetProperty("paragraph", out var paragraph) &&
+                paragraph.TryGetProperty("elements", out var paragraphElements))
+            {
+                foreach (var paragraphElement in paragraphElements.EnumerateArray())
+                {
+                    if (!paragraphElement.TryGetProperty("inlineObjectElement", out var inlineElement) ||
+                        !inlineElement.TryGetProperty("inlineObjectId", out var idProperty))
+                    {
+                        continue;
+                    }
+
+                    var inlineObjectId = idProperty.GetString();
+                    inlineObjects.TryGetValue(
+                        inlineObjectId ?? string.Empty,
+                        out var objectProperties);
+                    images.Add(new GoogleInlineImageSnapshot(
+                        ReadNullableInt(element, "startIndex"),
+                        ReadNullableInt(element, "endIndex"),
+                        ReadNullableInt(paragraphElement, "startIndex"),
+                        ReadNullableInt(paragraphElement, "endIndex"),
+                        inlineObjectId,
+                        objectProperties?.Size,
+                        objectProperties?.Title,
+                        objectProperties?.Description));
+                }
+            }
+
             if (!element.TryGetProperty("table", out var table))
             {
                 continue;
@@ -193,8 +273,69 @@ public sealed class GoogleDocsClient : IGoogleDocsClient
                 rows));
         }
 
-        return new GoogleDocumentSnapshot(tables);
+        return new GoogleDocumentSnapshot(tables, images);
     }
+
+    private static Dictionary<string, EmbeddedObjectProperties> ParseInlineObjects(
+        JsonElement root)
+    {
+        var result = new Dictionary<string, EmbeddedObjectProperties>(StringComparer.Ordinal);
+        if (!root.TryGetProperty("inlineObjects", out var inlineObjects) ||
+            inlineObjects.ValueKind != JsonValueKind.Object)
+        {
+            return result;
+        }
+
+        foreach (var property in inlineObjects.EnumerateObject())
+        {
+            if (!property.Value.TryGetProperty("inlineObjectProperties", out var inlineProperties) ||
+                !inlineProperties.TryGetProperty("embeddedObject", out var embeddedObject))
+            {
+                continue;
+            }
+
+            ImageSize? size = null;
+            if (embeddedObject.TryGetProperty("size", out var sizeElement) &&
+                TryReadPoints(sizeElement, "width", out var width) &&
+                TryReadPoints(sizeElement, "height", out var height))
+            {
+                try
+                {
+                    size = new ImageSize(width, height);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    size = null;
+                }
+            }
+
+            result[property.Name] = new EmbeddedObjectProperties(
+                size,
+                ReadNullableString(embeddedObject, "title"),
+                ReadNullableString(embeddedObject, "description"));
+        }
+
+        return result;
+    }
+
+    private static bool TryReadPoints(
+        JsonElement size,
+        string propertyName,
+        out double points)
+    {
+        points = 0;
+        return size.TryGetProperty(propertyName, out var dimension) &&
+            dimension.TryGetProperty("magnitude", out var magnitude) &&
+            magnitude.TryGetDouble(out points) &&
+            (!dimension.TryGetProperty("unit", out var unit) ||
+                unit.GetString() is "PT" or "UNIT_UNSPECIFIED");
+    }
+
+    private static string? ReadNullableString(JsonElement element, string propertyName) =>
+        element.TryGetProperty(propertyName, out var property) &&
+        property.ValueKind == JsonValueKind.String
+            ? property.GetString()
+            : null;
 
     private static int? ReadContentIndex(
         JsonElement cell,
@@ -225,4 +366,11 @@ public sealed class GoogleDocsClient : IGoogleDocsClient
         element.TryGetProperty(propertyName, out var property) && property.TryGetInt32(out var value)
             ? value
             : null;
+
+    private static object Dimension(double magnitude) => new { magnitude, unit = "PT" };
+
+    private sealed record EmbeddedObjectProperties(
+        ImageSize? Size,
+        string? Title,
+        string? Description);
 }

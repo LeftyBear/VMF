@@ -98,6 +98,14 @@ public sealed class GeneratedBlockRenderer : IGeneratedBlockRenderer
 
         foreach (var block in document.Blocks)
         {
+            if (block.Kind == DocumentBlockKind.Image)
+            {
+                FlushBatch();
+                steps.Add(new InsertImageStep(
+                    block.Image ?? throw new InvalidOperationException("An image block requires image content.")));
+                continue;
+            }
+
             if (block.Kind == DocumentBlockKind.Table)
             {
                 FlushBatch();

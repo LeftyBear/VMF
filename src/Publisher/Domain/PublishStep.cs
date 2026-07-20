@@ -48,3 +48,20 @@ public sealed class InsertTableStep : PublishStep
     /// <summary>Gets the table to insert.</summary>
     public TableBlock Table { get; }
 }
+
+/// <summary>Inserts one standalone image and reads its resulting structure.</summary>
+public sealed class InsertImageStep : PublishStep
+{
+    /// <summary>Initializes an image insertion step.</summary>
+    public InsertImageStep(ImageBlock image)
+    {
+        Image = image ?? throw new ArgumentNullException(nameof(image));
+        if (image.Size is null)
+        {
+            throw new ArgumentException("An image publish step requires a calculated size.", nameof(image));
+        }
+    }
+
+    /// <summary>Gets the prepared image.</summary>
+    public ImageBlock Image { get; }
+}

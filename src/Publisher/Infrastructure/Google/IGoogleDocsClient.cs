@@ -23,7 +23,15 @@ public interface IGoogleDocsClient
         int index,
         CancellationToken cancellationToken);
 
-    /// <summary>Reads the current document table structure.</summary>
+    /// <summary>Inserts a standalone inline image and applies START paragraph alignment.</summary>
+    Task InsertInlineImageAsync(
+        string documentId,
+        Uri imageUri,
+        ImageSize size,
+        int index,
+        CancellationToken cancellationToken);
+
+    /// <summary>Reads the current document table and inline-image structure.</summary>
     Task<GoogleDocumentSnapshot> GetDocumentAsync(
         string documentId,
         CancellationToken cancellationToken);

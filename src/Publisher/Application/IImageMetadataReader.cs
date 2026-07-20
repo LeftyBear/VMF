@@ -9,6 +9,13 @@ public interface IImageMetadataReader
     Task<ImageMetadata> ReadAsync(ImageSource source, CancellationToken cancellationToken);
 }
 
+/// <summary>Calculates a target image size from decoded metadata.</summary>
+public interface IImageSizeCalculator
+{
+    /// <summary>Calculates width and height while preserving aspect ratio.</summary>
+    ImageSize Calculate(ImageMetadata metadata);
+}
+
 /// <summary>Contains target-neutral Publisher behavior settings.</summary>
 public sealed class PublisherOptions
 {
