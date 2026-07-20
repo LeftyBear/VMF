@@ -47,5 +47,39 @@ Name | Status | Note
 Parser | Ready | Right
 Escaped pipe | A \| B | Safe
 
+## `Code and Quote` verification
+
+Use `dotnet test` before publishing. The inline code must use Roboto Mono and a
+light gray background without interpreting Markdown markers.
+
+```csharp
+var text = "**not bold**";
+Console.WriteLine(text);
+```
+
+### Heading with `inline code`
+
+- A list item runs `dotnet test` before publishing.
+  1. A nested list item keeps **bold `inline code`** aligned after tab removal.
+
+| Context    | Example                         | Result |
+| ---------- | :-----------------------------: | -----: |
+| Table code | `dotnet test`                   | Styled |
+| Overlap    | **`bold code`**                 | Styled |
+| Link       | [`linked code`](https://example.com/code) | Styled |
+
+> A quoted paragraph with **bold** and `inline code`.
+>> A nested quote with [a link](https://example.com).
+>>> Quote level three.
+>>>> Quote level four.
+>>>>> Quote level five.
+>>>>>> Quote level six with `inline code`.
+ >>>>>>> Quote level seven is normalized to level six.
+>
+> The empty quote line above remains present.
+
+After quote.
+
 Malformed constructs remain literal text: **unclosed bold, [](https://example.com),
-and [invalid URL](relative/path).
+and [invalid URL](relative/path). Empty inline code `` and `unclosed inline code
+remain ordinary text without terminating publication.
