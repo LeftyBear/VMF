@@ -82,6 +82,8 @@ public sealed class GoogleDocsClientTests
         Assert.Contains("\"magnitude\":450", body, StringComparison.Ordinal);
         Assert.Contains("\"magnitude\":225", body, StringComparison.Ordinal);
         Assert.Contains("\"index\":12", body, StringComparison.Ordinal);
+        Assert.Contains("insertText", body, StringComparison.Ordinal);
+        Assert.Contains("\\n", body, StringComparison.Ordinal);
         Assert.Contains("\"alignment\":\"START\"", body, StringComparison.Ordinal);
     }
 

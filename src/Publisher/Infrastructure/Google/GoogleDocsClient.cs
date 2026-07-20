@@ -129,6 +129,14 @@ public sealed class GoogleDocsClient : IGoogleDocsClient
                 },
                 new
                 {
+                    insertText = new
+                    {
+                        location = new { index = index + 1 },
+                        text = "\n",
+                    },
+                },
+                new
+                {
                     updateParagraphStyle = new
                     {
                         range = new { startIndex = index, endIndex = index + 1 },
