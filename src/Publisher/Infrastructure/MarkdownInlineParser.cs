@@ -65,6 +65,21 @@ public sealed class MarkdownInlineParser : IMarkdownInlineParser
                 continue;
             }
 
+            if (markdown[index] == '`')
+            {
+                var codeStart = index;
+                if (TryParseCode(markdown, ref index, out var code, out var codeFallbackEnd))
+                {
+                    FlushText(result, text);
+                    result.Add(code);
+                    continue;
+                }
+
+                text.Append(markdown.AsSpan(codeStart, codeFallbackEnd - codeStart));
+                index = codeFallbackEnd;
+                continue;
+            }
+
             if (markdown[index] == '[')
             {
                 var linkStart = index;
@@ -113,6 +128,46 @@ public sealed class MarkdownInlineParser : IMarkdownInlineParser
         FlushText(result, text);
         closed = closingDelimiter is null;
         return result;
+    }
+
+    private static bool TryParseCode(
+        string markdown,
+        ref int index,
+        out InlineContent code,
+        out int fallbackEnd)
+    {
+        code = null!;
+        var start = index;
+        var delimiterLength = CountRun(markdown, start, '`');
+        var searchIndex = start + delimiterLength;
+        while (searchIndex < markdown.Length)
+        {
+            if (markdown[searchIndex] != '`')
+            {
+                searchIndex++;
+                continue;
+            }
+
+            var candidateLength = CountRun(markdown, searchIndex, '`');
+            if (candidateLength == delimiterLength)
+            {
+                fallbackEnd = searchIndex + candidateLength;
+                var value = markdown[(start + delimiterLength)..searchIndex];
+                if (value.Length == 0)
+                {
+                    return false;
+                }
+
+                index = fallbackEnd;
+                code = new CodeInline(value);
+                return true;
+            }
+
+            searchIndex += candidateLength;
+        }
+
+        fallbackEnd = markdown.Length;
+        return false;
     }
 
     private bool TryParseDelimited(
@@ -316,6 +371,7 @@ public sealed class MarkdownInlineParser : IMarkdownInlineParser
         content.Any(item => item switch
         {
             TextInline text => !string.IsNullOrWhiteSpace(text.Text),
+            CodeInline code => code.Text.Length > 0,
             BoldInline bold => HasVisibleContent(bold.Content),
             ItalicInline italic => HasVisibleContent(italic.Content),
             LinkInline link => HasVisibleContent(link.Content),

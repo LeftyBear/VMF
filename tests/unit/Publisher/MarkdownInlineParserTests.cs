@@ -50,6 +50,42 @@ public sealed class MarkdownInlineParserTests
     }
 
     [Fact]
+    public void Parse_MapsInlineCodeBeforeLinksAndEmphasisWithoutParsingItsBody()
+    {
+        const string markdown = @"Use `**not bold** [not a link](https://example.com) \*literal` now.";
+
+        var content = new MarkdownInlineParser().Parse(markdown);
+
+        Assert.Collection(
+            content,
+            inline => AssertText(inline, "Use "),
+            inline => Assert.Equal(
+                @"**not bold** [not a link](https://example.com) \*literal",
+                Assert.IsType<CodeInline>(inline).Text),
+            inline => AssertText(inline, " now."));
+    }
+
+    [Fact]
+    public void Parse_AllowsCodeToOverlapOuterBoldAndLinkStyles()
+    {
+        var content = new MarkdownInlineParser().Parse(
+            "**`bold code`** [`linked code`](https://example.com)");
+
+        var bold = Assert.IsType<BoldInline>(content[0]);
+        Assert.IsType<CodeInline>(Assert.Single(bold.Content));
+        var link = Assert.IsType<LinkInline>(content[2]);
+        Assert.IsType<CodeInline>(Assert.Single(link.Content));
+    }
+
+    [Fact]
+    public void Parse_SupportsMatchingMultiBacktickDelimiters()
+    {
+        var content = new MarkdownInlineParser().Parse("``one ` two``");
+
+        Assert.Equal("one ` two", Assert.IsType<CodeInline>(Assert.Single(content)).Text);
+    }
+
+    [Fact]
     public void Parse_UnescapesMarkdownPunctuationAndCoalescesAdjacentText()
     {
         var content = new MarkdownInlineParser().Parse(
@@ -70,6 +106,9 @@ public sealed class MarkdownInlineParserTests
     [InlineData("[label](mailto:user@example.com)")]
     [InlineData("[label](https://)")]
     [InlineData("[label](https://example.com")]
+    [InlineData("``")]
+    [InlineData("`unclosed")]
+    [InlineData("``unclosed`")]
     public void Parse_InvalidOrIncompleteMarkupFallsBackToPlainText(string markdown)
     {
         var content = new MarkdownInlineParser().Parse(markdown);
@@ -170,6 +209,7 @@ public sealed class MarkdownInlineParserTests
     private static string Text(InlineContent content) => content switch
     {
         TextInline text => text.Text,
+        CodeInline code => code.Text,
         BoldInline bold => Text(bold.Content),
         ItalicInline italic => Text(italic.Content),
         LinkInline link => Text(link.Content),
@@ -192,6 +232,7 @@ public sealed class MarkdownInlineParserTests
         BoldInline bold => 1 + CountStyles(Assert.Single(bold.Content)),
         ItalicInline italic => 1 + CountStyles(Assert.Single(italic.Content)),
         LinkInline link => 1 + CountStyles(Assert.Single(link.Content)),
+        CodeInline => 0,
         TextInline => 0,
         _ => throw new InvalidOperationException(),
     };

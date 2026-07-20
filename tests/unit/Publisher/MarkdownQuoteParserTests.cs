@@ -8,7 +8,7 @@ public sealed class MarkdownQuoteParserTests
     [Fact]
     public void TryParse_GroupsSameLevelPreservesEmptyLinesAndParsesInlineContent()
     {
-        string[] lines = ["> **bold**", ">", "> _italic_", ">> nested"];
+        string[] lines = ["> **bold**", ">", "> `code`", ">> nested"];
 
         var parsed = new MarkdownQuoteParser().TryParse(lines, 0, out var block, out var consumed);
 
@@ -17,8 +17,8 @@ public sealed class MarkdownQuoteParserTests
         Assert.Equal(1, block.Level);
         Assert.Equal(3, consumed);
         Assert.Contains(block.Content, inline => inline is BoldInline);
-        Assert.Contains(block.Content, inline => inline is ItalicInline);
-        Assert.Equal("bold\n\nitalic", string.Concat(block.Content.Select(Text)));
+        Assert.Contains(block.Content, inline => inline is CodeInline);
+        Assert.Equal("bold\n\ncode", string.Concat(block.Content.Select(Text)));
     }
 
     [Theory]
