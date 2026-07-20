@@ -15,23 +15,42 @@ public sealed class ListItem
 {
     /// <summary>Initializes a list item.</summary>
     /// <param name="kind">The list marker kind.</param>
-    /// <param name="inlines">The inline content.</param>
+    /// <param name="content">The inline content.</param>
     /// <param name="depth">The zero-based normalized nesting depth.</param>
-    public ListItem(ListKind kind, IEnumerable<InlineElement> inlines, int depth)
+    public ListItem(ListKind kind, IEnumerable<InlineContent> content, int depth)
     {
-        ArgumentNullException.ThrowIfNull(inlines);
         ArgumentOutOfRangeException.ThrowIfNegative(depth);
 
         Kind = kind;
-        Inlines = Array.AsReadOnly(inlines.ToArray());
+        Content = InlineContentCollection.Create(content, nameof(content));
         Depth = depth;
     }
+
+    /// <summary>Initializes a list item from the legacy plain-text inline model.</summary>
+    /// <param name="kind">The list marker kind.</param>
+    /// <param name="inlines">The plain inline content.</param>
+    /// <param name="depth">The zero-based normalized nesting depth.</param>
+    public ListItem(ListKind kind, IEnumerable<InlineElement> inlines, int depth)
+        : this(kind, InlineContentCompatibility.Convert(inlines), depth)
+    {
+    }
+
+    /// <summary>Creates a plain-text list item.</summary>
+    /// <param name="kind">The list marker kind.</param>
+    /// <param name="text">The item text.</param>
+    /// <param name="depth">The zero-based normalized nesting depth.</param>
+    /// <returns>The list item.</returns>
+    public static ListItem FromText(ListKind kind, string text, int depth) =>
+        new(kind, [new TextInline(text)], depth);
 
     /// <summary>Gets the list marker kind.</summary>
     public ListKind Kind { get; }
 
     /// <summary>Gets the inline content.</summary>
-    public IReadOnlyList<InlineElement> Inlines { get; }
+    public IReadOnlyList<InlineContent> Content { get; }
+
+    /// <summary>Gets a flattened legacy plain-text view of the inline content.</summary>
+    public IReadOnlyList<InlineElement> Inlines => InlineContentCompatibility.Flatten(Content);
 
     /// <summary>Gets the zero-based normalized nesting depth.</summary>
     public int Depth { get; }

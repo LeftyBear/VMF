@@ -8,21 +8,33 @@ public sealed partial class MarkdownListParser
 {
     private readonly int _listIndentSize;
     private readonly int _maxListDepth;
+    private readonly MarkdownInlineParser inlineParser;
 
     /// <summary>Initializes a parser with the default list settings.</summary>
     public MarkdownListParser()
-        : this(new MarkdownListParserOptions())
+        : this(new MarkdownListParserOptions(), new MarkdownInlineParser())
     {
     }
 
     /// <summary>Initializes a parser with explicit list settings.</summary>
     /// <param name="options">The list parser settings.</param>
     public MarkdownListParser(MarkdownListParserOptions options)
+        : this(options, new MarkdownInlineParser())
+    {
+    }
+
+    /// <summary>Initializes a parser with explicit list and inline parsers.</summary>
+    /// <param name="options">The list parser settings.</param>
+    /// <param name="inlineParser">The Markdown inline parser.</param>
+    public MarkdownListParser(
+        MarkdownListParserOptions options,
+        MarkdownInlineParser inlineParser)
     {
         ArgumentNullException.ThrowIfNull(options);
         options.Validate();
         _listIndentSize = options.ListIndentSize;
         _maxListDepth = options.MaxListDepth;
+        this.inlineParser = inlineParser ?? throw new ArgumentNullException(nameof(inlineParser));
     }
 
     /// <summary>Parses one Markdown line when it is a list item.</summary>
@@ -51,9 +63,10 @@ public sealed partial class MarkdownListParser
         normalizedDepth = Math.Min(normalizedDepth, maximumDepth);
 
         var kind = match.Groups["ordered"].Success ? ListKind.Ordered : ListKind.Unordered;
+        var content = match.Groups["content"].Value.Trim();
         return new ListItem(
             kind,
-            [new InlineElement(InlineElementKind.Text, match.Groups["content"].Value.Trim())],
+            inlineParser.Parse(content),
             normalizedDepth);
     }
 

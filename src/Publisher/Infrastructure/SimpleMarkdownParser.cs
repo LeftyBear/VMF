@@ -8,18 +8,39 @@ namespace Vmf.Publisher.Infrastructure;
 public sealed partial class SimpleMarkdownParser : IMarkdownParser
 {
     private readonly MarkdownListParser _listParser;
+    private readonly MarkdownInlineParser inlineParser;
 
     /// <summary>Initializes a parser with the default block parsers.</summary>
     public SimpleMarkdownParser()
-        : this(new MarkdownListParser())
+        : this(new MarkdownInlineParser())
+    {
+    }
+
+    /// <summary>Initializes a parser with an explicitly registered inline parser.</summary>
+    /// <param name="inlineParser">The Markdown inline parser.</param>
+    public SimpleMarkdownParser(MarkdownInlineParser inlineParser)
+        : this(
+            new MarkdownListParser(new MarkdownListParserOptions(), inlineParser),
+            inlineParser)
     {
     }
 
     /// <summary>Initializes a parser with an explicitly registered list parser.</summary>
     /// <param name="listParser">The Markdown list parser.</param>
     public SimpleMarkdownParser(MarkdownListParser listParser)
+        : this(listParser, new MarkdownInlineParser())
+    {
+    }
+
+    /// <summary>Initializes a parser with explicitly registered block and inline parsers.</summary>
+    /// <param name="listParser">The Markdown list parser.</param>
+    /// <param name="inlineParser">The Markdown inline parser.</param>
+    public SimpleMarkdownParser(
+        MarkdownListParser listParser,
+        MarkdownInlineParser inlineParser)
     {
         _listParser = listParser ?? throw new ArgumentNullException(nameof(listParser));
+        this.inlineParser = inlineParser ?? throw new ArgumentNullException(nameof(inlineParser));
     }
 
     /// <inheritdoc />
@@ -41,7 +62,8 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
                 return;
             }
 
-            blocks.Add(CreateBlock(DocumentBlockKind.Paragraph, string.Join(" ", paragraph)));
+            blocks.Add(new DocumentBlock(
+                new ParagraphBlock(inlineParser.Parse(string.Join(" ", paragraph)))));
             paragraph.Clear();
         }
 
@@ -80,10 +102,9 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
             {
                 FlushParagraph();
                 FlushList();
-                blocks.Add(new DocumentBlock(
-                    DocumentBlockKind.Heading,
-                    [new InlineElement(InlineElementKind.Text, headingMatch.Groups[2].Value.Trim())],
-                    headingMatch.Groups[1].Value.Length));
+                blocks.Add(new DocumentBlock(new HeadingBlock(
+                    headingMatch.Groups[1].Value.Length,
+                    inlineParser.Parse(headingMatch.Groups[2].Value.Trim()))));
                 continue;
             }
 
@@ -95,9 +116,6 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
         FlushList();
         return new DocumentModel(blocks);
     }
-
-    private static DocumentBlock CreateBlock(DocumentBlockKind kind, string text) =>
-        new(kind, [new InlineElement(InlineElementKind.Text, text)]);
 
     [GeneratedRegex("^(#{1,6})[ \\t]+(.+?)\\s*$", RegexOptions.CultureInvariant)]
     private static partial Regex HeadingPattern();

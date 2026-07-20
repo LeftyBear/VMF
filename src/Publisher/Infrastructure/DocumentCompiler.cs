@@ -6,18 +6,47 @@ namespace Vmf.Publisher.Infrastructure;
 /// <summary>Compiles supported document blocks into Google-Docs-compatible neutral operations.</summary>
 public sealed class DocumentCompiler : IDocumentCompiler
 {
+    private readonly ParagraphBlockRenderer paragraphBlockRenderer;
+    private readonly HeadingBlockRenderer headingBlockRenderer;
     private readonly ListBlockRenderer _listBlockRenderer;
 
     /// <summary>Initializes a compiler with the default block renderers.</summary>
     public DocumentCompiler()
-        : this(new ListBlockRenderer())
+        : this(new InlineContentRenderer())
+    {
+    }
+
+    private DocumentCompiler(InlineContentRenderer inlineRenderer)
+        : this(
+            new ParagraphBlockRenderer(inlineRenderer),
+            new HeadingBlockRenderer(inlineRenderer),
+            new ListBlockRenderer(inlineRenderer))
     {
     }
 
     /// <summary>Initializes a compiler with an explicitly registered list renderer.</summary>
     /// <param name="listBlockRenderer">The list block renderer.</param>
     public DocumentCompiler(ListBlockRenderer listBlockRenderer)
+        : this(
+            new ParagraphBlockRenderer(),
+            new HeadingBlockRenderer(),
+            listBlockRenderer)
     {
+    }
+
+    /// <summary>Initializes a compiler with explicitly registered block renderers.</summary>
+    /// <param name="paragraphBlockRenderer">The paragraph block renderer.</param>
+    /// <param name="headingBlockRenderer">The heading block renderer.</param>
+    /// <param name="listBlockRenderer">The list block renderer.</param>
+    public DocumentCompiler(
+        ParagraphBlockRenderer paragraphBlockRenderer,
+        HeadingBlockRenderer headingBlockRenderer,
+        ListBlockRenderer listBlockRenderer)
+    {
+        this.paragraphBlockRenderer = paragraphBlockRenderer
+            ?? throw new ArgumentNullException(nameof(paragraphBlockRenderer));
+        this.headingBlockRenderer = headingBlockRenderer
+            ?? throw new ArgumentNullException(nameof(headingBlockRenderer));
         _listBlockRenderer = listBlockRenderer ?? throw new ArgumentNullException(nameof(listBlockRenderer));
     }
 
@@ -41,25 +70,27 @@ public sealed class DocumentCompiler : IDocumentCompiler
                 continue;
             }
 
-            var text = string.Concat(block.Inlines.Select(element => element.Text)) + "\n";
-            var start = index;
-            var end = start + text.Length;
-            operations.Add(new DocumentOperation(DocumentOperationKind.InsertText, start, text: text));
-
             if (block.Kind == DocumentBlockKind.Heading)
             {
-                operations.Add(new DocumentOperation(
-                    DocumentOperationKind.ApplyHeading,
-                    start,
-                    end,
-                    level: block.Level));
-            }
-            else if (block.Kind == DocumentBlockKind.BulletListItem)
-            {
-                operations.Add(new DocumentOperation(DocumentOperationKind.CreateBullet, start, end));
+                index = headingBlockRenderer.Render(
+                    new HeadingBlock(block.Level, block.Content),
+                    index,
+                    operations);
+                continue;
             }
 
-            index = end;
+            var start = index;
+            index = paragraphBlockRenderer.Render(
+                new ParagraphBlock(block.Content),
+                index,
+                operations);
+            if (block.Kind == DocumentBlockKind.BulletListItem)
+            {
+                operations.Add(new DocumentOperation(
+                    DocumentOperationKind.CreateBullet,
+                    start,
+                    index));
+            }
         }
 
         return new CompiledDocument(title, operations);

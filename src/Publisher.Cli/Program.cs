@@ -63,16 +63,26 @@ internal static class CliApplication
         var requestMapper = new GoogleDocsRequestMapper();
         var serviceFactory = new GoogleServiceFactory(credentialProvider, requestMapper, httpClient);
         var googlePublisher = new GoogleDocsPublisher(serviceFactory, options);
+        var inlineParser = new MarkdownInlineParser(new MarkdownInlineParserOptions
+        {
+            MaxInlineDepth = MarkdownInlineParserOptions.DefaultMaxInlineDepth,
+        });
         var markdownListParser = new MarkdownListParser(new MarkdownListParserOptions
         {
             ListIndentSize = MarkdownListParserOptions.DefaultListIndentSize,
             MaxListDepth = MarkdownListParserOptions.DefaultMaxListDepth,
-        });
-        var listBlockRenderer = new ListBlockRenderer();
+        }, inlineParser);
+        var inlineRenderer = new InlineContentRenderer();
+        var paragraphBlockRenderer = new ParagraphBlockRenderer(inlineRenderer);
+        var headingBlockRenderer = new HeadingBlockRenderer(inlineRenderer);
+        var listBlockRenderer = new ListBlockRenderer(inlineRenderer);
         IPublishService publishService = new PublishService(
             new MarkdownFileDocumentLoader(),
-            new SimpleMarkdownParser(markdownListParser),
-            new DocumentCompiler(listBlockRenderer),
+            new SimpleMarkdownParser(markdownListParser, inlineParser),
+            new DocumentCompiler(
+                paragraphBlockRenderer,
+                headingBlockRenderer,
+                listBlockRenderer),
             googlePublisher);
 
         try
