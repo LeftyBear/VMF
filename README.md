@@ -53,11 +53,11 @@ the generation definitions instead.
 ## VMF Studio v2.0 Publisher PoC v0.1
 
 `VMF.Publisher.sln` contains the first Publisher PoC. It reads UTF-8 Markdown,
-converts headings, paragraphs, and ordered, unordered, nested, or mixed lists
-with bold, italic, bold-italic, and HTTP(S) link content into a neutral document
-model, compiles Google Docs operations, creates a native document through the
-Google Drive REST API, and applies content and text styles through the Google
-Docs REST API.
+converts headings, paragraphs, ordered, unordered, nested, or mixed lists, and
+pipe-delimited tables with bold, italic, bold-italic, and HTTP(S) link content
+into a neutral document model, compiles Google Docs operations, creates a native
+document through the Google Drive REST API, and applies content and text styles
+through the Google Docs REST API.
 
 The four projects are:
 
@@ -170,18 +170,27 @@ Publish `samples/publisher-poc.md`, open the returned Document URL, and confirm:
 - bold-italic text has overlapping bold and italic ranges;
 - links have the expected `textStyle.link.url`, including styled link labels;
 - the paragraph after the list starts at the expected position and list-item
-  style ranges remain aligned after leading tabs are removed.
+  style ranges remain aligned after leading tabs are removed;
+- Markdown tables appear at the expected block positions with the source row and
+  column counts and cell text;
+- table headers are bold, and left-, center-, and right-aligned columns read back
+  as `START`, `CENTER`, and `END`;
+- table-cell bold, italic, and link styles are preserved without adding content
+  to empty cells, and escaped pipes appear as ordinary `|` characters;
+- the paragraph after each table starts at the table `EndIndex` without range
+  drift.
 
 Live verification evidence is recorded here after execution. Current status:
 **Verified on 2026-07-20 through Google Drive and Docs API publication plus Docs
-API readback of list presets, paragraph indentation, and the post-list paragraph.
-Phase 2-2 inline TextStyle publication/readback and Google Docs visual comparison
+API readback of list presets, paragraph indentation, table structures, cell
+styles, and post-block paragraphs. Phase 2-2 inline TextStyle verification and
+Phase 2-3 Markdown table publication/readback and Google Docs visual comparison
 are complete. See the
 [Publisher v1.0 Implementation Voyage Log](docs/development/Publisher_v1.0_Implementation_Voyage_Log.md).**
 
 ### PoC scope
 
-Not implemented in v0.1: tables, images, footnotes, and embedded HTML.
+Not implemented in v0.1: images, footnotes, and embedded HTML.
 
 The current official VMF Studio release artifact is:
 

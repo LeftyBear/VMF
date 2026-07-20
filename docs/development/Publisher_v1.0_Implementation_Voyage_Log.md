@@ -102,3 +102,105 @@ bold run occupied 805-838. No list style or index offset leaked into it.
 
 No credential contents, access tokens, refresh tokens, or client secrets were
 captured in this record.
+
+## Phase 2-3: Markdown Table Live Verification
+
+| Field | Value |
+|---|---|
+| Date | 2026-07-20 |
+| Status | PASS |
+| Source | `samples/publisher-poc.md` |
+| Authentication | OAuth Desktop with persisted token reuse |
+| Destination | Configured Google Drive folder |
+| Document ID | `1324qmL6hwc-zDpGmYE34ntIxQIoB3M77z8VQGIdfz24` |
+| Document URL | <https://docs.google.com/document/d/1324qmL6hwc-zDpGmYE34ntIxQIoB3M77z8VQGIdfz24/edit> |
+| Verification surfaces | Publisher CLI, Google Docs API readback, and Google Docs UI in Chrome |
+
+### Execution
+
+The sample was published with the complete current CLI command:
+
+```powershell
+dotnet run --project src/Publisher.Cli -- publish samples/publisher-poc.md
+```
+
+The CLI reported successful Google Drive and Google Docs API calls. The returned
+Document ID matched the ID embedded in the returned document URL. The document
+was read back through `documents.get`, including its `StructuralElement`,
+`Table`, `TableRow`, `TableCell`, `ParagraphStyle`, and `TextRun.TextStyle`
+fields.
+
+### Table structure and cell text
+
+Google Docs indexes below are UTF-16 code-unit ranges with an exclusive end.
+Each API table dimension matched the Markdown source.
+
+| Table | API range | Rows x columns | Cell text by row |
+|---|---:|---:|---|
+| Outer-pipe table | 1077-1167 | 4 x 3 | `Name / Status / Note`; `Publisher / Active / v1.0`; `Renderer / Ready / 100%`; `Empty / [empty] / Right` |
+| No-outer-pipe table | 1342-1416 | 3 x 3 | `Name / Status / Note`; `Parser / Ready / Right`; `Escaped pipe / A \| B / Safe` |
+
+The empty cell at row 4, column 2 had the cell range 1157-1159. Its only text
+run was the required cell-ending newline at 1158-1159; no cell body text or
+placeholder was inserted. The escaped source pipe read back as the ordinary
+text `A | B` at 1403-1409.
+
+### ParagraphStyle and TextStyle readback
+
+Every cell contained one `NORMAL_TEXT` paragraph. Paragraph alignment was
+consistent for every row: column 1 was `START`, column 2 was `CENTER`, and
+column 3 was `END`.
+
+| Context | Range | Text | Bold | Italic | Link URL |
+|---|---:|---|:---:|:---:|---|
+| Table 1 header, column 1 | 1080-1085 | `Name` | true | false | - |
+| Table 1 header, column 2 | 1086-1093 | `Status` | true | false | - |
+| Table 1 header, column 3 | 1094-1099 | `Note` | true | false | - |
+| Bold cell content | 1101-1111 | `Publisher` | true | false | - |
+| Italic cell content | 1120-1125 | `v1.0` | false | true | - |
+| Linked cell content | 1127-1135 | `Renderer` | false | false | `https://example.com/` |
+| Table 2 header, column 1 | 1345-1350 | `Name` | true | false | - |
+| Table 2 header, column 2 | 1351-1358 | `Status` | true | false | - |
+| Table 2 header, column 3 | 1359-1364 | `Note` | true | false | - |
+
+Adjacent plain-text runs did not contain unintended bold, italic, or link
+properties.
+
+### Post-table paragraph placement
+
+The first table ended at index 1167. The following normal paragraph started at
+1167 and ended at 1298, so there was no index gap or overlap. Its intended bold
+run, `styled paragraph follows the table`, occupied 1172-1206.
+
+The second table ended at index 1416. The following normal paragraph started at
+1416 and ended at 1534. Google Docs rendered it at the start of page 2 because
+the preceding table reached the bottom of page 1; API adjacency confirmed that
+pagination did not introduce content or range drift.
+
+### Google Docs visual comparison
+
+The generated document was opened in the authenticated Chrome profile. The
+first table appeared immediately after its preceding paragraph, and its
+following styled paragraph appeared immediately after the table. Both tables
+visually had three columns and the expected row counts. Headers were bold;
+column 1 was left-aligned, column 2 centered, and column 3 right-aligned.
+`Publisher` was bold, `v1.0` italic, and `Renderer` displayed as a link. The
+empty cell remained blank, and the second table displayed `A | B` as ordinary
+text. The visible Google Docs rendering matched the API readback.
+
+### Success criteria
+
+| Criterion | Result |
+|---|---|
+| Table structures match the expected row and column counts | PASS |
+| Every cell body matches the Markdown source | PASS |
+| Header cells read back with `Bold=true` | PASS |
+| Column alignments read back as `START`, `CENTER`, and `END` | PASS |
+| Inline `TextStyle` and `Link.Url` values match the source | PASS |
+| The empty cell contains no unnecessary body text | PASS |
+| Escaped pipes display as ordinary characters | PASS |
+| Following paragraphs start at each table `EndIndex` | PASS |
+| Google Docs API readback matches the Google Docs UI | PASS - visually confirmed in Chrome on 2026-07-20 |
+
+No credential contents, access tokens, refresh tokens, or client secrets were
+captured in this record.
