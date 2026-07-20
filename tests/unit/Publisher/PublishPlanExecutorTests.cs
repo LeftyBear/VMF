@@ -67,6 +67,12 @@ public sealed class PublishPlanExecutorTests
                 operation.InlineStyle == InlineTextStyle.Code &&
                 operation.StartIndex == 24 &&
                 operation.EndIndex == 25);
+        var tableOperationItems = tableOperations.ToArray();
+        Assert.True(
+            Array.FindIndex(tableOperationItems, operation =>
+                operation.InlineStyle == InlineTextStyle.Code && operation.StartIndex == 24) <
+            Array.FindIndex(tableOperationItems, operation =>
+                operation.InlineStyle == InlineTextStyle.Italic && operation.StartIndex == 24));
         Assert.Equal(100, Assert.Single(client.Applied[2]).StartIndex);
     }
 

@@ -137,16 +137,16 @@ public sealed class PublishPlanExecutor : IPublishPlanExecutor
                         DocumentOperationKind.InsertText,
                         startIndex,
                         text: rendered.Text));
+                    InlineStyleOperationAppender.Append(rendered, startIndex, operations);
                     if (rowIndex == 0)
                     {
+                        // Keep the header bold operation after code font-family changes.
                         operations.Add(new DocumentOperation(
                             DocumentOperationKind.UpdateTextStyle,
                             startIndex,
                             startIndex + rendered.Text.Length,
                             inlineStyle: InlineTextStyle.Bold));
                     }
-
-                    InlineStyleOperationAppender.Append(rendered, startIndex, operations);
                 }
 
                 operations.Add(new DocumentOperation(

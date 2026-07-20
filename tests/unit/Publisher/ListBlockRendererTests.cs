@@ -51,8 +51,8 @@ public sealed class ListBlockRendererTests
         Assert.Equal("Root\n\tOne\n\t\tDeep\n\tTail\n", operations[0].Text);
         Assert.Collection(
             operations.Skip(4),
-            operation => AssertStyleOperation(operation, 6, 9, InlineTextStyle.Bold),
             operation => AssertStyleOperation(operation, 6, 9, InlineTextStyle.Code),
+            operation => AssertStyleOperation(operation, 6, 9, InlineTextStyle.Bold),
             operation => AssertStyleOperation(operation, 10, 14, InlineTextStyle.Italic),
             operation => AssertStyleOperation(operation, 15, 19, InlineTextStyle.Link, url));
     }

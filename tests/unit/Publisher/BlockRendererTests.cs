@@ -99,8 +99,8 @@ public sealed class BlockRendererTests
         Assert.Equal(DocumentOperationKind.ApplyQuoteBlockStyle, operations[1].Kind);
         Assert.Equal(3, operations[1].Level);
         AssertStyle(operations[2], 5, 11, InlineTextStyle.Italic);
-        AssertStyle(operations[3], 7, 11, InlineTextStyle.Bold);
-        AssertStyle(operations[4], 7, 11, InlineTextStyle.Code);
+        AssertStyle(operations[3], 7, 11, InlineTextStyle.Code);
+        AssertStyle(operations[4], 7, 11, InlineTextStyle.Bold);
     }
 
     [Fact]
