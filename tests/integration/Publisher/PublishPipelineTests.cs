@@ -121,6 +121,66 @@ public sealed class PublishPipelineTests
     }
 
     [Fact]
+    public async Task PublishAsync_CompilesFencedCodeInlineCodeAndNestedQuotes()
+    {
+        var tempPath = Path.Combine(Path.GetTempPath(), $"vmf-publisher-code-quote-{Guid.NewGuid():N}.md");
+        await File.WriteAllTextAsync(
+            tempPath,
+            "# `Code and Quote`\n\n" +
+            "Use `dotnet test` before publishing.\n\n" +
+            "```csharp\n" +
+            "var text = \"**not bold**\";\n" +
+            "Console.WriteLine(text);\n" +
+            "```\n\n" +
+            "> A quoted paragraph with **bold** and `inline code`.\n" +
+            ">> A nested quote with [a link](https://example.com).\n\n" +
+            "After quote.\n");
+        var target = new RecordingPublisher();
+        var service = new PublishService(
+            new MarkdownFileDocumentLoader(),
+            new SimpleMarkdownParser(),
+            new DocumentCompiler(),
+            target);
+
+        try
+        {
+            var result = await service.PublishAsync(new PublishRequest(tempPath), CancellationToken.None);
+
+            Assert.True(result.IsSuccess);
+            var document = Assert.IsType<CompiledDocument>(target.Document);
+            var operations = Assert.IsType<BatchUpdateStep>(Assert.Single(document.Steps)).Operations;
+            Assert.Contains(
+                operations,
+                operation => operation.Kind == DocumentOperationKind.InsertText &&
+                    operation.Text == "var text = \"**not bold**\";\nConsole.WriteLine(text);\n");
+            Assert.Contains(
+                operations,
+                operation => operation.Kind == DocumentOperationKind.ApplyCodeBlockStyle);
+            Assert.Equal(
+                2,
+                operations.Count(operation => operation.Kind == DocumentOperationKind.ApplyQuoteBlockStyle));
+            Assert.Contains(
+                operations,
+                operation => operation.Kind == DocumentOperationKind.ApplyQuoteBlockStyle &&
+                    operation.Level == 2);
+            Assert.True(
+                operations.Count(operation => operation.InlineStyle == InlineTextStyle.Code) >= 4);
+            Assert.Contains(
+                operations,
+                operation => operation.Kind == DocumentOperationKind.InsertText &&
+                    operation.Text == "After quote.\n");
+            Assert.DoesNotContain(
+                operations.Where(operation => operation.Kind == DocumentOperationKind.InsertText),
+                operation => operation.Text?.Contains("```", StringComparison.Ordinal) == true ||
+                    operation.Text?.Contains("csharp", StringComparison.Ordinal) == true);
+        }
+        finally
+        {
+            File.Delete(tempPath);
+        }
+    }
+
+    [Fact]
     public async Task PublishAsync_PreservesPublishPipelineErrorCode()
     {
         var tempPath = Path.Combine(Path.GetTempPath(), $"vmf-publisher-error-{Guid.NewGuid():N}.md");

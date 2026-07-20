@@ -61,6 +61,12 @@ public sealed class PublishPlanExecutorTests
             operation => operation.Kind == DocumentOperationKind.UpdateTextStyle &&
                 operation.InlineStyle == InlineTextStyle.Italic &&
                 operation.StartIndex == 24);
+        Assert.Contains(
+            tableOperations,
+            operation => operation.Kind == DocumentOperationKind.UpdateTextStyle &&
+                operation.InlineStyle == InlineTextStyle.Code &&
+                operation.StartIndex == 24 &&
+                operation.EndIndex == 25);
         Assert.Equal(100, Assert.Single(client.Applied[2]).StartIndex);
     }
 
@@ -157,7 +163,7 @@ public sealed class PublishPlanExecutorTests
         [new TableRow([
             new TableCell([new TextInline("A")]),
             TableCell.Empty(),
-            new TableCell([new ItalicInline([new TextInline("B")])]),
+            new TableCell([new ItalicInline([new CodeInline("B")])]),
         ])]);
 
     private static GoogleDocumentSnapshot Snapshot(

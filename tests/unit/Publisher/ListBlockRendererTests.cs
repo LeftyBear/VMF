@@ -39,7 +39,7 @@ public sealed class ListBlockRendererTests
         var block = new ListBlock(
         [
             ListItem.FromText(ListKind.Unordered, "Root", 0),
-            new ListItem(ListKind.Ordered, [new BoldInline([new TextInline("One")])], 1),
+            new ListItem(ListKind.Ordered, [new BoldInline([new CodeInline("One")])], 1),
             new ListItem(ListKind.Ordered, [new ItalicInline([new TextInline("Deep")])], 2),
             new ListItem(ListKind.Unordered, [new LinkInline([new TextInline("Tail")], url)], 1),
         ]);
@@ -52,6 +52,7 @@ public sealed class ListBlockRendererTests
         Assert.Collection(
             operations.Skip(4),
             operation => AssertStyleOperation(operation, 6, 9, InlineTextStyle.Bold),
+            operation => AssertStyleOperation(operation, 6, 9, InlineTextStyle.Code),
             operation => AssertStyleOperation(operation, 10, 14, InlineTextStyle.Italic),
             operation => AssertStyleOperation(operation, 15, 19, InlineTextStyle.Link, url));
     }

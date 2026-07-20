@@ -71,22 +71,33 @@ internal static class CliApplication
             ListIndentSize = MarkdownListParserOptions.DefaultListIndentSize,
             MaxListDepth = MarkdownListParserOptions.DefaultMaxListDepth,
         }, inlineParser);
+        var markdownCodeBlockParser = new MarkdownCodeBlockParser();
         var markdownTableParser = new MarkdownTableParser(inlineParser);
+        var markdownQuoteParser = new MarkdownQuoteParser(inlineParser);
         var inlineRenderer = new InlineContentRenderer();
         var paragraphBlockRenderer = new ParagraphBlockRenderer(inlineRenderer);
         var headingBlockRenderer = new HeadingBlockRenderer(inlineRenderer);
         var listBlockRenderer = new ListBlockRenderer(inlineRenderer);
+        var codeBlockRenderer = new CodeBlockRenderer();
+        var quoteBlockRenderer = new QuoteBlockRenderer(inlineRenderer);
         IGeneratedBlockRenderer generatedBlockRenderer = new GeneratedBlockRenderer(
             paragraphBlockRenderer,
             headingBlockRenderer,
-            listBlockRenderer);
+            listBlockRenderer,
+            codeBlockRenderer,
+            quoteBlockRenderer);
         IPublishPlanExecutor publishPlanExecutor = new PublishPlanExecutor(
             serviceFactory.CreateDocsClient(),
             inlineRenderer);
         var googlePublisher = new GoogleDocsPublisher(serviceFactory, options, publishPlanExecutor);
         IPublishService publishService = new PublishService(
             new MarkdownFileDocumentLoader(),
-            new SimpleMarkdownParser(markdownListParser, markdownTableParser, inlineParser),
+            new SimpleMarkdownParser(
+                markdownCodeBlockParser,
+                markdownListParser,
+                markdownTableParser,
+                markdownQuoteParser,
+                inlineParser),
             new DocumentCompiler(generatedBlockRenderer),
             googlePublisher);
 
