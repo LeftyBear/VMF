@@ -10,6 +10,7 @@ public sealed class GeneratedBlockRenderer : IGeneratedBlockRenderer
     private readonly HeadingBlockRenderer headingRenderer;
     private readonly ListBlockRenderer listRenderer;
     private readonly CodeBlockRenderer codeRenderer;
+    private readonly QuoteBlockRenderer quoteRenderer;
 
     /// <summary>Initializes a renderer with default block renderers.</summary>
     public GeneratedBlockRenderer()
@@ -17,7 +18,8 @@ public sealed class GeneratedBlockRenderer : IGeneratedBlockRenderer
             new ParagraphBlockRenderer(),
             new HeadingBlockRenderer(),
             new ListBlockRenderer(),
-            new CodeBlockRenderer())
+            new CodeBlockRenderer(),
+            new QuoteBlockRenderer())
     {
     }
 
@@ -43,6 +45,27 @@ public sealed class GeneratedBlockRenderer : IGeneratedBlockRenderer
         HeadingBlockRenderer headingRenderer,
         ListBlockRenderer listRenderer,
         CodeBlockRenderer codeRenderer)
+        : this(
+            paragraphRenderer,
+            headingRenderer,
+            listRenderer,
+            codeRenderer,
+            new QuoteBlockRenderer())
+    {
+    }
+
+    /// <summary>Initializes a renderer with registered block renderers.</summary>
+    /// <param name="paragraphRenderer">The paragraph renderer.</param>
+    /// <param name="headingRenderer">The heading renderer.</param>
+    /// <param name="listRenderer">The list renderer.</param>
+    /// <param name="codeRenderer">The fenced-code renderer.</param>
+    /// <param name="quoteRenderer">The block-quote renderer.</param>
+    public GeneratedBlockRenderer(
+        ParagraphBlockRenderer paragraphRenderer,
+        HeadingBlockRenderer headingRenderer,
+        ListBlockRenderer listRenderer,
+        CodeBlockRenderer codeRenderer,
+        QuoteBlockRenderer quoteRenderer)
     {
         this.paragraphRenderer = paragraphRenderer
             ?? throw new ArgumentNullException(nameof(paragraphRenderer));
@@ -50,6 +73,7 @@ public sealed class GeneratedBlockRenderer : IGeneratedBlockRenderer
             ?? throw new ArgumentNullException(nameof(headingRenderer));
         this.listRenderer = listRenderer ?? throw new ArgumentNullException(nameof(listRenderer));
         this.codeRenderer = codeRenderer ?? throw new ArgumentNullException(nameof(codeRenderer));
+        this.quoteRenderer = quoteRenderer ?? throw new ArgumentNullException(nameof(quoteRenderer));
     }
 
     /// <inheritdoc />
@@ -95,6 +119,15 @@ public sealed class GeneratedBlockRenderer : IGeneratedBlockRenderer
             {
                 index = codeRenderer.Render(
                     block.Code ?? throw new InvalidOperationException("A code block requires code content."),
+                    index,
+                    operations);
+                continue;
+            }
+
+            if (block.Kind == DocumentBlockKind.Quote)
+            {
+                index = quoteRenderer.Render(
+                    block.Quote ?? throw new InvalidOperationException("A quote block requires quote content."),
                     index,
                     operations);
                 continue;

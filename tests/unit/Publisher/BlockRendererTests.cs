@@ -81,6 +81,41 @@ public sealed class BlockRendererTests
         }
     }
 
+    [Fact]
+    public void QuoteBlockRenderer_AppliesParagraphIndentWholeQuoteItalicAndInlineStyles()
+    {
+        var block = new QuoteBlock(
+            3,
+            [
+                new TextInline("A "),
+                new BoldInline([new CodeInline("code")]),
+            ]);
+        var operations = new List<DocumentOperation>();
+
+        var nextIndex = new QuoteBlockRenderer().Render(block, 5, operations);
+
+        Assert.Equal(12, nextIndex);
+        Assert.Equal("A code\n", operations[0].Text);
+        Assert.Equal(DocumentOperationKind.ApplyQuoteBlockStyle, operations[1].Kind);
+        Assert.Equal(3, operations[1].Level);
+        AssertStyle(operations[2], 5, 11, InlineTextStyle.Italic);
+        AssertStyle(operations[3], 7, 11, InlineTextStyle.Bold);
+        AssertStyle(operations[4], 7, 11, InlineTextStyle.Code);
+    }
+
+    [Fact]
+    public void QuoteBlockRenderer_PreservesEmptyQuoteLine()
+    {
+        var operations = new List<DocumentOperation>();
+
+        var nextIndex = new QuoteBlockRenderer().Render(new QuoteBlock(1, []), 1, operations);
+
+        Assert.Equal(2, nextIndex);
+        Assert.Equal("\n", operations[0].Text);
+        Assert.Equal(DocumentOperationKind.ApplyQuoteBlockStyle, operations[1].Kind);
+        Assert.Equal(2, operations.Count);
+    }
+
     private static void AssertStyle(
         DocumentOperation operation,
         int startIndex,

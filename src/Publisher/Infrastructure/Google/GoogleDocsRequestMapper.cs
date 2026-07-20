@@ -22,6 +22,7 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
                 DocumentOperationKind.UpdateTextStyle => MapTextStyle(operation),
                 DocumentOperationKind.UpdateParagraphAlignment => MapParagraphAlignment(operation),
                 DocumentOperationKind.ApplyCodeBlockStyle => MapCodeBlockStyle(operation),
+                DocumentOperationKind.ApplyQuoteBlockStyle => MapQuoteBlockStyle(operation),
                 _ => throw new InvalidOperationException($"Unsupported operation: {operation.Kind}"),
             });
         }
@@ -160,6 +161,31 @@ public sealed class GoogleDocsRequestMapper : IGoogleDocsRequestMapper
                     spaceBelow = Dimension(6),
                 },
                 fields = "indentStart,indentEnd,spaceAbove,spaceBelow",
+            },
+        };
+    }
+
+    private static object MapQuoteBlockStyle(DocumentOperation operation)
+    {
+        if (operation.EndIndex is null || operation.Level is null or < 1 or > 6)
+        {
+            throw new InvalidOperationException(
+                "ApplyQuoteBlockStyle requires a range and quote level 1 through 6.");
+        }
+
+        return new
+        {
+            updateParagraphStyle = new
+            {
+                range = new { startIndex = operation.StartIndex, endIndex = operation.EndIndex.Value },
+                paragraphStyle = new
+                {
+                    indentStart = Dimension(18 * operation.Level.Value),
+                    indentFirstLine = Dimension(0),
+                    spaceAbove = Dimension(3),
+                    spaceBelow = Dimension(3),
+                },
+                fields = "indentStart,indentFirstLine,spaceAbove,spaceBelow",
             },
         };
     }

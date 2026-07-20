@@ -174,4 +174,23 @@ public sealed class DocumentCompilerTests
         Assert.Equal(12, compiled.Operations[3].StartIndex);
         Assert.Equal("After\n", compiled.Operations[3].Text);
     }
+
+    [Fact]
+    public void Compile_RendersNestedQuoteBeforeFollowingParagraphWithoutIndexDrift()
+    {
+        var document = new DocumentModel([
+            new DocumentBlock(new QuoteBlock(6, [new CodeInline("Quoted")])),
+            new DocumentBlock(ParagraphBlock.FromText("After")),
+        ]);
+
+        var compiled = new DocumentCompiler().Compile(document, "Sample");
+
+        Assert.Equal("Quoted\n", compiled.Operations[0].Text);
+        Assert.Equal(DocumentOperationKind.ApplyQuoteBlockStyle, compiled.Operations[1].Kind);
+        Assert.Equal(6, compiled.Operations[1].Level);
+        Assert.Equal(InlineTextStyle.Italic, compiled.Operations[2].InlineStyle);
+        Assert.Equal(InlineTextStyle.Code, compiled.Operations[3].InlineStyle);
+        Assert.Equal(8, compiled.Operations[4].StartIndex);
+        Assert.Equal("After\n", compiled.Operations[4].Text);
+    }
 }

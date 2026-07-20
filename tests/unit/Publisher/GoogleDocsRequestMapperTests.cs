@@ -30,13 +30,14 @@ public sealed class GoogleDocsRequestMapperTests
                 20,
                 tableAlignment: TableAlignment.Right),
             new(DocumentOperationKind.ApplyCodeBlockStyle, 20, 30),
+            new(DocumentOperationKind.ApplyQuoteBlockStyle, 30, 40, level: 3),
         ];
 
         var json = new GoogleDocsRequestMapper().MapBatchUpdate(operations);
 
         using var document = JsonDocument.Parse(json);
         var requests = document.RootElement.GetProperty("requests");
-        Assert.Equal(10, requests.GetArrayLength());
+        Assert.Equal(11, requests.GetArrayLength());
         Assert.Equal("Heading\n", requests[0].GetProperty("insertText").GetProperty("text").GetString());
         Assert.Equal(
             "HEADING_1",
@@ -75,6 +76,15 @@ public sealed class GoogleDocsRequestMapperTests
             18,
             codeBlockRequest.GetProperty("paragraphStyle").GetProperty("indentStart")
                 .GetProperty("magnitude").GetDouble());
+        var quoteRequest = requests[10].GetProperty("updateParagraphStyle");
+        Assert.Equal(
+            "indentStart,indentFirstLine,spaceAbove,spaceBelow",
+            quoteRequest.GetProperty("fields").GetString());
+        var quoteStyle = quoteRequest.GetProperty("paragraphStyle");
+        Assert.Equal(54, quoteStyle.GetProperty("indentStart").GetProperty("magnitude").GetDouble());
+        Assert.Equal(0, quoteStyle.GetProperty("indentFirstLine").GetProperty("magnitude").GetDouble());
+        Assert.Equal(3, quoteStyle.GetProperty("spaceAbove").GetProperty("magnitude").GetDouble());
+        Assert.False(quoteStyle.TryGetProperty("borderLeft", out _));
     }
 
     private static void AssertTextStyle(

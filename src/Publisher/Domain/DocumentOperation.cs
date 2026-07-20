@@ -15,6 +15,8 @@ public enum DocumentOperationKind
     UpdateParagraphAlignment,
     /// <summary>Applies fenced-code paragraph formatting.</summary>
     ApplyCodeBlockStyle,
+    /// <summary>Applies block-quote paragraph formatting.</summary>
+    ApplyQuoteBlockStyle,
 }
 
 /// <summary>Represents one target-neutral document operation.</summary>
