@@ -52,12 +52,13 @@ the generation definitions instead.
 
 ## VMF Studio v2.0 Publisher PoC v0.1
 
-`VMF.Publisher.sln` contains the first Publisher PoC. It reads UTF-8 Markdown,
-converts headings, paragraphs, ordered, unordered, nested, or mixed lists, and
-pipe-delimited tables with bold, italic, bold-italic, and HTTP(S) link content
-into a neutral document model, compiles Google Docs operations, creates a native
-document through the Google Drive REST API, and applies content and text styles
-through the Google Docs REST API.
+`VMF.Publisher.sln` contains the first Publisher PoC. It reads UTF-8 Markdown;
+converts headings, paragraphs, ordered, unordered, nested, or mixed lists,
+pipe-delimited tables, fenced code blocks, and block quotes with bold, italic,
+bold-italic, inline-code, and HTTP(S) link content into a neutral document model;
+compiles Google Docs operations; creates a native document through the Google
+Drive REST API; and applies content, paragraph, and text styles through the
+Google Docs REST API.
 
 The four projects are:
 
@@ -178,14 +179,23 @@ Publish `samples/publisher-poc.md`, open the returned Document URL, and confirm:
 - table-cell bold, italic, and link styles are preserved without adding content
   to empty cells, and escaped pipes appear as ordinary `|` characters;
 - the paragraph after each table starts at the table `EndIndex` without range
-  drift.
+  drift;
+- fenced code omits its fences and language, preserves Markdown markers as
+  literal text, and uses Roboto Mono, a light gray background, 18 pt left/right
+  indentation, and 6 pt spacing;
+- inline code is preserved in paragraphs, headings, lists, quotes, and table
+  cells, including overlapping bold and link styles;
+- quote levels 1 through 6 use 18 pt incremental left indentation, 3 pt spacing,
+  and whole-quote italics while preserving nested inline styles;
+- empty quote lines remain present, excess quote depth normalizes to level 6,
+  and the paragraph after a quote has no quote indentation or italic leakage.
 
 Live verification evidence is recorded here after execution. Current status:
 **Verified on 2026-07-20 through Google Drive and Docs API publication plus Docs
-API readback of list presets, paragraph indentation, table structures, cell
-styles, and post-block paragraphs. Phase 2-2 inline TextStyle verification and
-Phase 2-3 Markdown table publication/readback and Google Docs visual comparison
-are complete. See the
+API readback of list presets, paragraph indentation, table structures, code and
+quote styles, cell styles, and post-block paragraphs. Phase 2-2 inline TextStyle,
+Phase 2-3 Markdown table, and Phase 2-4 code and quote publication/readback and
+Google Docs visual comparison are complete. See the
 [Publisher v1.0 Implementation Voyage Log](docs/development/Publisher_v1.0_Implementation_Voyage_Log.md).**
 
 ### PoC scope

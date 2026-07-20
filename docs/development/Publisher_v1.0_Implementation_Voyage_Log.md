@@ -204,3 +204,99 @@ text. The visible Google Docs rendering matched the API readback.
 
 No credential contents, access tokens, refresh tokens, or client secrets were
 captured in this record.
+
+## Phase 2-4: Code and Quote Live Verification
+
+| Field | Value |
+|---|---|
+| Date | 2026-07-20 |
+| Status | PASS |
+| Source | `samples/publisher-poc.md` |
+| Authentication | OAuth Desktop with persisted token reuse |
+| Destination | Configured Google Drive folder |
+| Document ID | `1C7ZdUxlJhhc4nc5P5yZAWODJ_BRfTqg1ACYb3m5LvOY` |
+| Document URL | <https://docs.google.com/document/d/1C7ZdUxlJhhc4nc5P5yZAWODJ_BRfTqg1ACYb3m5LvOY/edit> |
+| Verification surfaces | Publisher CLI, Google Docs API readback, and Google Docs UI in Chrome |
+
+### Execution and compatibility correction
+
+The complete sample was published with:
+
+```powershell
+dotnet run --project src/Publisher.Cli --configuration Release --no-build -- publish samples/publisher-poc.md
+```
+
+An initial live readback found that applying `weightedFontFamily` after `bold`
+removed the effective bold weight in Google Docs. Text-style operation ordering
+was corrected to apply code formatting before overlapping bold formatting, and
+table-header bold was likewise moved after cell inline styles. Unit and
+integration tests passed before the final publication above.
+
+`BorderLeft` was intentionally omitted because the compatibility fallback is
+the v1.0 contract: incremental left indentation plus whole-quote italics.
+
+### Fenced code and inline-code readback
+
+The opening and closing fences and the `csharp` language string were absent from
+the published text. The literal code occupied paragraphs 1583-1610 and
+1610-1635. `**not bold**` remained literal and had neither bold nor italic
+styling. Both lines read back with `weightedFontFamily.fontFamily=Roboto Mono`,
+light gray background color, 18 pt start/end indentation, and 6 pt space
+above/below. The generated code-style range excluded the required final newline.
+
+Inline code read back with Roboto Mono and the same background in every required
+context:
+
+| Context | Range | Text |
+|---|---:|---|
+| Paragraph | 1448-1459 | `dotnet test` |
+| Heading | 1648-1660 | `inline code` |
+| List | 1677-1688 | `dotnet test` |
+| Quote | 1931-1942 | `inline code` |
+| Table cell | 1820-1832 | `dotnet test` |
+
+The nested-list `inline code` and table-cell `bold code` both read back with
+`Bold=true` after the compatibility correction. The table-cell `linked code`
+retained both its code style and `https://example.com/code` link target.
+
+### Quote readback
+
+Quote levels 1 through 6 read back with start indentation of 18, 36, 54, 72,
+90, and 108 pt. The seven-marker sample also read back at 108 pt, confirming
+normalization to level 6. Every non-empty quote run was italic, while nested bold,
+link, and inline-code styles remained present. Space above and below was 3 pt;
+the requested zero first-line indentation was represented by the omitted API
+default value.
+
+The empty quote paragraph occupied 2107-2108 and retained its quote indentation.
+The final level-1 quote ended at 2152, and the following normal paragraph began
+at 2152 with no quote indentation or italic style. Malformed inline constructs
+remained literal and did not terminate publication.
+
+### Google Docs visual comparison
+
+The final document was opened in the authenticated Chrome profile. The code
+lines visibly used a monospaced face and light gray background without visible
+fences or language text. Inline code appeared in the heading, paragraph, list,
+table, and quote. Bold code was visibly bold in both list and table contexts.
+Quotes were italic and progressively indented through six levels; the excess
+level matched level 6, the empty quote line was visible as spacing, and `After
+quote.` returned to the normal paragraph position and style.
+
+### Success criteria
+
+| Criterion | Result |
+|---|---|
+| Fences and language are excluded from output | PASS |
+| Code-body Markdown remains literal | PASS |
+| Code font, background, indentation, and spacing read back correctly | PASS |
+| Final code newline is excluded from the generated background range | PASS |
+| Inline code works in all five required contexts | PASS |
+| Bold, italic, and link overlap remains effective | PASS |
+| Quote levels 1-6 and excess-depth normalization are correct | PASS |
+| Empty quote line and post-quote placement are preserved | PASS |
+| Malformed syntax completes without exception | PASS |
+| Google Docs API readback matches the Google Docs UI | PASS - visually confirmed in Chrome on 2026-07-20 |
+
+No credential contents, access tokens, refresh tokens, or client secrets were
+captured in this record.
