@@ -11,6 +11,9 @@ public enum InlineTextStyle
 
     /// <summary>Linked text.</summary>
     Link,
+
+    /// <summary>Inline code text.</summary>
+    Code,
 }
 
 /// <summary>Represents one relative inline style range.</summary>

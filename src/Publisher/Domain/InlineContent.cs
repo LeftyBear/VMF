@@ -22,6 +22,26 @@ public sealed class TextInline : InlineContent
     public string Text { get; }
 }
 
+/// <summary>Represents inline code whose contents are not parsed as Markdown.</summary>
+public sealed class CodeInline : InlineContent
+{
+    /// <summary>Initializes inline code.</summary>
+    /// <param name="text">The literal code text.</param>
+    public CodeInline(string text)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        if (text.Length == 0)
+        {
+            throw new ArgumentException("Inline code must not be empty.", nameof(text));
+        }
+
+        Text = text;
+    }
+
+    /// <summary>Gets the literal code text.</summary>
+    public string Text { get; }
+}
+
 /// <summary>Represents bold inline content.</summary>
 public sealed class BoldInline : InlineContent
 {

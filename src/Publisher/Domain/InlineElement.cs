@@ -49,6 +49,7 @@ internal static class InlineContentCompatibility
     internal static string GetText(InlineContent content) => content switch
     {
         TextInline text => text.Text,
+        CodeInline code => code.Text,
         BoldInline bold => string.Concat(bold.Content.Select(GetText)),
         ItalicInline italic => string.Concat(italic.Content.Select(GetText)),
         LinkInline link => string.Concat(link.Content.Select(GetText)),

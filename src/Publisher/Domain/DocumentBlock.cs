@@ -13,6 +13,60 @@ public enum DocumentBlockKind
     List,
     /// <summary>A table block with a header row.</summary>
     Table,
+    /// <summary>A fenced code block.</summary>
+    Code,
+    /// <summary>A block quote.</summary>
+    Quote,
+}
+
+/// <summary>Represents a fenced code block.</summary>
+public sealed class CodeBlock
+{
+    /// <summary>Initializes a fenced code block.</summary>
+    /// <param name="text">The literal code body without fences.</param>
+    /// <param name="language">The optional language string from the opening fence.</param>
+    public CodeBlock(string text, string language)
+    {
+        Text = text ?? throw new ArgumentNullException(nameof(text));
+        Language = language ?? throw new ArgumentNullException(nameof(language));
+    }
+
+    /// <summary>Gets the literal code body without fences.</summary>
+    public string Text { get; }
+
+    /// <summary>Gets the optional language string from the opening fence.</summary>
+    public string Language { get; }
+}
+
+/// <summary>Represents contiguous block-quote lines at one normalized level.</summary>
+public sealed class QuoteBlock
+{
+    /// <summary>Initializes a block quote.</summary>
+    /// <param name="level">The quote level from one through six.</param>
+    /// <param name="content">The parsed inline content; an empty sequence preserves an empty quote line.</param>
+    public QuoteBlock(int level, IEnumerable<InlineContent> content)
+    {
+        if (level is < 1 or > 6)
+        {
+            throw new ArgumentOutOfRangeException(nameof(level));
+        }
+
+        ArgumentNullException.ThrowIfNull(content);
+        var items = content.ToArray();
+        if (items.Any(item => item is null))
+        {
+            throw new ArgumentException("Quote content must not contain null items.", nameof(content));
+        }
+
+        Level = level;
+        Content = Array.AsReadOnly(items);
+    }
+
+    /// <summary>Gets the normalized quote level.</summary>
+    public int Level { get; }
+
+    /// <summary>Gets the parsed inline content.</summary>
+    public IReadOnlyList<InlineContent> Content { get; }
 }
 
 /// <summary>Represents a paragraph and its inline content.</summary>
@@ -73,7 +127,8 @@ public sealed class DocumentBlock
     /// <param name="level">The heading level, or zero for non-headings.</param>
     public DocumentBlock(DocumentBlockKind kind, IEnumerable<InlineContent> content, int level = 0)
     {
-        if (kind is DocumentBlockKind.List or DocumentBlockKind.Table)
+        if (kind is DocumentBlockKind.List or DocumentBlockKind.Table or
+            DocumentBlockKind.Code or DocumentBlockKind.Quote)
         {
             throw new ArgumentException(
                 "Use the strongly typed constructor for structured document blocks.",
@@ -131,6 +186,25 @@ public sealed class DocumentBlock
         Content = Array.Empty<InlineContent>();
     }
 
+    /// <summary>Initializes a fenced-code document block.</summary>
+    /// <param name="code">The fenced code content.</param>
+    public DocumentBlock(CodeBlock code)
+    {
+        Code = code ?? throw new ArgumentNullException(nameof(code));
+        Kind = DocumentBlockKind.Code;
+        Content = Array.Empty<InlineContent>();
+    }
+
+    /// <summary>Initializes a quote document block.</summary>
+    /// <param name="quote">The quote content.</param>
+    public DocumentBlock(QuoteBlock quote)
+    {
+        Quote = quote ?? throw new ArgumentNullException(nameof(quote));
+        Kind = DocumentBlockKind.Quote;
+        Level = quote.Level;
+        Content = quote.Content;
+    }
+
     /// <summary>Gets the block kind.</summary>
     public DocumentBlockKind Kind { get; }
 
@@ -148,4 +222,10 @@ public sealed class DocumentBlock
 
     /// <summary>Gets the table content when <see cref="Kind"/> is <see cref="DocumentBlockKind.Table"/>.</summary>
     public TableBlock? Table { get; }
+
+    /// <summary>Gets the code content when <see cref="Kind"/> is <see cref="DocumentBlockKind.Code"/>.</summary>
+    public CodeBlock? Code { get; }
+
+    /// <summary>Gets the quote content when <see cref="Kind"/> is <see cref="DocumentBlockKind.Quote"/>.</summary>
+    public QuoteBlock? Quote { get; }
 }
