@@ -25,6 +25,9 @@ public sealed class GooglePublisherOptions
     /// <summary>Gets or sets the optional destination Google Drive folder identifier.</summary>
     public string FolderId { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the Drive folder used only for temporary image hosting.</summary>
+    public string TemporaryImageFolderId { get; set; } = string.Empty;
+
     /// <summary>Gets or sets the application name sent to Google services.</summary>
     public string ApplicationName { get; set; } = "VMF Studio Publisher PoC";
 }
