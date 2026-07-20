@@ -211,8 +211,7 @@ quote styles, cell styles, and post-block paragraphs. Phase 2-2 inline TextStyle
 Phase 2-3 Markdown table, and Phase 2-4 code and quote publication/readback and
 Google Docs visual comparison are complete. Phase 2-5 local and remote image
 publication, Docs API readback, sizing, following-index handling, and temporary
-Drive cleanup are also complete; its Chrome visual check is pending local
-native-host registration repair. See the
+Drive cleanup and Chrome visual comparison are also complete. See the
 [Publisher v1.0 Implementation Voyage Log](docs/development/Publisher_v1.0_Implementation_Voyage_Log.md).**
 
 ### PoC scope

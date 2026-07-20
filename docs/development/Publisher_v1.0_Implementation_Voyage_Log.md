@@ -311,7 +311,7 @@ captured in this record.
 | Live Google Docs publication | PASS |
 | Document ID | `1aD78YrEaHAFsoy1-QUq4Qwhq06A_scVBLn7zD_Hove4` |
 | Document URL | <https://docs.google.com/document/d/1aD78YrEaHAFsoy1-QUq4Qwhq06A_scVBLn7zD_Hove4/edit> |
-| Verification surfaces | Publisher CLI and Google Docs API readback; Chrome blocked by local native-host registration |
+| Verification surfaces | Publisher CLI, Google Docs API readback, and Google Docs UI in Chrome |
 | Source | `samples/publisher-poc.md` and `samples/images/publisher-image-sample.png` |
 
 ### Implemented behavior
@@ -371,9 +371,17 @@ success. Two expected `IMAGE_ALT_TEXT_UPDATE_FAILED` warnings confirmed that
 both Alt Text values remained in the model but could not be mapped to unsupported
 Title or Description request fields.
 
-Chrome visual verification could not be completed. Chrome was installed and
-running, and the ChatGPT Chrome Extension was installed and enabled in the
-selected profile, but the native messaging host registry key was absent. The
-Chrome control workflow prohibits repairing that registration automatically.
+### Google Docs visual comparison
+
+After the native messaging host was re-registered, the final document was
+opened in the authenticated Chrome profile. The local Publisher pipeline image
+and remote landscape image were both visible, START-aligned at the left margin,
+and visually matched the API-verified 450 pt maximum-width plan while retaining
+their expected aspect ratios. The local-image following paragraph appeared
+immediately after the first image, and the remote-image following paragraph
+appeared immediately after the second, with no overlap or index drift. The
+subsequent malformed-syntax paragraph remained ordinary literal text on the
+next page.
+
 No access token, credential content, image public URI, or temporary Drive file
 identifier was logged.
