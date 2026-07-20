@@ -53,9 +53,10 @@ the generation definitions instead.
 ## VMF Studio v2.0 Publisher PoC v0.1
 
 `VMF.Publisher.sln` contains the first Publisher PoC. It reads UTF-8 Markdown,
-converts headings, paragraphs, and unordered-list items into a neutral document
-model, compiles Google Docs operations, creates a native document through the
-Google Drive REST API, and applies content through the Google Docs REST API.
+converts headings, paragraphs, and ordered, unordered, nested, or mixed lists
+into a neutral document model, compiles Google Docs operations, creates a native
+document through the Google Drive REST API, and applies content through the
+Google Docs REST API.
 
 The four projects are:
 
@@ -160,15 +161,19 @@ Publish `samples/publisher-poc.md`, open the returned Document URL, and confirm:
 - the returned Document ID matches the ID embedded in the Document URL;
 - level 1 and level 2 headings appear with heading styles;
 - the paragraph appears as a normal paragraph;
-- all three checklist items appear as an unordered list.
+- unordered items use disc, circle, and square bullets by nesting level;
+- ordered items use decimal, alpha, and Roman markers by nesting level;
+- the sample's four nesting levels and mixed list kinds are preserved;
+- the paragraph after the list starts at the expected position.
 
 Live verification evidence is recorded here after execution. Current status:
-**Pending local OAuth Desktop client credentials and My Drive Folder ID.**
+**Verified on 2026-07-20 through Google Drive and Docs API publication plus Docs
+API readback of list presets, paragraph indentation, and the post-list paragraph.**
 
 ### PoC scope
 
-Not implemented in v0.1: tables, images, footnotes, embedded HTML, ordered
-lists, nested lists, and inline emphasis/link styling.
+Not implemented in v0.1: tables, images, footnotes, embedded HTML, and inline
+emphasis/link styling.
 
 The current official VMF Studio release artifact is:
 

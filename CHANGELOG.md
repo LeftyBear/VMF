@@ -8,6 +8,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added Publisher Phase 2-1 ordered, unordered, nested, and mixed Markdown list support.
+- Added configurable list indentation and depth normalization with defaults of two spaces and six levels.
+- Added Google Docs list rendering with bullet/number presets and post-list index correction.
+- Added parser, renderer, and publish-pipeline coverage plus a nested-list live-validation sample.
 - Started VMF Studio v2.0 Publisher PoC v0.1 with a .NET solution, layered Publisher library, CLI, unit tests, and integration tests.
 - Added minimal Markdown publication support for headings, paragraphs, and unordered-list items through separated Google Drive and Google Docs REST clients.
 - Added the Publisher live-validation Markdown sample and local OAuth Desktop configuration example.
