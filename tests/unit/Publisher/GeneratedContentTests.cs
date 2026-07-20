@@ -38,6 +38,19 @@ public sealed class GeneratedContentTests
         Assert.Throws<ArgumentOutOfRangeException>(() => Item(ListKind.Unordered, -1, "Invalid"));
     }
 
+    [Fact]
+    public void PlainTextFactoriesPreserveLegacyCallSites()
+    {
+        var paragraph = ParagraphBlock.FromText("Paragraph");
+        var heading = HeadingBlock.FromText(2, "Heading");
+        var item = ListItem.FromText(ListKind.Unordered, "Item", 0);
+
+        Assert.Equal("Paragraph", Assert.IsType<TextInline>(paragraph.Content[0]).Text);
+        Assert.Equal("Heading", Assert.IsType<TextInline>(heading.Content[0]).Text);
+        Assert.Equal("Item", Assert.IsType<TextInline>(item.Content[0]).Text);
+        Assert.Equal("Item", item.Inlines[0].Text);
+    }
+
     private static ListItem Item(ListKind kind, int depth, string text) =>
         new(kind, [new InlineElement(InlineElementKind.Text, text)], depth);
 }

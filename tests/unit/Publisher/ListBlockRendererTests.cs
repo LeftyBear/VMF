@@ -32,6 +32,30 @@ public sealed class ListBlockRendererTests
             operation => AssertListOperation(operation, ListKind.Unordered, 17, 30));
     }
 
+    [Fact]
+    public void Render_AdjustsInlineStyleRangesAfterEveryLeadingTabIsRemoved()
+    {
+        var url = new Uri("https://example.com/");
+        var block = new ListBlock(
+        [
+            ListItem.FromText(ListKind.Unordered, "Root", 0),
+            new ListItem(ListKind.Ordered, [new BoldInline([new TextInline("One")])], 1),
+            new ListItem(ListKind.Ordered, [new ItalicInline([new TextInline("Deep")])], 2),
+            new ListItem(ListKind.Unordered, [new LinkInline([new TextInline("Tail")], url)], 1),
+        ]);
+        var operations = new List<DocumentOperation>();
+
+        var nextIndex = new ListBlockRenderer().Render(block, 1, operations);
+
+        Assert.Equal(20, nextIndex);
+        Assert.Equal("Root\n\tOne\n\t\tDeep\n\tTail\n", operations[0].Text);
+        Assert.Collection(
+            operations.Skip(4),
+            operation => AssertStyleOperation(operation, 6, 9, InlineTextStyle.Bold),
+            operation => AssertStyleOperation(operation, 10, 14, InlineTextStyle.Italic),
+            operation => AssertStyleOperation(operation, 15, 19, InlineTextStyle.Link, url));
+    }
+
     private static ListItem Item(ListKind kind, int depth, string text) =>
         new(kind, [new InlineElement(InlineElementKind.Text, text)], depth);
 
@@ -45,5 +69,19 @@ public sealed class ListBlockRendererTests
         Assert.Equal(kind, operation.ListKind);
         Assert.Equal(startIndex, operation.StartIndex);
         Assert.Equal(endIndex, operation.EndIndex);
+    }
+
+    private static void AssertStyleOperation(
+        DocumentOperation operation,
+        int startIndex,
+        int endIndex,
+        InlineTextStyle style,
+        Uri? url = null)
+    {
+        Assert.Equal(DocumentOperationKind.UpdateTextStyle, operation.Kind);
+        Assert.Equal(startIndex, operation.StartIndex);
+        Assert.Equal(endIndex, operation.EndIndex);
+        Assert.Equal(style, operation.InlineStyle);
+        Assert.Equal(url, operation.Url);
     }
 }

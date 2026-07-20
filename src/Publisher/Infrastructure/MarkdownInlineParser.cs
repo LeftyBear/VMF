@@ -64,19 +64,45 @@ public sealed class MarkdownInlineParser
                 continue;
             }
 
-            if (markdown[index] == '[' && TryParseLink(markdown, ref index, depth, out var link))
+            if (markdown[index] == '[')
             {
-                FlushText(result, text);
-                result.Add(link);
-                continue;
+                var linkStart = index;
+                if (TryParseLink(markdown, ref index, depth, out var link, out var linkFallbackEnd))
+                {
+                    FlushText(result, text);
+                    result.Add(link);
+                    continue;
+                }
+
+                if (linkFallbackEnd > linkStart)
+                {
+                    text.Append(Unescape(markdown[linkStart..linkFallbackEnd]));
+                    index = linkFallbackEnd;
+                    continue;
+                }
             }
 
-            if ((markdown[index] == '*' || markdown[index] == '_') &&
-                TryParseDelimited(markdown, ref index, depth, out var styled))
+            if (markdown[index] == '*' || markdown[index] == '_')
             {
-                FlushText(result, text);
-                result.Add(styled);
-                continue;
+                var delimiterStart = index;
+                if (TryParseDelimited(
+                    markdown,
+                    ref index,
+                    depth,
+                    out var styled,
+                    out var delimiterFallbackEnd))
+                {
+                    FlushText(result, text);
+                    result.Add(styled);
+                    continue;
+                }
+
+                if (delimiterFallbackEnd > delimiterStart)
+                {
+                    text.Append(Unescape(markdown[delimiterStart..delimiterFallbackEnd]));
+                    index = delimiterFallbackEnd;
+                    continue;
+                }
             }
 
             text.Append(markdown[index]);
@@ -92,9 +118,11 @@ public sealed class MarkdownInlineParser
         string markdown,
         ref int index,
         int depth,
-        out InlineContent styled)
+        out InlineContent styled,
+        out int fallbackEnd)
     {
         styled = null!;
+        fallbackEnd = index;
         if (depth >= maxInlineDepth)
         {
             return false;
@@ -102,27 +130,25 @@ public sealed class MarkdownInlineParser
 
         var marker = markdown[index];
         var available = CountRun(markdown, index, marker);
-        foreach (var length in GetDelimiterLengths(available))
+        var length = Math.Min(available, 3);
+        var start = index;
+        var delimiter = new string(marker, length);
+        index += length;
+        var content = ParseSequence(markdown, ref index, delimiter, depth + 1, out var closed);
+        fallbackEnd = index;
+        if (closed && HasVisibleContent(content))
         {
-            var start = index;
-            var delimiter = new string(marker, length);
-            index += length;
-            var content = ParseSequence(markdown, ref index, delimiter, depth + 1, out var closed);
-            if (closed && HasVisibleContent(content))
+            styled = length switch
             {
-                styled = length switch
-                {
-                    3 => new BoldInline([new ItalicInline(content)]),
-                    2 => new BoldInline(content),
-                    1 => new ItalicInline(content),
-                    _ => throw new InvalidOperationException("Unsupported inline delimiter length."),
-                };
-                return true;
-            }
-
-            index = start;
+                3 => new BoldInline([new ItalicInline(content)]),
+                2 => new BoldInline(content),
+                1 => new ItalicInline(content),
+                _ => throw new InvalidOperationException("Unsupported inline delimiter length."),
+            };
+            return true;
         }
 
+        index = start;
         return false;
     }
 
@@ -130,9 +156,11 @@ public sealed class MarkdownInlineParser
         string markdown,
         ref int index,
         int depth,
-        out InlineContent link)
+        out InlineContent link,
+        out int fallbackEnd)
     {
         link = null!;
+        fallbackEnd = index;
         if (depth >= maxInlineDepth)
         {
             return false;
@@ -146,11 +174,14 @@ public sealed class MarkdownInlineParser
             return false;
         }
 
-        var urlEnd = FindUnescaped(markdown, labelEnd + 2, ')');
+        var urlEnd = FindUrlEnd(markdown, labelEnd + 2);
         if (urlEnd < 0)
         {
+            fallbackEnd = markdown.Length;
             return false;
         }
+
+        fallbackEnd = urlEnd + 1;
 
         var urlText = Unescape(markdown[(labelEnd + 2)..urlEnd]);
         if (!TryCreateHttpUrl(urlText, out var url))
@@ -206,6 +237,32 @@ public sealed class MarkdownInlineParser
         return -1;
     }
 
+    private static int FindUrlEnd(string source, int startIndex)
+    {
+        var nestedParentheses = 0;
+        for (var index = startIndex; index < source.Length; index++)
+        {
+            if (source[index] == '\\' &&
+                index + 1 < source.Length &&
+                char.IsPunctuation(source[index + 1]))
+            {
+                index++;
+                continue;
+            }
+
+            if (source[index] == '(')
+            {
+                nestedParentheses++;
+            }
+            else if (source[index] == ')' && nestedParentheses-- == 0)
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
     private static string Unescape(string value)
     {
         var result = new StringBuilder(value.Length);
@@ -252,25 +309,10 @@ public sealed class MarkdownInlineParser
         return length;
     }
 
-    private static IEnumerable<int> GetDelimiterLengths(int available)
-    {
-        if (available >= 3)
-        {
-            yield return 3;
-        }
-
-        if (available >= 2)
-        {
-            yield return 2;
-        }
-
-        yield return 1;
-    }
-
     private static bool HasVisibleContent(IEnumerable<InlineContent> content) =>
         content.Any(item => item switch
         {
-            TextInline text => text.Text.Length > 0,
+            TextInline text => !string.IsNullOrWhiteSpace(text.Text),
             BoldInline bold => HasVisibleContent(bold.Content),
             ItalicInline italic => HasVisibleContent(italic.Content),
             LinkInline link => HasVisibleContent(link.Content),

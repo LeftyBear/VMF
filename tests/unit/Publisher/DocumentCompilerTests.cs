@@ -78,4 +78,29 @@ public sealed class DocumentCompilerTests
         Assert.Equal(13, compiled.Operations[3].StartIndex);
         Assert.Equal("After\n", compiled.Operations[3].Text);
     }
+
+    [Fact]
+    public void Compile_InlineStylesDoNotShiftFollowingBlockIndex()
+    {
+        var document = new DocumentModel(
+        [
+            new DocumentBlock(new ParagraphBlock(
+            [
+                new BoldInline([
+                    new ItalicInline([new TextInline("Styled")]),
+                ]),
+            ])),
+            new DocumentBlock(ParagraphBlock.FromText("After")),
+        ]);
+
+        var compiled = new DocumentCompiler().Compile(document, "Sample");
+
+        Assert.Equal(DocumentOperationKind.InsertText, compiled.Operations[0].Kind);
+        Assert.Equal("Styled\n", compiled.Operations[0].Text);
+        Assert.Equal(DocumentOperationKind.UpdateTextStyle, compiled.Operations[1].Kind);
+        Assert.Equal(DocumentOperationKind.UpdateTextStyle, compiled.Operations[2].Kind);
+        Assert.Equal(DocumentOperationKind.InsertText, compiled.Operations[3].Kind);
+        Assert.Equal(8, compiled.Operations[3].StartIndex);
+        Assert.Equal("After\n", compiled.Operations[3].Text);
+    }
 }

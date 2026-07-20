@@ -78,4 +78,18 @@ public sealed class MarkdownParserTests
 
         Assert.Empty(document.Blocks);
     }
+
+    [Fact]
+    public void Parse_AppliesInlineParsingToHeadingsParagraphsAndListItems()
+    {
+        const string markdown =
+            "# **Bold heading**\n\nParagraph with _italic_.\n\n- [**linked** label](https://example.com)\n";
+
+        var document = new SimpleMarkdownParser().Parse(markdown);
+
+        Assert.IsType<BoldInline>(document.Blocks[0].Content[0]);
+        Assert.IsType<ItalicInline>(document.Blocks[1].Content[1]);
+        var link = Assert.IsType<LinkInline>(document.Blocks[2].List?.Items[0].Content[0]);
+        Assert.IsType<BoldInline>(link.Content[0]);
+    }
 }

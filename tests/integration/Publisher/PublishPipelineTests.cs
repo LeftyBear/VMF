@@ -12,7 +12,7 @@ public sealed class PublishPipelineTests
         var tempPath = Path.Combine(Path.GetTempPath(), $"vmf-publisher-{Guid.NewGuid():N}.md");
         await File.WriteAllTextAsync(
             tempPath,
-            "# Sample\n\n- First\n  1. Ordered\n    - Deep\n\nAfter list.\n");
+            "# **Sample**\n\n- First\n  1. **Ordered**\n    - [_Deep_](https://example.com)\n\nAfter **list**.\n");
         var target = new RecordingPublisher();
         var service = new PublishService(
             new MarkdownFileDocumentLoader(),
@@ -40,9 +40,28 @@ public sealed class PublishPipelineTests
                     && operation.ListKind == ListKind.Ordered);
             Assert.Contains(
                 target.Document.Operations,
+                operation => operation.Kind == DocumentOperationKind.UpdateTextStyle
+                    && operation.InlineStyle == InlineTextStyle.Bold);
+            Assert.Contains(
+                target.Document.Operations,
+                operation => operation.Kind == DocumentOperationKind.UpdateTextStyle
+                    && operation.InlineStyle == InlineTextStyle.Italic);
+            Assert.Contains(
+                target.Document.Operations,
+                operation => operation.Kind == DocumentOperationKind.UpdateTextStyle
+                    && operation.InlineStyle == InlineTextStyle.Link
+                    && operation.Url == new Uri("https://example.com/"));
+            Assert.Contains(
+                target.Document.Operations,
                 operation => operation.Kind == DocumentOperationKind.InsertText
                     && operation.StartIndex == 27
                     && operation.Text == "After list.\n");
+            Assert.Contains(
+                target.Document.Operations,
+                operation => operation.Kind == DocumentOperationKind.UpdateTextStyle
+                    && operation.InlineStyle == InlineTextStyle.Bold
+                    && operation.StartIndex == 33
+                    && operation.EndIndex == 37);
         }
         finally
         {

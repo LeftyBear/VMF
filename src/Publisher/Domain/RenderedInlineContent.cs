@@ -37,7 +37,8 @@ public sealed class InlineStyleRange
         {
             ArgumentNullException.ThrowIfNull(url);
             if (!url.IsAbsoluteUri ||
-                (url.Scheme != Uri.UriSchemeHttp && url.Scheme != Uri.UriSchemeHttps))
+                (url.Scheme != Uri.UriSchemeHttp && url.Scheme != Uri.UriSchemeHttps) ||
+                string.IsNullOrWhiteSpace(url.Host))
             {
                 throw new ArgumentException(
                     "A link style requires an absolute HTTP or HTTPS URI.",
