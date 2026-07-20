@@ -90,7 +90,7 @@ before local-image hosting and insertion.
 This paragraph follows the local image and verifies that its position comes from
 the image paragraph EndIndex returned by Google Docs.
 
-![Remote Markdown sample](https://raw.githubusercontent.com/github/explore/main/topics/markdown/markdown.png)
+![Remote public PNG sample](https://www.gstatic.com/webp/gallery/1.png)
 
 This paragraph follows the remote image and verifies that redirect-safe remote
 metadata inspection and the image paragraph EndIndex preserve subsequent text.

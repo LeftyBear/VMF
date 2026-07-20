@@ -308,7 +308,10 @@ captured in this record.
 | Date | 2026-07-20 |
 | Implementation status | COMPLETE |
 | Automated verification | PASS |
-| Live Google Docs publication | PENDING explicit approval for external sample/image upload |
+| Live Google Docs publication | PASS |
+| Document ID | `1aD78YrEaHAFsoy1-QUq4Qwhq06A_scVBLn7zD_Hove4` |
+| Document URL | <https://docs.google.com/document/d/1aD78YrEaHAFsoy1-QUq4Qwhq06A_scVBLn7zD_Hove4/edit> |
+| Verification surfaces | Publisher CLI and Google Docs API readback; Chrome blocked by local native-host registration |
 | Source | `samples/publisher-poc.md` and `samples/images/publisher-image-sample.png` |
 
 ### Implemented behavior
@@ -331,7 +334,8 @@ only through insertion/readback. Cleanup runs in `finally`; cleanup failure is
 logged without hiding an earlier exception.
 
 Google Docs insertion requests specify calculated width/height and START
-paragraph alignment. Each insertion is read back to verify its
+paragraph alignment. A newline immediately after the inline object terminates
+the independent image paragraph. Each insertion is read back to verify its
 `InlineObjectElement`, `InlineObjectId`, and actual size. The containing image
 paragraph's returned `EndIndex`, rather than inferred structural length, becomes
 the following insertion index. Alt Text remains in the publish model and emits
@@ -349,8 +353,27 @@ the following insertion index. Alt Text remains in the publish model and emits
 | `dotnet format --verify-no-changes` | PASS |
 | `git diff --check` | PASS |
 
-The attempted live publication was stopped by the execution safety review
-before any external write occurred. It requires explicit approval acknowledging
-that the checked-in PoC Markdown and sample PNG will be sent to Google and that
-the PNG will briefly receive public `anyone/reader` access. Google Docs API
-readback and Chrome visual verification remain pending until that approval.
+### Live Google Docs evidence
+
+After explicit approval for external publication and temporary public access,
+the complete PoC was published with the Release CLI. The first run exposed a
+Google Docs structural constraint: inserting only an inline object left it in
+the terminal paragraph, whose `EndIndex` was not a valid location for following
+content. The insertion batch was corrected to add the paragraph-terminating
+newline immediately after the object. The final run completed successfully.
+
+Both local and remote images returned an `InlineObjectElement`, non-empty
+`InlineObjectId`, actual width and height matching the publish plan, and a valid
+containing-paragraph `EndIndex`. Subsequent text was inserted from those returned
+indexes. The local PNG was uploaded, granted temporary `anyone/reader` access,
+inserted and read back, then deleted successfully before the CLI reported
+success. Two expected `IMAGE_ALT_TEXT_UPDATE_FAILED` warnings confirmed that
+both Alt Text values remained in the model but could not be mapped to unsupported
+Title or Description request fields.
+
+Chrome visual verification could not be completed. Chrome was installed and
+running, and the ChatGPT Chrome Extension was installed and enabled in the
+selected profile, but the native messaging host registry key was absent. The
+Chrome control workflow prohibits repairing that registration automatically.
+No access token, credential content, image public URI, or temporary Drive file
+identifier was logged.
