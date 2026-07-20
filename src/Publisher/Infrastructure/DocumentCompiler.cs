@@ -6,9 +6,7 @@ namespace Vmf.Publisher.Infrastructure;
 /// <summary>Compiles supported document blocks into Google-Docs-compatible neutral operations.</summary>
 public sealed class DocumentCompiler : IDocumentCompiler
 {
-    private readonly ParagraphBlockRenderer paragraphBlockRenderer;
-    private readonly HeadingBlockRenderer headingBlockRenderer;
-    private readonly ListBlockRenderer _listBlockRenderer;
+    private readonly IGeneratedBlockRenderer generatedBlockRenderer;
 
     /// <summary>Initializes a compiler with the default block renderers.</summary>
     public DocumentCompiler()
@@ -18,9 +16,10 @@ public sealed class DocumentCompiler : IDocumentCompiler
 
     private DocumentCompiler(InlineContentRenderer inlineRenderer)
         : this(
-            new ParagraphBlockRenderer(inlineRenderer),
-            new HeadingBlockRenderer(inlineRenderer),
-            new ListBlockRenderer(inlineRenderer))
+            new GeneratedBlockRenderer(
+                new ParagraphBlockRenderer(inlineRenderer),
+                new HeadingBlockRenderer(inlineRenderer),
+                new ListBlockRenderer(inlineRenderer)))
     {
     }
 
@@ -28,9 +27,10 @@ public sealed class DocumentCompiler : IDocumentCompiler
     /// <param name="listBlockRenderer">The list block renderer.</param>
     public DocumentCompiler(ListBlockRenderer listBlockRenderer)
         : this(
-            new ParagraphBlockRenderer(),
-            new HeadingBlockRenderer(),
-            listBlockRenderer)
+            new GeneratedBlockRenderer(
+                new ParagraphBlockRenderer(),
+                new HeadingBlockRenderer(),
+                listBlockRenderer))
     {
     }
 
@@ -42,12 +42,19 @@ public sealed class DocumentCompiler : IDocumentCompiler
         ParagraphBlockRenderer paragraphBlockRenderer,
         HeadingBlockRenderer headingBlockRenderer,
         ListBlockRenderer listBlockRenderer)
+        : this(new GeneratedBlockRenderer(
+            paragraphBlockRenderer,
+            headingBlockRenderer,
+            listBlockRenderer))
     {
-        this.paragraphBlockRenderer = paragraphBlockRenderer
-            ?? throw new ArgumentNullException(nameof(paragraphBlockRenderer));
-        this.headingBlockRenderer = headingBlockRenderer
-            ?? throw new ArgumentNullException(nameof(headingBlockRenderer));
-        _listBlockRenderer = listBlockRenderer ?? throw new ArgumentNullException(nameof(listBlockRenderer));
+    }
+
+    /// <summary>Initializes a compiler with a generated-block renderer.</summary>
+    /// <param name="generatedBlockRenderer">The renderer that produces publish steps.</param>
+    public DocumentCompiler(IGeneratedBlockRenderer generatedBlockRenderer)
+    {
+        this.generatedBlockRenderer = generatedBlockRenderer
+            ?? throw new ArgumentNullException(nameof(generatedBlockRenderer));
     }
 
     /// <inheritdoc />
@@ -56,43 +63,6 @@ public sealed class DocumentCompiler : IDocumentCompiler
         ArgumentNullException.ThrowIfNull(document);
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
 
-        var operations = new List<DocumentOperation>();
-        var index = 1;
-
-        foreach (var block in document.Blocks)
-        {
-            if (block.Kind == DocumentBlockKind.List)
-            {
-                index = _listBlockRenderer.Render(
-                    block.List ?? throw new InvalidOperationException("A list block requires list content."),
-                    index,
-                    operations);
-                continue;
-            }
-
-            if (block.Kind == DocumentBlockKind.Heading)
-            {
-                index = headingBlockRenderer.Render(
-                    new HeadingBlock(block.Level, block.Content),
-                    index,
-                    operations);
-                continue;
-            }
-
-            var start = index;
-            index = paragraphBlockRenderer.Render(
-                new ParagraphBlock(block.Content),
-                index,
-                operations);
-            if (block.Kind == DocumentBlockKind.BulletListItem)
-            {
-                operations.Add(new DocumentOperation(
-                    DocumentOperationKind.CreateBullet,
-                    start,
-                    index));
-            }
-        }
-
-        return new CompiledDocument(title, operations);
+        return CompiledDocument.FromSteps(title, generatedBlockRenderer.Render(document));
     }
 }

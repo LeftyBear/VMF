@@ -103,4 +103,57 @@ public sealed class DocumentCompilerTests
         Assert.Equal(8, compiled.Operations[3].StartIndex);
         Assert.Equal("After\n", compiled.Operations[3].Text);
     }
+
+    [Fact]
+    public void Compile_SplitsOrdinaryBatchesBeforeAndAfterEveryTable()
+    {
+        var table = new TableBlock(
+            [new TableColumn(TableAlignment.Left)],
+            new TableRow([new TableCell([new TextInline("Header")])]),
+            [new TableRow([new TableCell([new TextInline("Value")])])]);
+        var document = new DocumentModel([
+            new DocumentBlock(ParagraphBlock.FromText("Before")),
+            new DocumentBlock(HeadingBlock.FromText(2, "Still before")),
+            new DocumentBlock(table),
+            new DocumentBlock(ParagraphBlock.FromText("After")),
+        ]);
+
+        var compiled = new DocumentCompiler().Compile(document, "Sample");
+
+        Assert.Collection(
+            compiled.Steps,
+            step =>
+            {
+                var batch = Assert.IsType<BatchUpdateStep>(step);
+                Assert.Equal(3, batch.Operations.Count);
+                Assert.Equal("Before\n", batch.Operations[0].Text);
+                Assert.Equal("Still before\n", batch.Operations[1].Text);
+            },
+            step => Assert.Same(table, Assert.IsType<InsertTableStep>(step).Table),
+            step =>
+            {
+                var batch = Assert.IsType<BatchUpdateStep>(step);
+                Assert.Single(batch.Operations);
+                Assert.Equal(1, batch.Operations[0].StartIndex);
+                Assert.Equal("After\n", batch.Operations[0].Text);
+            });
+    }
+
+    [Fact]
+    public void Compile_AdjacentTablesDoNotCreateEmptyBatches()
+    {
+        static TableBlock Table(string value) => new(
+            [new TableColumn(TableAlignment.Left)],
+            new TableRow([new TableCell([new TextInline(value)])]),
+            []);
+        var document = new DocumentModel([
+            new DocumentBlock(Table("One")),
+            new DocumentBlock(Table("Two")),
+        ]);
+
+        var compiled = new DocumentCompiler().Compile(document, "Sample");
+
+        Assert.Equal(2, compiled.Steps.Count);
+        Assert.All(compiled.Steps, step => Assert.IsType<InsertTableStep>(step));
+    }
 }
