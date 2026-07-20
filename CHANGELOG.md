@@ -16,6 +16,8 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Added OAuth credential validation, cached-token reuse, persisted-token reuse, and authentication-mode unit coverage.
 - Added `specs/studio/VMF-Studio-v2.0-Specification-v1.0-Frozen.md`, exported from the frozen Google Docs master specification.
 - Added `RELEASE_NOTES_v1.0.md` for the VMF Studio v2.0 Specification v1.0 Frozen Edition.
+- Added the Publisher v1.0 Architecture Specification Markdown set under `specs/publisher/`, including the consolidated specification artifact and volumes P0 through P6.
+- Added `specs/publisher/schemas/publish-manifest.schema.yaml` as the Publisher v1.0 Publish Manifest schema baseline.
 
 ## Changed
 
@@ -24,6 +26,8 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Documented OAuth Desktop setup, browser consent, token persistence, service-account compatibility, secret management, and live verification for Publisher PoC v0.1.
 - Established the Git repository copy of the Frozen Edition as the official version-controlled specification artifact.
 - Advanced the project milestone from Specification Voyage to Implementation Voyage.
+- Standardized the Publisher v1.0 specification documents as UTF-8 Markdown, preserved headings and numbered lists, and removed the intermediate DOCX sources after paragraph-level text verification.
+- Updated `RELEASE_NOTES_v1.0.md` with the Publisher v1.0 documentation artifacts, source provenance, and conversion verification record.
 
 ## Released
 

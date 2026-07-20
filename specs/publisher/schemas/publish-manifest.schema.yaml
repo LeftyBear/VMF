@@ -1,0 +1,55 @@
+# Publish Manifest Schema
+# Publisher v1.0 Architecture Specification (Frozen Edition)
+
+schemaVersion: "1.0"
+
+publication:
+  id: ""
+  title: ""
+  subtitle: ""
+  version: "1.0.0"
+  language: "en"
+  status: draft
+  authors: []
+  publishedAt: null
+
+documents: {}
+
+outputs:
+  googleDocs:
+    enabled: true
+  pdf:
+    enabled: true
+
+assets:
+  root: assets/
+  failurePolicy: fail
+
+update:
+  mode: differential
+  conflictPolicy: fail
+  missingPolicy: fail
+  replacePolicy: managedRegion
+
+compilation:
+  documents: []
+  generatedContent:
+    cover: true
+    tableOfContents: true
+  options: {}
+
+validation:
+  mode: normal
+  rules: []
+  severity:
+    warningAsError: false
+
+reporting:
+  formats:
+    - json
+    - markdown
+  directory: output/reports
+
+metadata:
+  createdBy: VMF Studio Publisher
+  specification: Publisher v1.0 Architecture Specification (Frozen Edition)
