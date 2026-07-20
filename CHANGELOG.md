@@ -8,6 +8,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added Publisher Phase 2-2 inline content models and Markdown parsing for
+  asterisk/underscore bold, italic, bold-italic, and HTTP(S) links.
+- Added Google Docs inline text-style rendering for headings, paragraphs, and
+  list items, including overlapping styles and post-tab-removal range correction.
+- Added inline parser, renderer, request-mapper, block-renderer, and publication
+  pipeline coverage plus a styled live-validation sample.
 - Added Publisher Phase 2-1 ordered, unordered, nested, and mixed Markdown list support.
 - Added configurable list indentation and depth normalization with defaults of two spaces and six levels.
 - Added Google Docs list rendering with bullet/number presets and post-list index correction.

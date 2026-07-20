@@ -54,9 +54,10 @@ the generation definitions instead.
 
 `VMF.Publisher.sln` contains the first Publisher PoC. It reads UTF-8 Markdown,
 converts headings, paragraphs, and ordered, unordered, nested, or mixed lists
-into a neutral document model, compiles Google Docs operations, creates a native
-document through the Google Drive REST API, and applies content through the
-Google Docs REST API.
+with bold, italic, bold-italic, and HTTP(S) link content into a neutral document
+model, compiles Google Docs operations, creates a native document through the
+Google Drive REST API, and applies content and text styles through the Google
+Docs REST API.
 
 The four projects are:
 
@@ -164,16 +165,22 @@ Publish `samples/publisher-poc.md`, open the returned Document URL, and confirm:
 - unordered items use disc, circle, and square bullets by nesting level;
 - ordered items use decimal, alpha, and Roman markers by nesting level;
 - the sample's four nesting levels and mixed list kinds are preserved;
-- the paragraph after the list starts at the expected position.
+- bold text has `textStyle.bold=true` in headings, paragraphs, and list items;
+- italic text has `textStyle.italic=true` in headings, paragraphs, and list items;
+- bold-italic text has overlapping bold and italic ranges;
+- links have the expected `textStyle.link.url`, including styled link labels;
+- the paragraph after the list starts at the expected position and list-item
+  style ranges remain aligned after leading tabs are removed.
 
 Live verification evidence is recorded here after execution. Current status:
 **Verified on 2026-07-20 through Google Drive and Docs API publication plus Docs
-API readback of list presets, paragraph indentation, and the post-list paragraph.**
+API readback of list presets, paragraph indentation, and the post-list paragraph.
+Phase 2-2 inline TextStyle publication/readback is pending local OAuth or service
+account configuration.**
 
 ### PoC scope
 
-Not implemented in v0.1: tables, images, footnotes, embedded HTML, and inline
-emphasis/link styling.
+Not implemented in v0.1: tables, images, footnotes, and embedded HTML.
 
 The current official VMF Studio release artifact is:
 
