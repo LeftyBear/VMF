@@ -385,3 +385,160 @@ next page.
 
 No access token, credential content, image public URI, or temporary Drive file
 identifier was logged.
+
+## Phase 3-1.5: Diff Planning Hardening Decisions
+
+| Field | Value |
+|---|---|
+| Date | 2026-07-22 |
+| Scope | Pure differential planning, fingerprint generation, and Unit Tests |
+| Frozen specification changes | None |
+| Google Docs update execution | Out of scope |
+| Persistence, CLI, Managed Region, Snapshot, Recovery | Out of scope |
+
+### Identity and conflict decisions
+
+The Diff Engine validates candidate identities before using the documented
+`ExplicitId`, `GeneratedId`, `ContentHash` precedence. `ExplicitId` and
+`GeneratedId` are each unique within the baseline and candidate. Duplicate
+values stop planning with `DIFF_DUPLICATE_IDENTITY`.
+
+When multiple identity tiers on one candidate resolve to different baseline
+blocks, or separate candidate blocks attempt to consume one baseline block
+through different strong identity tiers, planning stops with
+`DIFF_IDENTITY_CONFLICT`. Priority is used only when every resolving identity
+agrees or when only one identity resolves.
+
+Content-hash fallback considers only blocks left unmatched by explicit and
+generated identities. A hash is matched only when exactly one unmatched
+baseline block and exactly one unmatched candidate block remain. Any viable
+one-to-many, many-to-one, or many-to-many fallback stops with
+`DIFF_CONTENT_HASH_AMBIGUOUS`. FIFO matching is not the v1.0 production
+default.
+
+Publication ID and Document ID use ordinal comparison. Google Document ID is
+also ordinal: equal non-null values and two null values are accepted, while a
+one-sided null or unequal values stop with `DIFF_DOCUMENT_IDENTITY_MISMATCH`.
+
+### Verified baseline and candidate lifecycle
+
+`VerifiedPublishState` and `PublishCandidate` are separate sealed types with no
+common public state base. Both constructors are internal. Public callers create
+a candidate only through `PublishCandidateFactory`, which binds one canonical
+input to its generated fingerprint and aligned block identities. The
+verified-state constructor is reserved for a future state manager restoring
+data that was persisted only after target verification.
+
+The intended future lifecycle is:
+
+1. parse, validate, and prepare canonical candidate input;
+2. atomically generate its versioned fingerprint and candidate through the factory;
+3. compare it with a restored `VerifiedPublishState`;
+4. apply the logical plan through a target-specific executor;
+5. verify target readback;
+6. only then construct and persist the next verified state.
+
+A `PublishCandidate` cannot be passed where a `VerifiedPublishState` is
+required. This phase does not implement promotion, persistence, or target
+verification.
+
+### Fingerprint canonical input
+
+Fingerprint algorithm version 1 uses these inputs in this exact top-level
+order:
+
+1. canonical format name;
+2. fingerprint algorithm version;
+3. hash algorithm name;
+4. Publisher implementation version;
+5. Publisher transformation specification version;
+6. PublishState schema version;
+7. Publication ID;
+8. Document ID;
+9. output-setting count and settings;
+10. document-block count and ordered document blocks.
+
+Google Document ID is intentionally excluded. It identifies and protects the
+update target but does not change the desired document content. It is checked
+independently by the Diff Engine.
+
+Every document block contains its zero-based order, nullable Explicit ID,
+nullable Generated ID, ContentHash, fixed block-kind token, level, and complete
+canonical Domain model payload. Payload serialization covers ordered nested
+inline content, list kind/depth/items, table columns/alignments/rows/cells, code
+language/text, quote level/content, and image alt text/source kind/source
+value/optional dimensions. Collection order is always preserved.
+
+Output settings are sorted by ordinal setting name before serialization. The
+canonical-input constructor rejects a missing member of the current required
+setting set. Additional output-affecting settings are allowed. For the current
+Publisher pipeline the required set is:
+
+- `markdown.inline.maxDepth`
+- `markdown.list.indentSize`
+- `markdown.list.maxDepth`
+- `publisher.allowImageUpscale`
+- `publisher.imageMaxWidthPoints`
+
+Authentication, credential paths, token-store paths, Drive folder IDs,
+temporary-hosting folder IDs, and application names are excluded because they
+do not alter generated document content. Temporary public-hosting permission is
+a transport/security policy and is also excluded.
+
+### Canonical serialization and hash format
+
+The canonical byte stream is a sequence of records:
+
+```text
+<field-name>:<UTF-8-byte-length>:<value-bytes>\n
+```
+
+Field names and record order are fixed by algorithm version 1. String values
+normalize CRLF and CR to LF before encoding. Encoding is UTF-8 without BOM, and
+record separators are LF. A null value uses length `-1` and no value bytes; an
+empty string uses length `0`, so null and empty remain distinct.
+
+Integers use invariant decimal form, Booleans use lowercase `true` or `false`,
+and floating-point values use invariant round-trip form. Enum-like values use
+fixed lowercase tokens rather than runtime enum names. URI values use their
+absolute representation. All collection counts and item orders are explicit.
+
+SHA-256 is applied to the canonical byte stream. The public fingerprint uses
+lowercase hexadecimal with this version prefix:
+
+```text
+v1:sha256:<64 lowercase hexadecimal characters>
+```
+
+Algorithm or canonical-shape changes require a new algorithm version and value
+prefix. `PublishFingerprint` has no public constructor and accepts only the
+current prefix followed by exactly 64 lowercase hexadecimal characters inside
+the Publisher boundary. A known-vector Unit Test protects version 1 from
+accidental drift.
+
+### Move semantics
+
+Move detection constructs the sequence of matched baseline indexes in candidate
+order and computes a deterministic strict longest increasing subsequence in
+O(n log n). Matched blocks outside the selected LIS are logical `Move`
+operations. Insertions and deletions that only shift absolute indexes do not
+create false moves.
+
+Diff operations describe logical source-to-target correspondence. Their list
+order is not a Google Docs physical execution order. A future target executor
+must translate the full logical plan into safe target-specific operations and
+may expand a logical Move into Delete plus Insert.
+
+### Automated evidence
+
+| Check | Result |
+|---|---|
+| Phase 3-1.5 focused Unit Tests | PASS - 71/71 |
+| Publisher Unit Tests | PASS - 203/203 |
+| Publisher Integration Tests | PASS - 6/6 |
+| Release solution build | PASS - 0 warnings, 0 errors |
+| `dotnet format --verify-no-changes` | PASS |
+| Frozen specification changes | None |
+
+No Google Docs API call, state persistence, CLI integration, Managed Region
+mutation, Snapshot, or Recovery behavior was added or executed in this phase.

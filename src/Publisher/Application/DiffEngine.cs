@@ -6,17 +6,18 @@ namespace Vmf.Publisher.Application;
 public sealed class DiffEngine : IDiffEngine
 {
     /// <inheritdoc />
-    public DiffPlan CreatePlan(PublishState? previousState, PublishState currentState)
+    public DiffPlan CreatePlan(VerifiedPublishState? baseline, PublishCandidate candidate)
     {
-        ArgumentNullException.ThrowIfNull(currentState);
+        ArgumentNullException.ThrowIfNull(candidate);
+        EnsureUniqueIdentities(candidate.Blocks, "candidate");
 
-        if (previousState is null)
+        if (baseline is null)
         {
             return new DiffPlan(
                 null,
-                currentState.Fingerprint,
+                candidate.Fingerprint,
                 false,
-                currentState.Blocks.Select((block, index) => new DiffOperation(
+                candidate.Blocks.Select((block, index) => new DiffOperation(
                     DiffOperationKind.Insert,
                     null,
                     index,
@@ -25,186 +26,276 @@ public sealed class DiffEngine : IDiffEngine
                     null)));
         }
 
-        EnsureSameDocument(previousState.Identity, currentState.Identity);
-        if (previousState.Fingerprint.Equals(currentState.Fingerprint))
+        EnsureUniqueIdentities(baseline.Blocks, "baseline");
+        EnsureSameDocument(baseline.Identity, candidate.Identity);
+        var matches = MatchBlocks(baseline.Blocks, candidate.Blocks);
+
+        if (baseline.Fingerprint.Equals(candidate.Fingerprint))
         {
             return new DiffPlan(
-                previousState.Fingerprint,
-                currentState.Fingerprint,
+                baseline.Fingerprint,
+                candidate.Fingerprint,
                 true,
                 Array.Empty<DiffOperation>());
         }
 
-        var matches = MatchBlocks(previousState.Blocks, currentState.Blocks);
-        var operations = BuildOperations(previousState.Blocks, currentState.Blocks, matches);
+        var operations = BuildOperations(baseline.Blocks, candidate.Blocks, matches);
         return new DiffPlan(
-            previousState.Fingerprint,
-            currentState.Fingerprint,
+            baseline.Fingerprint,
+            candidate.Fingerprint,
             false,
             operations);
     }
 
-    private static void EnsureSameDocument(DocumentIdentity previous, DocumentIdentity current)
+    private static void EnsureUniqueIdentities(
+        IReadOnlyList<BlockIdentity> blocks,
+        string stateRole)
     {
-        if (!string.Equals(previous.PublicationId, current.PublicationId, StringComparison.Ordinal) ||
-            !string.Equals(previous.DocumentId, current.DocumentId, StringComparison.Ordinal) ||
-            (previous.GoogleDocumentId is not null &&
-             current.GoogleDocumentId is not null &&
-             !string.Equals(
-                 previous.GoogleDocumentId,
-                 current.GoogleDocumentId,
-                 StringComparison.Ordinal)))
+        EnsureUniqueIdentityTier(blocks, block => block.ExplicitId, "ExplicitId", stateRole);
+        EnsureUniqueIdentityTier(blocks, block => block.GeneratedId, "GeneratedId", stateRole);
+    }
+
+    private static void EnsureUniqueIdentityTier(
+        IReadOnlyList<BlockIdentity> blocks,
+        Func<BlockIdentity, string?> selector,
+        string identityName,
+        string stateRole)
+    {
+        var indexes = new Dictionary<string, int>(StringComparer.Ordinal);
+        for (var index = 0; index < blocks.Count; index++)
+        {
+            var identity = selector(blocks[index]);
+            if (identity is null)
+            {
+                continue;
+            }
+
+            if (!indexes.TryAdd(identity, index))
+            {
+                throw new DiffConflictException(
+                    DiffErrorCodes.DuplicateIdentity,
+                    $"The {stateRole} contains a duplicate {identityName}: {identity}");
+            }
+        }
+    }
+
+    private static void EnsureSameDocument(DocumentIdentity baseline, DocumentIdentity candidate)
+    {
+        var googleDocumentIdMatches =
+            (baseline.GoogleDocumentId is null && candidate.GoogleDocumentId is null) ||
+            (baseline.GoogleDocumentId is not null &&
+             candidate.GoogleDocumentId is not null &&
+             string.Equals(
+                 baseline.GoogleDocumentId,
+                 candidate.GoogleDocumentId,
+                 StringComparison.Ordinal));
+
+        if (!string.Equals(baseline.PublicationId, candidate.PublicationId, StringComparison.Ordinal) ||
+            !string.Equals(baseline.DocumentId, candidate.DocumentId, StringComparison.Ordinal) ||
+            !googleDocumentIdMatches)
         {
             throw new DiffConflictException(
-                "DIFF_DOCUMENT_IDENTITY_MISMATCH",
-                "The baseline and desired publish states do not identify the same document.");
+                DiffErrorCodes.DocumentIdentityMismatch,
+                "The baseline and candidate do not identify the same document.");
         }
     }
 
     private static MatchResult[] MatchBlocks(
-        IReadOnlyList<BlockIdentity> previous,
-        IReadOnlyList<BlockIdentity> current)
+        IReadOnlyList<BlockIdentity> baseline,
+        IReadOnlyList<BlockIdentity> candidate)
     {
-        var matches = new MatchResult[current.Count];
-        var matchedPrevious = new bool[previous.Count];
+        var matches = new MatchResult[candidate.Count];
+        var matchedBaseline = new bool[baseline.Count];
+        var baselineByExplicitId = CreateIdentityMap(baseline, block => block.ExplicitId);
+        var baselineByGeneratedId = CreateIdentityMap(baseline, block => block.GeneratedId);
+        var baselineByContentHash = CreateContentHashMap(baseline);
 
-        MatchUniqueIdentifiers(
-            previous,
-            current,
-            block => block.ExplicitId,
-            BlockMatchKind.ExplicitId,
+        MatchStrongIdentities(
+            baseline,
+            candidate,
+            baselineByExplicitId,
+            baselineByGeneratedId,
+            baselineByContentHash,
             matches,
-            matchedPrevious);
-        MatchUniqueIdentifiers(
-            previous,
-            current,
-            block => block.GeneratedId,
-            BlockMatchKind.GeneratedId,
-            matches,
-            matchedPrevious);
-        MatchContentHashes(previous, current, matches, matchedPrevious);
+            matchedBaseline);
+        MatchUnambiguousContentHashes(baseline, candidate, matches, matchedBaseline);
 
         return matches;
     }
 
-    private static void MatchUniqueIdentifiers(
-        IReadOnlyList<BlockIdentity> previous,
-        IReadOnlyList<BlockIdentity> current,
-        Func<BlockIdentity, string?> selector,
-        BlockMatchKind matchKind,
-        MatchResult[] matches,
-        bool[] matchedPrevious)
+    private static Dictionary<string, int> CreateIdentityMap(
+        IReadOnlyList<BlockIdentity> blocks,
+        Func<BlockIdentity, string?> selector)
     {
-        var previousByIdentifier = new Dictionary<string, int>(StringComparer.Ordinal);
-        for (var index = 0; index < previous.Count; index++)
+        var result = new Dictionary<string, int>(StringComparer.Ordinal);
+        for (var index = 0; index < blocks.Count; index++)
         {
-            if (matchedPrevious[index])
+            var identity = selector(blocks[index]);
+            if (identity is not null)
             {
-                continue;
-            }
-
-            var identifier = selector(previous[index]);
-            if (identifier is not null)
-            {
-                previousByIdentifier.Add(identifier, index);
+                result.Add(identity, index);
             }
         }
 
-        for (var index = 0; index < current.Count; index++)
+        return result;
+    }
+
+    private static Dictionary<string, IReadOnlyList<int>> CreateContentHashMap(
+        IReadOnlyList<BlockIdentity> blocks) =>
+        blocks
+            .Select((block, index) => (block.ContentHash, Index: index))
+            .GroupBy(item => item.ContentHash, StringComparer.Ordinal)
+            .ToDictionary(
+                group => group.Key,
+                group => (IReadOnlyList<int>)group.Select(item => item.Index).ToArray(),
+                StringComparer.Ordinal);
+
+    private static void MatchStrongIdentities(
+        IReadOnlyList<BlockIdentity> baseline,
+        IReadOnlyList<BlockIdentity> candidate,
+        IReadOnlyDictionary<string, int> baselineByExplicitId,
+        IReadOnlyDictionary<string, int> baselineByGeneratedId,
+        IReadOnlyDictionary<string, IReadOnlyList<int>> baselineByContentHash,
+        MatchResult[] matches,
+        bool[] matchedBaseline)
+    {
+        for (var candidateIndex = 0; candidateIndex < candidate.Count; candidateIndex++)
         {
-            if (matches[index].IsMatched)
+            var block = candidate[candidateIndex];
+            var explicitIndex = ResolveIdentity(block.ExplicitId, baselineByExplicitId);
+            var generatedIndex = ResolveIdentity(block.GeneratedId, baselineByGeneratedId);
+
+            if (explicitIndex is not null &&
+                generatedIndex is not null &&
+                explicitIndex != generatedIndex)
+            {
+                throw IdentityConflict(candidateIndex);
+            }
+
+            var baselineIndex = explicitIndex ?? generatedIndex;
+            if (baselineIndex is null)
             {
                 continue;
             }
 
-            var identifier = selector(current[index]);
-            if (identifier is null || !previousByIdentifier.TryGetValue(identifier, out var previousIndex))
+            if (baselineByContentHash.TryGetValue(block.ContentHash, out var hashCandidates) &&
+                !hashCandidates.Contains(baselineIndex.Value))
             {
-                continue;
+                throw IdentityConflict(candidateIndex);
             }
 
-            matches[index] = new MatchResult(previousIndex, matchKind);
-            matchedPrevious[previousIndex] = true;
+            if (matchedBaseline[baselineIndex.Value])
+            {
+                throw IdentityConflict(candidateIndex);
+            }
+
+            matches[candidateIndex] = new MatchResult(
+                baselineIndex.Value,
+                explicitIndex is not null ? BlockMatchKind.ExplicitId : BlockMatchKind.GeneratedId);
+            matchedBaseline[baselineIndex.Value] = true;
         }
     }
 
-    private static void MatchContentHashes(
-        IReadOnlyList<BlockIdentity> previous,
-        IReadOnlyList<BlockIdentity> current,
+    private static int? ResolveIdentity(
+        string? identity,
+        IReadOnlyDictionary<string, int> baselineByIdentity) =>
+        identity is not null && baselineByIdentity.TryGetValue(identity, out var index)
+            ? index
+            : null;
+
+    private static DiffConflictException IdentityConflict(int candidateIndex) => new(
+        DiffErrorCodes.IdentityConflict,
+        $"Candidate block {candidateIndex} resolves to conflicting baseline blocks.");
+
+    private static void MatchUnambiguousContentHashes(
+        IReadOnlyList<BlockIdentity> baseline,
+        IReadOnlyList<BlockIdentity> candidate,
         MatchResult[] matches,
-        bool[] matchedPrevious)
+        bool[] matchedBaseline)
     {
-        var previousByHash = new Dictionary<string, Queue<int>>(StringComparer.Ordinal);
-        for (var index = 0; index < previous.Count; index++)
+        var processedHashes = new HashSet<string>(StringComparer.Ordinal);
+        for (var candidateIndex = 0; candidateIndex < candidate.Count; candidateIndex++)
         {
-            if (matchedPrevious[index])
+            if (matches[candidateIndex].IsMatched)
             {
                 continue;
             }
 
-            if (!previousByHash.TryGetValue(previous[index].ContentHash, out var indexes))
-            {
-                indexes = new Queue<int>();
-                previousByHash.Add(previous[index].ContentHash, indexes);
-            }
-
-            indexes.Enqueue(index);
-        }
-
-        for (var index = 0; index < current.Count; index++)
-        {
-            if (matches[index].IsMatched ||
-                !previousByHash.TryGetValue(current[index].ContentHash, out var indexes) ||
-                indexes.Count == 0)
+            var contentHash = candidate[candidateIndex].ContentHash;
+            if (!processedHashes.Add(contentHash))
             {
                 continue;
             }
 
-            var previousIndex = indexes.Dequeue();
-            matches[index] = new MatchResult(previousIndex, BlockMatchKind.ContentHash);
-            matchedPrevious[previousIndex] = true;
+            var candidateIndexes = Enumerable.Range(0, candidate.Count)
+                .Where(index =>
+                    !matches[index].IsMatched &&
+                    string.Equals(candidate[index].ContentHash, contentHash, StringComparison.Ordinal))
+                .ToArray();
+            var baselineIndexes = Enumerable.Range(0, baseline.Count)
+                .Where(index =>
+                    !matchedBaseline[index] &&
+                    string.Equals(baseline[index].ContentHash, contentHash, StringComparison.Ordinal))
+                .ToArray();
+
+            if (baselineIndexes.Length == 0)
+            {
+                continue;
+            }
+
+            if (candidateIndexes.Length != 1 || baselineIndexes.Length != 1)
+            {
+                throw new DiffConflictException(
+                    DiffErrorCodes.ContentHashAmbiguous,
+                    $"ContentHash fallback is ambiguous for hash: {contentHash}");
+            }
+
+            matches[candidateIndexes[0]] = new MatchResult(
+                baselineIndexes[0],
+                BlockMatchKind.ContentHash);
+            matchedBaseline[baselineIndexes[0]] = true;
         }
     }
 
     private static IReadOnlyList<DiffOperation> BuildOperations(
-        IReadOnlyList<BlockIdentity> previous,
-        IReadOnlyList<BlockIdentity> current,
+        IReadOnlyList<BlockIdentity> baseline,
+        IReadOnlyList<BlockIdentity> candidate,
         MatchResult[] matches)
     {
         var operations = new List<DiffOperation>();
-        var matchedPrevious = new bool[previous.Count];
-        var movedCurrent = FindMovedCurrentBlocks(matches);
+        var matchedBaseline = new bool[baseline.Count];
+        var movedCandidate = FindMovedCandidateBlocks(matches);
 
-        for (var currentIndex = 0; currentIndex < current.Count; currentIndex++)
+        for (var candidateIndex = 0; candidateIndex < candidate.Count; candidateIndex++)
         {
-            var match = matches[currentIndex];
+            var match = matches[candidateIndex];
             if (!match.IsMatched)
             {
                 operations.Add(new DiffOperation(
                     DiffOperationKind.Insert,
                     null,
-                    currentIndex,
+                    candidateIndex,
                     null,
-                    current[currentIndex],
+                    candidate[candidateIndex],
                     null));
                 continue;
             }
 
-            var previousIndex = match.PreviousIndex;
-            matchedPrevious[previousIndex] = true;
+            var baselineIndex = match.PreviousIndex;
+            matchedBaseline[baselineIndex] = true;
             var contentChanged = !string.Equals(
-                previous[previousIndex].ContentHash,
-                current[currentIndex].ContentHash,
+                baseline[baselineIndex].ContentHash,
+                candidate[candidateIndex].ContentHash,
                 StringComparison.Ordinal);
 
-            if (movedCurrent[currentIndex])
+            if (movedCandidate[candidateIndex])
             {
                 operations.Add(new DiffOperation(
                     DiffOperationKind.Move,
-                    previousIndex,
-                    currentIndex,
-                    previous[previousIndex],
-                    current[currentIndex],
+                    baselineIndex,
+                    candidateIndex,
+                    baseline[baselineIndex],
+                    candidate[candidateIndex],
                     match.Kind));
             }
 
@@ -212,34 +303,34 @@ public sealed class DiffEngine : IDiffEngine
             {
                 operations.Add(new DiffOperation(
                     DiffOperationKind.Update,
-                    previousIndex,
-                    currentIndex,
-                    previous[previousIndex],
-                    current[currentIndex],
+                    baselineIndex,
+                    candidateIndex,
+                    baseline[baselineIndex],
+                    candidate[candidateIndex],
                     match.Kind));
             }
 
-            if (!movedCurrent[currentIndex] && !contentChanged)
+            if (!movedCandidate[candidateIndex] && !contentChanged)
             {
                 operations.Add(new DiffOperation(
                     DiffOperationKind.NoChange,
-                    previousIndex,
-                    currentIndex,
-                    previous[previousIndex],
-                    current[currentIndex],
+                    baselineIndex,
+                    candidateIndex,
+                    baseline[baselineIndex],
+                    candidate[candidateIndex],
                     match.Kind));
             }
         }
 
-        for (var previousIndex = 0; previousIndex < previous.Count; previousIndex++)
+        for (var baselineIndex = 0; baselineIndex < baseline.Count; baselineIndex++)
         {
-            if (!matchedPrevious[previousIndex])
+            if (!matchedBaseline[baselineIndex])
             {
                 operations.Add(new DiffOperation(
                     DiffOperationKind.Delete,
-                    previousIndex,
+                    baselineIndex,
                     null,
-                    previous[previousIndex],
+                    baseline[baselineIndex],
                     null,
                     null));
             }
@@ -248,32 +339,32 @@ public sealed class DiffEngine : IDiffEngine
         return operations;
     }
 
-    private static bool[] FindMovedCurrentBlocks(MatchResult[] matches)
+    private static bool[] FindMovedCandidateBlocks(MatchResult[] matches)
     {
-        var matchedCurrentIndexes = Enumerable.Range(0, matches.Length)
+        var matchedCandidateIndexes = Enumerable.Range(0, matches.Length)
             .Where(index => matches[index].IsMatched)
             .ToArray();
-        var movedCurrent = new bool[matches.Length];
-        if (matchedCurrentIndexes.Length == 0)
+        var movedCandidate = new bool[matches.Length];
+        if (matchedCandidateIndexes.Length == 0)
         {
-            return movedCurrent;
+            return movedCandidate;
         }
 
-        var tailSequenceIndexes = new int[matchedCurrentIndexes.Length];
-        var predecessorSequenceIndexes = Enumerable.Repeat(-1, matchedCurrentIndexes.Length).ToArray();
+        var tailSequenceIndexes = new int[matchedCandidateIndexes.Length];
+        var predecessorSequenceIndexes = Enumerable.Repeat(-1, matchedCandidateIndexes.Length).ToArray();
         var longestLength = 0;
 
-        for (var sequenceIndex = 0; sequenceIndex < matchedCurrentIndexes.Length; sequenceIndex++)
+        for (var sequenceIndex = 0; sequenceIndex < matchedCandidateIndexes.Length; sequenceIndex++)
         {
-            var previousIndex = matches[matchedCurrentIndexes[sequenceIndex]].PreviousIndex;
+            var baselineIndex = matches[matchedCandidateIndexes[sequenceIndex]].PreviousIndex;
             var lower = 0;
             var upper = longestLength;
             while (lower < upper)
             {
                 var middle = lower + ((upper - lower) / 2);
-                var tailPreviousIndex = matches[
-                    matchedCurrentIndexes[tailSequenceIndexes[middle]]].PreviousIndex;
-                if (tailPreviousIndex < previousIndex)
+                var tailBaselineIndex = matches[
+                    matchedCandidateIndexes[tailSequenceIndexes[middle]]].PreviousIndex;
+                if (tailBaselineIndex < baselineIndex)
                 {
                     lower = middle + 1;
                 }
@@ -295,7 +386,7 @@ public sealed class DiffEngine : IDiffEngine
             }
         }
 
-        var stableSequenceIndexes = new bool[matchedCurrentIndexes.Length];
+        var stableSequenceIndexes = new bool[matchedCandidateIndexes.Length];
         for (var sequenceIndex = tailSequenceIndexes[longestLength - 1];
              sequenceIndex >= 0;
              sequenceIndex = predecessorSequenceIndexes[sequenceIndex])
@@ -303,15 +394,15 @@ public sealed class DiffEngine : IDiffEngine
             stableSequenceIndexes[sequenceIndex] = true;
         }
 
-        for (var sequenceIndex = 0; sequenceIndex < matchedCurrentIndexes.Length; sequenceIndex++)
+        for (var sequenceIndex = 0; sequenceIndex < matchedCandidateIndexes.Length; sequenceIndex++)
         {
             if (!stableSequenceIndexes[sequenceIndex])
             {
-                movedCurrent[matchedCurrentIndexes[sequenceIndex]] = true;
+                movedCandidate[matchedCandidateIndexes[sequenceIndex]] = true;
             }
         }
 
-        return movedCurrent;
+        return movedCandidate;
     }
 
     private readonly struct MatchResult

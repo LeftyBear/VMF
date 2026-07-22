@@ -5,7 +5,7 @@ namespace Vmf.Publisher.UnitTests;
 public sealed class UpdateModelTests
 {
     [Fact]
-    public void PublishState_PreservesIdentityFingerprintAndBlockOrder()
+    public void PublishCandidate_PreservesIdentityFingerprintAndBlockOrder()
     {
         var source = new List<BlockIdentity>
         {
@@ -13,42 +13,62 @@ public sealed class UpdateModelTests
             Block("second", "generated-second", "hash-second"),
         };
         var identity = Identity(DocumentState.Existing);
-        var fingerprint = new PublishFingerprint("fingerprint");
+        var fingerprint = Fingerprint('a');
 
-        var state = new PublishState(identity, fingerprint, source);
+        var candidate = new PublishCandidate(identity, fingerprint, source);
         source.Clear();
 
-        Assert.Same(identity, state.Identity);
-        Assert.Same(fingerprint, state.Fingerprint);
-        Assert.Equal(["first", "second"], state.Blocks.Select(block => block.ExplicitId));
+        Assert.Same(identity, candidate.Identity);
+        Assert.Same(fingerprint, candidate.Fingerprint);
+        Assert.Equal(["first", "second"], candidate.Blocks.Select(block => block.ExplicitId));
     }
 
     [Fact]
-    public void PublishState_RejectsDuplicateExplicitAndGeneratedIdentifiers()
+    public void VerifiedPublishState_CannotBeConstructedOrReplacedByExternalCandidate()
     {
-        Assert.Throws<ArgumentException>(() => new PublishState(
-            Identity(DocumentState.Existing),
-            new PublishFingerprint("fingerprint"),
-            [Block("duplicate", "generated-one", "hash-one"),
-             Block("duplicate", "generated-two", "hash-two")]));
-
-        Assert.Throws<ArgumentException>(() => new PublishState(
-            Identity(DocumentState.Existing),
-            new PublishFingerprint("fingerprint"),
-            [Block("one", "duplicate", "hash-one"),
-             Block("two", "duplicate", "hash-two")]));
+        Assert.Empty(typeof(VerifiedPublishState).GetConstructors());
+        Assert.False(typeof(VerifiedPublishState).IsAssignableFrom(typeof(PublishCandidate)));
     }
 
     [Fact]
-    public void PublishFingerprint_UsesOrdinalValueEquality()
+    public void VerifiedPublishState_PreservesRestoredValues()
     {
-        var first = new PublishFingerprint("ABC");
-        var same = new PublishFingerprint("ABC");
-        var differentCase = new PublishFingerprint("abc");
+        var identity = Identity(DocumentState.Existing);
+        var fingerprint = Fingerprint('b');
+        var block = Block("explicit", "generated", "hash");
+
+        var baseline = new VerifiedPublishState(identity, fingerprint, [block]);
+
+        Assert.Same(identity, baseline.Identity);
+        Assert.Same(fingerprint, baseline.Fingerprint);
+        Assert.Same(block, Assert.Single(baseline.Blocks));
+    }
+
+    [Fact]
+    public void PublishFingerprint_UsesValueEquality()
+    {
+        var first = Fingerprint('a');
+        var same = Fingerprint('a');
+        var different = Fingerprint('b');
 
         Assert.Equal(first, same);
-        Assert.NotEqual(first, differentCase);
-        Assert.Equal("ABC", first.ToString());
+        Assert.NotEqual(first, different);
+        Assert.Equal("v1:sha256:" + new string('a', 64), first.ToString());
+    }
+
+    [Fact]
+    public void PublishFingerprint_CannotBeConstructedByExternalCaller()
+    {
+        Assert.Empty(typeof(PublishFingerprint).GetConstructors());
+    }
+
+    [Theory]
+    [InlineData("fingerprint")]
+    [InlineData("v1:sha256:ABCDEF")]
+    [InlineData("v1:sha256:ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789")]
+    public void PublishFingerprint_RejectsNonCanonicalValues(string value)
+    {
+        Assert.Throws<ArgumentException>(() => new PublishFingerprint(value));
     }
 
     [Theory]
@@ -72,4 +92,7 @@ public sealed class UpdateModelTests
 
     private static BlockIdentity Block(string? explicitId, string? generatedId, string hash) =>
         new(explicitId, generatedId, hash);
+
+    private static PublishFingerprint Fingerprint(char hexadecimalDigit) =>
+        new("v1:sha256:" + new string(hexadecimalDigit, 64));
 }

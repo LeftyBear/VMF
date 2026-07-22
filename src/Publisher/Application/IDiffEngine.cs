@@ -6,8 +6,8 @@ namespace Vmf.Publisher.Application;
 public interface IDiffEngine
 {
     /// <summary>Creates a plan from an optional verified baseline and the desired state.</summary>
-    /// <param name="previousState">The verified baseline, or <see langword="null"/> for a new publication.</param>
-    /// <param name="currentState">The desired publish state.</param>
+    /// <param name="baseline">The verified baseline, or <see langword="null"/> for a new publication.</param>
+    /// <param name="candidate">The desired, unverified publish candidate.</param>
     /// <returns>The differential publish plan.</returns>
-    DiffPlan CreatePlan(PublishState? previousState, PublishState currentState);
+    DiffPlan CreatePlan(VerifiedPublishState? baseline, PublishCandidate candidate);
 }

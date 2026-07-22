@@ -99,11 +99,22 @@ public sealed class BlockIdentity
 /// <summary>Represents an opaque fingerprint of canonical publish input.</summary>
 public sealed class PublishFingerprint : IEquatable<PublishFingerprint>
 {
-    /// <summary>Initializes a publish fingerprint.</summary>
+    internal const string VersionPrefix = "v1:sha256:";
+
+    /// <summary>Initializes a fingerprint produced or restored inside the Publisher boundary.</summary>
     /// <param name="value">The canonical fingerprint value.</param>
-    public PublishFingerprint(string value)
+    internal PublishFingerprint(string value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        if (value.Length != VersionPrefix.Length + 64 ||
+            !value.StartsWith(VersionPrefix, StringComparison.Ordinal) ||
+            value.AsSpan(VersionPrefix.Length).ContainsAnyExcept("0123456789abcdef"))
+        {
+            throw new ArgumentException(
+                "A publish fingerprint must use v1:sha256 followed by 64 lowercase hexadecimal characters.",
+                nameof(value));
+        }
+
         Value = value;
     }
 
@@ -124,14 +135,9 @@ public sealed class PublishFingerprint : IEquatable<PublishFingerprint>
     public override string ToString() => Value;
 }
 
-/// <summary>Represents the verified state used as a differential publish baseline.</summary>
-public sealed class PublishState
+internal sealed class PublishStateData
 {
-    /// <summary>Initializes a publish state.</summary>
-    /// <param name="identity">The document identity.</param>
-    /// <param name="fingerprint">The canonical publish fingerprint.</param>
-    /// <param name="blocks">The managed blocks in publication order.</param>
-    public PublishState(
+    internal PublishStateData(
         DocumentIdentity identity,
         PublishFingerprint fingerprint,
         IEnumerable<BlockIdentity> blocks)
@@ -146,37 +152,69 @@ public sealed class PublishState
             throw new ArgumentException("Publish state blocks must not contain null items.", nameof(blocks));
         }
 
-        EnsureUnique(items, block => block.ExplicitId, "explicit", nameof(blocks));
-        EnsureUnique(items, block => block.GeneratedId, "generated", nameof(blocks));
         Blocks = Array.AsReadOnly(items);
     }
 
-    /// <summary>Gets the document identity.</summary>
-    public DocumentIdentity Identity { get; }
+    internal DocumentIdentity Identity { get; }
 
-    /// <summary>Gets the canonical publish fingerprint.</summary>
-    public PublishFingerprint Fingerprint { get; }
+    internal PublishFingerprint Fingerprint { get; }
 
-    /// <summary>Gets the managed blocks in publication order.</summary>
-    public IReadOnlyList<BlockIdentity> Blocks { get; }
+    internal IReadOnlyList<BlockIdentity> Blocks { get; }
+}
 
-    private static void EnsureUnique(
-        IEnumerable<BlockIdentity> blocks,
-        Func<BlockIdentity, string?> selector,
-        string identifierKind,
-        string parameterName)
+/// <summary>Represents a previously verified differential-publish baseline.</summary>
+public sealed class VerifiedPublishState
+{
+    private readonly PublishStateData data;
+
+    /// <summary>Restores state that was verified before being persisted.</summary>
+    /// <remarks>
+    /// This constructor is internal so an unverified candidate cannot be promoted by an external caller.
+    /// A future persistence component is responsible for restoring verified state through this boundary.
+    /// </remarks>
+    internal VerifiedPublishState(
+        DocumentIdentity identity,
+        PublishFingerprint fingerprint,
+        IEnumerable<BlockIdentity> blocks)
     {
-        var identifiers = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var identifier in blocks.Select(selector).Where(value => value is not null))
-        {
-            if (!identifiers.Add(identifier!))
-            {
-                throw new ArgumentException(
-                    $"Publish state contains a duplicate {identifierKind} block identifier: {identifier}",
-                    parameterName);
-            }
-        }
+        data = new PublishStateData(identity, fingerprint, blocks);
     }
+
+    /// <summary>Gets the verified document identity.</summary>
+    public DocumentIdentity Identity => data.Identity;
+
+    /// <summary>Gets the verified canonical publish fingerprint.</summary>
+    public PublishFingerprint Fingerprint => data.Fingerprint;
+
+    /// <summary>Gets the verified managed blocks in publication order.</summary>
+    public IReadOnlyList<BlockIdentity> Blocks => data.Blocks;
+}
+
+/// <summary>Represents desired publish input that has not yet been verified or persisted.</summary>
+public sealed class PublishCandidate
+{
+    private readonly PublishStateData data;
+
+    /// <summary>Initializes an unverified publish candidate inside the Publisher boundary.</summary>
+    /// <param name="identity">The desired document identity.</param>
+    /// <param name="fingerprint">The canonical fingerprint of the desired publish input.</param>
+    /// <param name="blocks">The desired managed blocks in publication order.</param>
+    internal PublishCandidate(
+        DocumentIdentity identity,
+        PublishFingerprint fingerprint,
+        IEnumerable<BlockIdentity> blocks)
+    {
+        data = new PublishStateData(identity, fingerprint, blocks);
+    }
+
+    /// <summary>Gets the desired document identity.</summary>
+    public DocumentIdentity Identity => data.Identity;
+
+    /// <summary>Gets the desired canonical publish fingerprint.</summary>
+    public PublishFingerprint Fingerprint => data.Fingerprint;
+
+    /// <summary>Gets the desired managed blocks in publication order.</summary>
+    public IReadOnlyList<BlockIdentity> Blocks => data.Blocks;
 }
 
 /// <summary>Identifies a block-level differential operation.</summary>
@@ -271,7 +309,10 @@ public sealed class DiffPlan
     /// <summary>Gets the desired fingerprint.</summary>
     public PublishFingerprint CurrentFingerprint { get; }
 
-    /// <summary>Gets a value indicating whether idempotency skipped block comparison.</summary>
+    /// <summary>
+    /// Gets a value indicating whether equal fingerprints skipped operation generation
+    /// after identity and matching safety validation.
+    /// </summary>
     public bool IsFingerprintMatch { get; }
 
     /// <summary>Gets the block-level differential operations.</summary>
