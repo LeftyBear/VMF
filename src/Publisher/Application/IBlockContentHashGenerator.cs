@@ -5,6 +5,9 @@ namespace Vmf.Publisher.Application;
 /// <summary>Generates a versioned hash from canonical block content.</summary>
 public interface IBlockContentHashGenerator
 {
+    /// <summary>Gets the canonical content-hash algorithm version.</summary>
+    string AlgorithmVersion { get; }
+
     /// <summary>Generates a content-only hash for one canonical document block.</summary>
     /// <param name="block">The canonical block payload.</param>
     /// <returns>The versioned content hash.</returns>

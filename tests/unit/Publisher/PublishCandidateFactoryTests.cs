@@ -16,7 +16,7 @@ public sealed class PublishCandidateFactoryTests
         var input = Input("publication", "document", block);
         var factory = new PublishCandidateFactory(fingerprintGenerator);
 
-        var candidate = factory.Create(identity, input);
+        var candidate = factory.Create(identity, input, Versions());
 
         Assert.Same(identity, candidate.Identity);
         Assert.Same(block, Assert.Single(candidate.Blocks));
@@ -35,7 +35,8 @@ public sealed class PublishCandidateFactoryTests
 
         Assert.Throws<ArgumentException>(() => factory.Create(
             Identity("publication", "document", "google-document"),
-            Input(publicationId, documentId, new BlockIdentity("explicit", null, "hash"))));
+            Input(publicationId, documentId, new BlockIdentity("explicit", null, "hash")),
+            Versions()));
     }
 
     [Fact]
@@ -44,11 +45,27 @@ public sealed class PublishCandidateFactoryTests
         Assert.Empty(typeof(PublishCandidate).GetConstructors());
     }
 
+    [Theory]
+    [InlineData(DocumentState.Missing)]
+    [InlineData(DocumentState.Archived)]
+    public void Create_RejectsNonActiveCandidateState(DocumentState state)
+    {
+        var factory = new PublishCandidateFactory(fingerprintGenerator);
+        var identity = new DocumentIdentity("publication", "document", "google-document", state);
+
+        Assert.Throws<ArgumentException>(() => factory.Create(
+            identity,
+            Input("publication", "document", new BlockIdentity("explicit", null, "hash")),
+            Versions()));
+    }
+
     private static DocumentIdentity Identity(
         string publicationId,
         string documentId,
         string? googleDocumentId) =>
-        new(publicationId, documentId, googleDocumentId, DocumentState.Existing);
+        new(publicationId, documentId, googleDocumentId, DocumentState.Active);
+
+    private static PublishStateVersions Versions() => new("1", "1", "1", "1", "1.0", "1.0.0");
 
     private static PublishFingerprintInput Input(
         string publicationId,

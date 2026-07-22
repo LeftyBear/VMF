@@ -30,6 +30,9 @@ public sealed class GeneratedBlockIdGenerator : IGeneratedBlockIdGenerator
     }
 
     /// <inheritdoc />
+    string IGeneratedBlockIdGenerator.AlgorithmVersion => algorithmVersion;
+
+    /// <inheritdoc />
     public IReadOnlyList<string?> Generate(DocumentModel document)
     {
         ArgumentNullException.ThrowIfNull(document);

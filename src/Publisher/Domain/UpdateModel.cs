@@ -3,17 +3,67 @@ namespace Vmf.Publisher.Domain;
 /// <summary>Identifies the lifecycle state of a published document.</summary>
 public enum DocumentState
 {
-    /// <summary>The document has not been published.</summary>
-    New,
-
-    /// <summary>The destination document exists.</summary>
-    Existing,
+    /// <summary>The destination document is an active verified publication target.</summary>
+    Active,
 
     /// <summary>The destination document is archived.</summary>
     Archived,
 
     /// <summary>The expected destination document is missing.</summary>
     Missing,
+}
+
+/// <summary>Defines the current persisted publish-state schema.</summary>
+public static class PublishStateSchema
+{
+    /// <summary>The only schema version supported without migration.</summary>
+    public const string CurrentVersion = "1";
+}
+
+/// <summary>Records independently versioned inputs required to interpret persisted publish state.</summary>
+public sealed class PublishStateVersions
+{
+    /// <summary>Initializes a version set.</summary>
+    public PublishStateVersions(
+        string schemaVersion,
+        string generatedIdAlgorithmVersion,
+        string contentHashAlgorithmVersion,
+        string fingerprintAlgorithmVersion,
+        string transformationSpecificationVersion,
+        string publisherVersion)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(schemaVersion);
+        ArgumentException.ThrowIfNullOrWhiteSpace(generatedIdAlgorithmVersion);
+        ArgumentException.ThrowIfNullOrWhiteSpace(contentHashAlgorithmVersion);
+        ArgumentException.ThrowIfNullOrWhiteSpace(fingerprintAlgorithmVersion);
+        ArgumentException.ThrowIfNullOrWhiteSpace(transformationSpecificationVersion);
+        ArgumentException.ThrowIfNullOrWhiteSpace(publisherVersion);
+
+        SchemaVersion = schemaVersion;
+        GeneratedIdAlgorithmVersion = generatedIdAlgorithmVersion;
+        ContentHashAlgorithmVersion = contentHashAlgorithmVersion;
+        FingerprintAlgorithmVersion = fingerprintAlgorithmVersion;
+        TransformationSpecificationVersion = transformationSpecificationVersion;
+        PublisherVersion = publisherVersion;
+    }
+
+    /// <summary>Gets the persisted-state schema version.</summary>
+    public string SchemaVersion { get; }
+
+    /// <summary>Gets the generated-block-identifier algorithm version.</summary>
+    public string GeneratedIdAlgorithmVersion { get; }
+
+    /// <summary>Gets the block content-hash algorithm version.</summary>
+    public string ContentHashAlgorithmVersion { get; }
+
+    /// <summary>Gets the publish-fingerprint algorithm version.</summary>
+    public string FingerprintAlgorithmVersion { get; }
+
+    /// <summary>Gets the Publisher transformation specification version.</summary>
+    public string TransformationSpecificationVersion { get; }
+
+    /// <summary>Gets the Publisher implementation version.</summary>
+    public string PublisherVersion { get; }
 }
 
 /// <summary>Identifies one document across a publication and Google Docs.</summary>
@@ -139,10 +189,12 @@ internal sealed class PublishStateData
 {
     internal PublishStateData(
         DocumentIdentity identity,
+        PublishStateVersions versions,
         PublishFingerprint fingerprint,
         IEnumerable<BlockIdentity> blocks)
     {
         Identity = identity ?? throw new ArgumentNullException(nameof(identity));
+        Versions = versions ?? throw new ArgumentNullException(nameof(versions));
         Fingerprint = fingerprint ?? throw new ArgumentNullException(nameof(fingerprint));
         ArgumentNullException.ThrowIfNull(blocks);
 
@@ -156,6 +208,8 @@ internal sealed class PublishStateData
     }
 
     internal DocumentIdentity Identity { get; }
+
+    internal PublishStateVersions Versions { get; }
 
     internal PublishFingerprint Fingerprint { get; }
 
@@ -174,20 +228,25 @@ public sealed class VerifiedPublishState
     /// </remarks>
     internal VerifiedPublishState(
         DocumentIdentity identity,
+        PublishStateVersions versions,
         PublishFingerprint fingerprint,
         IEnumerable<BlockIdentity> blocks)
     {
-        data = new PublishStateData(identity, fingerprint, blocks);
+        data = new PublishStateData(identity, versions, fingerprint, blocks);
     }
 
     /// <summary>Gets the verified document identity.</summary>
     public DocumentIdentity Identity => data.Identity;
+
+    /// <summary>Gets the version set required to interpret this state.</summary>
+    public PublishStateVersions Versions => data.Versions;
 
     /// <summary>Gets the verified canonical publish fingerprint.</summary>
     public PublishFingerprint Fingerprint => data.Fingerprint;
 
     /// <summary>Gets the verified managed blocks in publication order.</summary>
     public IReadOnlyList<BlockIdentity> Blocks => data.Blocks;
+
 }
 
 /// <summary>Represents desired publish input that has not yet been verified or persisted.</summary>
@@ -197,24 +256,30 @@ public sealed class PublishCandidate
 
     /// <summary>Initializes an unverified publish candidate inside the Publisher boundary.</summary>
     /// <param name="identity">The desired document identity.</param>
+    /// <param name="versions">The independently versioned state inputs.</param>
     /// <param name="fingerprint">The canonical fingerprint of the desired publish input.</param>
     /// <param name="blocks">The desired managed blocks in publication order.</param>
     internal PublishCandidate(
         DocumentIdentity identity,
+        PublishStateVersions versions,
         PublishFingerprint fingerprint,
         IEnumerable<BlockIdentity> blocks)
     {
-        data = new PublishStateData(identity, fingerprint, blocks);
+        data = new PublishStateData(identity, versions, fingerprint, blocks);
     }
 
     /// <summary>Gets the desired document identity.</summary>
     public DocumentIdentity Identity => data.Identity;
+
+    /// <summary>Gets the version set that governs this candidate.</summary>
+    public PublishStateVersions Versions => data.Versions;
 
     /// <summary>Gets the desired canonical publish fingerprint.</summary>
     public PublishFingerprint Fingerprint => data.Fingerprint;
 
     /// <summary>Gets the desired managed blocks in publication order.</summary>
     public IReadOnlyList<BlockIdentity> Blocks => data.Blocks;
+
 }
 
 /// <summary>Identifies a block-level differential operation.</summary>

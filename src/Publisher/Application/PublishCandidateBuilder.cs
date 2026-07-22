@@ -131,7 +131,14 @@ public sealed class PublishCandidateBuilder : IPublishCandidateBuilder
             options.TransformationSpecificationVersion,
             options.PublishStateSchemaVersion,
             options.OutputSettings);
-        return candidateFactory.Create(identity, fingerprintInput);
+        var versions = new PublishStateVersions(
+            options.PublishStateSchemaVersion,
+            generatedIdGenerator.AlgorithmVersion,
+            contentHashGenerator.AlgorithmVersion,
+            candidateFactory.FingerprintAlgorithmVersion,
+            options.TransformationSpecificationVersion,
+            options.PublisherVersion);
+        return candidateFactory.Create(identity, fingerprintInput, versions);
     }
 
     private static void EnsureUniqueExplicitIds(IReadOnlyList<DocumentBlock> blocks)

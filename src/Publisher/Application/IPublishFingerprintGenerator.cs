@@ -5,6 +5,9 @@ namespace Vmf.Publisher.Application;
 /// <summary>Generates a versioned fingerprint from canonical publish input.</summary>
 public interface IPublishFingerprintGenerator
 {
+    /// <summary>Gets the canonical fingerprint algorithm version.</summary>
+    string AlgorithmVersion { get; }
+
     /// <summary>Generates a canonical publish fingerprint.</summary>
     /// <param name="input">The complete output-affecting publish input.</param>
     /// <returns>The versioned fingerprint.</returns>

@@ -23,6 +23,12 @@ public sealed class CandidateIdentityPipelineTests
         Assert.All(candidate.Blocks, block =>
             Assert.StartsWith(BlockContentHashGenerator.ValuePrefix, block.ContentHash));
         Assert.StartsWith(PublishFingerprintGenerator.ValuePrefix, candidate.Fingerprint.Value);
+        Assert.Equal("1", candidate.Versions.SchemaVersion);
+        Assert.Equal(GeneratedBlockIdGenerator.AlgorithmVersion, candidate.Versions.GeneratedIdAlgorithmVersion);
+        Assert.Equal(BlockContentHashGenerator.AlgorithmVersion, candidate.Versions.ContentHashAlgorithmVersion);
+        Assert.Equal(PublishFingerprintGenerator.AlgorithmVersion, candidate.Versions.FingerprintAlgorithmVersion);
+        Assert.Equal("1.0", candidate.Versions.TransformationSpecificationVersion);
+        Assert.Equal("1.0.0", candidate.Versions.PublisherVersion);
     }
 
     [Fact]
@@ -84,6 +90,7 @@ public sealed class CandidateIdentityPipelineTests
             Options());
         var baseline = new VerifiedPublishState(
             baselineCandidate.Identity,
+            baselineCandidate.Versions,
             baselineCandidate.Fingerprint,
             baselineCandidate.Blocks);
 
@@ -123,7 +130,7 @@ public sealed class CandidateIdentityPipelineTests
         new SimpleMarkdownParser().Parse(markdown);
 
     private static DocumentIdentity Identity() =>
-        new("publication", "document", "google-document", DocumentState.Existing);
+        new("publication", "document", "google-document", DocumentState.Active);
 
     private static PublishCandidateBuildOptions Options() => new(
         "1.0.0",

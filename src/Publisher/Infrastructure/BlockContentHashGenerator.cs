@@ -30,6 +30,9 @@ public sealed class BlockContentHashGenerator : IBlockContentHashGenerator
     }
 
     /// <inheritdoc />
+    string IBlockContentHashGenerator.AlgorithmVersion => algorithmVersion;
+
+    /// <inheritdoc />
     public string Generate(DocumentBlock block)
     {
         ArgumentNullException.ThrowIfNull(block);

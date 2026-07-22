@@ -12,10 +12,10 @@ public sealed class UpdateModelTests
             Block("first", "generated-first", "hash-first"),
             Block("second", "generated-second", "hash-second"),
         };
-        var identity = Identity(DocumentState.Existing);
+        var identity = Identity(DocumentState.Active);
         var fingerprint = Fingerprint('a');
 
-        var candidate = new PublishCandidate(identity, fingerprint, source);
+        var candidate = new PublishCandidate(identity, Versions(), fingerprint, source);
         source.Clear();
 
         Assert.Same(identity, candidate.Identity);
@@ -33,11 +33,11 @@ public sealed class UpdateModelTests
     [Fact]
     public void VerifiedPublishState_PreservesRestoredValues()
     {
-        var identity = Identity(DocumentState.Existing);
+        var identity = Identity(DocumentState.Active);
         var fingerprint = Fingerprint('b');
         var block = Block("explicit", "generated", "hash");
 
-        var baseline = new VerifiedPublishState(identity, fingerprint, [block]);
+        var baseline = new VerifiedPublishState(identity, Versions(), fingerprint, [block]);
 
         Assert.Same(identity, baseline.Identity);
         Assert.Same(fingerprint, baseline.Fingerprint);
@@ -95,4 +95,6 @@ public sealed class UpdateModelTests
 
     private static PublishFingerprint Fingerprint(char hexadecimalDigit) =>
         new("v1:sha256:" + new string(hexadecimalDigit, 64));
+
+    private static PublishStateVersions Versions() => new("1", "1", "1", "1", "1.0", "test");
 }

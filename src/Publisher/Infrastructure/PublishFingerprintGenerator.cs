@@ -14,6 +14,9 @@ public sealed class PublishFingerprintGenerator : IPublishFingerprintGenerator
     public const string ValuePrefix = PublishFingerprint.VersionPrefix;
 
     /// <inheritdoc />
+    string IPublishFingerprintGenerator.AlgorithmVersion => AlgorithmVersion;
+
+    /// <inheritdoc />
     public PublishFingerprint Generate(PublishFingerprintInput input)
     {
         ArgumentNullException.ThrowIfNull(input);

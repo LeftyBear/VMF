@@ -615,7 +615,7 @@ public sealed class DiffEngineTests
         string fingerprint,
         DocumentIdentity identity,
         params BlockIdentity[] blocks) =>
-        new(identity, Fingerprint(fingerprint), blocks);
+        new(identity, Versions(), Fingerprint(fingerprint), blocks);
 
     private static PublishCandidate Candidate(
         string fingerprint,
@@ -626,13 +626,15 @@ public sealed class DiffEngineTests
         string fingerprint,
         DocumentIdentity identity,
         params BlockIdentity[] blocks) =>
-        new(identity, Fingerprint(fingerprint), blocks);
+        new(identity, Versions(), Fingerprint(fingerprint), blocks);
 
     private static DocumentIdentity Identity(
         string publicationId = "publication",
         string documentId = "document",
         string? googleDocumentId = "google-document") =>
-        new(publicationId, documentId, googleDocumentId, DocumentState.Existing);
+        new(publicationId, documentId, googleDocumentId, DocumentState.Active);
+
+    private static PublishStateVersions Versions() => new("1", "1", "1", "1", "1.0", "test");
 
     private static BlockIdentity Block(string? explicitId, string? generatedId, string hash) =>
         new(explicitId, generatedId, hash);

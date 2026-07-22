@@ -711,3 +711,143 @@ block's Explicit ID when replacing the prepared image payload.
 No Google Docs update call, Verified State persistence, Update CLI command,
 Managed Region mutation, Snapshot, or Recovery behavior was added or executed
 in this phase.
+
+## Phase 3-2B: Verified State Lifecycle Decisions
+
+| Field | Value |
+|---|---|
+| Date | 2026-07-22 |
+| Scope | Verified-state restoration, verification-gated promotion, state transitions, and atomic local JSON persistence |
+| Frozen specification changes | None |
+| Google Docs physical update and readback | Contract only; no implementation |
+| CLI, Managed Region, Snapshot, Recovery | Out of scope |
+
+### Lifecycle boundary and confirmation order
+
+`PublishCandidate` remains unverified input. It cannot construct or replace a
+`VerifiedPublishState`. A physical application adapter must instead provide a
+`PublishApplicationVerification` containing the applied plan, target identity,
+completion flags, applied fingerprint, and ordered read-back block identities.
+`PublishResultVerifier` checks that evidence and is the only producer of the
+non-publicly-constructible `VerifiedPublishResult`. Only that result can be
+accepted by `VerifiedPublishStatePromoter`.
+
+`VerifiedPublishLifecycle` enforces this order:
+
+1. receive an already generated Candidate;
+2. restore the optional verified Baseline and reject a prohibited state transition;
+3. generate the logical DiffPlan;
+4. call the target-neutral external apply-and-verify contract;
+5. validate application and readback evidence;
+6. promote the verified result to active state;
+7. atomically save the complete state;
+8. return success.
+
+No success result exists before step 7 completes. Application, readback,
+verification, transition, or save failure therefore cannot publish a new
+Verified State. Phase 3-2B provides no Google Docs implementation of step 4.
+
+### Persisted DocumentState and transitions
+
+Absence is represented by no state record, not by a persisted enum value. Only
+`active`, `missing`, and `archived` are serialized.
+
+| From / To | Active | Missing | Archived |
+|---|---:|---:|---:|
+| No state | Allow | Deny | Deny |
+| Active | Allow | Allow | Allow |
+| Missing | Allow | Allow | Allow |
+| Archived | Deny | Deny | Allow |
+
+Missing-to-Active is allowed only after the normal verification-gated publish
+flow. Missing-to-Archived permits terminal administrative retirement. Archived
+is terminal in v1: implicit resurrection is prohibited until a future explicit
+restore workflow defines its authorization and verification semantics. Invalid
+transitions fail with `STATE_INVALID_TRANSITION`.
+
+### Restore contract and version policy
+
+The read contract uses `PublicationId` plus `DocumentId` as its logical key and
+also requires the expected nullable `GoogleDocumentId`. All identity values use
+ordinal comparison. Both Google IDs null is valid; a one-sided null or unequal
+value fails with `STATE_DOCUMENT_IDENTITY_MISMATCH`. A missing optional baseline
+returns null. Callers that require an existing record may report the reserved
+`STATE_NOT_FOUND` code.
+
+Restore validates the exact v1 field set, required values, JSON types, schema,
+algorithm versions, known DocumentState token, canonical fingerprint and hash
+prefixes, lowercase SHA-256 hex, Explicit ID canonical syntax and NFC form,
+Explicit ID uniqueness, Generated ID uniqueness, exactly one strong identity
+per block, and zero-based contiguous block order. Unknown or duplicated JSON
+properties, malformed UTF-8, BOM, CR bytes, missing LF terminator, and invalid
+or unknown values are corruption. No normalization, repair, fallback, or schema
+migration is attempted.
+
+The versions persisted independently are:
+
+- Publish State Schema Version;
+- Generated ID Algorithm Version;
+- Content Hash Algorithm Version;
+- Fingerprint Algorithm Version;
+- Publisher Transformation Specification Version;
+- Publisher implementation version.
+
+Only schema version `1` is accepted by the configured v1 store. A different
+schema fails with `STATE_SCHEMA_VERSION_UNSUPPORTED`; migration is deferred.
+Unsupported identity, hash, or fingerprint algorithms fail with
+`STATE_ALGORITHM_VERSION_UNSUPPORTED`. Transformation and Publisher versions
+remain historical state metadata; a newer candidate's fingerprint determines
+whether a new application is needed.
+
+Stable lifecycle codes are `STATE_NOT_FOUND` (reserved for a required-load
+caller), `STATE_CORRUPTED`, `STATE_SCHEMA_VERSION_UNSUPPORTED`,
+`STATE_ALGORITHM_VERSION_UNSUPPORTED`, `STATE_DOCUMENT_IDENTITY_MISMATCH`,
+`STATE_INVALID_TRANSITION`, `STATE_VERIFICATION_REQUIRED`,
+`STATE_VERIFICATION_MISMATCH`, and `STATE_SAVE_FAILED`.
+
+### Canonical local JSON and atomicity
+
+The v1 state document uses UTF-8 without BOM, no indentation, fixed property
+emission order, JSON arrays for block order, and exactly one LF terminator.
+Null is emitted as JSON `null`; empty required strings are invalid. JSON string
+escaping preserves the distinction between data characters and record bytes.
+The stored shape is:
+
+```json
+{"format":"vmf-publisher-verified-state","schemaVersion":"1","generatedIdAlgorithmVersion":"1","contentHashAlgorithmVersion":"1","fingerprintAlgorithmVersion":"1","transformationSpecificationVersion":"1.0","publisherVersion":"1.0.0","publicationId":"publication","documentId":"document","googleDocumentId":"google-document","documentState":"active","publishFingerprint":"v1:sha256:<64 lowercase hex>","blocks":[{"order":0,"explicitId":"intro","generatedId":null,"contentHash":"ch-v1:sha256:<64 lowercase hex>"}]}
+```
+
+The file name is derived from a SHA-256 digest of length-delimited canonical
+Publication ID and Document ID values, so user identifiers are never used as
+paths. The root directory is supplied explicitly by the host and is not coupled
+to Google credentials or local Google API configuration.
+
+Save first serializes and revalidates the complete new record. It then writes a
+uniquely named temporary file in the destination directory, flushes it to disk,
+and commits by same-directory atomic rename for a new key or atomic replacement
+for an existing key. If writing, flushing, or replacement fails, the temporary
+file is removed and the prior state remains the committed record. The public
+failure is `STATE_SAVE_FAILED`.
+
+### Phase boundary
+
+The Application layer owns restore/use contracts, evidence verification,
+promotion, and lifecycle ordering. Domain owns persisted states, versions, and
+transition rules. Infrastructure owns strict JSON and atomic file operations.
+Composition registers the current algorithms and target-neutral services.
+
+No Google Docs physical update, Google Docs readback, Update CLI command,
+Managed Region mutation, Snapshot, or Recovery behavior was added in this
+phase.
+
+### Automated evidence
+
+| Check | Result |
+|---|---|
+| Phase 3-2B focused Unit Tests | PASS - 76/76 |
+| Publisher Unit Tests | PASS - 320/320 |
+| Publisher Integration Tests | PASS - 8/8 |
+| Release solution build | PASS - 0 warnings, 0 errors |
+| `dotnet format --verify-no-changes` | PASS |
+| `git diff --check` | PASS |
+| Frozen specification changes | None |
