@@ -224,6 +224,8 @@ public sealed class JsonVerifiedPublishStateStore : IVerifiedPublishStateStore
             }
 
             writer.WriteString("documentState", StateToken(state.Identity.State));
+            writer.WriteString("revisionId", state.Revision.RevisionId);
+            writer.WriteNumber("revisionSequence", state.Revision.Sequence);
             writer.WriteString("publishFingerprint", state.Fingerprint.Value);
             writer.WriteStartArray("blocks");
             for (var index = 0; index < state.Blocks.Count; index++)
@@ -264,6 +266,8 @@ public sealed class JsonVerifiedPublishStateStore : IVerifiedPublishStateStore
             "documentId",
             "googleDocumentId",
             "documentState",
+            "revisionId",
+            "revisionSequence",
             "publishFingerprint",
             "blocks");
         RequireExact(root, "format", FormatName);
@@ -300,6 +304,13 @@ public sealed class JsonVerifiedPublishStateStore : IVerifiedPublishStateStore
         }
 
         var state = ParseState(RequireString(root, "documentState"));
+        var revisionId = RequireString(root, "revisionId");
+        var revisionSequence = RequireLong(root, "revisionSequence");
+        if (revisionSequence < 0)
+        {
+            throw Corrupted("Persisted revision sequence must not be negative.");
+        }
+
         var fingerprintValue = RequireString(root, "publishFingerprint");
         EnsureHashValue(fingerprintValue, $"v{fingerprintVersion}:sha256:", "publish fingerprint");
         var blocks = ParseBlocks(root, generatedVersion, contentVersion);
@@ -315,6 +326,7 @@ public sealed class JsonVerifiedPublishStateStore : IVerifiedPublishStateStore
                     fingerprintVersion,
                     transformationVersion,
                     publisherVersion),
+                new DocumentRevision(revisionId, revisionSequence),
                 new PublishFingerprint(fingerprintValue),
                 blocks);
         }
@@ -542,6 +554,18 @@ public sealed class JsonVerifiedPublishStateStore : IVerifiedPublishStateStore
         if (!element.TryGetProperty(name, out var property) ||
             property.ValueKind != JsonValueKind.Number ||
             !property.TryGetInt32(out var value))
+        {
+            throw Corrupted($"Persisted field '{name}' is missing or invalid.");
+        }
+
+        return value;
+    }
+
+    private static long RequireLong(JsonElement element, string name)
+    {
+        if (!element.TryGetProperty(name, out var property) ||
+            property.ValueKind != JsonValueKind.Number ||
+            !property.TryGetInt64(out var value))
         {
             throw Corrupted($"Persisted field '{name}' is missing or invalid.");
         }

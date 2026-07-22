@@ -37,7 +37,7 @@ public sealed class UpdateModelTests
         var fingerprint = Fingerprint('b');
         var block = Block("explicit", "generated", "hash");
 
-        var baseline = new VerifiedPublishState(identity, Versions(), fingerprint, [block]);
+        var baseline = new VerifiedPublishState(identity, Versions(), Revision(), fingerprint, [block]);
 
         Assert.Same(identity, baseline.Identity);
         Assert.Same(fingerprint, baseline.Fingerprint);
@@ -96,5 +96,7 @@ public sealed class UpdateModelTests
     private static PublishFingerprint Fingerprint(char hexadecimalDigit) =>
         new("v1:sha256:" + new string(hexadecimalDigit, 64));
 
-    private static PublishStateVersions Versions() => new("1", "1", "1", "1", "1.0", "test");
+    private static PublishStateVersions Versions() => new("2", "1", "1", "1", "1.0", "test");
+
+    private static DocumentRevision Revision() => new("revision-1", 1);
 }

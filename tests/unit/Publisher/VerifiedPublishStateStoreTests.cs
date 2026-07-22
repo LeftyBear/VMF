@@ -50,10 +50,28 @@ public sealed class VerifiedPublishStateStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task LoadAsync_RejectsMissingRevision()
+    {
+        var store = await SavedStoreAsync();
+        await ReplaceAsync(store, "\"revisionId\":\"revision-1\",", string.Empty);
+
+        await AssertCodeAsync(StateErrorCodes.Corrupted, () => store.LoadAsync(Request(), default));
+    }
+
+    [Fact]
+    public async Task LoadAsync_RejectsNegativeRevisionSequence()
+    {
+        var store = await SavedStoreAsync();
+        await ReplaceAsync(store, "\"revisionSequence\":1", "\"revisionSequence\":-1");
+
+        await AssertCodeAsync(StateErrorCodes.Corrupted, () => store.LoadAsync(Request(), default));
+    }
+
+    [Fact]
     public async Task LoadAsync_RejectsUnsupportedSchemaVersion()
     {
         var store = await SavedStoreAsync();
-        await ReplaceAsync(store, "\"schemaVersion\":\"1\"", "\"schemaVersion\":\"0\"");
+        await ReplaceAsync(store, "\"schemaVersion\":\"2\"", "\"schemaVersion\":\"1\"");
 
         await AssertCodeAsync(
             StateErrorCodes.SchemaVersionUnsupported,
@@ -253,6 +271,7 @@ public sealed class VerifiedPublishStateStoreTests : IDisposable
         var unsupported = new VerifiedPublishState(
             new DocumentIdentity("publication", "document", "google-document", DocumentState.Active),
             new PublishStateVersions("0", "1", "1", "1", "1.0", "1.0.0"),
+            Revision(),
             new PublishFingerprint(Fingerprint('f')),
             [new BlockIdentity("intro", null, Content('c'))]);
 
@@ -290,6 +309,8 @@ public sealed class VerifiedPublishStateStoreTests : IDisposable
         Assert.Equal((byte)'\n', first[^1]);
         Assert.DoesNotContain((byte)'\r', first);
         Assert.Contains("\"googleDocumentId\":\"google-document\"", Encoding.UTF8.GetString(first));
+        Assert.Contains("\"revisionId\":\"revision-1\"", Encoding.UTF8.GetString(first));
+        Assert.Contains("\"revisionSequence\":1", Encoding.UTF8.GetString(first));
     }
 
     [Fact]
@@ -325,7 +346,7 @@ public sealed class VerifiedPublishStateStoreTests : IDisposable
 
     private JsonVerifiedPublishStateStore Store() => new(Options());
 
-    private VerifiedPublishStateStoreOptions Options() => new(root, "1", "1", "1", "1");
+    private VerifiedPublishStateStoreOptions Options() => new(root, "2", "1", "1", "1");
 
     private async Task<JsonVerifiedPublishStateStore> SavedStoreAsync()
     {
@@ -343,6 +364,7 @@ public sealed class VerifiedPublishStateStoreTests : IDisposable
         IReadOnlyList<BlockIdentity>? blocks = null) => new(
             new DocumentIdentity(publicationId, documentId, googleDocumentId, documentState),
             Versions(),
+            Revision(),
             new PublishFingerprint(Fingerprint(fingerprintDigit)),
             blocks ??
             [
@@ -350,7 +372,9 @@ public sealed class VerifiedPublishStateStoreTests : IDisposable
                 new BlockIdentity(null, Generated('b'), Content('d')),
             ]);
 
-    private static PublishStateVersions Versions() => new("1", "1", "1", "1", "1.0", "1.0.0");
+    private static PublishStateVersions Versions() => new("2", "1", "1", "1", "1.0", "1.0.0");
+
+    private static DocumentRevision Revision() => new("revision-1", 1);
 
     private static PublishStateLoadRequest Request(
         string? googleDocumentId = "google-document",
@@ -372,6 +396,7 @@ public sealed class VerifiedPublishStateStoreTests : IDisposable
         Assert.Equal(expected.Identity.GoogleDocumentId, actual.Identity.GoogleDocumentId);
         Assert.Equal(expected.Identity.State, actual.Identity.State);
         Assert.Equal(expected.Fingerprint, actual.Fingerprint);
+        Assert.Equal(expected.Revision, actual.Revision);
         Assert.Equal(expected.Versions.SchemaVersion, actual.Versions.SchemaVersion);
         Assert.Equal(
             expected.Blocks.Select(BlockSignature),

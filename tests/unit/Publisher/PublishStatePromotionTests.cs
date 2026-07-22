@@ -238,13 +238,16 @@ public sealed class PublishStatePromotionTests
     private static VerifiedPublishState State(DocumentState state) => new(
         Identity(state),
         Versions(),
+        Revision(),
         Fingerprint('b'),
         Blocks());
 
     private static DocumentIdentity Identity(DocumentState state) =>
         new("publication", "document", "google-document", state);
 
-    private static PublishStateVersions Versions() => new("1", "1", "1", "1", "1.0", "1.0.0");
+    private static PublishStateVersions Versions() => new("2", "1", "1", "1", "1.0", "1.0.0");
+
+    private static DocumentRevision Revision() => new("revision-1", 1);
 
     private static PublishFingerprint Fingerprint(char digit) =>
         new("v1:sha256:" + new string(digit, 64));
@@ -272,7 +275,8 @@ public sealed class PublishStatePromotionTests
             applied,
             readback,
             fingerprint ?? candidate.Fingerprint.Value,
-            blocks ?? candidate.Blocks);
+            blocks ?? candidate.Blocks,
+            Revision());
 
     private static void AssertCode(string code, Action action)
     {

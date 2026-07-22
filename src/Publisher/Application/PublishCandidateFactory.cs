@@ -72,6 +72,7 @@ public sealed class PublishCandidateFactory : IPublishCandidateFactory
             identity,
             versions,
             fingerprintGenerator.Generate(input),
-            input.Blocks);
+            input.Blocks,
+            input.Document);
     }
 }

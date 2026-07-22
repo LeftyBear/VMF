@@ -54,7 +54,7 @@ public sealed class VerifiedStateLifecycleIntegrationTests : IDisposable
     private static PublishCandidateBuildOptions Options() => new(
         "1.0.0",
         "1.0",
-        "1",
+        "2",
         [
             new(PublishFingerprintSettingNames.MarkdownInlineMaxDepth, "8"),
             new(PublishFingerprintSettingNames.MarkdownListIndentSize, "2"),
@@ -71,9 +71,21 @@ public sealed class VerifiedStateLifecycleIntegrationTests : IDisposable
 
     private sealed class SuccessfulApplicationVerifier : IPublishPlanApplicationVerifier
     {
+        public Task<ManagedDocumentSnapshot> PrepareAsync(
+            PublishCandidate candidate,
+            VerifiedPublishState? baseline,
+            CancellationToken cancellationToken) => Task.FromResult(new ManagedDocumentSnapshot(
+                candidate.Identity,
+                baseline?.Revision ?? new DocumentRevision("revision-0", 0),
+                new DocumentTextRange(1, 1),
+                baseline?.Fingerprint.Value ?? candidate.Fingerprint.Value,
+                Array.Empty<ManagedBlockSnapshot>()));
+
         public Task<PublishApplicationVerification> ApplyAndVerifyAsync(
             PublishCandidate candidate,
+            VerifiedPublishState? baseline,
             DiffPlan plan,
+            ManagedDocumentSnapshot preparedSnapshot,
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -83,7 +95,14 @@ public sealed class VerifiedStateLifecycleIntegrationTests : IDisposable
                 isLogicalPlanApplied: true,
                 isReadbackVerified: true,
                 candidate.Fingerprint.Value,
-                candidate.Blocks));
+                candidate.Blocks,
+                new DocumentRevision("revision-1", 1)));
         }
+
+        public PhysicalUpdateDryRunResult CreateDryRun(
+            PublishCandidate candidate,
+            VerifiedPublishState? baseline,
+            DiffPlan plan,
+            ManagedDocumentSnapshot preparedSnapshot) => new(plan, null, Array.Empty<string>());
     }
 }

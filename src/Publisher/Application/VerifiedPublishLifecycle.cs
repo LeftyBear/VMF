@@ -5,11 +5,26 @@ namespace Vmf.Publisher.Application;
 /// <summary>Applies and verifies one target-neutral differential plan.</summary>
 public interface IPublishPlanApplicationVerifier
 {
-    /// <summary>Applies the plan externally and returns readback or equivalent verification evidence.</summary>
+    /// <summary>Reads and validates the current snapshot before logical planning.</summary>
+    Task<ManagedDocumentSnapshot> PrepareAsync(
+        PublishCandidate candidate,
+        VerifiedPublishState? baseline,
+        CancellationToken cancellationToken);
+
+    /// <summary>Applies the plan externally and returns readback verification evidence.</summary>
     Task<PublishApplicationVerification> ApplyAndVerifyAsync(
         PublishCandidate candidate,
+        VerifiedPublishState? baseline,
         DiffPlan plan,
+        ManagedDocumentSnapshot preparedSnapshot,
         CancellationToken cancellationToken);
+
+    /// <summary>Creates a non-mutating physical-plan preview.</summary>
+    PhysicalUpdateDryRunResult CreateDryRun(
+        PublishCandidate candidate,
+        VerifiedPublishState? baseline,
+        DiffPlan plan,
+        ManagedDocumentSnapshot preparedSnapshot);
 }
 
 /// <summary>Represents a lifecycle operation that became durable.</summary>
@@ -33,6 +48,11 @@ public interface IVerifiedPublishLifecycle
 {
     /// <summary>Executes one complete verified-state lifecycle operation.</summary>
     Task<VerifiedPublishLifecycleResult> ExecuteAsync(
+        PublishCandidate candidate,
+        CancellationToken cancellationToken);
+
+    /// <summary>Builds and validates plans without applying or saving state.</summary>
+    Task<PhysicalUpdateDryRunResult> DryRunAsync(
         PublishCandidate candidate,
         CancellationToken cancellationToken);
 }
@@ -84,13 +104,50 @@ public sealed class VerifiedPublishLifecycle : IVerifiedPublishLifecycle
                 DocumentState.Active);
         }
 
+        var preparedSnapshot = await applicationVerifier
+            .PrepareAsync(candidate, baseline, cancellationToken)
+            .ConfigureAwait(false);
         var plan = diffEngine.CreatePlan(baseline, candidate);
         var applicationResult = await applicationVerifier
-            .ApplyAndVerifyAsync(candidate, plan, cancellationToken)
+            .ApplyAndVerifyAsync(candidate, baseline, plan, preparedSnapshot, cancellationToken)
             .ConfigureAwait(false);
         var verifiedResult = resultVerifier.Verify(candidate, plan, applicationResult);
         var state = promoter.Promote(baseline, verifiedResult);
         await writer.SaveAsync(state, cancellationToken).ConfigureAwait(false);
         return new VerifiedPublishLifecycleResult(plan, state);
+    }
+
+    /// <inheritdoc />
+    public async Task<PhysicalUpdateDryRunResult> DryRunAsync(
+        PublishCandidate candidate,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(candidate);
+        cancellationToken.ThrowIfCancellationRequested();
+        var request = new PublishStateLoadRequest(
+            new PublishStateKey(candidate.Identity.PublicationId, candidate.Identity.DocumentId),
+            candidate.Identity.GoogleDocumentId);
+        var baseline = await reader.LoadAsync(request, cancellationToken).ConfigureAwait(false);
+        if (!DocumentStateTransitionRules.IsAllowed(baseline?.Identity.State, DocumentState.Active))
+        {
+            throw VerifiedPublishStatePromoter.InvalidTransition(
+                baseline?.Identity.State,
+                DocumentState.Active);
+        }
+
+        ManagedDocumentSnapshot preparedSnapshot;
+        try
+        {
+            preparedSnapshot = await applicationVerifier
+                .PrepareAsync(candidate, baseline, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (PhysicalUpdateException exception)
+        {
+            return new PhysicalUpdateDryRunResult(null, null, [exception.Code]);
+        }
+
+        var plan = diffEngine.CreatePlan(baseline, candidate);
+        return applicationVerifier.CreateDryRun(candidate, baseline, plan, preparedSnapshot);
     }
 }

@@ -17,7 +17,7 @@ public enum DocumentState
 public static class PublishStateSchema
 {
     /// <summary>The only schema version supported without migration.</summary>
-    public const string CurrentVersion = "1";
+    public const string CurrentVersion = "2";
 }
 
 /// <summary>Records independently versioned inputs required to interpret persisted publish state.</summary>
@@ -229,10 +229,12 @@ public sealed class VerifiedPublishState
     internal VerifiedPublishState(
         DocumentIdentity identity,
         PublishStateVersions versions,
+        DocumentRevision revision,
         PublishFingerprint fingerprint,
         IEnumerable<BlockIdentity> blocks)
     {
         data = new PublishStateData(identity, versions, fingerprint, blocks);
+        Revision = revision ?? throw new ArgumentNullException(nameof(revision));
     }
 
     /// <summary>Gets the verified document identity.</summary>
@@ -240,6 +242,9 @@ public sealed class VerifiedPublishState
 
     /// <summary>Gets the version set required to interpret this state.</summary>
     public PublishStateVersions Versions => data.Versions;
+
+    /// <summary>Gets the document revision verified with this state.</summary>
+    public DocumentRevision Revision { get; }
 
     /// <summary>Gets the verified canonical publish fingerprint.</summary>
     public PublishFingerprint Fingerprint => data.Fingerprint;
@@ -259,13 +264,23 @@ public sealed class PublishCandidate
     /// <param name="versions">The independently versioned state inputs.</param>
     /// <param name="fingerprint">The canonical fingerprint of the desired publish input.</param>
     /// <param name="blocks">The desired managed blocks in publication order.</param>
+    /// <param name="document">The optional canonical payload required for physical application.</param>
     internal PublishCandidate(
         DocumentIdentity identity,
         PublishStateVersions versions,
         PublishFingerprint fingerprint,
-        IEnumerable<BlockIdentity> blocks)
+        IEnumerable<BlockIdentity> blocks,
+        DocumentModel? document = null)
     {
         data = new PublishStateData(identity, versions, fingerprint, blocks);
+        if (document is not null && document.Blocks.Count != data.Blocks.Count)
+        {
+            throw new ArgumentException(
+                "Candidate document blocks must align with candidate identities.",
+                nameof(document));
+        }
+
+        Document = document;
     }
 
     /// <summary>Gets the desired document identity.</summary>
@@ -279,6 +294,9 @@ public sealed class PublishCandidate
 
     /// <summary>Gets the desired managed blocks in publication order.</summary>
     public IReadOnlyList<BlockIdentity> Blocks => data.Blocks;
+
+    /// <summary>Gets the canonical block payload required for physical application.</summary>
+    public DocumentModel? Document { get; }
 
 }
 

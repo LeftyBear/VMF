@@ -59,7 +59,7 @@ public sealed class PublishResultVerifier : IPublishResultVerifier
             }
         }
 
-        return new VerifiedPublishResult(candidate);
+        return new VerifiedPublishResult(candidate, verification.AppliedRevision);
     }
 
     private static void EnsureSameDocument(DocumentIdentity expected, DocumentIdentity actual)
@@ -107,6 +107,7 @@ public sealed class VerifiedPublishStatePromoter : IVerifiedPublishStatePromoter
         return new VerifiedPublishState(
             identity,
             candidate.Versions,
+            verifiedResult.Revision,
             candidate.Fingerprint,
             candidate.Blocks);
     }
@@ -150,6 +151,7 @@ public sealed class VerifiedPublishStateTransitioner : IVerifiedPublishStateTran
         return new VerifiedPublishState(
             identity,
             current.Versions,
+            current.Revision,
             current.Fingerprint,
             current.Blocks);
     }

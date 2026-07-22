@@ -22,7 +22,7 @@ public sealed class VerifiedPublishLifecycleTests : IDisposable
 
         var result = await lifecycle.ExecuteAsync(candidate, default);
 
-        Assert.Equal(["load", "plan", "apply", "save"], calls);
+        Assert.Equal(["load", "prepare", "plan", "apply", "save"], calls);
         Assert.Same(reader.SavedState, result.State);
         Assert.Equal(candidate.Fingerprint, result.State.Fingerprint);
         Assert.Equal(DocumentState.Active, result.State.Identity.State);
@@ -109,7 +109,7 @@ public sealed class VerifiedPublishLifecycleTests : IDisposable
 
         var result = await lifecycle.ExecuteAsync(candidate, default);
 
-        Assert.Equal(["load", "plan", "apply", "save"], calls);
+        Assert.Equal(["load", "prepare", "plan", "apply", "save"], calls);
         Assert.Equal(baseline.Fingerprint, result.Plan.PreviousFingerprint);
     }
 
@@ -175,13 +175,16 @@ public sealed class VerifiedPublishLifecycleTests : IDisposable
     private static VerifiedPublishState State(DocumentState state, char fingerprintDigit) => new(
         Identity(state),
         Versions(),
+        Revision(1),
         Fingerprint(fingerprintDigit),
         Blocks());
 
     private static DocumentIdentity Identity(DocumentState state) =>
         new("publication", "document", "google-document", state);
 
-    private static PublishStateVersions Versions() => new("1", "1", "1", "1", "1.0", "1.0.0");
+    private static PublishStateVersions Versions() => new("2", "1", "1", "1", "1.0", "1.0.0");
+
+    private static DocumentRevision Revision(long sequence) => new("revision-" + sequence, sequence);
 
     private static PublishFingerprint Fingerprint(char digit) =>
         new("v1:sha256:" + new string(digit, 64));
@@ -268,9 +271,30 @@ public sealed class VerifiedPublishLifecycleTests : IDisposable
             this.mode = mode;
         }
 
+        public Task<ManagedDocumentSnapshot> PrepareAsync(
+            PublishCandidate candidate,
+            VerifiedPublishState? baseline,
+            CancellationToken cancellationToken)
+        {
+            calls.Add("prepare");
+            var blocks = (baseline?.Blocks ?? Array.Empty<BlockIdentity>())
+                .Select((block, index) => new ManagedBlockSnapshot(
+                    block,
+                    new DocumentTextRange(index + 1, index + 2)))
+                .ToArray();
+            return Task.FromResult(new ManagedDocumentSnapshot(
+                candidate.Identity,
+                baseline?.Revision ?? Revision(0),
+                new DocumentTextRange(1, blocks.Length + 1),
+                baseline?.Fingerprint.Value ?? candidate.Fingerprint.Value,
+                blocks));
+        }
+
         public Task<PublishApplicationVerification> ApplyAndVerifyAsync(
             PublishCandidate candidate,
+            VerifiedPublishState? baseline,
             DiffPlan plan,
+            ManagedDocumentSnapshot preparedSnapshot,
             CancellationToken cancellationToken)
         {
             calls.Add("apply");
@@ -288,8 +312,15 @@ public sealed class VerifiedPublishLifecycleTests : IDisposable
                 isLogicalPlanApplied: true,
                 isReadbackVerified: mode != VerificationMode.ReadbackFailed,
                 candidate.Fingerprint.Value,
-                blocks));
+                blocks,
+                Revision(preparedSnapshot.Revision.Sequence + 1)));
         }
+
+        public PhysicalUpdateDryRunResult CreateDryRun(
+            PublishCandidate candidate,
+            VerifiedPublishState? baseline,
+            DiffPlan plan,
+            ManagedDocumentSnapshot preparedSnapshot) => new(plan, null, Array.Empty<string>());
     }
 
     private enum VerificationMode

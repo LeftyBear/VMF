@@ -393,6 +393,8 @@ identifier was logged.
 | Date | 2026-07-22 |
 | Scope | Pure differential planning, fingerprint generation, and Unit Tests |
 | Frozen specification changes | None |
+
+
 | Google Docs update execution | Out of scope |
 | Persistence, CLI, Managed Region, Snapshot, Recovery | Out of scope |
 
@@ -847,6 +849,152 @@ phase.
 | Phase 3-2B focused Unit Tests | PASS - 76/76 |
 | Publisher Unit Tests | PASS - 320/320 |
 | Publisher Integration Tests | PASS - 8/8 |
+| Release solution build | PASS - 0 warnings, 0 errors |
+| `dotnet format --verify-no-changes` | PASS |
+| `git diff --check` | PASS |
+| Frozen specification changes | None |
+
+## Phase 3-2C: Physical Update Planning and Verification Decisions
+
+| Field | Value |
+|---|---|
+| Date | 2026-07-22 |
+| Scope | Physical block planning, explicit managed snapshots, optimistic concurrency, dry-run, readback verification, and lifecycle connection |
+| Frozen specification changes | None |
+| Live Google Docs updates | Disabled by default; no credentialed live test |
+| CLI, complete Managed Region design, Snapshot, Recovery, Archived restore, Schema migration | Out of scope |
+
+### Logical and physical plan separation
+
+`DiffPlan` remains a target-neutral statement of block identity changes.
+`PhysicalUpdatePlanner` converts it into a separate `PhysicalUpdatePlan` only
+after receiving a validated `ManagedDocumentSnapshot`. Every physical operation
+retains its prior and candidate block indexes, logical reason, affected range,
+and traced `BlockIdentity`. A Candidate built by the canonical pipeline also
+retains its `DocumentModel`, because identities and hashes alone cannot supply
+the payload required for a physical insertion.
+
+NoChange generates no physical operation. Insert generates one InsertBlock.
+Delete generates one DeleteRange. Update generates DeleteRange followed by an
+InsertBlock carrying the Candidate payload. Move is not treated as a Google
+Docs primitive: it generates DeleteRange followed by InsertBlock. A block that
+is both moved and updated generates exactly one source deletion and one
+Candidate-payload insertion, both marked `MoveAndUpdate`.
+
+### Index-safe execution order
+
+All destructive operations are emitted first in descending current document
+start index. Their ranges therefore remain valid while later document content
+is deleted. Overlapping, repeated, missing, or out-of-region source ranges stop
+planning with a stable error.
+
+After all destructive operations, ranges for surviving NoChange blocks are
+rebased by the exact lengths of preceding deletions. Constructive operations
+are emitted in descending Candidate index. Each insertion uses the first
+surviving block to its right as an anchor, or the reduced managed-region end
+when no such survivor exists. Multiple blocks in one gap are consequently
+inserted in reverse order at the same anchor and finish in Candidate order.
+This avoids guessing the post-insert length of tables or images and keeps the
+plan deterministic.
+
+### Managed document snapshot contract
+
+Every planning and application operation requires:
+
+- exact `DocumentIdentity`;
+- `DocumentRevision` with provider ID and adapter-supplied monotonic sequence;
+- managed-region start and exclusive end UTF-16 indexes;
+- ordered managed blocks;
+- Explicit ID, Generated ID, and Content Hash for every block;
+- inclusive-start/exclusive-end block range;
+- reconstructed publish fingerprint.
+
+Block ranges must be non-empty, ordered, non-overlapping, and fully inside the
+managed region. The current snapshot must match the Verified Baseline's
+revision, fingerprint, identity, block identities, hashes, and order. Phase
+3-2C defines this boundary contract but does not define marker discovery or the
+complete Managed Region storage design.
+
+### Revision and optimistic concurrency
+
+Four revisions are kept distinct:
+
+1. the revision persisted with the Verified Baseline;
+2. the snapshot revision used for planning;
+3. a second snapshot read immediately before apply;
+4. the apply receipt and post-apply readback revision.
+
+The Baseline and planning revisions must match exactly. The pre-apply revision
+and complete topology must still equal the prepared snapshot. The adapter
+receives the prepared revision as an apply precondition. A mutating apply must
+return a strictly greater monotonic sequence. Readback must equal the apply
+receipt and remain greater than the planning revision. NoChange does not apply
+and may retain the same revision. Missing, changed, unchanged-after-mutation,
+or regressed revisions stop with `UPDATE_REVISION_CONFLICT`.
+
+Persisting the successful readback revision changes the Publish State canonical
+shape. `PublishStateSchema.CurrentVersion` is therefore `2`. Schema v2 adds
+`revisionId` and `revisionSequence`. Schema v1 is not migrated in this phase and
+fails with `STATE_SCHEMA_VERSION_UNSUPPORTED`.
+
+### Apply, readback, and lifecycle
+
+`IManagedDocumentAdapter` exposes snapshot read and revision-bound physical
+apply operations without Google SDK types in Application. The physical
+application verifier creates the plan, repeats the pre-apply read, invokes the
+adapter, reads back, and requires exact Candidate identity, fingerprint, block
+count, order, Explicit ID, Generated ID, and Content Hash. It also validates
+the returned managed boundary and all block ranges.
+
+`VerifiedPublishLifecycle` now performs Baseline load, current snapshot read,
+DiffPlan generation, physical planning/application, readback verification,
+promotion, atomic save, and success in that order. Any physical planning,
+application, revision, readback, promotion, or save error occurs before a new
+state becomes durable.
+
+### Dry-run
+
+`DryRunAsync` uses the same Baseline load, snapshot preparation, DiffEngine, and
+PhysicalUpdatePlanner as a real update. It returns logical and physical counts,
+per-kind logical counts, publish-required status, revision precondition,
+operation identities, affected ranges, warnings, and stable conflicts. It does
+not call adapter apply and does not call State save. A conflicting dry-run
+retains the logical publish-required result while omitting an unsafe physical
+plan.
+
+If identity, revision, or managed-boundary preparation fails before DiffPlan
+generation, dry-run returns the stable conflict code with no logical or
+physical plan; counts are zero because unsafe input is not planned.
+
+### Infrastructure adapters and live-update boundary
+
+`InMemoryManagedDocumentAdapter` implements deterministic revision-bound apply
+and readback for Unit and Integration tests. It can inject pre-apply edits,
+post-apply edits, unchanged or regressed revisions, and application failures.
+
+`GoogleDocsPhysicalUpdateAdapter` implements the Application adapter boundary
+over `IGoogleDocsManagedDocumentGateway`. Snapshot reads are available, but
+live apply is rejected by default. The host must explicitly construct it with
+`liveUpdatesEnabled: true`. The gateway implementation that discovers managed
+markers, reconstructs canonical block metadata, and maps block payloads to
+credentialed Google Docs requests is deferred with the complete Managed Region
+design; it is not silently approximated in Phase 3-2C.
+
+Stable physical-update codes are `UPDATE_REVISION_CONFLICT`,
+`UPDATE_MANAGED_REGION_MISMATCH`, `UPDATE_PHYSICAL_PLAN_INVALID`,
+`UPDATE_APPLICATION_FAILED`, `UPDATE_READBACK_FAILED`, and
+`UPDATE_READBACK_MISMATCH`.
+
+No CLI command, live-write default, complete Managed Region marker design,
+Snapshot, Recovery, Archived restoration, or schema migration was introduced.
+
+### Automated evidence
+
+| Check | Result |
+|---|---|
+| Phase 3-2C focused Unit Tests | PASS - 52/52 |
+| Publisher Unit Tests | PASS - 372/372 |
+| Publisher Integration Tests | PASS - 10/10 |
 | Release solution build | PASS - 0 warnings, 0 errors |
 | `dotnet format --verify-no-changes` | PASS |
 | `git diff --check` | PASS |

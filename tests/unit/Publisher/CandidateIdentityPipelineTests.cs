@@ -91,6 +91,7 @@ public sealed class CandidateIdentityPipelineTests
         var baseline = new VerifiedPublishState(
             baselineCandidate.Identity,
             baselineCandidate.Versions,
+            new DocumentRevision("revision-1", 1),
             baselineCandidate.Fingerprint,
             baselineCandidate.Blocks);
 

@@ -45,4 +45,16 @@ public static class PublisherCompositionRoot
             new PublishResultVerifier(),
             new VerifiedPublishStatePromoter());
     }
+
+    /// <summary>Creates a Phase 3-2C physical-update lifecycle with dry-run support.</summary>
+    public static IVerifiedPublishLifecycle CreatePhysicalUpdateLifecycle(
+        IVerifiedPublishStateStore store,
+        IManagedDocumentAdapter adapter)
+    {
+        ArgumentNullException.ThrowIfNull(store);
+        ArgumentNullException.ThrowIfNull(adapter);
+        return CreateVerifiedPublishLifecycle(
+            store,
+            new PhysicalUpdateApplicationVerifier(adapter, new PhysicalUpdatePlanner()));
+    }
 }

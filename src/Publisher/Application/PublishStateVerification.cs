@@ -12,12 +12,14 @@ public sealed class PublishApplicationVerification
         bool isLogicalPlanApplied,
         bool isReadbackVerified,
         string appliedFingerprint,
-        IEnumerable<BlockIdentity> appliedBlocks)
+        IEnumerable<BlockIdentity> appliedBlocks,
+        DocumentRevision appliedRevision)
     {
         AppliedIdentity = appliedIdentity ?? throw new ArgumentNullException(nameof(appliedIdentity));
         AppliedPlan = appliedPlan ?? throw new ArgumentNullException(nameof(appliedPlan));
         AppliedFingerprint = appliedFingerprint
             ?? throw new ArgumentNullException(nameof(appliedFingerprint));
+        AppliedRevision = appliedRevision ?? throw new ArgumentNullException(nameof(appliedRevision));
         ArgumentNullException.ThrowIfNull(appliedBlocks);
 
         var blocks = appliedBlocks.ToArray();
@@ -48,17 +50,23 @@ public sealed class PublishApplicationVerification
 
     /// <summary>Gets the applied blocks in read-back order.</summary>
     public IReadOnlyList<BlockIdentity> AppliedBlocks { get; }
+
+    /// <summary>Gets the revision that was read back with the verified payload.</summary>
+    public DocumentRevision AppliedRevision { get; }
 }
 
 /// <summary>Represents evidence accepted by the Publisher verification boundary.</summary>
 public sealed class VerifiedPublishResult
 {
-    internal VerifiedPublishResult(PublishCandidate candidate)
+    internal VerifiedPublishResult(PublishCandidate candidate, DocumentRevision revision)
     {
         Candidate = candidate;
+        Revision = revision;
     }
 
     internal PublishCandidate Candidate { get; }
+
+    internal DocumentRevision Revision { get; }
 }
 
 /// <summary>Validates application evidence against a candidate.</summary>
