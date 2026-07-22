@@ -125,6 +125,26 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
         var blocks = new List<DocumentBlock>();
         var paragraph = new List<string>();
         var listItems = new List<ListItem>();
+        var explicitIds = new HashSet<string>(StringComparer.Ordinal);
+        string? pendingExplicitId = null;
+
+        void AddBlock(DocumentBlock block)
+        {
+            if (pendingExplicitId is not null)
+            {
+                block = block.WithExplicitId(pendingExplicitId);
+                pendingExplicitId = null;
+            }
+
+            if (block.ExplicitId is not null && !explicitIds.Add(block.ExplicitId))
+            {
+                throw new PublishPipelineException(
+                    PublishErrorCodes.BlockExplicitIdDuplicate,
+                    $"The Markdown document contains a duplicate explicit block identifier: {block.ExplicitId}");
+            }
+
+            blocks.Add(block);
+        }
 
         void FlushParagraph()
         {
@@ -133,7 +153,7 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
                 return;
             }
 
-            blocks.Add(new DocumentBlock(
+            AddBlock(new DocumentBlock(
                 new ParagraphBlock(inlineParser.Parse(string.Join(" ", paragraph)))));
             paragraph.Clear();
         }
@@ -145,13 +165,28 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
                 return;
             }
 
-            blocks.Add(new DocumentBlock(new ListBlock(listItems)));
+            AddBlock(new DocumentBlock(new ListBlock(listItems)));
             listItems.Clear();
         }
 
         for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
         {
             var line = lines[lineIndex];
+            if (TryReadExplicitIdDirective(line, out var explicitId))
+            {
+                FlushParagraph();
+                FlushList();
+                if (pendingExplicitId is not null)
+                {
+                    throw new PublishPipelineException(
+                        PublishErrorCodes.MarkdownExplicitIdOrphaned,
+                        "An explicit block identifier directive must be followed by a document block.");
+                }
+
+                pendingExplicitId = explicitId;
+                continue;
+            }
+
             if (string.IsNullOrWhiteSpace(line))
             {
                 FlushParagraph();
@@ -163,7 +198,7 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
             {
                 FlushParagraph();
                 FlushList();
-                blocks.Add(new DocumentBlock(
+                AddBlock(new DocumentBlock(
                     code ?? throw new InvalidOperationException("A parsed code block requires code content.")));
                 lineIndex += codeLines - 1;
                 continue;
@@ -173,7 +208,7 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
             {
                 FlushParagraph();
                 FlushList();
-                blocks.Add(new DocumentBlock(
+                AddBlock(new DocumentBlock(
                     table ?? throw new InvalidOperationException("A parsed table requires table content.")));
                 lineIndex += consumedLines - 1;
                 continue;
@@ -183,7 +218,7 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
             {
                 FlushParagraph();
                 FlushList();
-                blocks.Add(new DocumentBlock(
+                AddBlock(new DocumentBlock(
                     image ?? throw new InvalidOperationException("A parsed image requires image content.")));
                 continue;
             }
@@ -193,7 +228,7 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
             {
                 FlushParagraph();
                 FlushList();
-                blocks.Add(new DocumentBlock(new HeadingBlock(
+                AddBlock(new DocumentBlock(new HeadingBlock(
                     headingMatch.Groups[1].Value.Length,
                     inlineParser.Parse(headingMatch.Groups[2].Value.Trim()))));
                 continue;
@@ -213,7 +248,7 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
             {
                 FlushParagraph();
                 FlushList();
-                blocks.Add(new DocumentBlock(
+                AddBlock(new DocumentBlock(
                     quote ?? throw new InvalidOperationException("A parsed quote requires quote content.")));
                 lineIndex += quoteLines - 1;
                 continue;
@@ -225,9 +260,60 @@ public sealed partial class SimpleMarkdownParser : IMarkdownParser
 
         FlushParagraph();
         FlushList();
+        if (pendingExplicitId is not null)
+        {
+            throw new PublishPipelineException(
+                PublishErrorCodes.MarkdownExplicitIdOrphaned,
+                "An explicit block identifier directive must be followed by a document block.");
+        }
+
         return new DocumentModel(blocks);
+    }
+
+    private static bool TryReadExplicitIdDirective(string line, out string? explicitId)
+    {
+        var trimmed = line.Trim();
+        var match = ExplicitIdDirectivePattern().Match(trimmed);
+        if (!match.Success)
+        {
+            explicitId = null;
+            if (trimmed.StartsWith("<!-- vmf:block-id", StringComparison.Ordinal))
+            {
+                throw new PublishPipelineException(
+                    PublishErrorCodes.MarkdownExplicitIdInvalid,
+                    "The explicit block identifier directive syntax is invalid.");
+            }
+
+            return false;
+        }
+
+        var value = match.Groups[1].Value.Trim();
+        if (value.Length == 0)
+        {
+            throw new PublishPipelineException(
+                PublishErrorCodes.MarkdownExplicitIdEmpty,
+                "The explicit block identifier directive must contain a value.");
+        }
+
+        try
+        {
+            explicitId = ExplicitBlockIdRules.NormalizeOptional(value, nameof(line));
+            return true;
+        }
+        catch (ArgumentException exception)
+        {
+            throw new PublishPipelineException(
+                PublishErrorCodes.MarkdownExplicitIdInvalid,
+                "The explicit block identifier contains an invalid value.",
+                exception);
+        }
     }
 
     [GeneratedRegex("^(#{1,6})[ \\t]+(.+?)\\s*$", RegexOptions.CultureInvariant)]
     private static partial Regex HeadingPattern();
+
+    [GeneratedRegex(
+        "^<!--[ \\t]+vmf:block-id[ \\t]*=[ \\t]*(.*?)[ \\t]*-->$",
+        RegexOptions.CultureInvariant)]
+    private static partial Regex ExplicitIdDirectivePattern();
 }

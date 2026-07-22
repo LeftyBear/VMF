@@ -129,7 +129,8 @@ public sealed class PublishService : IPublishService
                 .ConfigureAwait(false);
             var size = imageSizeCalculator.Calculate(metadata);
             blocks.Add(new Domain.DocumentBlock(
-                new Domain.ImageBlock(image.AltText, metadata.Source, size)));
+                new Domain.ImageBlock(image.AltText, metadata.Source, size),
+                block.ExplicitId));
         }
 
         return new Domain.DocumentModel(blocks);

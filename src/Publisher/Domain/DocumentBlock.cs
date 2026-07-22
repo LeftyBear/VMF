@@ -127,7 +127,12 @@ public sealed class DocumentBlock
     /// <param name="kind">The block kind.</param>
     /// <param name="content">The inline content.</param>
     /// <param name="level">The heading level, or zero for non-headings.</param>
-    public DocumentBlock(DocumentBlockKind kind, IEnumerable<InlineContent> content, int level = 0)
+    /// <param name="explicitId">The optional author-supplied block identifier.</param>
+    public DocumentBlock(
+        DocumentBlockKind kind,
+        IEnumerable<InlineContent> content,
+        int level = 0,
+        string? explicitId = null)
     {
         if (kind is DocumentBlockKind.List or DocumentBlockKind.Table or
             DocumentBlockKind.Code or DocumentBlockKind.Quote or DocumentBlockKind.Image)
@@ -139,6 +144,7 @@ public sealed class DocumentBlock
 
         Kind = kind;
         Level = level;
+        ExplicitId = ExplicitBlockIdRules.NormalizeOptional(explicitId, nameof(explicitId));
         Content = InlineContentCollection.Create(content, nameof(content));
     }
 
@@ -146,73 +152,92 @@ public sealed class DocumentBlock
     /// <param name="kind">The block kind.</param>
     /// <param name="inlines">The inline content.</param>
     /// <param name="level">The heading level, or zero for non-headings.</param>
-    public DocumentBlock(DocumentBlockKind kind, IEnumerable<InlineElement> inlines, int level = 0)
-        : this(kind, InlineContentCompatibility.Convert(inlines), level)
+    /// <param name="explicitId">The optional author-supplied block identifier.</param>
+    public DocumentBlock(
+        DocumentBlockKind kind,
+        IEnumerable<InlineElement> inlines,
+        int level = 0,
+        string? explicitId = null)
+        : this(kind, InlineContentCompatibility.Convert(inlines), level, explicitId)
     {
     }
 
     /// <summary>Initializes a paragraph document block.</summary>
     /// <param name="paragraph">The paragraph content.</param>
-    public DocumentBlock(ParagraphBlock paragraph)
+    /// <param name="explicitId">The optional author-supplied block identifier.</param>
+    public DocumentBlock(ParagraphBlock paragraph, string? explicitId = null)
     {
         ArgumentNullException.ThrowIfNull(paragraph);
         Kind = DocumentBlockKind.Paragraph;
+        ExplicitId = ExplicitBlockIdRules.NormalizeOptional(explicitId, nameof(explicitId));
         Content = paragraph.Content;
     }
 
     /// <summary>Initializes a heading document block.</summary>
     /// <param name="heading">The heading content.</param>
-    public DocumentBlock(HeadingBlock heading)
+    /// <param name="explicitId">The optional author-supplied block identifier.</param>
+    public DocumentBlock(HeadingBlock heading, string? explicitId = null)
     {
         ArgumentNullException.ThrowIfNull(heading);
         Kind = DocumentBlockKind.Heading;
         Level = heading.Level;
+        ExplicitId = ExplicitBlockIdRules.NormalizeOptional(explicitId, nameof(explicitId));
         Content = heading.Content;
     }
 
     /// <summary>Initializes a list document block.</summary>
     /// <param name="list">The list content.</param>
-    public DocumentBlock(ListBlock list)
+    /// <param name="explicitId">The optional author-supplied block identifier.</param>
+    public DocumentBlock(ListBlock list, string? explicitId = null)
     {
         List = list ?? throw new ArgumentNullException(nameof(list));
         Kind = DocumentBlockKind.List;
+        ExplicitId = ExplicitBlockIdRules.NormalizeOptional(explicitId, nameof(explicitId));
         Content = Array.Empty<InlineContent>();
     }
 
     /// <summary>Initializes a table document block.</summary>
     /// <param name="table">The table content.</param>
-    public DocumentBlock(TableBlock table)
+    /// <param name="explicitId">The optional author-supplied block identifier.</param>
+    public DocumentBlock(TableBlock table, string? explicitId = null)
     {
         Table = table ?? throw new ArgumentNullException(nameof(table));
         Kind = DocumentBlockKind.Table;
+        ExplicitId = ExplicitBlockIdRules.NormalizeOptional(explicitId, nameof(explicitId));
         Content = Array.Empty<InlineContent>();
     }
 
     /// <summary>Initializes a fenced-code document block.</summary>
     /// <param name="code">The fenced code content.</param>
-    public DocumentBlock(CodeBlock code)
+    /// <param name="explicitId">The optional author-supplied block identifier.</param>
+    public DocumentBlock(CodeBlock code, string? explicitId = null)
     {
         Code = code ?? throw new ArgumentNullException(nameof(code));
         Kind = DocumentBlockKind.Code;
+        ExplicitId = ExplicitBlockIdRules.NormalizeOptional(explicitId, nameof(explicitId));
         Content = Array.Empty<InlineContent>();
     }
 
     /// <summary>Initializes a quote document block.</summary>
     /// <param name="quote">The quote content.</param>
-    public DocumentBlock(QuoteBlock quote)
+    /// <param name="explicitId">The optional author-supplied block identifier.</param>
+    public DocumentBlock(QuoteBlock quote, string? explicitId = null)
     {
         Quote = quote ?? throw new ArgumentNullException(nameof(quote));
         Kind = DocumentBlockKind.Quote;
         Level = quote.Level;
+        ExplicitId = ExplicitBlockIdRules.NormalizeOptional(explicitId, nameof(explicitId));
         Content = quote.Content;
     }
 
     /// <summary>Initializes an image document block.</summary>
     /// <param name="image">The image content.</param>
-    public DocumentBlock(ImageBlock image)
+    /// <param name="explicitId">The optional author-supplied block identifier.</param>
+    public DocumentBlock(ImageBlock image, string? explicitId = null)
     {
         Image = image ?? throw new ArgumentNullException(nameof(image));
         Kind = DocumentBlockKind.Image;
+        ExplicitId = ExplicitBlockIdRules.NormalizeOptional(explicitId, nameof(explicitId));
         Content = Array.Empty<InlineContent>();
     }
 
@@ -221,6 +246,9 @@ public sealed class DocumentBlock
 
     /// <summary>Gets the heading level, or zero for non-headings.</summary>
     public int Level { get; }
+
+    /// <summary>Gets the optional author-supplied canonical block identifier.</summary>
+    public string? ExplicitId { get; }
 
     /// <summary>Gets the inline content.</summary>
     public IReadOnlyList<InlineContent> Content { get; }
@@ -242,4 +270,38 @@ public sealed class DocumentBlock
 
     /// <summary>Gets the image content when <see cref="Kind"/> is <see cref="DocumentBlockKind.Image"/>.</summary>
     public ImageBlock? Image { get; }
+
+    /// <summary>Returns the same canonical block payload with an explicit identifier.</summary>
+    /// <param name="explicitId">The explicit identifier.</param>
+    /// <returns>A block carrying the identifier.</returns>
+    internal DocumentBlock WithExplicitId(string explicitId) => Kind switch
+    {
+        DocumentBlockKind.Heading => new DocumentBlock(
+            new HeadingBlock(Level, Content),
+            explicitId),
+        DocumentBlockKind.Paragraph or DocumentBlockKind.BulletListItem => new DocumentBlock(
+            Kind,
+            Content,
+            Level,
+            explicitId),
+        DocumentBlockKind.List => new DocumentBlock(
+            List ?? throw MissingContent(),
+            explicitId),
+        DocumentBlockKind.Table => new DocumentBlock(
+            Table ?? throw MissingContent(),
+            explicitId),
+        DocumentBlockKind.Code => new DocumentBlock(
+            Code ?? throw MissingContent(),
+            explicitId),
+        DocumentBlockKind.Quote => new DocumentBlock(
+            Quote ?? throw MissingContent(),
+            explicitId),
+        DocumentBlockKind.Image => new DocumentBlock(
+            Image ?? throw MissingContent(),
+            explicitId),
+        _ => throw new InvalidOperationException($"Unsupported document block kind: {Kind}"),
+    };
+
+    private InvalidOperationException MissingContent() =>
+        new($"Document block {Kind} is missing its strongly typed content.");
 }

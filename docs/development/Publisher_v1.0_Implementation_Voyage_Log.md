@@ -542,3 +542,172 @@ may expand a logical Move into Delete plus Insert.
 
 No Google Docs API call, state persistence, CLI integration, Managed Region
 mutation, Snapshot, or Recovery behavior was added or executed in this phase.
+
+## Phase 3-2A: Identity and Content Hash Pipeline Decisions
+
+| Field | Value |
+|---|---|
+| Date | 2026-07-22 |
+| Scope | Explicit ID parsing, generated block IDs, content hashes, and candidate construction |
+| Frozen specification changes | None |
+| Google Docs update execution | Out of scope |
+| Persistence, CLI commands, Managed Region, Snapshot, Recovery | Out of scope |
+
+### Generated identifier design comparison
+
+Four designs were evaluated before implementation:
+
+| Candidate | Decision | Reason |
+|---|---|---|
+| Parent context + block kind + content feature | Adopted | Stable under unrelated front or tail insertion and deletion, deterministic without persisted state, and aligned with the canonical model |
+| Stable structural path | Rejected as default | Absolute or sibling ordinals cause cascading identifier changes after front insertion or deletion |
+| Neighbor anchors | Rejected as default | Editing or inserting a neighbor propagates identity changes into otherwise unchanged blocks |
+| Persisted UUID | Deferred | Provides the strongest edit stability but requires persistence and verified reinjection, which are outside Phase 3-2A |
+
+The adopted algorithm uses heading ancestry as parent context, a fixed block-kind
+token, and a separately domain-versioned digest of canonical block content. It
+does not use the document block index. When multiple blocks have exactly the
+same parent context, kind, and canonical content, a zero-based occurrence is
+used only inside that equivalence class. An unrelated insertion or deletion
+therefore does not renumber existing identifiers.
+
+Content edits change the generated content feature and therefore may change the
+Generated ID. Authors must use an Explicit ID for blocks whose identity must
+survive content edits. This limitation cannot be removed deterministically
+without an author-provided or persisted stable identifier.
+
+### Explicit block identifier syntax
+
+An Explicit ID is declared by a reserved standalone directive associated with
+the next non-blank canonical block:
+
+```markdown
+<!-- vmf:block-id=introduction -->
+## Introduction
+```
+
+The canonical directive spelling is case-sensitive. Horizontal whitespace is
+accepted around `=` and before the comment close. The value is trimmed,
+normalized to Unicode NFC, and stored on `DocumentBlock.ExplicitId`. Absence of
+the directive produces `null`.
+
+After NFC normalization, the identifier must contain at most 128 Unicode scalar
+values. Its first scalar must be a Unicode letter or `_`. Remaining scalars may
+be Unicode letters, digits, combining marks, `_`, `-`, `.`, or `:`. Case is
+preserved and compared using ordinal semantics, so `Example` and `example` are
+different identifiers. Empty, malformed, invalid, orphaned, and duplicate
+directives stop parsing with stable pipeline error codes. Canonically equivalent
+Unicode spellings are duplicates.
+
+Blocks carrying an Explicit ID do not receive a Generated ID. This keeps the
+authoritative identity unambiguous and avoids introducing a second strong tier
+that could conflict with an author-supplied identifier.
+
+### Generated ID algorithm version 1
+
+The content-feature digest input is serialized in this order:
+
+1. format `vmf-publisher-generated-id-feature-canonical`;
+2. Generated ID Algorithm Version `1`;
+3. hash algorithm `sha-256`;
+4. canonical block kind, level, and complete payload.
+
+The final Generated ID input is serialized in this order:
+
+1. format `vmf-publisher-generated-block-id-canonical`;
+2. Generated ID Algorithm Version `1`;
+3. hash algorithm `sha-256`;
+4. parent-heading count;
+5. each parent heading level and anchor in ascending heading level;
+6. fixed block-kind token;
+7. content-feature digest;
+8. zero-based occurrence within the same parent, kind, and feature equivalence class.
+
+A heading anchor is `explicit:<ExplicitId>` when explicit, otherwise
+`generated:<GeneratedId>`. Publication ID, Document ID, Google Document ID,
+document index, absolute structural path, and unrelated neighbor values are not
+inputs. Reordering distinct blocks in the same parent scope preserves their
+Generated IDs. Moving a block to a different heading parent changes its ID by
+design.
+
+Both stages use SHA-256 and lowercase hexadecimal. The public representation is:
+
+```text
+gid-v1:sha256:<64 lowercase hexadecimal characters>
+```
+
+Any change to the canonical shape, parent semantics, feature projection, or
+duplicate discriminator requires a new Generated ID Algorithm Version and
+prefix.
+
+### Content Hash algorithm version 1
+
+The Content Hash input is serialized in this exact order:
+
+1. format `vmf-publisher-block-content-canonical`;
+2. Content Hash Algorithm Version `1`;
+3. hash algorithm `sha-256`;
+4. fixed block-kind token;
+5. block level;
+6. the complete canonical block payload.
+
+The payload covers ordered nested inline content, list kind/depth/items, table
+columns/alignments/rows/cells, code language/text, quote level/content, and
+image alt text/source kind/source value/optional dimensions. Explicit ID,
+Generated ID, document index, Publication ID, Document ID, Google Document ID,
+and Document State are excluded because they are not content.
+
+SHA-256 and lowercase hexadecimal produce:
+
+```text
+ch-v1:sha256:<64 lowercase hexadecimal characters>
+```
+
+Content Hash and Generated ID have independent interfaces, canonical domain
+strings, versions, and prefixes. The Generated ID implementation does not call
+the Content Hash generator. Both use the shared canonical block serializer so
+their string, collection, number, URI, and enum rules cannot drift from the
+Fingerprint model accidentally.
+
+### Shared canonical serialization
+
+Fingerprint, Generated ID features, Generated IDs, and Content Hashes use the
+Phase 3-1.5 record format:
+
+```text
+<field-name>:<UTF-8-byte-length>:<value-bytes>\n
+```
+
+Encoding is UTF-8 without BOM. CRLF and CR normalize to LF. Record separators
+are LF. Null uses length `-1`; empty uses length `0`. Integers use invariant
+decimal form, Booleans use lowercase tokens, doubles use invariant round-trip
+form, URIs use their absolute representation, enums use fixed lowercase tokens,
+and every collection count and order is explicit.
+
+### Candidate pipeline and composition
+
+`PublishCandidateBuilder` validates Explicit ID uniqueness, requests aligned
+Generated IDs and Content Hashes, builds `BlockIdentity` values, constructs the
+complete `PublishFingerprintInput`, and delegates atomic candidate creation to
+`PublishCandidateFactory`. A dedicated target-neutral `PublisherCompositionRoot`
+binds the current generators without adding an Update CLI command.
+
+The existing Create Mode remains on the same `PublishService` path. Markdown
+without an identity directive is parsed and compiled as before. A directive is
+metadata and is not rendered. Image preparation explicitly preserves the
+block's Explicit ID when replacing the prepared image payload.
+
+### Automated evidence
+
+| Check | Result |
+|---|---|
+| Phase 3-2A focused Unit Tests | PASS - 39/39 |
+| Publisher Unit Tests | PASS - 242/242 |
+| Publisher Integration Tests | PASS - 7/7 |
+| Release solution build | PASS - 0 warnings, 0 errors |
+| `dotnet format --verify-no-changes` | PASS |
+| Frozen specification changes | None |
+
+No Google Docs update call, Verified State persistence, Update CLI command,
+Managed Region mutation, Snapshot, or Recovery behavior was added or executed
+in this phase.

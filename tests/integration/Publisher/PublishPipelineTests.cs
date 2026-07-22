@@ -204,6 +204,41 @@ public sealed class PublishPipelineTests
         }
     }
 
+    [Fact]
+    public async Task PublishAsync_ExplicitIdDirectiveDoesNotAlterCreateModeOutput()
+    {
+        var tempPath = Path.Combine(Path.GetTempPath(), $"vmf-publisher-identity-{Guid.NewGuid():N}.md");
+        await File.WriteAllTextAsync(
+            tempPath,
+            "<!-- vmf:block-id=intro -->\n# Heading\n\nParagraph.\n");
+        var target = new RecordingPublisher();
+        var service = new PublishService(
+            new MarkdownFileDocumentLoader(),
+            new SimpleMarkdownParser(),
+            new DocumentCompiler(),
+            target);
+
+        try
+        {
+            var result = await service.PublishAsync(new PublishRequest(tempPath), CancellationToken.None);
+
+            Assert.True(result.IsSuccess);
+            var document = Assert.IsType<CompiledDocument>(target.Document);
+            var insertedText = document.Operations
+                .Where(operation => operation.Kind == DocumentOperationKind.InsertText)
+                .Select(operation => operation.Text)
+                .ToArray();
+            Assert.Contains("Heading\n", insertedText);
+            Assert.Contains("Paragraph.\n", insertedText);
+            Assert.DoesNotContain(insertedText, text =>
+                text?.Contains("vmf:block-id", StringComparison.Ordinal) == true);
+        }
+        finally
+        {
+            File.Delete(tempPath);
+        }
+    }
+
     private sealed class RecordingPublisher : IGoogleDocsPublisher
     {
         internal CompiledDocument? Document { get; private set; }

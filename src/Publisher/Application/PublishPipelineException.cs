@@ -1,8 +1,23 @@
 namespace Vmf.Publisher.Application;
 
-/// <summary>Provides stable error codes for table publish failures.</summary>
+/// <summary>Provides stable error codes for Publisher pipeline failures.</summary>
 public static class PublishErrorCodes
 {
+    /// <summary>The Markdown explicit block identifier was empty.</summary>
+    public const string MarkdownExplicitIdEmpty = "MARKDOWN_EXPLICIT_ID_EMPTY";
+
+    /// <summary>The Markdown explicit block identifier or directive syntax was invalid.</summary>
+    public const string MarkdownExplicitIdInvalid = "MARKDOWN_EXPLICIT_ID_INVALID";
+
+    /// <summary>The canonical document repeated an explicit block identifier.</summary>
+    public const string BlockExplicitIdDuplicate = "BLOCK_EXPLICIT_ID_DUPLICATE";
+
+    /// <summary>An explicit block identifier directive was not followed by a block.</summary>
+    public const string MarkdownExplicitIdOrphaned = "MARKDOWN_EXPLICIT_ID_ORPHANED";
+
+    /// <summary>The generated block identifier pipeline produced a duplicate identifier.</summary>
+    public const string BlockGeneratedIdDuplicate = "BLOCK_GENERATED_ID_DUPLICATE";
+
     /// <summary>The image source was empty.</summary>
     public const string ImageSourceEmpty = "IMAGE_SOURCE_EMPTY";
     /// <summary>The local image file was absent.</summary>
@@ -49,7 +64,7 @@ public static class PublishErrorCodes
     public const string TableContentUpdateFailed = "TABLE_CONTENT_UPDATE_FAILED";
 }
 
-/// <summary>Represents a publish-plan failure with a stable public error code.</summary>
+/// <summary>Represents a Publisher pipeline failure with a stable public error code.</summary>
 public sealed class PublishPipelineException : Exception
 {
     /// <summary>Initializes a publish-plan exception.</summary>
