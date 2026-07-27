@@ -854,6 +854,81 @@ phase.
 | `git diff --check` | PASS |
 | Frozen specification changes | None |
 
+## Phase 3-2D: Update Execution Transaction and Recovery Decisions
+
+### Scope
+
+Phase 3-2D adds the productization execution boundary for applying an existing
+`PhysicalUpdatePlan` through Google Docs `batchUpdate`. It does not recalculate
+diffs, alter plan revisions, mutate the plan, update Verified State inside the
+executor, or change Frozen specifications.
+
+### Execution boundary
+
+`PhysicalUpdateExecutor` validates the supplied plan, returns `NoChange` before
+mapping or API calls, maps operation plans exactly once, and reuses the same
+`PhysicalUpdateRequestBatch` for all retries. It classifies terminal outcomes
+as `Applied`, `NoChange`, `RevisionConflict`, `Rejected`, `TransientFailure`,
+or `IndeterminateFailure`. Result diagnostics include document ID, required
+revision, applied revision when known, submitted operation and request counts,
+attempt count, diagnostic code/message, and request traces.
+
+Retry is limited to failures that are both retryable and definitely `NotSent`.
+`Sent` or `Unknown` failures are treated as indeterminate and are not resent by
+the executor. Retry delay uses the configured policy, honors `Retry-After`,
+applies exponential backoff and max-delay clamping, and is mediated through
+`IAsyncDelay` so tests do not wait in real time.
+
+Cancellation is classified by location. Pre-send cancellation returns a safe
+not-sent result, retry-delay cancellation returns a safe not-sent result, and
+send-time cancellation is indeterminate. API success remains `Applied`.
+
+### Request mapping and Google client
+
+`GoogleDocsPhysicalUpdateRequestMapper` is a pure mapper from
+`PhysicalUpdatePlan` to `PhysicalUpdateRequestBatch`. It preserves the planner's
+operation order, emits delete ranges before subsequent inserts when that is the
+plan order, expands insert/update/move/move-and-update payloads from the
+candidate canonical block only, and creates one trace for each Google Docs
+request. Trace records retain request index, source physical operation
+sequence, operation reason, block identity, and request kind.
+
+`GoogleDocsBatchUpdateClient` serializes the mapped requests with
+`writeControl.requiredRevisionId` and normalizes Google/transport failures into
+`GoogleDocsBatchUpdateException` with HTTP status, Google reason, Retry-After,
+delivery state, and inner exception where available.
+
+### Recovery and Verified State
+
+`PhysicalUpdateApplicationService` sits above the executor. On `Applied` or
+`NoChange`, it rereads the document, verifies the readback against the
+Candidate, passes evidence through the existing publish-result verifier and
+promoter, and saves Verified State only at the end. On `IndeterminateFailure`,
+it rereads and invokes `PhysicalUpdateRecoveryReconciler`.
+
+Recovery compares canonical document evidence, not revision alone:
+
+* Candidate identity, fingerprint, block order, Explicit ID, Generated ID, and
+  Content Hash match -> `Applied`
+* Baseline identity, fingerprint, block order, Explicit ID, Generated ID, and
+  Content Hash match -> `NotApplied`
+* neither full comparison matches -> `Diverged`
+
+`NotApplied` requests upper-layer replanning; the old plan is not resent by the
+application service. `Diverged` stops without saving state.
+
+### Automated evidence
+
+| Check | Result |
+|---|---|
+| Phase 3-2D focused Unit Tests | PASS - 21/21 |
+| Publisher Unit Tests | PASS - 393/393 |
+| Publisher Integration Tests | PASS - 10/10 |
+| Release solution build | PASS - 0 warnings, 0 errors |
+| `dotnet format --verify-no-changes` | PASS |
+| `git diff --check` | PASS - no whitespace errors; CRLF normalization warnings only |
+| Frozen specification changes | None |
+
 ## Phase 3-2C: Physical Update Planning and Verification Decisions
 
 | Field | Value |

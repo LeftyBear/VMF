@@ -18,7 +18,7 @@ public interface IGoogleDocsManagedDocumentGateway
 }
 
 /// <summary>Adapts a Google Docs managed-document gateway without enabling live writes by default.</summary>
-public sealed class GoogleDocsPhysicalUpdateAdapter : IManagedDocumentAdapter
+public sealed class GoogleDocsPhysicalUpdateAdapter : IManagedDocumentAdapter, IDocumentSnapshotReader
 {
     private readonly IGoogleDocsManagedDocumentGateway gateway;
     private readonly bool liveUpdatesEnabled;

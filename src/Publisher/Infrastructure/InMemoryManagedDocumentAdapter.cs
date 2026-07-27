@@ -4,7 +4,7 @@ using Vmf.Publisher.Domain;
 namespace Vmf.Publisher.Infrastructure;
 
 /// <summary>Applies physical plans in memory for deterministic lifecycle and integration tests.</summary>
-public sealed class InMemoryManagedDocumentAdapter : IManagedDocumentAdapter
+public sealed class InMemoryManagedDocumentAdapter : IManagedDocumentAdapter, IDocumentSnapshotReader
 {
     private ManagedDocumentSnapshot snapshot;
 
