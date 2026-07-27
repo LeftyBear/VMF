@@ -231,6 +231,7 @@ public sealed class VerifiedPublishStateStoreTests : IDisposable
 
         Assert.Equal(Fingerprint('f'), Assert.IsType<VerifiedPublishState>(restored).Fingerprint.Value);
         Assert.Empty(Directory.GetFiles(root, "*.tmp"));
+        Assert.Single(Directory.GetFiles(root, "*.bak"));
     }
 
     [Theory]

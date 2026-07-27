@@ -76,7 +76,7 @@ internal sealed class AtomicStateFileWriter : IAtomicStateFileWriter
 
             if (File.Exists(path))
             {
-                File.Replace(temporaryPath, path, null, ignoreMetadataErrors: true);
+                File.Replace(temporaryPath, path, path + ".bak", ignoreMetadataErrors: true);
             }
             else
             {

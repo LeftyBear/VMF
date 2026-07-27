@@ -57,4 +57,53 @@ public static class PublisherCompositionRoot
             store,
             new PhysicalUpdateApplicationVerifier(adapter, new PhysicalUpdatePlanner()));
     }
+
+    /// <summary>Creates a Phase 3-2E crash-safe transaction coordinator.</summary>
+    public static PublishTransactionCoordinator CreatePublishTransactionCoordinator(
+        IVerifiedPublishStateStore store,
+        IManagedDocumentAdapter adapter,
+        IPhysicalUpdateExecutor executor,
+        string journalRootDirectory)
+    {
+        ArgumentNullException.ThrowIfNull(store);
+        ArgumentNullException.ThrowIfNull(adapter);
+        ArgumentNullException.ThrowIfNull(executor);
+        if (adapter is not IDocumentSnapshotReader snapshotReader)
+        {
+            throw new ArgumentException(
+                "A crash-safe transaction coordinator requires a snapshot reader.",
+                nameof(adapter));
+        }
+
+        var journal = new JsonPublishTransactionJournal(new PublishTransactionJournalOptions(journalRootDirectory));
+        var diffEngine = new DiffEngine();
+        var planner = new PhysicalUpdatePlanner();
+        var verifier = new PhysicalUpdateApplicationVerifier(adapter, planner);
+        var resultVerifier = new PublishResultVerifier();
+        var promoter = new VerifiedPublishStatePromoter();
+        var snapshotVerifier = new PhysicalUpdateApplicationSnapshotVerifier();
+        var recoveryReconciler = new PhysicalUpdateRecoveryReconciler();
+        return new PublishTransactionCoordinator(
+            store,
+            diffEngine,
+            verifier,
+            new PhysicalUpdateApplicationService(
+                executor,
+                snapshotReader,
+                recoveryReconciler,
+                snapshotVerifier,
+                resultVerifier,
+                promoter,
+                store),
+            journal,
+            new FileDocumentPublishLockManager(new DocumentLockFileOptions(journalRootDirectory)),
+            new PublishRecoveryEngine(
+                snapshotReader,
+                recoveryReconciler,
+                snapshotVerifier,
+                resultVerifier,
+                promoter,
+                store,
+                journal));
+    }
 }
