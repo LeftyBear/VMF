@@ -227,6 +227,16 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
                     "Insert operations require canonical candidate payload.");
             }
 
+            if ((operation.Kind is PhysicalOperationKind.ReplaceInlineContent or
+                    PhysicalOperationKind.InsertInlineText or
+                    PhysicalOperationKind.UpdateInlineStyle) &&
+                operation.InlineUpdate is null)
+            {
+                throw new PhysicalUpdateException(
+                    UpdateErrorCodes.PhysicalPlanInvalid,
+                    "Inline operations require inline update payload.");
+            }
+
             if (operation.Kind == PhysicalOperationKind.DeleteRange && operation.AffectedRange.Length == 0)
             {
                 throw new PhysicalUpdateException(

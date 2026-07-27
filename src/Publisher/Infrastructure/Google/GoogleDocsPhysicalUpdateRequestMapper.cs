@@ -52,6 +52,23 @@ public sealed class GoogleDocsPhysicalUpdateRequestMapper : IPhysicalUpdateReque
                 case PhysicalOperationKind.InsertBlock:
                     MapInsert(operation, requests, traces);
                     break;
+                case PhysicalOperationKind.ReplaceInlineContent:
+                    MapReplaceInline(operation, requests, traces);
+                    break;
+                case PhysicalOperationKind.DeleteInlineRange:
+                    AddRequest(
+                        requests,
+                        traces,
+                        operation,
+                        "deleteContentRange",
+                        DeleteRange(operation.AffectedRange));
+                    break;
+                case PhysicalOperationKind.InsertInlineText:
+                    MapInsertInline(operation, requests, traces);
+                    break;
+                case PhysicalOperationKind.UpdateInlineStyle:
+                    MapUpdateInlineStyle(operation, requests, traces);
+                    break;
                 default:
                     throw new InvalidOperationException($"Unsupported physical operation: {operation.Kind}");
             }
@@ -92,6 +109,108 @@ public sealed class GoogleDocsPhysicalUpdateRequestMapper : IPhysicalUpdateReque
                 RequestKind(documentOperation.Kind),
                 request);
         }
+    }
+
+    private static void MapReplaceInline(
+        PhysicalUpdateOperation operation,
+        List<object> requests,
+        List<PhysicalUpdateRequestTrace> traces)
+    {
+        var update = operation.InlineUpdate ?? throw new InvalidOperationException(
+            "ReplaceInlineContent requires inline update payload.");
+        if (operation.AffectedRange.Length > 0)
+        {
+            AddRequest(
+                requests,
+                traces,
+                operation,
+                "deleteContentRange",
+                DeleteRange(operation.AffectedRange));
+        }
+
+        if (!string.IsNullOrEmpty(update.Text))
+        {
+            AddRequest(
+                requests,
+                traces,
+                operation,
+                "insertText",
+                InsertText(operation.AffectedRange.StartIndex, update.Text));
+            foreach (var range in update.StyleRanges)
+            {
+                AddRequest(
+                    requests,
+                    traces,
+                    operation,
+                    "updateTextStyle",
+                    InlineStyleRequest(
+                        new DocumentTextRange(
+                            operation.AffectedRange.StartIndex + range.StartOffset,
+                            operation.AffectedRange.StartIndex + range.EndOffset),
+                        range.Style,
+                        enabled: true,
+                        range.Url));
+            }
+        }
+    }
+
+    private static void MapInsertInline(
+        PhysicalUpdateOperation operation,
+        List<object> requests,
+        List<PhysicalUpdateRequestTrace> traces)
+    {
+        var update = operation.InlineUpdate ?? throw new InvalidOperationException(
+            "InsertInlineText requires inline update payload.");
+        if (string.IsNullOrEmpty(update.Text))
+        {
+            throw new InvalidOperationException("InsertInlineText requires text.");
+        }
+
+        AddRequest(
+            requests,
+            traces,
+            operation,
+            "insertText",
+            InsertText(operation.AffectedRange.StartIndex, update.Text));
+        foreach (var range in update.StyleRanges)
+        {
+            AddRequest(
+                requests,
+                traces,
+                operation,
+                "updateTextStyle",
+                InlineStyleRequest(
+                    new DocumentTextRange(
+                        operation.AffectedRange.StartIndex + range.StartOffset,
+                        operation.AffectedRange.StartIndex + range.EndOffset),
+                    range.Style,
+                    enabled: true,
+                    range.Url));
+        }
+    }
+
+    private static void MapUpdateInlineStyle(
+        PhysicalUpdateOperation operation,
+        List<object> requests,
+        List<PhysicalUpdateRequestTrace> traces)
+    {
+        var update = operation.InlineUpdate ?? throw new InvalidOperationException(
+            "UpdateInlineStyle requires inline update payload.");
+        if (update.Style is null || update.StyleEnabled is null)
+        {
+            throw new InvalidOperationException("UpdateInlineStyle requires a style decision.");
+        }
+
+        AddRequest(
+            requests,
+            traces,
+            operation,
+            "updateTextStyle",
+            InlineStyleRequest(
+                operation.AffectedRange,
+                update.Style.Value,
+                update.StyleEnabled.Value,
+                update.Url));
     }
 
     private static DocumentOperation Shift(DocumentOperation operation, int offset) => new(
@@ -162,6 +281,27 @@ public sealed class GoogleDocsPhysicalUpdateRequestMapper : IPhysicalUpdateReque
         };
     }
 
+    private static object InsertText(int startIndex, string text) => new
+    {
+        insertText = new
+        {
+            location = new { index = startIndex },
+            text,
+        },
+    };
+
+    private static object DeleteRange(DocumentTextRange range) => new
+    {
+        deleteContentRange = new
+        {
+            range = new
+            {
+                startIndex = range.StartIndex,
+                endIndex = range.EndIndex,
+            },
+        },
+    };
+
     private static object MapHeading(DocumentOperation operation)
     {
         if (operation.EndIndex is null || operation.Level is null or < 1 or > 6)
@@ -209,11 +349,24 @@ public sealed class GoogleDocsPhysicalUpdateRequestMapper : IPhysicalUpdateReque
             throw new InvalidOperationException("UpdateTextStyle requires a range and inline style.");
         }
 
-        var textStyle = operation.InlineStyle switch
+        return InlineStyleRequest(
+            new DocumentTextRange(operation.StartIndex, operation.EndIndex.Value),
+            operation.InlineStyle.Value,
+            enabled: true,
+            operation.Url);
+    }
+
+    private static object InlineStyleRequest(
+        DocumentTextRange range,
+        InlineTextStyle style,
+        bool enabled,
+        Uri? url)
+    {
+        var textStyle = style switch
         {
-            InlineTextStyle.Bold => (object)new { bold = true },
-            InlineTextStyle.Italic => new { italic = true },
-            InlineTextStyle.Code => new
+            InlineTextStyle.Bold => (object)new { bold = enabled },
+            InlineTextStyle.Italic => new { italic = enabled },
+            InlineTextStyle.Code when enabled => new
             {
                 weightedFontFamily = new { fontFamily = "Roboto Mono" },
                 backgroundColor = new
@@ -224,27 +377,40 @@ public sealed class GoogleDocsPhysicalUpdateRequestMapper : IPhysicalUpdateReque
                     },
                 },
             },
-            InlineTextStyle.Link when operation.Url is not null => new
+            InlineTextStyle.Code => new
             {
-                link = new { url = operation.Url.AbsoluteUri },
+                weightedFontFamily = (object?)null,
+                backgroundColor = (object?)null,
+            },
+            InlineTextStyle.Link when enabled && url is not null => new
+            {
+                link = new { url = url.AbsoluteUri },
+            },
+            InlineTextStyle.Link when !enabled => new
+            {
+                link = (object?)null,
             },
             InlineTextStyle.Link => throw new InvalidOperationException("A link text style requires a URL."),
-            _ => throw new InvalidOperationException($"Unsupported inline text style: {operation.InlineStyle}"),
+            _ => throw new InvalidOperationException($"Unsupported inline text style: {style}"),
         };
-        var fields = operation.InlineStyle switch
+        var fields = style switch
         {
             InlineTextStyle.Bold => "bold",
             InlineTextStyle.Italic => "italic",
             InlineTextStyle.Code => "weightedFontFamily,backgroundColor",
             InlineTextStyle.Link => "link",
-            _ => throw new InvalidOperationException($"Unsupported inline text style: {operation.InlineStyle}"),
+            _ => throw new InvalidOperationException($"Unsupported inline text style: {style}"),
         };
 
         return new
         {
             updateTextStyle = new
             {
-                range = Range(operation),
+                range = new
+                {
+                    startIndex = range.StartIndex,
+                    endIndex = range.EndIndex,
+                },
                 textStyle,
                 fields,
             },

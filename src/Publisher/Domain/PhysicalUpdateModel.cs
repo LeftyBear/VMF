@@ -81,6 +81,15 @@ public sealed class ManagedBlockSnapshot
 {
     /// <summary>Initializes a managed block snapshot.</summary>
     public ManagedBlockSnapshot(BlockIdentity identity, DocumentTextRange range)
+        : this(identity, range, canonicalBlock: null)
+    {
+    }
+
+    /// <summary>Initializes a managed block snapshot with reconstructed canonical content.</summary>
+    public ManagedBlockSnapshot(
+        BlockIdentity identity,
+        DocumentTextRange range,
+        DocumentBlock? canonicalBlock)
     {
         Identity = identity ?? throw new ArgumentNullException(nameof(identity));
         Range = range ?? throw new ArgumentNullException(nameof(range));
@@ -88,6 +97,8 @@ public sealed class ManagedBlockSnapshot
         {
             throw new ArgumentException("A managed block range must not be empty.", nameof(range));
         }
+
+        CanonicalBlock = canonicalBlock;
     }
 
     /// <summary>Gets the reconstructed block identity.</summary>
@@ -95,6 +106,9 @@ public sealed class ManagedBlockSnapshot
 
     /// <summary>Gets the current block range.</summary>
     public DocumentTextRange Range { get; }
+
+    /// <summary>Gets the reconstructed canonical block payload, when available.</summary>
+    public DocumentBlock? CanonicalBlock { get; }
 }
 
 /// <summary>Represents a read-back managed document boundary and block topology.</summary>
@@ -148,6 +162,18 @@ public enum PhysicalOperationKind
 
     /// <summary>Inserts one canonical candidate block.</summary>
     InsertBlock,
+
+    /// <summary>Replaces the inline text inside an existing managed block.</summary>
+    ReplaceInlineContent,
+
+    /// <summary>Deletes a canonical inline range inside an existing managed block.</summary>
+    DeleteInlineRange,
+
+    /// <summary>Inserts canonical inline text inside an existing managed block.</summary>
+    InsertInlineText,
+
+    /// <summary>Updates one inline style range inside an existing managed block.</summary>
+    UpdateInlineStyle,
 }
 
 /// <summary>Explains why a physical operation exists.</summary>
@@ -180,7 +206,8 @@ public sealed class PhysicalUpdateOperation
         int? currentIndex,
         DocumentTextRange affectedRange,
         BlockIdentity traceIdentity,
-        DocumentBlock? candidateBlock)
+        DocumentBlock? candidateBlock,
+        InlinePhysicalUpdate? inlineUpdate = null)
     {
         Sequence = sequence;
         Kind = kind;
@@ -190,6 +217,7 @@ public sealed class PhysicalUpdateOperation
         AffectedRange = affectedRange;
         TraceIdentity = traceIdentity;
         CandidateBlock = candidateBlock;
+        InlineUpdate = inlineUpdate;
     }
 
     /// <summary>Gets the zero-based physical execution sequence.</summary>
@@ -215,6 +243,47 @@ public sealed class PhysicalUpdateOperation
 
     /// <summary>Gets the canonical candidate payload for insertion.</summary>
     public DocumentBlock? CandidateBlock { get; }
+
+    /// <summary>Gets the inline update payload for inline physical operations.</summary>
+    public InlinePhysicalUpdate? InlineUpdate { get; }
+}
+
+/// <summary>Represents a deterministic inline physical update payload.</summary>
+public sealed class InlinePhysicalUpdate
+{
+    /// <summary>Initializes an inline physical update payload.</summary>
+    public InlinePhysicalUpdate(
+        string? text,
+        IEnumerable<InlineStyleRange>? styleRanges,
+        InlineTextStyle? style,
+        bool? styleEnabled,
+        Uri? url)
+    {
+        Text = text;
+        Style = style;
+        StyleEnabled = styleEnabled;
+        Url = url;
+        StyleRanges = Array.AsReadOnly((styleRanges ?? []).ToArray());
+        if (Style == InlineTextStyle.Link && StyleEnabled == true && Url is null)
+        {
+            throw new ArgumentException("A link update requires a URL when enabled.", nameof(url));
+        }
+    }
+
+    /// <summary>Gets inserted replacement text, when applicable.</summary>
+    public string? Text { get; }
+
+    /// <summary>Gets candidate style ranges relative to the inserted text, when applicable.</summary>
+    public IReadOnlyList<InlineStyleRange> StyleRanges { get; }
+
+    /// <summary>Gets the single style changed by an UpdateInlineStyle operation.</summary>
+    public InlineTextStyle? Style { get; }
+
+    /// <summary>Gets whether the single style is enabled or disabled.</summary>
+    public bool? StyleEnabled { get; }
+
+    /// <summary>Gets the URL applied by a link style update.</summary>
+    public Uri? Url { get; }
 }
 
 /// <summary>Represents a revision-bound physical update plan.</summary>

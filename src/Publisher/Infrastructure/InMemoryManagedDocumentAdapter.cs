@@ -80,7 +80,8 @@ public sealed class InMemoryManagedDocumentAdapter : IManagedDocumentAdapter, ID
         ApplyCount++;
         LastAppliedPlan = plan;
         var blocks = BuildCandidateBlocks(plan);
-        var ranges = BuildCandidateRanges(plan, blocks);
+        var payloads = BuildCandidatePayloads(plan, blocks);
+        var ranges = BuildCandidateRanges(plan, blocks, payloads);
         var appliedRevision = RegressRevisionAfterApply
             ? new DocumentRevision(
                 "revision-" + Math.Max(0, snapshot.Revision.Sequence - 1),
@@ -117,9 +118,40 @@ public sealed class InMemoryManagedDocumentAdapter : IManagedDocumentAdapter, ID
                 .First(block => block is not null)!)
             .ToArray();
 
-    private IReadOnlyList<ManagedBlockSnapshot> BuildCandidateRanges(
+    private IReadOnlyList<DocumentBlock?> BuildCandidatePayloads(
         PhysicalUpdatePlan plan,
         IReadOnlyList<BlockIdentity> blocks)
+    {
+        var result = new DocumentBlock?[blocks.Count];
+        for (var index = 0; index < blocks.Count; index++)
+        {
+            var candidatePayload = plan.Operations
+                .Where(operation => operation.CurrentIndex == index)
+                .Select(operation => operation.CandidateBlock)
+                .FirstOrDefault(block => block is not null);
+            if (candidatePayload is not null)
+            {
+                result[index] = candidatePayload;
+                continue;
+            }
+
+            var unchanged = plan.LogicalPlan.Operations.FirstOrDefault(operation =>
+                operation.CurrentIndex == index &&
+                operation.PreviousIndex is not null &&
+                operation.Kind == DiffOperationKind.NoChange);
+            if (unchanged?.PreviousIndex is int previousIndex)
+            {
+                result[index] = snapshot.Blocks[previousIndex].CanonicalBlock;
+            }
+        }
+
+        return result;
+    }
+
+    private IReadOnlyList<ManagedBlockSnapshot> BuildCandidateRanges(
+        PhysicalUpdatePlan plan,
+        IReadOnlyList<BlockIdentity> blocks,
+        IReadOnlyList<DocumentBlock?> payloads)
     {
         var result = new ManagedBlockSnapshot[blocks.Count];
         var currentIndex = plan.ManagedRegion.StartIndex;
@@ -128,11 +160,19 @@ public sealed class InMemoryManagedDocumentAdapter : IManagedDocumentAdapter, ID
             var inserted = plan.Operations.FirstOrDefault(operation =>
                 operation.Kind == PhysicalOperationKind.InsertBlock &&
                 operation.CurrentIndex == index);
+            var inlineUpdate = plan.Operations.FirstOrDefault(operation =>
+                (operation.Kind is PhysicalOperationKind.ReplaceInlineContent or
+                    PhysicalOperationKind.InsertInlineText or
+                    PhysicalOperationKind.DeleteInlineRange or
+                    PhysicalOperationKind.UpdateInlineStyle) &&
+                operation.CurrentIndex == index);
             var length = inserted?.CandidateBlock is not null
                 ? EstimateLength(inserted.CandidateBlock)
-                : ExistingLength(plan, index);
+                : inlineUpdate?.CandidateBlock is not null
+                    ? EstimateLength(inlineUpdate.CandidateBlock)
+                    : ExistingLength(plan, index);
             var range = new DocumentTextRange(currentIndex, currentIndex + length);
-            result[index] = new ManagedBlockSnapshot(blocks[index], range);
+            result[index] = new ManagedBlockSnapshot(blocks[index], range, payloads[index]);
             currentIndex = range.EndIndex;
         }
 
@@ -185,6 +225,17 @@ public sealed class InMemoryManagedDocumentAdapter : IManagedDocumentAdapter, ID
             throw new PhysicalUpdateException(
                 UpdateErrorCodes.PhysicalPlanInvalid,
                 "Physical operation sequence values are not contiguous.");
+        }
+
+        var replacements = plan.Operations
+            .Where(operation => operation.Kind == PhysicalOperationKind.ReplaceInlineContent)
+            .Select(operation => operation.AffectedRange.StartIndex)
+            .ToArray();
+        if (!replacements.SequenceEqual(replacements.OrderByDescending(index => index)))
+        {
+            throw new PhysicalUpdateException(
+                UpdateErrorCodes.PhysicalPlanInvalid,
+                "Inline replacements are not ordered from the end of the document.");
         }
     }
 

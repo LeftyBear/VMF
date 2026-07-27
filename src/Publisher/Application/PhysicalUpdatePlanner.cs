@@ -5,6 +5,8 @@ namespace Vmf.Publisher.Application;
 /// <summary>Produces delete-descending and insert-reverse physical block plans.</summary>
 public sealed class PhysicalUpdatePlanner : IPhysicalUpdatePlanner
 {
+    private readonly RichInlineDiffEngine inlineDiffEngine = new();
+
     /// <inheritdoc />
     public void ValidateSnapshot(
         VerifiedPublishState? baseline,
@@ -50,6 +52,16 @@ public sealed class PhysicalUpdatePlanner : IPhysicalUpdatePlanner
         }
 
         var groups = GroupCurrentOperations(candidate, logicalPlan);
+        var inlineOnlyPlan = TryCreateInlineOnlyPlan(
+            candidate,
+            logicalPlan,
+            snapshot,
+            groups);
+        if (inlineOnlyPlan is not null)
+        {
+            return inlineOnlyPlan;
+        }
+
         var destructive = new List<PendingOperation>();
         var consumedPrevious = new HashSet<int>();
 
@@ -64,6 +76,7 @@ public sealed class PhysicalUpdatePlanner : IPhysicalUpdatePlanner
                 null,
                 snapshot.Blocks[previousIndex].Range,
                 snapshot.Blocks[previousIndex].Identity,
+                null,
                 null));
         }
 
@@ -96,6 +109,7 @@ public sealed class PhysicalUpdatePlanner : IPhysicalUpdatePlanner
                 group.CurrentIndex,
                 snapshot.Blocks[previousIndex].Range,
                 candidate.Blocks[group.CurrentIndex],
+                null,
                 null));
         }
 
@@ -125,7 +139,8 @@ public sealed class PhysicalUpdatePlanner : IPhysicalUpdatePlanner
                     group.CurrentIndex,
                     new DocumentTextRange(insertionIndex, insertionIndex),
                     candidate.Blocks[group.CurrentIndex],
-                    document.Blocks[group.CurrentIndex]);
+                    document.Blocks[group.CurrentIndex],
+                    null);
             })
             .ToArray();
 
@@ -138,7 +153,83 @@ public sealed class PhysicalUpdatePlanner : IPhysicalUpdatePlanner
             item.CurrentIndex,
             item.Range,
             item.Identity,
-            item.CandidateBlock)).ToArray();
+            item.CandidateBlock,
+            item.InlineUpdate)).ToArray();
+        EnsureInsideManagedRegion(operations, snapshot.ManagedRegion);
+        return new PhysicalUpdatePlan(
+            candidate.Identity,
+            snapshot.Revision,
+            snapshot.ManagedRegion,
+            logicalPlan,
+            operations);
+    }
+
+    private PhysicalUpdatePlan? TryCreateInlineOnlyPlan(
+        PublishCandidate candidate,
+        DiffPlan logicalPlan,
+        ManagedDocumentSnapshot snapshot,
+        IReadOnlyDictionary<int, CurrentOperationGroup> groups)
+    {
+        if (candidate.Document is null ||
+            groups.Values.Any(group =>
+                group.Reason is not null && group.Reason != PhysicalOperationReason.Update))
+        {
+            return null;
+        }
+
+        var pending = new List<PendingOperation>();
+        foreach (var group in groups.Values.Where(group => group.Reason == PhysicalOperationReason.Update))
+        {
+            var previousIndex = group.PreviousIndex ?? throw Invalid(
+                $"Candidate block {group.CurrentIndex} requires a previous index.");
+            var previous = snapshot.Blocks[previousIndex];
+            var candidateBlock = candidate.Document.Blocks[group.CurrentIndex];
+            var edits = inlineDiffEngine.CreateEdits(previous, candidateBlock);
+            if (edits.Count == 0)
+            {
+                return null;
+            }
+
+            pending.AddRange(edits.Select(edit => new PendingOperation(
+                edit.Kind,
+                PhysicalOperationReason.Update,
+                previousIndex,
+                group.CurrentIndex,
+                edit.Range,
+                candidate.Blocks[group.CurrentIndex],
+                candidateBlock,
+                edit.Update)));
+        }
+
+        if (pending.Count == 0)
+        {
+            return null;
+        }
+
+        var ordered = pending.Any(item => item.Kind == PhysicalOperationKind.ReplaceInlineContent)
+            ? pending
+                .OrderByDescending(item => item.Range.StartIndex)
+                .ThenBy(item => item.Kind)
+                .ThenBy(item => item.InlineUpdate?.Style)
+                .ThenBy(item => item.InlineUpdate?.Url?.AbsoluteUri, StringComparer.Ordinal)
+                .ToArray()
+            : pending
+                .OrderBy(item => item.Range.StartIndex)
+                .ThenBy(item => item.Range.EndIndex)
+                .ThenBy(item => item.Kind)
+                .ThenBy(item => item.InlineUpdate?.Style)
+                .ThenBy(item => item.InlineUpdate?.Url?.AbsoluteUri, StringComparer.Ordinal)
+                .ToArray();
+        var operations = ordered.Select((item, index) => new PhysicalUpdateOperation(
+            index,
+            item.Kind,
+            item.Reason,
+            item.PreviousIndex,
+            item.CurrentIndex,
+            item.Range,
+            item.Identity,
+            item.CandidateBlock,
+            item.InlineUpdate)).ToArray();
         EnsureInsideManagedRegion(operations, snapshot.ManagedRegion);
         return new PhysicalUpdatePlan(
             candidate.Identity,
@@ -372,5 +463,6 @@ public sealed class PhysicalUpdatePlanner : IPhysicalUpdatePlanner
         int? CurrentIndex,
         DocumentTextRange Range,
         BlockIdentity Identity,
-        DocumentBlock? CandidateBlock);
+        DocumentBlock? CandidateBlock,
+        InlinePhysicalUpdate? InlineUpdate);
 }

@@ -64,6 +64,67 @@ public sealed class GoogleDocsPhysicalUpdateRequestMapperTests
                 .GetProperty("startIndex").GetInt32());
     }
 
+    [Fact]
+    public void Map_InlineStyleUpdate_CanApplyAndClearRichStyles()
+    {
+        var plan = Plan(
+            InlineStyle(
+                0,
+                10,
+                14,
+                InlineTextStyle.Link,
+                enabled: true,
+                new Uri("https://example.com/new")),
+            InlineStyle(
+                1,
+                15,
+                18,
+                InlineTextStyle.Code,
+                enabled: false,
+                null));
+
+        var batch = new GoogleDocsPhysicalUpdateRequestMapper().Map(plan);
+
+        Assert.Equal(["updateTextStyle", "updateTextStyle"], batch.Traces.Select(item => item.RequestKind));
+        using var link = JsonDocument.Parse(JsonSerializer.Serialize(batch.Requests[0]));
+        using var code = JsonDocument.Parse(JsonSerializer.Serialize(batch.Requests[1]));
+        Assert.Equal(
+            "https://example.com/new",
+            link.RootElement.GetProperty("updateTextStyle")
+                .GetProperty("textStyle").GetProperty("link").GetProperty("url").GetString());
+        Assert.True(
+            code.RootElement.GetProperty("updateTextStyle")
+                .GetProperty("textStyle").GetProperty("weightedFontFamily").ValueKind == JsonValueKind.Null);
+    }
+
+    [Fact]
+    public void Map_ReplaceInlineContent_DeletesInsertsAndAppliesCandidateStyles()
+    {
+        var plan = Plan(ReplaceInline(
+            0,
+            10,
+            13,
+            "new",
+            [new InlineStyleRange(0, 3, InlineTextStyle.Bold)]));
+
+        var batch = new GoogleDocsPhysicalUpdateRequestMapper().Map(plan);
+
+        Assert.Equal(["deleteContentRange", "insertText", "updateTextStyle"], batch.Traces.Select(x => x.RequestKind));
+        using var delete = JsonDocument.Parse(JsonSerializer.Serialize(batch.Requests[0]));
+        using var insert = JsonDocument.Parse(JsonSerializer.Serialize(batch.Requests[1]));
+        using var style = JsonDocument.Parse(JsonSerializer.Serialize(batch.Requests[2]));
+        Assert.Equal(
+            13,
+            delete.RootElement.GetProperty("deleteContentRange")
+                .GetProperty("range").GetProperty("endIndex").GetInt32());
+        Assert.Equal(
+            "new",
+            insert.RootElement.GetProperty("insertText").GetProperty("text").GetString());
+        Assert.True(
+            style.RootElement.GetProperty("updateTextStyle")
+                .GetProperty("textStyle").GetProperty("bold").GetBoolean());
+    }
+
     private static PhysicalUpdatePlan Plan(params PhysicalUpdateOperation[] operations) => new(
         Identity(),
         new DocumentRevision("required-revision", 1),
@@ -104,6 +165,39 @@ public sealed class GoogleDocsPhysicalUpdateRequestMapperTests
         new DocumentTextRange(index, index),
         Block(id),
         block);
+
+    private static PhysicalUpdateOperation InlineStyle(
+        int sequence,
+        int start,
+        int end,
+        InlineTextStyle style,
+        bool enabled,
+        Uri? url) => new(
+        sequence,
+        PhysicalOperationKind.UpdateInlineStyle,
+        PhysicalOperationReason.Update,
+        0,
+        0,
+        new DocumentTextRange(start, end),
+        Block("a"),
+        null,
+        new InlinePhysicalUpdate(null, null, style, enabled, url));
+
+    private static PhysicalUpdateOperation ReplaceInline(
+        int sequence,
+        int start,
+        int end,
+        string text,
+        IEnumerable<InlineStyleRange> ranges) => new(
+        sequence,
+        PhysicalOperationKind.ReplaceInlineContent,
+        PhysicalOperationReason.Update,
+        0,
+        0,
+        new DocumentTextRange(start, end),
+        Block("a"),
+        new DocumentBlock(ParagraphBlock.FromText(text), "a"),
+        new InlinePhysicalUpdate(text, ranges, null, null, null));
 
     private static DocumentIdentity Identity() =>
         new("publication", "document", "google-document", DocumentState.Active);

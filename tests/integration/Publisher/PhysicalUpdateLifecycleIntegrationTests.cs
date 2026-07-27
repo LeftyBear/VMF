@@ -67,6 +67,37 @@ public sealed class PhysicalUpdateLifecycleIntegrationTests : IDisposable
         Assert.Equal(baselineResult.State.Fingerprint, restored!.Fingerprint);
     }
 
+    [Fact]
+    public async Task RichInlineUpdate_ReadbackVerificationPromotesVerifiedState()
+    {
+        var builder = PublisherCompositionRoot.CreatePublishCandidateBuilder();
+        var baselineCandidate = builder.Create(
+            Identity(),
+            Parse("<!-- vmf:block-id=intro -->\nRich inline text.\n"),
+            Options());
+        var candidate = builder.Create(
+            Identity(),
+            Parse("<!-- vmf:block-id=intro -->\n**Rich** inline text.\n"),
+            Options());
+        var store = PublisherCompositionRoot.CreateVerifiedPublishStateStore(root);
+        var adapter = new InMemoryManagedDocumentAdapter(EmptySnapshot());
+        var lifecycle = PublisherCompositionRoot.CreatePhysicalUpdateLifecycle(store, adapter);
+        await lifecycle.ExecuteAsync(baselineCandidate, default);
+
+        var dryRun = await lifecycle.DryRunAsync(candidate, default);
+        await lifecycle.ExecuteAsync(candidate, default);
+        var restored = await store.LoadAsync(Request(), default);
+
+        var operation = Assert.Single(dryRun.PhysicalPlan!.Operations);
+        Assert.Equal(PhysicalOperationKind.UpdateInlineStyle, operation.Kind);
+        Assert.Equal(InlineTextStyle.Bold, operation.InlineUpdate?.Style);
+        Assert.True(operation.InlineUpdate?.StyleEnabled);
+        var state = Assert.IsType<VerifiedPublishState>(restored);
+        Assert.Equal(2, adapter.ApplyCount);
+        Assert.Equal(2, state.Revision.Sequence);
+        Assert.Equal(candidate.Fingerprint, state.Fingerprint);
+    }
+
     public void Dispose()
     {
         if (Directory.Exists(root))
