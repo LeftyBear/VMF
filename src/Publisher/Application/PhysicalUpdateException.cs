@@ -15,6 +15,15 @@ public static class UpdateErrorCodes
     /// <summary>Physical application failed.</summary>
     public const string ApplicationFailed = "UPDATE_APPLICATION_FAILED";
 
+    /// <summary>No executor is registered for the physical operation kind.</summary>
+    public const string OperationExecutorNotRegistered = "UPDATE_OPERATION_EXECUTOR_NOT_REGISTERED";
+
+    /// <summary>More than one executor is registered for the same physical operation kind.</summary>
+    public const string DuplicateOperationExecutor = "UPDATE_OPERATION_EXECUTOR_DUPLICATE";
+
+    /// <summary>A physical operation executor failed unexpectedly.</summary>
+    public const string OperationExecutorFailed = "UPDATE_OPERATION_EXECUTOR_FAILED";
+
     /// <summary>Post-apply readback failed.</summary>
     public const string ReadbackFailed = "UPDATE_READBACK_FAILED";
 
