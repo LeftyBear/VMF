@@ -7,7 +7,7 @@ using Vmf.Publisher.Application;
 namespace Vmf.Publisher.Infrastructure.Google;
 
 /// <summary>Executes Google Docs batchUpdate requests for physical updates.</summary>
-public sealed class GoogleDocsBatchUpdateClient : IGoogleDocsBatchUpdateClient
+public sealed class GoogleDocsBatchUpdateClient : IGoogleDocsBatchUpdateClient, IGoogleDocsGateway
 {
     private readonly IGoogleCredentialProvider credentialProvider;
     private readonly HttpClient httpClient;
@@ -27,15 +27,32 @@ public sealed class GoogleDocsBatchUpdateClient : IGoogleDocsBatchUpdateClient
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(batch);
+        var response = await BatchUpdateDocumentAsync(
+            batch.DocumentId,
+            new BatchUpdateDocumentRequest(
+                batch.Requests,
+                new BatchUpdateWriteControl(batch.RequiredRevisionId)),
+            cancellationToken).ConfigureAwait(false);
+        return new GoogleDocsBatchUpdateResponse(response.RevisionId);
+    }
+
+    /// <inheritdoc />
+    public async Task<BatchUpdateDocumentResponse> BatchUpdateDocumentAsync(
+        string documentId,
+        BatchUpdateDocumentRequest requestBody,
+        CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
+        ArgumentNullException.ThrowIfNull(requestBody);
         RequestDeliveryState deliveryState = RequestDeliveryState.NotSent;
         try
         {
             var credential = await credentialProvider.GetCredentialAsync(cancellationToken).ConfigureAwait(false);
             using var request = new HttpRequestMessage(
                 HttpMethod.Post,
-                $"https://docs.googleapis.com/v1/documents/{Uri.EscapeDataString(batch.DocumentId)}:batchUpdate");
+                $"https://docs.googleapis.com/v1/documents/{Uri.EscapeDataString(documentId)}:batchUpdate");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credential.AccessToken);
-            request.Content = new StringContent(Serialize(batch), Encoding.UTF8, "application/json");
+            request.Content = new StringContent(Serialize(requestBody), Encoding.UTF8, "application/json");
             deliveryState = RequestDeliveryState.Unknown;
             using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
             deliveryState = RequestDeliveryState.Sent;
@@ -45,7 +62,8 @@ public sealed class GoogleDocsBatchUpdateClient : IGoogleDocsBatchUpdateClient
                 throw Normalize(response, body, RequestDeliveryState.Sent);
             }
 
-            return new GoogleDocsBatchUpdateResponse(ReadRevisionId(body) ?? batch.RequiredRevisionId);
+            return new BatchUpdateDocumentResponse(
+                ReadRevisionId(body) ?? requestBody.WriteControl.RequiredRevisionId);
         }
         catch (GoogleDocsBatchUpdateException)
         {
@@ -82,12 +100,12 @@ public sealed class GoogleDocsBatchUpdateClient : IGoogleDocsBatchUpdateClient
         }
     }
 
-    private static string Serialize(PhysicalUpdateRequestBatch batch) => JsonSerializer.Serialize(new
+    private static string Serialize(BatchUpdateDocumentRequest request) => JsonSerializer.Serialize(new
     {
-        requests = batch.Requests,
+        requests = request.Requests,
         writeControl = new
         {
-            requiredRevisionId = batch.RequiredRevisionId,
+            requiredRevisionId = request.WriteControl.RequiredRevisionId,
         },
     });
 

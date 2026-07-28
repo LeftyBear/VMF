@@ -217,6 +217,152 @@ public interface IGoogleDocsBatchUpdateClient
         CancellationToken cancellationToken);
 }
 
+/// <summary>Represents a Google Docs batchUpdate request body.</summary>
+public sealed class BatchUpdateDocumentRequest
+{
+    /// <summary>Initializes a batchUpdate request body.</summary>
+    public BatchUpdateDocumentRequest(
+        IEnumerable<object> requests,
+        BatchUpdateWriteControl writeControl)
+    {
+        ArgumentNullException.ThrowIfNull(requests);
+        WriteControl = writeControl ?? throw new ArgumentNullException(nameof(writeControl));
+        var items = requests.ToArray();
+        if (items.Any(item => item is null))
+        {
+            throw new ArgumentException("Requests must not contain null items.", nameof(requests));
+        }
+
+        Requests = Array.AsReadOnly(items);
+    }
+
+    /// <summary>Gets the Google Docs request sequence.</summary>
+    public IReadOnlyList<object> Requests { get; }
+
+    /// <summary>Gets the optimistic-concurrency write control.</summary>
+    public BatchUpdateWriteControl WriteControl { get; }
+}
+
+/// <summary>Represents Google Docs batchUpdate write control.</summary>
+public sealed class BatchUpdateWriteControl
+{
+    /// <summary>Initializes write control.</summary>
+    public BatchUpdateWriteControl(string requiredRevisionId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(requiredRevisionId);
+        RequiredRevisionId = requiredRevisionId;
+    }
+
+    /// <summary>Gets the required revision ID.</summary>
+    public string RequiredRevisionId { get; }
+}
+
+/// <summary>Represents the gateway response for Google Docs batchUpdate.</summary>
+public sealed class BatchUpdateDocumentResponse
+{
+    /// <summary>Initializes a batchUpdate response.</summary>
+    public BatchUpdateDocumentResponse(string revisionId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(revisionId);
+        RevisionId = revisionId;
+    }
+
+    /// <summary>Gets the revision returned after the update.</summary>
+    public string RevisionId { get; }
+}
+
+/// <summary>Executes Google Docs API operations through the infrastructure gateway boundary.</summary>
+public interface IGoogleDocsGateway
+{
+    /// <summary>Executes documents.batchUpdate.</summary>
+    Task<BatchUpdateDocumentResponse> BatchUpdateDocumentAsync(
+        string documentId,
+        BatchUpdateDocumentRequest request,
+        CancellationToken cancellationToken);
+}
+
+/// <summary>Builds a Google Docs batchUpdate request from a physical plan without I/O.</summary>
+public interface IGoogleDocsBatchRequestBuilder
+{
+    /// <summary>Builds one batchUpdate request.</summary>
+    BatchUpdateDocumentRequest Build(PhysicalUpdatePlan plan);
+}
+
+/// <summary>Executes a revision-bound physical plan.</summary>
+public interface IPhysicalPlanExecutor
+{
+    /// <summary>Applies or previews one physical plan.</summary>
+    Task<ApplyResult> ExecuteAsync(
+        PhysicalUpdatePlan plan,
+        bool dryRun,
+        CancellationToken cancellationToken);
+}
+
+/// <summary>Represents the result of physical-plan application.</summary>
+public sealed class ApplyResult
+{
+    /// <summary>Initializes an apply result.</summary>
+    public ApplyResult(
+        PhysicalUpdateExecutionStatus status,
+        bool dryRun,
+        string documentId,
+        string requiredRevisionId,
+        string? appliedRevisionId,
+        int plannedOperationCount,
+        int submittedRequestCount,
+        string? errorCode,
+        string message)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(requiredRevisionId);
+        ArgumentOutOfRangeException.ThrowIfNegative(plannedOperationCount);
+        ArgumentOutOfRangeException.ThrowIfNegative(submittedRequestCount);
+        ArgumentException.ThrowIfNullOrWhiteSpace(message);
+        Status = status;
+        DryRun = dryRun;
+        DocumentId = documentId;
+        RequiredRevisionId = requiredRevisionId;
+        AppliedRevisionId = appliedRevisionId;
+        PlannedOperationCount = plannedOperationCount;
+        SubmittedRequestCount = submittedRequestCount;
+        ErrorCode = errorCode;
+        Message = message;
+    }
+
+    /// <summary>Gets the terminal status.</summary>
+    public PhysicalUpdateExecutionStatus Status { get; }
+
+    /// <summary>Gets whether the executor ran as a non-mutating preview.</summary>
+    public bool DryRun { get; }
+
+    /// <summary>Gets the target document ID.</summary>
+    public string DocumentId { get; }
+
+    /// <summary>Gets the required revision ID sent in write control.</summary>
+    public string RequiredRevisionId { get; }
+
+    /// <summary>Gets the applied revision ID, when known.</summary>
+    public string? AppliedRevisionId { get; }
+
+    /// <summary>Gets the number of source physical operations.</summary>
+    public int PlannedOperationCount { get; }
+
+    /// <summary>Gets the number of Google Docs requests submitted or previewed.</summary>
+    public int SubmittedRequestCount { get; }
+
+    /// <summary>Gets the stable error code, when execution failed.</summary>
+    public string? ErrorCode { get; }
+
+    /// <summary>Gets a safe diagnostic message.</summary>
+    public string Message { get; }
+
+    /// <summary>Gets whether the plan was applied.</summary>
+    public bool Applied => Status == PhysicalUpdateExecutionStatus.Applied;
+
+    /// <summary>Gets whether execution stopped because the required revision mismatched.</summary>
+    public bool Conflict => Status == PhysicalUpdateExecutionStatus.RevisionConflict;
+}
+
 /// <summary>Applies a physical update plan through a deterministic execution boundary.</summary>
 public interface IPhysicalUpdateExecutor
 {
