@@ -203,6 +203,47 @@ public sealed class PhysicalUpdatePlannerTests
     }
 
     [Fact]
+    public void CreatePlan_TableUpdate_UsesSafeBlockRebuild()
+    {
+        var baselineBlock = new DocumentBlock(
+            new TableBlock(
+                [new TableColumn(TableAlignment.Left), new TableColumn(TableAlignment.Right)],
+                new TableRow([new TableCell([new TextInline("Name")]), new TableCell([new TextInline("Value")])]),
+                [new TableRow([new TableCell([new TextInline("A")]), new TableCell([new TextInline("1")])])]),
+            "table");
+        var candidateBlock = new DocumentBlock(
+            new TableBlock(
+                [new TableColumn(TableAlignment.Left), new TableColumn(TableAlignment.Right)],
+                new TableRow([new TableCell([new TextInline("Name")]), new TableCell([new TextInline("Value")])]),
+                [new TableRow([new TableCell([new TextInline("A")]), new TableCell([new BoldInline([new TextInline("2")])])])]),
+            "table");
+        var baseline = new VerifiedPublishState(
+            Identity(),
+            Versions(),
+            Revision(),
+            Fingerprint("baseline-table"),
+            [Block(("table", "old-table"))]);
+        var candidate = new PublishCandidate(
+            Identity(),
+            Versions(),
+            Fingerprint("candidate-table"),
+            [Block(("table", "new-table"))],
+            new DocumentModel([candidateBlock]));
+        var logical = diffEngine.CreatePlan(baseline, candidate);
+        var snapshot = Snapshot(
+            baseline,
+            new DocumentTextRange(10, 20),
+            [new ManagedBlockSnapshot(baseline.Blocks[0], new DocumentTextRange(10, 20), baselineBlock)]);
+
+        var plan = planner.CreatePlan(baseline, candidate, logical, snapshot);
+
+        Assert.Equal(
+            [PhysicalOperationKind.DeleteRange, PhysicalOperationKind.InsertBlock],
+            plan.Operations.Select(operation => operation.Kind));
+        Assert.All(plan.Operations, operation => Assert.Equal(PhysicalOperationReason.Update, operation.Reason));
+    }
+
+    [Fact]
     public void CreatePlan_RejectsOverlappingBlockRanges()
     {
         var baseline = Baseline(("a", "ha"), ("b", "hb"));
