@@ -240,7 +240,8 @@ public sealed class PhysicalUpdateExecutionResult
         int attemptCount,
         string diagnosticCode,
         string diagnosticMessage,
-        IEnumerable<PhysicalUpdateRequestTrace>? requestTraces = null)
+        IEnumerable<PhysicalUpdateRequestTrace>? requestTraces = null,
+        IEnumerable<string>? operationIds = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
         ArgumentException.ThrowIfNullOrWhiteSpace(requiredRevisionId);
@@ -259,6 +260,7 @@ public sealed class PhysicalUpdateExecutionResult
         DiagnosticCode = diagnosticCode;
         DiagnosticMessage = diagnosticMessage;
         RequestTraces = Array.AsReadOnly((requestTraces ?? []).ToArray());
+        OperationIds = Array.AsReadOnly((operationIds ?? []).ToArray());
     }
 
     /// <summary>Gets the terminal status.</summary>
@@ -290,6 +292,9 @@ public sealed class PhysicalUpdateExecutionResult
 
     /// <summary>Gets request traces retained for diagnostics.</summary>
     public IReadOnlyList<PhysicalUpdateRequestTrace> RequestTraces { get; }
+
+    /// <summary>Gets source operation identifiers retained for idempotent recovery diagnostics.</summary>
+    public IReadOnlyList<string> OperationIds { get; }
 }
 
 /// <summary>Provides production delay behavior.</summary>

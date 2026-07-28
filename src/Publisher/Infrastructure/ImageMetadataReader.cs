@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Net;
+using System.Security.Cryptography;
 using Vmf.Publisher.Application;
 using Vmf.Publisher.Domain;
 
@@ -37,6 +38,9 @@ public sealed class ImageMetadataReader : IImageMetadataReader
                     local),
                 RemoteImageSource remote => await ReadRemoteAsync(remote, cancellationToken)
                     .ConfigureAwait(false),
+                GoogleDriveImageSource drive => await ReadGoogleDriveAsync(drive, cancellationToken)
+                    .ConfigureAwait(false),
+                EmbeddedImageSource embedded => Parse(embedded.Content.ToArray(), embedded),
                 _ => throw new InvalidOperationException("Unsupported image source type."),
             };
         }
@@ -58,6 +62,23 @@ public sealed class ImageMetadataReader : IImageMetadataReader
     }
 
     private async Task<ImageMetadata> ReadRemoteAsync(
+        RemoteImageSource initialSource,
+        CancellationToken cancellationToken)
+    {
+        var result = await ReadRemoteBytesAsync(initialSource, cancellationToken).ConfigureAwait(false);
+        return Parse(result.Bytes, result.FinalSource);
+    }
+
+    private async Task<ImageMetadata> ReadGoogleDriveAsync(
+        GoogleDriveImageSource source,
+        CancellationToken cancellationToken)
+    {
+        var result = await ReadRemoteBytesAsync(new RemoteImageSource(source.PublicUri), cancellationToken)
+            .ConfigureAwait(false);
+        return Parse(result.Bytes, source);
+    }
+
+    private async Task<(byte[] Bytes, RemoteImageSource FinalSource)> ReadRemoteBytesAsync(
         RemoteImageSource initialSource,
         CancellationToken cancellationToken)
     {
@@ -109,7 +130,7 @@ public sealed class ImageMetadataReader : IImageMetadataReader
                     "Remote image exceeds the maximum inspection size.");
             }
 
-            return Parse(bytes, current);
+            return (bytes, current);
         }
 
         throw new InvalidOperationException("Remote image redirect loop terminated unexpectedly.");
@@ -189,7 +210,7 @@ public sealed class ImageMetadataReader : IImageMetadataReader
             offset += dataLength + 12;
         }
 
-        return new ImageMetadata(source, width, height, horizontalDpi, verticalDpi, "image/png");
+        return new ImageMetadata(source, width, height, horizontalDpi, verticalDpi, "image/png", Hash(bytes));
     }
 
     private static ImageMetadata ParseGif(byte[] bytes, ImageSource source)
@@ -206,7 +227,7 @@ public sealed class ImageMetadataReader : IImageMetadataReader
             throw MetadataFailure();
         }
 
-        return new ImageMetadata(source, width, height, DefaultDpi, DefaultDpi, "image/gif");
+        return new ImageMetadata(source, width, height, DefaultDpi, DefaultDpi, "image/gif", Hash(bytes));
     }
 
     private static ImageMetadata ParseJpeg(byte[] bytes, ImageSource source)
@@ -282,7 +303,8 @@ public sealed class ImageMetadataReader : IImageMetadataReader
                     height.Value,
                     horizontalDpi,
                     verticalDpi,
-                    "image/jpeg");
+                    "image/jpeg",
+                    Hash(bytes));
             }
         }
 
@@ -307,6 +329,9 @@ public sealed class ImageMetadataReader : IImageMetadataReader
         HttpStatusCode.TooManyRequests or HttpStatusCode.InternalServerError or
         HttpStatusCode.BadGateway or HttpStatusCode.ServiceUnavailable or
         HttpStatusCode.GatewayTimeout;
+
+    private static string Hash(byte[] bytes) =>
+        ImageContentHash.ValuePrefix + Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
 
     private static PublishPipelineException MetadataFailure() => new(
         PublishErrorCodes.ImageMetadataReadFailed,

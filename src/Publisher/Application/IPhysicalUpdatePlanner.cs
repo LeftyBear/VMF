@@ -23,12 +23,29 @@ public sealed class PhysicalApplyReceipt
 {
     /// <summary>Initializes an apply receipt.</summary>
     public PhysicalApplyReceipt(DocumentRevision revision)
+        : this(revision, [])
+    {
+    }
+
+    /// <summary>Initializes an apply receipt with applied operation identifiers.</summary>
+    public PhysicalApplyReceipt(DocumentRevision revision, IEnumerable<string> operationIds)
     {
         Revision = revision ?? throw new ArgumentNullException(nameof(revision));
+        ArgumentNullException.ThrowIfNull(operationIds);
+        var items = operationIds.ToArray();
+        if (items.Any(string.IsNullOrWhiteSpace))
+        {
+            throw new ArgumentException("Operation IDs must not be empty.", nameof(operationIds));
+        }
+
+        OperationIds = Array.AsReadOnly(items);
     }
 
     /// <summary>Gets the revision immediately after application.</summary>
     public DocumentRevision Revision { get; }
+
+    /// <summary>Gets operation identifiers accepted by the adapter, used for idempotent recovery.</summary>
+    public IReadOnlyList<string> OperationIds { get; }
 }
 
 /// <summary>Reads and updates one managed document without exposing Google SDK types.</summary>

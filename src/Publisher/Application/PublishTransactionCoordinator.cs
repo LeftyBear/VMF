@@ -39,7 +39,8 @@ public sealed class PublishTransactionJournalEntry
         string candidateFingerprint,
         string? baselineFingerprint = null,
         string? requiredRevisionId = null,
-        string? diagnosticCode = null)
+        string? diagnosticCode = null,
+        IEnumerable<string>? operationIds = null)
     {
         Key = key ?? throw new ArgumentNullException(nameof(key));
         if (googleDocumentId is not null && string.IsNullOrWhiteSpace(googleDocumentId))
@@ -54,6 +55,7 @@ public sealed class PublishTransactionJournalEntry
         BaselineFingerprint = baselineFingerprint;
         RequiredRevisionId = requiredRevisionId;
         DiagnosticCode = diagnosticCode;
+        OperationIds = Array.AsReadOnly((operationIds ?? []).ToArray());
         GoogleDocumentId = googleDocumentId;
         Status = status;
     }
@@ -82,11 +84,15 @@ public sealed class PublishTransactionJournalEntry
     /// <summary>Gets the last stable diagnostic code, when available.</summary>
     public string? DiagnosticCode { get; }
 
+    /// <summary>Gets operation identifiers recorded with the latest operation receipt.</summary>
+    public IReadOnlyList<string> OperationIds { get; }
+
     /// <summary>Creates a copy with updated progress fields.</summary>
     public PublishTransactionJournalEntry With(
         PublishTransactionStatus status,
         string? requiredRevisionId = null,
-        string? diagnosticCode = null) => new(
+        string? diagnosticCode = null,
+        IEnumerable<string>? operationIds = null) => new(
             Key,
             GoogleDocumentId,
             TransactionId,
@@ -94,7 +100,8 @@ public sealed class PublishTransactionJournalEntry
             CandidateFingerprint,
             BaselineFingerprint,
             requiredRevisionId ?? RequiredRevisionId,
-            diagnosticCode ?? DiagnosticCode);
+            diagnosticCode ?? DiagnosticCode,
+            operationIds ?? OperationIds);
 }
 
 /// <summary>Persists and restores transaction journal entries.</summary>
@@ -385,9 +392,15 @@ public sealed class PublishTransactionCoordinator
             : applicationResult.RecoveryStatus == RecoveryReconciliationStatus.Diverged
                 ? PublishTransactionStatus.Diverged
                 : PublishTransactionStatus.Completed;
-        entry = entry.With(terminalStatus, diagnosticCode: applicationResult.ExecutionResult.DiagnosticCode);
+        entry = entry.With(
+            terminalStatus,
+            diagnosticCode: applicationResult.ExecutionResult.DiagnosticCode,
+            operationIds: applicationResult.ExecutionResult.OperationIds);
         if (terminalStatus == PublishTransactionStatus.Completed)
         {
+            entry = entry.With(PublishTransactionStatus.StatePersistencePending);
+            await journal.SaveAsync(entry, cancellationToken).ConfigureAwait(false);
+            entry = entry.With(PublishTransactionStatus.Completed);
             await journal.CompleteAsync(entry, cancellationToken).ConfigureAwait(false);
         }
         else

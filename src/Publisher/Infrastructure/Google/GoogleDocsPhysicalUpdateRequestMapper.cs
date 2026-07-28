@@ -92,10 +92,16 @@ public sealed class GoogleDocsPhysicalUpdateRequestMapper : IPhysicalUpdateReque
         var block = operation.CandidateBlock ?? throw new InvalidOperationException(
             "Insert operations require canonical candidate payload.");
         var steps = renderer.Render(new DocumentModel([block]));
+        if (steps.Count == 1 && steps[0] is InsertImageStep imageStep)
+        {
+            MapInsertImage(operation, imageStep.Image, requests, traces);
+            return;
+        }
+
         if (steps.Count != 1 || steps[0] is not BatchUpdateStep batchStep)
         {
             throw new InvalidOperationException(
-                "Physical update batchUpdate mapping supports canonical text-style blocks only.");
+                "Physical update batchUpdate mapping supports canonical text-style and prepared image blocks only.");
         }
 
         foreach (var documentOperation in batchStep.Operations.Select(item =>
@@ -110,6 +116,45 @@ public sealed class GoogleDocsPhysicalUpdateRequestMapper : IPhysicalUpdateReque
                 request);
         }
     }
+
+    private static void MapInsertImage(
+        PhysicalUpdateOperation operation,
+        ImageBlock image,
+        List<object> requests,
+        List<PhysicalUpdateRequestTrace> traces)
+    {
+        var size = image.Size ?? throw new InvalidOperationException(
+            "Image insertion requires calculated size.");
+        AddRequest(
+            requests,
+            traces,
+            operation,
+            "insertInlineImage",
+            new
+            {
+                insertInlineImage = new
+                {
+                    uri = InsertionUri(image.Source).AbsoluteUri,
+                    location = new { index = operation.AffectedRange.StartIndex },
+                    objectSize = new
+                    {
+                        width = Dimension(size.WidthPoints),
+                        height = Dimension(size.HeightPoints),
+                    },
+                },
+            });
+    }
+
+    private static Uri InsertionUri(ImageSource source) => source switch
+    {
+        RemoteImageSource remote => remote.Uri,
+        GoogleDriveImageSource drive => drive.PublicUri,
+        EmbeddedImageSource embedded => new Uri(
+            $"data:{embedded.MimeType};base64,{Convert.ToBase64String(embedded.Content.ToArray())}"),
+        LocalImageSource => throw new InvalidOperationException(
+            "Local images must be resolved to an upload artifact before physical image insertion."),
+        _ => throw new InvalidOperationException($"Unsupported image source: {source.GetType().Name}"),
+    };
 
     private static void MapReplaceInline(
         PhysicalUpdateOperation operation,

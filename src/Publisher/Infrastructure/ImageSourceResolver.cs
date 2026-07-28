@@ -57,8 +57,37 @@ public sealed class ImageSourceResolver : IImageSourceResolver
             LocalImageSource local => ResolveLocal(local, markdownFilePath),
             RemoteImageSource remote => await ResolveRemoteAsync(remote, cancellationToken)
                 .ConfigureAwait(false),
+            GoogleDriveImageSource drive => ResolveGoogleDrive(drive),
+            EmbeddedImageSource embedded => ResolveEmbedded(embedded),
             _ => throw Error(PublishErrorCodes.ImagePathInvalid, "Image source type is invalid."),
         };
+    }
+
+    private static GoogleDriveImageSource ResolveGoogleDrive(GoogleDriveImageSource source)
+    {
+        if (!source.PublicUri.IsAbsoluteUri ||
+            (source.PublicUri.Scheme != Uri.UriSchemeHttp && source.PublicUri.Scheme != Uri.UriSchemeHttps) ||
+            string.IsNullOrWhiteSpace(source.FileId))
+        {
+            throw Error(
+                PublishErrorCodes.ImageRemoteUriInvalid,
+                "Google Drive image source must include an absolute HTTP or HTTPS public URI.");
+        }
+
+        return source;
+    }
+
+    private static EmbeddedImageSource ResolveEmbedded(EmbeddedImageSource source)
+    {
+        var detectedMimeType = DetectMimeType(source.Content.ToArray());
+        if (!string.Equals(detectedMimeType, source.MimeType, StringComparison.Ordinal))
+        {
+            throw Error(
+                PublishErrorCodes.ImageFormatNotSupported,
+                "Embedded image MIME type does not match its file signature.");
+        }
+
+        return source;
     }
 
     private static LocalImageSource ResolveLocal(

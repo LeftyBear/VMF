@@ -257,6 +257,107 @@ public sealed class PublishPlanExecutorTests
             warning.Code == PublishErrorCodes.ImageTempFileDeleteFailed);
     }
 
+    [Fact]
+    public async Task ExecuteAsync_UploadFailureStopsBeforeDocsMutation()
+    {
+        var size = new ImageSize(300, 200);
+        var client = new RecordingDocsClient(new GoogleDocumentSnapshot([]));
+        var host = new RecordingTemporaryImageHost { FailHost = true };
+
+        var exception = await Assert.ThrowsAsync<PublishPipelineException>(() =>
+            new PublishPlanExecutor(client, new InlineContentRenderer(), host, null).ExecuteAsync(
+                "document-id",
+                [new InsertImageStep(new ImageBlock(
+                    string.Empty,
+                    new LocalImageSource("image.png"),
+                    size))],
+                CancellationToken.None));
+
+        Assert.Equal(PublishErrorCodes.ImageUploadFailed, exception.Code);
+        Assert.True(host.Hosted);
+        Assert.False(host.Deleted);
+        Assert.Null(client.InsertedImage);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ExpiredTemporaryUriIsReissuedBeforeInsert()
+    {
+        var size = new ImageSize(300, 200);
+        var client = new RecordingDocsClient(new GoogleDocumentSnapshot([], [
+            new GoogleInlineImageSnapshot(1, 3, 1, 2, "inline-object-id", size),
+        ]));
+        var host = new RecordingTemporaryImageHost
+        {
+            HostedImages =
+            [
+                new TemporaryHostedImage(
+                    "expired-id",
+                    new Uri("https://drive.google.com/expired-image"),
+                    contentHash: null,
+                    publisherOwned: true,
+                    expiresAtUtc: DateTimeOffset.UtcNow.AddSeconds(10)),
+                new TemporaryHostedImage(
+                    "fresh-id",
+                    new Uri("https://drive.google.com/fresh-image"),
+                    contentHash: null,
+                    publisherOwned: true,
+                    expiresAtUtc: DateTimeOffset.UtcNow.AddMinutes(10)),
+            ],
+        };
+
+        await new PublishPlanExecutor(client, new InlineContentRenderer(), host, null)
+            .ExecuteAsync(
+                "document-id",
+                [new InsertImageStep(new ImageBlock(
+                    string.Empty,
+                    new LocalImageSource("image.png"),
+                    size))],
+                CancellationToken.None);
+
+        Assert.Equal(2, host.HostCount);
+        Assert.Equal(["expired-id", "fresh-id"], host.DeletedResourceIds);
+        Assert.Equal(new Uri("https://drive.google.com/fresh-image"), client.InsertedImage?.Uri);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ExpiredTemporaryUriStopsBeforeInsertWhenReissueAlsoExpired()
+    {
+        var size = new ImageSize(300, 200);
+        var client = new RecordingDocsClient(new GoogleDocumentSnapshot([]));
+        var host = new RecordingTemporaryImageHost
+        {
+            HostedImages =
+            [
+                new TemporaryHostedImage(
+                    "expired-id-1",
+                    new Uri("https://drive.google.com/expired-image-1"),
+                    contentHash: null,
+                    publisherOwned: true,
+                    expiresAtUtc: DateTimeOffset.UtcNow.AddSeconds(10)),
+                new TemporaryHostedImage(
+                    "expired-id-2",
+                    new Uri("https://drive.google.com/expired-image-2"),
+                    contentHash: null,
+                    publisherOwned: true,
+                    expiresAtUtc: DateTimeOffset.UtcNow.AddSeconds(20)),
+            ],
+        };
+
+        var exception = await Assert.ThrowsAsync<PublishPipelineException>(() =>
+            new PublishPlanExecutor(client, new InlineContentRenderer(), host, null).ExecuteAsync(
+                "document-id",
+                [new InsertImageStep(new ImageBlock(
+                    string.Empty,
+                    new LocalImageSource("image.png"),
+                    size))],
+                CancellationToken.None));
+
+        Assert.Equal(PublishErrorCodes.ImageUploadFailed, exception.Code);
+        Assert.Equal(2, host.HostCount);
+        Assert.Equal(["expired-id-1", "expired-id-2"], host.DeletedResourceIds);
+        Assert.Null(client.InsertedImage);
+    }
+
     private static TableBlock CreateTable() => new(
         [
             new TableColumn(TableAlignment.Left),
@@ -367,7 +468,15 @@ public sealed class PublishPlanExecutorTests
 
         internal bool Deleted { get; private set; }
 
+        internal int HostCount { get; private set; }
+
+        internal bool FailHost { get; init; }
+
         internal bool FailDelete { get; init; }
+
+        internal List<TemporaryHostedImage> HostedImages { get; init; } = [];
+
+        internal List<string> DeletedResourceIds { get; } = [];
 
         public Task<TemporaryHostedImage> HostAsync(
             LocalImageSource source,
@@ -375,6 +484,21 @@ public sealed class PublishPlanExecutorTests
         {
             cancellationToken.ThrowIfCancellationRequested();
             Hosted = true;
+            HostCount++;
+            if (FailHost)
+            {
+                return Task.FromException<TemporaryHostedImage>(new PublishPipelineException(
+                    PublishErrorCodes.ImageUploadFailed,
+                    "upload failed"));
+            }
+
+            if (HostedImages.Count > 0)
+            {
+                var hosted = HostedImages[0];
+                HostedImages.RemoveAt(0);
+                return Task.FromResult(hosted);
+            }
+
             return Task.FromResult(new TemporaryHostedImage(
                 "temporary-id",
                 new Uri("https://drive.google.com/public-image")));
@@ -385,6 +509,7 @@ public sealed class PublishPlanExecutorTests
             CancellationToken cancellationToken)
         {
             Deleted = true;
+            DeletedResourceIds.Add(image.ResourceId);
             return FailDelete
                 ? Task.FromException(new PublishPipelineException(
                     PublishErrorCodes.ImageTempFileDeleteFailed,

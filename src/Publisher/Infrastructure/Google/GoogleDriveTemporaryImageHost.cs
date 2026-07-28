@@ -12,6 +12,8 @@ namespace Vmf.Publisher.Infrastructure.Google;
 public sealed class GoogleDriveTemporaryImageHost : ITemporaryImageHost
 {
     private const int MaxAttempts = 3;
+    private readonly object gate = new();
+    private readonly Dictionary<string, CachedArtifact> artifactsByHash = new(StringComparer.Ordinal);
     private readonly IGoogleCredentialProvider credentialProvider;
     private readonly HttpClient httpClient;
     private readonly GooglePublisherOptions googleOptions;
@@ -69,8 +71,17 @@ public sealed class GoogleDriveTemporaryImageHost : ITemporaryImageHost
         }
 
         var extension = Path.GetExtension(source.Path).ToLowerInvariant();
+        var sha256 = ImageContentHash.ValuePrefix + Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
+        lock (gate)
+        {
+            if (artifactsByHash.TryGetValue(sha256, out var cached))
+            {
+                cached.LeaseCount++;
+                return new TemporaryHostedImage(cached.FileId, cached.PublicUri, sha256, publisherOwned: true);
+            }
+        }
+
         var fileName = $"publisher-temp-{Guid.NewGuid():N}{extension}";
-        var sha256 = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
         string fileId;
         try
         {
@@ -105,7 +116,12 @@ public sealed class GoogleDriveTemporaryImageHost : ITemporaryImageHost
 
         var publicUri = new Uri(
             $"https://drive.google.com/uc?export=download&id={Uri.EscapeDataString(fileId)}");
-        return new TemporaryHostedImage(fileId, publicUri);
+        lock (gate)
+        {
+            artifactsByHash[sha256] = new CachedArtifact(fileId, publicUri, leaseCount: 1);
+        }
+
+        return new TemporaryHostedImage(fileId, publicUri, sha256, publisherOwned: true);
     }
 
     /// <inheritdoc />
@@ -114,6 +130,28 @@ public sealed class GoogleDriveTemporaryImageHost : ITemporaryImageHost
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(image);
+        if (!image.PublisherOwned)
+        {
+            return;
+        }
+
+        if (image.ContentHash is not null)
+        {
+            lock (gate)
+            {
+                if (artifactsByHash.TryGetValue(image.ContentHash, out var cached))
+                {
+                    cached.LeaseCount--;
+                    if (cached.LeaseCount > 0)
+                    {
+                        return;
+                    }
+
+                    artifactsByHash.Remove(image.ContentHash);
+                }
+            }
+        }
+
         try
         {
             using var response = await SendAsync(
@@ -279,4 +317,20 @@ public sealed class GoogleDriveTemporaryImageHost : ITemporaryImageHost
         string code,
         string message,
         Exception? exception = null) => new(code, message, exception);
+
+    private sealed class CachedArtifact
+    {
+        internal CachedArtifact(string fileId, Uri publicUri, int leaseCount)
+        {
+            FileId = fileId;
+            PublicUri = publicUri;
+            LeaseCount = leaseCount;
+        }
+
+        internal string FileId { get; }
+
+        internal Uri PublicUri { get; }
+
+        internal int LeaseCount { get; set; }
+    }
 }

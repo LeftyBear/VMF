@@ -207,7 +207,8 @@ public sealed class PhysicalUpdateOperation
         DocumentTextRange affectedRange,
         BlockIdentity traceIdentity,
         DocumentBlock? candidateBlock,
-        InlinePhysicalUpdate? inlineUpdate = null)
+        InlinePhysicalUpdate? inlineUpdate = null,
+        string? operationId = null)
     {
         Sequence = sequence;
         Kind = kind;
@@ -218,6 +219,9 @@ public sealed class PhysicalUpdateOperation
         TraceIdentity = traceIdentity;
         CandidateBlock = candidateBlock;
         InlineUpdate = inlineUpdate;
+        OperationId = string.IsNullOrWhiteSpace(operationId)
+            ? CreateOperationId(sequence, kind, reason, previousIndex, currentIndex, affectedRange, traceIdentity)
+            : operationId;
     }
 
     /// <summary>Gets the zero-based physical execution sequence.</summary>
@@ -246,6 +250,27 @@ public sealed class PhysicalUpdateOperation
 
     /// <summary>Gets the inline update payload for inline physical operations.</summary>
     public InlinePhysicalUpdate? InlineUpdate { get; }
+
+    /// <summary>Gets a deterministic idempotency key for this physical operation.</summary>
+    public string OperationId { get; }
+
+    private static string CreateOperationId(
+        int sequence,
+        PhysicalOperationKind kind,
+        PhysicalOperationReason reason,
+        int? previousIndex,
+        int? currentIndex,
+        DocumentTextRange range,
+        BlockIdentity identity) => string.Join(
+            ":",
+            sequence.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            kind,
+            reason,
+            previousIndex?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "-",
+            currentIndex?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "-",
+            range.StartIndex.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            range.EndIndex.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            identity.ExplicitId ?? identity.GeneratedId ?? identity.ContentHash);
 }
 
 /// <summary>Represents a deterministic inline physical update payload.</summary>

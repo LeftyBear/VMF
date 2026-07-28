@@ -31,6 +31,7 @@ public sealed class PublishTransactionCoordinatorTests : IDisposable
         Assert.Equal(1, executor.CallCount);
         Assert.Equal(1, store.SaveCount);
         Assert.Equal(PublishTransactionStatus.Completed, Assert.IsType<PublishTransactionJournalEntry>(entry).Status);
+        Assert.NotEmpty(entry.OperationIds);
         Assert.Contains(PublishTransactionStatus.CommitUnknown, journal.SavedStatuses);
         Assert.All(journal.SavedEntries, saved => Assert.Equal(entry.TransactionId, saved.TransactionId));
     }
@@ -61,6 +62,38 @@ public sealed class PublishTransactionCoordinatorTests : IDisposable
         Assert.Equal(0, executor.CallCount);
         Assert.Equal(1, store.SaveCount);
         Assert.Contains(PublishTransactionStatus.StatePersistencePending, journal.SavedStatuses);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_StatePersistencePendingReceiptRecoveryDoesNotReexecutePhysicalUpdate()
+    {
+        var baseline = Baseline();
+        var candidate = Candidate();
+        var store = new RecordingStore(baseline);
+        var adapter = new InMemoryManagedDocumentAdapter(Snapshot(candidate, Revision(2)));
+        var executor = new AdapterExecutor(adapter);
+        var journal = Journal();
+        await journal.SaveAsync(new PublishTransactionJournalEntry(
+            Key(),
+            "google-document",
+            "pending-transaction",
+            PublishTransactionStatus.StatePersistencePending,
+            candidate.Fingerprint.Value,
+            baseline.Fingerprint.Value,
+            "revision-1",
+            "APPLIED",
+            ["operation-id-1"]), default);
+        var coordinator = Coordinator(store, adapter, executor, journal);
+
+        var result = await coordinator.ExecuteAsync(candidate, default);
+        var entry = await journal.LoadAsync(Key(), "google-document", default);
+
+        Assert.False(result.PublishExecuted);
+        Assert.Equal(PublishRecoveryStatus.AppliedAndStateSaved, result.RecoveryResult.Status);
+        Assert.Equal(0, executor.CallCount);
+        Assert.Equal(1, store.SaveCount);
+        Assert.Equal(["operation-id-1"], Assert.IsType<PublishTransactionJournalEntry>(entry).OperationIds);
+        Assert.Contains(PublishTransactionStatus.Completed, journal.SavedStatuses);
     }
 
     [Fact]
@@ -416,7 +449,8 @@ public sealed class PublishTransactionCoordinatorTests : IDisposable
                 plan.Operations.Count,
                 1,
                 "APPLIED",
-                "adapter applied");
+                "adapter applied",
+                operationIds: receipt.OperationIds);
         }
     }
 

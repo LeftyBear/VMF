@@ -153,18 +153,29 @@ internal static class CanonicalBlockSerializer
     private static void WriteImage(CanonicalValueWriter writer, ImageBlock image)
     {
         writer.Write("imageAltText", image.AltText);
+        writer.Write("imageStableId", image.StableId);
+        writer.Write("imageContentHash", image.ContentHash);
         writer.Write("imageSourceKind", image.Source switch
         {
-            LocalImageSource => "local",
-            RemoteImageSource => "remote",
+            LocalImageSource => "local-file",
+            RemoteImageSource => "remote-uri",
+            GoogleDriveImageSource => "google-drive",
+            EmbeddedImageSource => "embedded-resource",
             _ => throw new InvalidOperationException(
                 $"Unsupported image source: {image.Source.GetType().Name}"),
         });
         writer.Write("imageSourceValue", image.Source switch
         {
             RemoteImageSource remote => remote.Uri.AbsoluteUri,
+            GoogleDriveImageSource drive => drive.FileId,
+            EmbeddedImageSource embedded => embedded.ResourceName,
             _ => image.Source.Value,
         });
+        if (image.Source is GoogleDriveImageSource driveSource)
+        {
+            writer.WriteBoolean("imagePublisherOwned", driveSource.PublisherOwned);
+        }
+
         writer.WriteBoolean("imageHasSize", image.Size is not null);
         if (image.Size is not null)
         {

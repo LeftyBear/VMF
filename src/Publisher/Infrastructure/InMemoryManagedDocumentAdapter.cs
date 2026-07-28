@@ -99,7 +99,9 @@ public sealed class InMemoryManagedDocumentAdapter : IManagedDocumentAdapter, ID
                 ranges.Count == 0 ? plan.ManagedRegion.StartIndex : ranges[^1].Range.EndIndex),
             plan.LogicalPlan.CurrentFingerprint.Value,
             ranges);
-        var receipt = new PhysicalApplyReceipt(appliedRevision);
+        var receipt = new PhysicalApplyReceipt(
+            appliedRevision,
+            plan.Operations.Select(operation => operation.OperationId));
         if (AdvanceRevisionAfterApply)
         {
             AdvanceRevisionAfterApply = false;

@@ -77,6 +77,82 @@ public sealed class GoogleDriveTemporaryImageHostTests
         }
     }
 
+    [Fact]
+    public async Task HostAsync_UploadFailureDoesNotCacheReusableArtifact()
+    {
+        byte[] bytes = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+        var path = await WriteTemporaryImageAsync(bytes);
+        var handler = new RecordingHandler(
+            Response(HttpStatusCode.Forbidden, "{}"),
+            Response(HttpStatusCode.OK, "{\"id\":\"temporary-id\"}"),
+            Response(HttpStatusCode.OK, "{}"));
+        var host = CreateHost(handler, allow: true);
+
+        try
+        {
+            var exception = await Assert.ThrowsAsync<PublishPipelineException>(() =>
+                host.HostAsync(new LocalImageSource(path), CancellationToken.None));
+            var hosted = await host.HostAsync(new LocalImageSource(path), CancellationToken.None);
+
+            Assert.Equal(PublishErrorCodes.ImageUploadFailed, exception.Code);
+            Assert.Equal("temporary-id", hosted.ResourceId);
+            Assert.Equal(3, handler.Requests.Count);
+            Assert.Equal(HttpMethod.Post, handler.Requests[0].Method);
+            Assert.Equal(HttpMethod.Post, handler.Requests[1].Method);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+
+    [Fact]
+    public async Task HostAsync_ReusesUploadByContentHashAndDeletesWhenLastLeaseEnds()
+    {
+        byte[] bytes = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+        var path = await WriteTemporaryImageAsync(bytes);
+        var handler = new RecordingHandler(
+            Response(HttpStatusCode.OK, "{\"id\":\"temporary-id\"}"),
+            Response(HttpStatusCode.OK, "{}"),
+            Response(HttpStatusCode.NoContent, ""));
+        var host = CreateHost(handler, allow: true);
+
+        try
+        {
+            var first = await host.HostAsync(new LocalImageSource(path), CancellationToken.None);
+            var second = await host.HostAsync(new LocalImageSource(path), CancellationToken.None);
+            await host.DeleteAsync(first, CancellationToken.None);
+            await host.DeleteAsync(second, CancellationToken.None);
+
+            Assert.Equal(first.ResourceId, second.ResourceId);
+            Assert.Equal(first.ContentHash, second.ContentHash);
+            Assert.Equal(3, handler.Requests.Count);
+            Assert.Equal(HttpMethod.Delete, handler.Requests[2].Method);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public async Task DeleteAsync_NonPublisherOwnedArtifactIsIgnored()
+    {
+        var handler = new RecordingHandler();
+        var host = CreateHost(handler, allow: true);
+
+        await host.DeleteAsync(
+            new TemporaryHostedImage(
+                "external-id",
+                new Uri("https://example.com/image.png"),
+                contentHash: null,
+                publisherOwned: false),
+            CancellationToken.None);
+
+        Assert.Empty(handler.Requests);
+    }
+
     private static GoogleDriveTemporaryImageHost CreateHost(
         HttpMessageHandler handler,
         bool allow) => new(

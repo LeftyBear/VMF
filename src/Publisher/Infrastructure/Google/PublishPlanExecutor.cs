@@ -6,6 +6,7 @@ namespace Vmf.Publisher.Infrastructure.Google;
 /// <summary>Executes ordinary batches and two-stage table insertion steps.</summary>
 public sealed class PublishPlanExecutor : IPublishPlanExecutor
 {
+    private static readonly TimeSpan MinimumTemporaryImageUriLifetime = TimeSpan.FromMinutes(1);
     private readonly IGoogleDocsClient docsClient;
     private readonly InlineContentRenderer inlineRenderer;
     private readonly ITemporaryImageHost? temporaryImageHost;
@@ -104,7 +105,7 @@ public sealed class PublishPlanExecutor : IPublishPlanExecutor
             {
                 RemoteImageSource remote => remote.Uri,
                 LocalImageSource local when temporaryImageHost is not null =>
-                    (hostedImage = await temporaryImageHost.HostAsync(local, cancellationToken)
+                    (hostedImage = await HostFreshImageAsync(local, cancellationToken)
                         .ConfigureAwait(false)).PublicUri,
                 LocalImageSource => throw new PublishPipelineException(
                     PublishErrorCodes.ImageUploadFailed,
@@ -216,6 +217,41 @@ public sealed class PublishPlanExecutor : IPublishPlanExecutor
             }
         }
     }
+
+    private async Task<TemporaryHostedImage> HostFreshImageAsync(
+        LocalImageSource source,
+        CancellationToken cancellationToken)
+    {
+        if (temporaryImageHost is null)
+        {
+            throw new InvalidOperationException("Temporary image hosting is not configured.");
+        }
+
+        TemporaryHostedImage? expired = null;
+        for (var attempt = 0; attempt < 2; attempt++)
+        {
+            var hosted = await temporaryImageHost.HostAsync(source, cancellationToken)
+                .ConfigureAwait(false);
+            if (IsUsableTemporaryUri(hosted))
+            {
+                return hosted;
+            }
+
+            expired = hosted;
+            await temporaryImageHost.DeleteAsync(hosted, CancellationToken.None)
+                .ConfigureAwait(false);
+        }
+
+        throw new PublishPipelineException(
+            PublishErrorCodes.ImageUploadFailed,
+            expired is null
+                ? "Temporary image URI could not be created."
+                : "Temporary image URI expires before it is safe to use.");
+    }
+
+    private static bool IsUsableTemporaryUri(TemporaryHostedImage image) =>
+        image.ExpiresAtUtc is null ||
+        image.ExpiresAtUtc.Value - DateTimeOffset.UtcNow >= MinimumTemporaryImageUriLifetime;
 
     private static bool ApproximatelyEqual(double actual, double requested) =>
         Math.Abs(actual - requested) <= 0.5d;

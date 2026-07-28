@@ -45,6 +45,7 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
             ?? throw new PhysicalUpdateException(
                 UpdateErrorCodes.PhysicalPlanInvalid,
                 "The physical plan required revision is missing.");
+        var operationIds = plan.Operations.Select(operation => operation.OperationId).ToArray();
 
         if (!plan.IsPublishRequired)
         {
@@ -57,7 +58,8 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
                 submittedRequestCount: 0,
                 attemptCount: 0,
                 "NO_CHANGE",
-                "The physical update plan contains no operations."));
+                "The physical update plan contains no operations.",
+                operationIds: operationIds));
         }
 
         if (cancellationToken.IsCancellationRequested)
@@ -71,7 +73,8 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
                 submittedRequestCount: 0,
                 attemptCount: 0,
                 "CANCELED_BEFORE_SEND",
-                "Execution was canceled before the batch was sent."));
+                "Execution was canceled before the batch was sent.",
+                operationIds: operationIds));
         }
 
         PhysicalUpdateRequestBatch batch;
@@ -90,7 +93,8 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
                 submittedRequestCount: 0,
                 attemptCount: 0,
                 "REQUEST_MAPPING_REJECTED",
-                exception.Message));
+                exception.Message,
+                operationIds: operationIds));
         }
 
         var attempt = 0;
@@ -110,7 +114,8 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
                     attempt,
                     "APPLIED",
                     "The batchUpdate request was accepted.",
-                    batch.Traces));
+                    batch.Traces,
+                    operationIds));
             }
             catch (OperationCanceledException exception)
             {
@@ -124,7 +129,8 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
                     attempt,
                     "CANCELED_DURING_SEND",
                     exception.Message,
-                    batch.Traces));
+                    batch.Traces,
+                    operationIds));
             }
             catch (GoogleDocsBatchUpdateException exception)
             {
@@ -141,13 +147,14 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
                         attempt,
                         "CANCELED_BEFORE_SEND",
                         exception.Message,
-                        batch.Traces));
+                        batch.Traces,
+                        operationIds));
                 }
 
                 if (classification != PhysicalUpdateExecutionStatus.TransientFailure ||
                     attempt >= retryPolicy.MaxAttempts)
                 {
-                    return LogSafe(Result(batch, classification, attempt, exception));
+                    return LogSafe(Result(batch, classification, attempt, exception, operationIds));
                 }
 
                 try
@@ -167,7 +174,8 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
                         attempt,
                         "CANCELED_DURING_RETRY_DELAY",
                         canceled.Message,
-                        batch.Traces));
+                        batch.Traces,
+                        operationIds));
                 }
             }
             catch (Exception exception)
@@ -182,7 +190,8 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
                     attempt,
                     "UNCLASSIFIED_FAILURE",
                     exception.Message,
-                    batch.Traces));
+                    batch.Traces,
+                    operationIds));
             }
         }
 
@@ -297,7 +306,8 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
         PhysicalUpdateRequestBatch batch,
         PhysicalUpdateExecutionStatus status,
         int attempt,
-        GoogleDocsBatchUpdateException exception)
+        GoogleDocsBatchUpdateException exception,
+        IEnumerable<string> operationIds)
     {
         var code = status switch
         {
@@ -317,7 +327,8 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
             attempt,
             code,
             exception.Message,
-            batch.Traces);
+            batch.Traces,
+            operationIds);
     }
 
     private TimeSpan NextDelay(int completedAttempt, TimeSpan? retryAfter)

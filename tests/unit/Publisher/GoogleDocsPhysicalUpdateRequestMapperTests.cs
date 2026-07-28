@@ -125,6 +125,31 @@ public sealed class GoogleDocsPhysicalUpdateRequestMapperTests
                 .GetProperty("textStyle").GetProperty("bold").GetBoolean());
     }
 
+    [Fact]
+    public void Map_ImageInsert_UsesInsertInlineImageRequest()
+    {
+        var plan = Plan(Insert(
+            0,
+            10,
+            "image",
+            new DocumentBlock(
+                new ImageBlock(
+                    "Alt",
+                    new RemoteImageSource(new Uri("https://example.com/image.png")),
+                    new ImageSize(64, 32),
+                    ImageContentHash.ValuePrefix + Hash("image")),
+                "image")));
+
+        var batch = new GoogleDocsPhysicalUpdateRequestMapper().Map(plan);
+
+        Assert.Equal(["insertInlineImage"], batch.Traces.Select(trace => trace.RequestKind));
+        using var request = JsonDocument.Parse(JsonSerializer.Serialize(Assert.Single(batch.Requests)));
+        var image = request.RootElement.GetProperty("insertInlineImage");
+        Assert.Equal("https://example.com/image.png", image.GetProperty("uri").GetString());
+        Assert.Equal(10, image.GetProperty("location").GetProperty("index").GetInt32());
+        Assert.Equal(64, image.GetProperty("objectSize").GetProperty("width").GetProperty("magnitude").GetDouble());
+    }
+
     private static PhysicalUpdatePlan Plan(params PhysicalUpdateOperation[] operations) => new(
         Identity(),
         new DocumentRevision("required-revision", 1),

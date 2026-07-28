@@ -115,6 +115,13 @@ public sealed class JsonPublishTransactionJournal : IPublishTransactionJournal
             WriteNullable(json, "baselineFingerprint", entry.BaselineFingerprint);
             WriteNullable(json, "requiredRevisionId", entry.RequiredRevisionId);
             WriteNullable(json, "diagnosticCode", entry.DiagnosticCode);
+            json.WriteStartArray("operationIds");
+            foreach (var operationId in entry.OperationIds)
+            {
+                json.WriteStringValue(operationId);
+            }
+
+            json.WriteEndArray();
             json.WriteEndObject();
         }
 
@@ -152,7 +159,36 @@ public sealed class JsonPublishTransactionJournal : IPublishTransactionJournal
             RequireString(root, "candidateFingerprint"),
             RequireNullableString(root, "baselineFingerprint"),
             RequireNullableString(root, "requiredRevisionId"),
-            RequireNullableString(root, "diagnosticCode"));
+            RequireNullableString(root, "diagnosticCode"),
+            RestoreOperationIds(root));
+    }
+
+    private static IReadOnlyList<string> RestoreOperationIds(JsonElement root)
+    {
+        if (!root.TryGetProperty("operationIds", out var property))
+        {
+            return Array.Empty<string>();
+        }
+
+        if (property.ValueKind != JsonValueKind.Array)
+        {
+            throw new StateLifecycleException(StateErrorCodes.Corrupted, "Journal field 'operationIds' is invalid.");
+        }
+
+        var values = new List<string>();
+        foreach (var item in property.EnumerateArray())
+        {
+            if (item.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(item.GetString()))
+            {
+                throw new StateLifecycleException(
+                    StateErrorCodes.Corrupted,
+                    "Journal field 'operationIds' contains an invalid value.");
+            }
+
+            values.Add(item.GetString()!);
+        }
+
+        return values;
     }
 
     private static void WriteNullable(Utf8JsonWriter json, string name, string? value)
