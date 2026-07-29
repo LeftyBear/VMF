@@ -59,6 +59,10 @@ dist/*
 !dist/release/Build_v1.0.2/
 !dist/release/Build_v1.0.2/Build.xlam
 /build/
+!/build/
+/build/*
+!/build/package.ps1
+!/build/verify-package.ps1
 
 # --------------------------------------------------
 # Generated VMF Source Workspace
