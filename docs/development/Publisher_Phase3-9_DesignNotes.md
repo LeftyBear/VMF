@@ -60,3 +60,37 @@ Consequences:
   present in the package.
 - Release package verification must not require live Google API credentials or
   mutate Google Docs, Google Drive, token stores, or other external services.
+
+## Phase 3-9B Manifest and Package Verification
+
+### Decision: Local Package Manifest Verification
+
+Status: Accepted
+
+Publisher release ZIP packages include `package-manifest.json` generated at
+package time. The manifest records package metadata and a SHA-256 inventory for
+all packaged files except the manifest itself.
+
+`tools/publisher/verify-package.ps1` validates the ZIP by extracting it to a
+temporary local directory, checking required CLI artifacts, verifying manifest
+paths, sizes, and hashes, rejecting unmanifested files, and confirming excluded
+configuration files remain absent.
+
+Rationale:
+
+- Provides deterministic package verification without introducing runtime
+  dependencies or changing Publisher Application/Domain contracts.
+- Keeps release evidence local and repeatable.
+- Separates distributable package integrity from Google Docs or Google Drive
+  live verification.
+
+Consequences:
+
+- `appsettings.json` and `appsettings.local.json` remain excluded from release
+  ZIP packages.
+- Verification fails when secret-like filenames or secret-like content are
+  present in the ZIP.
+- Verification does not require credentials, token stores, live Google APIs, or
+  external service mutation.
+- MSI, signing, automatic updates, and native installer verification remain out
+  of scope for Phase 3-9B.
