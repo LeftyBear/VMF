@@ -1,0 +1,52 @@
+name: Live E2E
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  google-docs-live-e2e:
+    name: Google Docs Live E2E
+    runs-on: windows-latest
+    environment:
+      name: publisher-live-e2e
+    env:
+      VMF_PUBLISHER_GOOGLE_E2E: "1"
+      VMF_PUBLISHER_GOOGLE_AUTH_MODE: ServiceAccount
+      VMF_PUBLISHER_GOOGLE_E2E_FOLDER_ID: ${{ secrets.VMF_PUBLISHER_GOOGLE_E2E_FOLDER_ID }}
+      VMF_PUBLISHER_GOOGLE_E2E_TEMPLATE_DOCUMENT_ID: ${{ secrets.VMF_PUBLISHER_GOOGLE_E2E_TEMPLATE_DOCUMENT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Prepare live credentials
+        shell: pwsh
+        env:
+          VMF_PUBLISHER_GOOGLE_CREDENTIALS_JSON: ${{ secrets.VMF_PUBLISHER_GOOGLE_CREDENTIALS_JSON }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:VMF_PUBLISHER_GOOGLE_CREDENTIALS_JSON)) {
+              throw "VMF_PUBLISHER_GOOGLE_CREDENTIALS_JSON secret is required."
+          }
+
+          $credentialsPath = Join-Path $env:RUNNER_TEMP "vmf-publisher-google-credentials.json"
+          $env:VMF_PUBLISHER_GOOGLE_CREDENTIALS_JSON | Set-Content -LiteralPath $credentialsPath -Encoding UTF8
+          "VMF_PUBLISHER_GOOGLE_CREDENTIALS_PATH=$credentialsPath" >> $env:GITHUB_ENV
+
+      - name: Restore
+        run: dotnet restore VMF.Publisher.sln
+
+      - name: Run Google Docs live E2E tests
+        run: dotnet test tests\integration\Publisher\Vmf.Publisher.IntegrationTests.csproj --configuration Release --no-restore --filter "FullyQualifiedName~GoogleDocsEndToEndIntegrationTests" --logger "console;verbosity=normal"
+
+      - name: Cleanup live credential files
+        if: always()
+        shell: pwsh
+        run: |
+          Remove-Item -LiteralPath "$env:RUNNER_TEMP\vmf-publisher-google-credentials.json" -Force -ErrorAction SilentlyContinue

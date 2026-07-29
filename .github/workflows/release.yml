@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "publisher-v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Publisher package version.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  release-package:
+    name: Release Package Verification
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Resolve package version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+              $version = "${{ inputs.version }}"
+          }
+          else {
+              $version = "${{ github.ref_name }}".Replace("publisher-v", "")
+          }
+
+          if ([string]::IsNullOrWhiteSpace($version)) {
+              throw "Publisher package version is required."
+          }
+
+          "value=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Restore
+        run: dotnet restore VMF.Publisher.sln
+
+      - name: Build
+        run: dotnet build VMF.Publisher.sln --configuration Release --no-restore
+
+      - name: Run unit tests
+        run: dotnet test tests\unit\Publisher\Vmf.Publisher.UnitTests.csproj --configuration Release --no-restore --logger "console;verbosity=normal"
+
+      - name: Run mock integration tests
+        run: dotnet test tests\integration\Publisher\Vmf.Publisher.IntegrationTests.csproj --configuration Release --no-restore --filter "FullyQualifiedName!~GoogleDocsEndToEndIntegrationTests" --logger "console;verbosity=normal"
+
+      - name: Build release package
+        shell: pwsh
+        run: .\tools\publisher\package-publisher.ps1 -Configuration Release -RuntimeIdentifier win-x64 -Version "${{ steps.version.outputs.value }}"
+
+      - name: Verify release package
+        shell: pwsh
+        run: .\tools\publisher\verify-package.ps1 -PackagePath ".\dist\release\Publisher\vmf-publisher-${{ steps.version.outputs.value }}-win-x64.zip"
+
+      - name: Upload release package
+        uses: actions/upload-artifact@v4
+        with:
+          name: vmf-publisher-${{ steps.version.outputs.value }}-win-x64
+          path: dist/release/Publisher/vmf-publisher-${{ steps.version.outputs.value }}-win-x64.zip
+          if-no-files-found: error

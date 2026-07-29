@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore VMF.Publisher.sln
+
+      - name: Build
+        run: dotnet build VMF.Publisher.sln --configuration Release --no-restore
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore VMF.Publisher.sln
+
+      - name: Run unit tests
+        run: dotnet test tests\unit\Publisher\Vmf.Publisher.UnitTests.csproj --configuration Release --no-restore --logger "console;verbosity=normal"
+
+  mock-integration-tests:
+    name: Mock Integration Tests
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore VMF.Publisher.sln
+
+      - name: Run mock integration tests
+        run: dotnet test tests\integration\Publisher\Vmf.Publisher.IntegrationTests.csproj --configuration Release --no-restore --filter "FullyQualifiedName!~GoogleDocsEndToEndIntegrationTests" --logger "console;verbosity=normal"
+
+  package-verification:
+    name: Package Verification
+    runs-on: windows-latest
+    needs:
+      - unit-tests
+      - mock-integration-tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore VMF.Publisher.sln
+
+      - name: Build release package
+        shell: pwsh
+        run: .\tools\publisher\package-publisher.ps1 -Configuration Release -RuntimeIdentifier win-x64 -Version "ci-${{ github.run_number }}"
+
+      - name: Verify release package
+        shell: pwsh
+        run: |
+          $package = Get-ChildItem -LiteralPath .\dist\release\Publisher -Filter "vmf-publisher-ci-${{ github.run_number }}-win-x64.zip" | Select-Object -First 1
+          if ($null -eq $package) {
+              throw "Publisher package was not created."
+          }
+          .\tools\publisher\verify-package.ps1 -PackagePath $package.FullName
