@@ -50,9 +50,9 @@ the generation definitions instead.
 
 ---
 
-## VMF Studio v2.0 Publisher PoC v0.1
+## VMF Studio v2.0 Publisher
 
-`VMF.Publisher.sln` contains the first Publisher PoC. It reads UTF-8 Markdown;
+`VMF.Publisher.sln` contains the Publisher productization track. It reads UTF-8 Markdown;
 converts headings, paragraphs, ordered, unordered, nested, or mixed lists,
 pipe-delimited tables, fenced code blocks, and block quotes with bold, italic,
 bold-italic, inline-code, and HTTP(S) link content into a neutral document model;
@@ -74,8 +74,37 @@ dotnet restore VMF.Publisher.sln
 dotnet build VMF.Publisher.sln --no-restore
 dotnet test VMF.Publisher.sln --no-build
 dotnet run --project src/Publisher.Cli -- --help
+dotnet run --project src/Publisher.Cli -- verify samples/publisher-poc.md
+dotnet run --project src/Publisher.Cli -- dry-run samples/publisher-poc.md
+dotnet run --project src/Publisher.Cli -- diff samples/publisher-poc.md samples/publisher-poc.md
 dotnet run --project src/Publisher.Cli -- publish samples/publisher-poc.md
 ```
+
+### CLI operations
+
+The CLI emits structured JSON diagnostics to stderr for every command. Each run
+has a `sessionId` beginning with `pub-`; include that session ID when comparing
+logs with Google Docs or Drive evidence. Successful `publish` also writes the
+document ID and URL to stdout.
+
+| Command | External Google write | Purpose |
+|---|---:|---|
+| `verify [markdown-file]` | No | Validate appsettings/environment and optionally compile Markdown locally. |
+| `dry-run <markdown-file>` | No | Compile Markdown, prepare image metadata, and print the publish-plan summary. |
+| `diff <before> <after>` | No | Compile both files and print a local step-count diff summary. |
+| `publish <markdown-file>` | Yes | Create the Google Drive document and apply Google Docs content. |
+
+Exit codes:
+
+| Code | Meaning |
+|---:|---|
+| 0 | Success |
+| 1 | Publish or internal Publisher failure |
+| 2 | Usage error |
+| 3 | Configuration or input path error |
+| 4 | Reserved for verification failure |
+| 75 | Transient HTTP failure suitable for retry |
+| 130 | User cancellation or timeout cancellation |
 
 ### Authentication modes
 
@@ -130,8 +159,16 @@ $env:VMF_PUBLISHER_TOKEN_STORE_PATH = 'C:\Secrets\vmf-publisher-token-store'
 $env:VMF_PUBLISHER_FOLDER_ID = 'YOUR_MY_DRIVE_FOLDER_ID'
 $env:VMF_PUBLISHER_TEMPORARY_IMAGE_FOLDER_ID = 'YOUR_TEMPORARY_IMAGE_FOLDER_ID'
 $env:VMF_PUBLISHER_ALLOW_TEMPORARY_PUBLIC_IMAGE_HOSTING = 'true'
+$env:VMF_PUBLISHER_OPERATION_TIMEOUT_SECONDS = '300'
+$env:VMF_PUBLISHER_HTTP_TIMEOUT_SECONDS = '100'
 dotnet run --project src/Publisher.Cli -- publish samples/publisher-poc.md
 ```
+
+Settings are applied in this priority order: checked-in `appsettings.json`,
+local `appsettings.local.json`, then environment variables. Environment variables
+therefore override local files. The CLI validates numeric, Boolean, timeout, and
+Google publishing settings before `publish`; `verify`, `dry-run`, and `diff`
+avoid Google writes and do not require a folder ID unless publishing.
 
 Local PNG, JPEG, and GIF images are resolved relative to the Markdown file. They
 are uploaded to `GoogleApi:TemporaryImageFolderId`, made public only while the
@@ -153,6 +190,17 @@ On success, the CLI prints separate Google Drive and Google Docs API success
 lines followed by `Document ID` and `Document URL`. On failure, it reports only
 the API name, HTTP status, and sanitized Google error code; access tokens,
 private keys, response bodies, and credential contents are never logged.
+
+### Operational troubleshooting
+
+Use the JSON `code`, `classification`, and `sessionId` fields as the first
+diagnostic keys. `Configuration` failures mean appsettings or environment values
+must be corrected before retrying. `Transient` failures are limited to retryable
+HTTP status classes such as 429, 500, 502, 503, and 504; authentication and
+permission failures are not retried. `Canceled` indicates Ctrl+C or the
+operation timeout. Image failures during `verify` or `dry-run` can come from
+local file absence, DNS restrictions, unsafe redirects, unsupported formats, or
+blocked remote image hosts.
 
 ### Secret-management requirements
 

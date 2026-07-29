@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\Publisher\Vmf.Publisher.csproj" />
@@ -10,6 +10,12 @@
     <AssemblyName>vmf-publisher</AssemblyName>
     <RootNamespace>Vmf.Publisher.Cli</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Vmf.Publisher.UnitTests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="appsettings.json">

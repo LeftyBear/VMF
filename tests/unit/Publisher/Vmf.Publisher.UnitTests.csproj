@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Publisher.Cli\Vmf.Publisher.Cli.csproj" />
     <ProjectReference Include="..\..\..\src\Publisher\Vmf.Publisher.csproj" />
   </ItemGroup>
 
