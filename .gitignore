@@ -50,14 +50,8 @@ tmp/
 # --------------------------------------------------
 # Build Artifacts (if generated locally)
 # --------------------------------------------------
-dist/*
-!dist/.gitkeep
-!dist/debug/
-!dist/debug/.gitkeep
-!dist/release/
-!dist/release/.gitkeep
-!dist/release/Build_v1.0.2/
-!dist/release/Build_v1.0.2/Build.xlam
+dist/
+dist/**
 /build/
 !/build/
 /build/*

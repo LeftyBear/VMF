@@ -61,6 +61,21 @@ The Live E2E test collection is non-parallelized. Do not run multiple live
 Publisher verification processes against the same document or folder unless
 the operation has been explicitly designed for that concurrency test.
 
+GitHub Actions Live E2E is available only through manual dispatch of
+`.github/workflows/live-e2e.yml`. The job must use the
+`publisher-live-e2e` Environment so repository maintainers can require
+environment approval before credentials are exposed to the run.
+
+The GitHub workflow uses Service Account authentication and must receive live
+configuration only from these Secrets:
+
+- `VMF_PUBLISHER_GOOGLE_CREDENTIALS_JSON`
+- `VMF_PUBLISHER_GOOGLE_E2E_FOLDER_ID`
+- `VMF_PUBLISHER_GOOGLE_E2E_TEMPLATE_DOCUMENT_ID`
+
+Normal CI and Release workflows must not set `VMF_PUBLISHER_GOOGLE_E2E=1`.
+They run the mock integration subset and package verification only.
+
 ## 4. Expected Evidence
 
 Record:
@@ -126,4 +141,3 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\publisher\verify-packa
 
 Local alternatives must be reported as local verification. They do not prove
 Google Docs rendering, Docs API readback, or Drive cleanup behavior.
-
