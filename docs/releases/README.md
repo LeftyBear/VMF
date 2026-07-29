@@ -17,6 +17,7 @@ records when applicable, and release artifact references.
 | Build.xlam v1.1 | `Build_v1.1_ReleaseReport.md` | `dist/release/Build/v1.1/Build.xlam` |
 | VMF Studio v1.1.0 | `../../RELEASE_NOTES_v1.1.md` | `dist/release/VMFStudio_1.1.0/VMFStudio_1.1.0.xlam` |
 | Publisher Phase 3-8 | `Publisher_Phase3-8_ReleaseNotes.md` | `VMF.Publisher.sln` |
+| Publisher Phase 3-9 | `Publisher_Phase3-9_ReleaseNotes.md` | `dist/release/Publisher/vmf-publisher-<version>-win-x64.zip` |
 
 ---
 
