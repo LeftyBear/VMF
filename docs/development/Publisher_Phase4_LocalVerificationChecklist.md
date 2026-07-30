@@ -89,7 +89,37 @@ Local-only verification may proceed only when:
 If a precondition cannot be confirmed, mark the affected check `BLOCKED` and
 record the reason.
 
-## 5. Allowed Local-Only Checks
+## 5. Execution Order
+
+Run Phase 4 local-only verification in this order:
+
+1. `git status --short`
+2. `git diff --check`
+3. Preflight:
+   - confirm `VMF_PUBLISHER_GOOGLE_E2E` is not enabled;
+   - confirm Google Docs or Google Drive mutation will not be performed;
+   - confirm package creation or package update will not be performed;
+   - confirm release, tag creation, or distribution publication will not be
+     performed;
+   - stop if flagged executable re-run is required during Avast pending status
+     and explicit approval for that exact run is not recorded.
+4. `dotnet format VMF.Publisher.sln --verify-no-changes --no-restore`
+5. `dotnet build VMF.Publisher.sln --configuration Release --no-restore`
+6. `dotnet test tests\unit\Publisher\Vmf.Publisher.UnitTests.csproj --configuration Release --no-restore`
+7. `dotnet test tests\integration\Publisher\Vmf.Publisher.IntegrationTests.csproj --configuration Release --no-restore`
+8. Mock-backed tests, when separate from the non-live integration test run.
+9. Dry-run checks, when they do not require flagged executable re-run or live
+   external mutation.
+10. Existing-package verification only, when an existing package is available
+    and the task scope includes package verification.
+11. Final `git status --short`.
+12. Report local-only evidence and explicitly not-executed operations.
+
+If a `--no-restore` command fails because dependencies are not restored or
+NuGet is unreachable, do not classify that result as a Publisher failure.
+Stop and report it as an environment or restore precondition issue.
+
+## 6. Allowed Local-Only Checks
 
 ### Build
 
@@ -101,6 +131,10 @@ dotnet build VMF.Publisher.sln --configuration Release --no-restore
 
 Record the command, result, warning count, and error count.
 
+If this `--no-restore` command fails because dependencies are not restored or
+NuGet is unreachable, stop and report an environment or restore precondition
+issue instead of treating it as a Publisher failure.
+
 ### Unit Tests
 
 Allowed for Publisher behavior covered by local unit tests:
@@ -110,6 +144,10 @@ dotnet test tests\unit\Publisher\Vmf.Publisher.UnitTests.csproj --configuration 
 ```
 
 Record passed, failed, skipped, warning count when available, and error count.
+
+If this `--no-restore` command fails because dependencies are not restored or
+NuGet is unreachable, stop and report an environment or restore precondition
+issue instead of treating it as a Publisher failure.
 
 ### Non-Live Integration Tests
 
@@ -121,6 +159,10 @@ dotnet test tests\integration\Publisher\Vmf.Publisher.IntegrationTests.csproj --
 
 Record passed, failed, skipped, and confirm `VMF_PUBLISHER_GOOGLE_E2E` was not
 enabled.
+
+If this `--no-restore` command fails because dependencies are not restored or
+NuGet is unreachable, stop and report an environment or restore precondition
+issue instead of treating it as a Publisher failure.
 
 ### Mock-Backed Tests
 
@@ -139,6 +181,10 @@ Record the command, exit code, dry-run result, and summary of the local plan or
 diff. Do not report dry-run success as publish success or rendered document
 verification.
 
+If a dry-run check would require flagged executable re-run during Avast pending
+status and explicit approval for that exact run is not recorded, stop and
+report the check as `BLOCKED`.
+
 ### Existing-Package Verification Only
 
 Allowed only against an existing local package when the task scope includes
@@ -154,6 +200,9 @@ secret-like filename or content checks.
 
 This check must not create, replace, update, or publish a package.
 
+If the existing package is unavailable, do not create a package to satisfy this
+check. Report the check as `N/A` or `BLOCKED` with the reason.
+
 ### Format And Whitespace Checks
 
 Allowed after source, test, or documentation changes:
@@ -165,6 +214,10 @@ git diff --check
 
 For documentation-only changes, `git diff --check` is sufficient unless the
 task requires code formatting verification.
+
+If `dotnet format --verify-no-changes --no-restore` fails because dependencies
+are not restored or NuGet is unreachable, stop and report an environment or
+restore precondition issue instead of treating it as a Publisher failure.
 
 ### Documentation Consistency Review
 
@@ -179,7 +232,7 @@ Review that local-only reports:
 - do not change Frozen specifications, public APIs, production defaults, or
   release state.
 
-## 6. Explicitly Blocked Checks
+## 7. Explicitly Blocked Checks
 
 The following are blocked during local-only Phase 4 verification unless
 separately and explicitly authorized for that exact operation:
@@ -207,7 +260,7 @@ separately and explicitly authorized for that exact operation:
 Blocked checks must be reported as `BLOCKED`, `PENDING`, `N/A`, or `Not
 executed`, with the reason. They must not be omitted.
 
-## 7. Evidence Rules
+## 8. Evidence Rules
 
 Every report must distinguish these evidence classes:
 
@@ -240,7 +293,7 @@ Reports must include:
 Do not record credentials, OAuth tokens, private keys, token-store content,
 secret-bearing configuration values, or private document content.
 
-## 8. Reporting Template
+## 9. Reporting Template
 
 Use this template for Phase 4 local-only verification reports.
 
@@ -267,6 +320,7 @@ Use this template for Phase 4 local-only verification reports.
 | Package creation / update not planned |  |  |
 | Release / tag / publication not planned |  |  |
 | Flagged executable re-run avoided or explicitly approved |  |  |
+| Restore prerequisites available for `--no-restore` commands |  |  |
 
 ### Verification Results
 
@@ -317,7 +371,7 @@ Use this template for Phase 4 local-only verification reports.
 - Next required decision or action:
 ```
 
-## 9. Done Criteria
+## 10. Done Criteria
 
 Phase 4 local-only verification reporting is done when:
 
