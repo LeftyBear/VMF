@@ -18,6 +18,7 @@ records when applicable, and release artifact references.
 | VMF Studio v1.1.0 | `../../RELEASE_NOTES_v1.1.md` | `dist/release/VMFStudio_1.1.0/VMFStudio_1.1.0.xlam` |
 | Publisher Phase 3-8 | `Publisher_Phase3-8_ReleaseNotes.md` | `VMF.Publisher.sln` |
 | Publisher Phase 3-9 | `Publisher_Phase3-9_ReleaseNotes.md` | `dist/release/Publisher/vmf-publisher-<version>-win-x64.zip` |
+| Publisher Phase 3-10 | `Publisher_Phase3-10_ReleaseNotes.md` | Release approval pending external Avast response |
 
 ---
 

@@ -1,6 +1,6 @@
 # Publisher Release Checklist
 
-Status  : Phase 3-9D Operations Checklist
+Status  : Phase 3-10 Release Gate Finalization
 Scope   : VMF Publisher package release readiness
 Depends : VMF.Publisher.sln, docs/development/Publisher_Phase3-9_DesignNotes.md, tools/publisher/package-publisher.ps1, tools/publisher/verify-package.ps1
 
@@ -14,6 +14,7 @@ Result codes:
 | PASS | The item completed successfully and evidence is recorded. |
 | FAIL | The item was executed and did not satisfy the release condition. |
 | BLOCKED | The item could not be completed because a required condition is missing. |
+| PENDING | The item is waiting on an external response or repository-owner decision. |
 | N/A | The item is explicitly not applicable and the reason is recorded. |
 
 ## 1. Release Identity
@@ -96,6 +97,48 @@ Result codes:
 | Release notes identify scope and exclusions | PASS | `Publisher_Phase3-9_ReleaseNotes.md` | Codex | 2026-07-29 | Notes identify ZIP distribution, configuration exclusion, and Live E2E gate. |
 | Known issues recorded | PASS | this checklist | Codex | 2026-07-29 | Initial package replacement access denial and initial CLI help timeout were resolved by targeted retry. Avast later reported `vmf-publisher.exe` as `IDP.HELU.PSD11`; VirusTotal reported no detection, Avast exception handling was applied, and false positive submission was reported completed with Avast classification pending. Static triage recorded ZIP SHA-256 `D9C5C6E5269D20ED01447AB7738728ACD41CCF0E308688DF11D08143DC87C244` and exe SHA-256 `DF49E365A698A9C885C497DD5972B313708E92F127BE5E4CE786AFA88941FFCA`. |
 | Release approved or rejected | BLOCKED | decision record pending | Codex | 2026-07-29 | Final release approval or rejection remains a repository-owner decision. |
+
+## 9. Phase 3-10 Release Gate Finalization
+
+Phase 3-10 does not approve the release, create tags, publish artifacts,
+execute Live E2E, or change production behavior. It records the final gate
+state needed to continue planning while the release approval remains dependent
+on the external Avast classification response.
+
+| Item | Result | Evidence | Reviewer | Date | Remarks |
+| --- | --- | --- | --- | --- | --- |
+| Avast false positive response tracked as external dependency | PENDING | user reported submission completed; Avast response pending | Codex | 2026-07-30 | Release approval is pending external vendor response. The package may not be treated as approved until Avast responds or the repository owner explicitly accepts the AV exception posture. |
+| Release approval separated from Phase 4 planning | PASS | this section | Codex | 2026-07-30 | Phase 4 planning may proceed only as non-release work. It must not imply release approval for the Phase 3-9 package. |
+| Pending risk owner recorded | PASS | repository owner decision required | Codex | 2026-07-30 | Repository owner owns the final accept/reject decision after Avast response or explicit exception acceptance. |
+| Pending risk impact recorded | PASS | Phase 3-9 package release approval remains blocked | Codex | 2026-07-30 | Do not create release tags, publish distribution artifacts, announce production release, or mutate live external services while this item is pending. |
+| Phase 4 entry conditions recorded | PASS | this section | Codex | 2026-07-30 | Phase 4 may start only if Frozen specs, public APIs, production defaults, package artifacts, and release state remain unchanged unless separately authorized. |
+
+### Phase 4 Entry Conditions
+
+Phase 4 work may begin while the Avast response is pending only when all of the
+following remain true:
+
+- Work is scoped to planning, implementation, tests, or documentation that does
+  not approve, publish, or announce the Phase 3-9 release.
+- Frozen specifications, public APIs, persisted schemas, canonical formats,
+  and existing production defaults remain unchanged.
+- Live Google Docs, Google Drive, token stores, temporary public hosting,
+  release tags, and distribution publication remain disabled unless explicitly
+  authorized for that specific operation.
+- Any required improvement that would change a Frozen specification, public
+  contract, package trust posture, signing model, installer model, or production
+  release process is recorded separately as a vNext candidate before adoption.
+
+### Pending Risk Closure Criteria
+
+The Avast pending risk can be closed only by recording one of these outcomes:
+
+- Avast confirms the package or executable is not malicious and the repository
+  owner approves release continuation.
+- Avast continues to classify the executable as unsafe and the repository owner
+  rejects release continuation or requires remediation.
+- The repository owner explicitly accepts the AV exception posture without
+  waiting further and records that decision as the release approval basis.
 
 Release approval requires all required items to be PASS or explicitly approved
 as N/A. A failed package verification, missing release evidence, unapproved
