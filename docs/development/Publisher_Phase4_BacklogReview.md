@@ -28,7 +28,7 @@ configuration validation, timeout settings, and retry documentation.
 
 | Item | Classification | Rationale | Phase 4 Handling |
 | --- | --- | --- | --- |
-| Local verification of CLI command behavior | Local-only | Build, unit tests, integration tests, and dry-run checks can run without live Google updates. | Include in the local verification plan. |
+| Local verification of CLI command behavior | Local-only | Build, unit tests, integration tests, and dry-run checks can run without live Google updates. | Include in the local verification plan. During Avast pending status, smoke checks that re-run the flagged executable are treated as blocked external dependency work unless explicitly authorized. |
 | Configuration and timeout behavior regression checks | Local-only | Configuration validation and timeout parsing can be verified with local tests and mock integrations. | Use focused tests before broad verification when implementation changes are made. |
 | Live Google Docs end-to-end verification | Blocked external dependency | Live E2E requires explicit authorization, credentials, destination folder, and cleanup expectations. | Do not run during Phase 4 planning. |
 | Changes to production live-write defaults | vNext candidate | Changing defaults could alter live external service behavior. | Exclude from Phase 4 implementation unless separately adopted. |
@@ -41,7 +41,7 @@ documentation.
 
 | Item | Classification | Rationale | Phase 4 Handling |
 | --- | --- | --- | --- |
-| Package verification procedure maintenance | Local-only | Manifest, hash, file inventory, unsafe path, and secret-like content checks are local. | May be refined through tests or documentation if behavior remains compatible. |
+| Package verification procedure maintenance | Local-only | Manifest, hash, file inventory, unsafe path, and secret-like content checks are local. | May be refined through tests or documentation if behavior remains compatible. This does not include package creation or package updates. |
 | Installation and upgrade documentation review | Local-only | Documentation review can proceed without publishing artifacts or mutating external services. | Keep changes non-normative and scoped to operations docs. |
 | Local smoke and dry-run evidence model | Local-only | Local smoke checks do not require Google Docs or Drive updates. | Clarify evidence boundaries in the local verification plan. |
 | MSI installer | vNext candidate | Installer adoption changes the distribution model. | Record as candidate before implementation. |
@@ -74,7 +74,7 @@ release approval dependency.
 | A | Document Phase 4 scope and release gate boundary | Local-only | Phase 4 planning records state that release approval remains blocked by the Avast external dependency. |
 | A | Document local verification plan | Local-only | Local checks are listed separately from Live E2E and live readback. |
 | A | Review Phase 3 carried-over operational items | Local-only | Items are classified into local-only, vNext candidate, or blocked external dependency. |
-| B | Evaluate package verification documentation gaps | Local-only | Any proposed documentation update remains non-normative and does not change package artifacts. |
+| B | Evaluate package verification documentation gaps | Local-only | Any proposed documentation update remains non-normative and does not change package artifacts. Verification script specification changes, package trust posture changes, or release process changes require vNext candidate separation or separate approval. |
 | B | Prepare candidate outline for signing or installer strategy | vNext candidate | Candidate is recorded before implementation or release process adoption. |
 | B | Prepare candidate outline for package trust posture alternatives | vNext candidate | Candidate distinguishes signed apphost, no-apphost distribution, installer, and owner exception posture. |
 | C | Execute Live E2E | Blocked external dependency | Requires explicit per-run authorization and cleanup plan. |
@@ -97,4 +97,3 @@ authorized and, where required, recorded as candidates first:
 - release announcement;
 - Live E2E execution;
 - Google Docs or Google Drive mutation.
-
