@@ -98,6 +98,10 @@ Boundary:
 Use mock-backed integration tests, CLI `verify`, CLI `diff`, and CLI `dry-run`
 for non-mutating verification.
 
+These checks are local-only in normal operation. During Avast pending status,
+do not run them when they would re-run the flagged executable unless the run is
+explicitly authorized; treat that case as blocked external dependency work.
+
 Examples from an extracted, approved local test package:
 
 ```powershell
@@ -143,6 +147,7 @@ Expected evidence:
 Boundary:
 
 - package verification does not create a release;
+- package verification does not create or update a package;
 - package verification does not publish artifacts;
 - package verification does not override antivirus classification;
 - package verification does not close the Avast pending external dependency.
@@ -202,7 +207,7 @@ Drive cleanup.
 | Planning documentation only | `git diff --check` | Build and tests are not required unless documentation references generated behavior that needs validation. |
 | Publisher source behavior | Focused unit tests, then Publisher unit tests | Add integration tests when lifecycle or pipeline behavior changes. |
 | Publisher integration behavior | Focused integration filter, then integration project | Keep Live E2E disabled unless explicitly authorized. |
-| Packaging scripts | Package creation only if explicitly authorized, then package verification | Do not publish artifacts or treat the result as release approval. |
+| Packaging scripts | Existing-package verification only by default | Package creation requires separate approval; package verification may remain local-only when it uses an existing package. Do not publish artifacts or treat the result as release approval. |
 | Release documentation | `git diff --check` and release evidence consistency review | Do not change release approval state without owner decision. |
 | Candidate planning | `git diff --check` | Candidate documentation must not modify Frozen specifications. |
 
@@ -222,4 +227,3 @@ Every Phase 4 verification report must state:
 
 If Live E2E was not authorized, report it as not executed. Do not substitute
 local verification for live readback.
-
