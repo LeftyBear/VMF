@@ -4,6 +4,21 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ---
 
+# 2026-08-01
+
+## Added
+
+- Added Publisher Phase 4-2-1 diagnostic logging specification, implementation
+  review record, and local-only verification evidence.
+
+## Changed
+
+- Standardized Publisher CLI structured diagnostic logs with command, phase,
+  operation, lifecycle events, safe summary messages, and normalized warning
+  messages while preserving public APIs and publish result compatibility.
+
+---
+
 # 2026-07-31
 
 ## Changed

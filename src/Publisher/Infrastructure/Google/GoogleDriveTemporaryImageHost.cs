@@ -296,7 +296,7 @@ public sealed class GoogleDriveTemporaryImageHost : ITemporaryImageHost
         {
             logger.Warning(
                 PublishErrorCodes.ImageTempFileDeleteFailed,
-                "Temporary Drive image cleanup failed after an earlier image-hosting failure.");
+                "Temporary image cleanup failed.");
         }
     }
 

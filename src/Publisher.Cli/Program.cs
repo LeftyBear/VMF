@@ -51,12 +51,15 @@ internal static class CliApplication
     {
         var sessionId = CreateSessionId();
         var stopwatch = Stopwatch.StartNew();
-        var logger = new StructuredPublisherLogger(sessionId);
-        logger.Info("SESSION_STARTED", "Publish session started.");
+        var command = NormalizeCommand(arguments);
+        var logger = new StructuredPublisherLogger(sessionId, command);
+        logger.SessionStarted();
+        logger.CommandStarted();
 
         try
         {
             var result = await RunCommandAsync(arguments, logger, cancellationToken).ConfigureAwait(false);
+            logger.CommandFinished(result);
             logger.Summary(result, stopwatch.Elapsed);
             return result.ExitCode;
         }
@@ -65,8 +68,9 @@ internal static class CliApplication
             var result = CliResult.Failure(
                 ExitCanceled,
                 "CANCELED",
-                "Publication was canceled.",
+                "Operation was canceled.",
                 ErrorClassification.Canceled);
+            logger.CommandFinished(result);
             logger.Summary(result, stopwatch.Elapsed);
             return result.ExitCode;
         }
@@ -77,6 +81,7 @@ internal static class CliApplication
                 exception.Code,
                 exception.Message,
                 ErrorClassification.Configuration);
+            logger.CommandFinished(result);
             logger.Summary(result, stopwatch.Elapsed);
             return result.ExitCode;
         }
@@ -85,8 +90,10 @@ internal static class CliApplication
             var result = CliResult.Failure(
                 ExitTransient,
                 "TRANSIENT_ERROR",
-                SafeMessage(exception),
-                ErrorClassification.Transient);
+                SafeMessage(ErrorClassification.Transient),
+                ErrorClassification.Transient,
+                ExceptionType(exception));
+            logger.CommandFinished(result);
             logger.Summary(result, stopwatch.Elapsed);
             return result.ExitCode;
         }
@@ -95,8 +102,10 @@ internal static class CliApplication
             var result = CliResult.Failure(
                 ExitPublishFailed,
                 "PUBLISHER_ERROR",
-                SafeMessage(exception),
-                ErrorClassification.Internal);
+                SafeMessage(ErrorClassification.Internal),
+                ErrorClassification.Internal,
+                ExceptionType(exception));
+            logger.CommandFinished(result);
             logger.Summary(result, stopwatch.Elapsed);
             return result.ExitCode;
         }
@@ -109,6 +118,7 @@ internal static class CliApplication
     {
         if (arguments.Length == 0 || IsHelp(arguments[0]))
         {
+            logger.SetContext("cli", "help");
             Console.WriteLine(HelpText);
             return CliResult.Success("HELP", "Help displayed.");
         }
@@ -120,7 +130,7 @@ internal static class CliApplication
             "verify" => await VerifyAsync(arguments, logger, cancellationToken).ConfigureAwait(false),
             "diff" => await DiffAsync(arguments, logger, cancellationToken).ConfigureAwait(false),
             "dry-run" => await DryRunAsync(arguments, logger, cancellationToken).ConfigureAwait(false),
-            _ => UsageFailure($"Unknown command: {arguments[0]}"),
+            _ => UsageFailure(logger, "Unknown command."),
         };
     }
 
@@ -131,17 +141,21 @@ internal static class CliApplication
     {
         if (arguments.Length == 2 && IsHelp(arguments[1]))
         {
+            logger.SetContext("cli", "help");
             Console.WriteLine(HelpText);
             return CliResult.Success("HELP", "Help displayed.");
         }
 
+        logger.SetContext("publish", "validateArguments");
         if (arguments.Length != 2)
         {
-            return UsageFailure("publish requires exactly one Markdown file path.");
+            return UsageFailure(logger, "publish requires exactly one Markdown file path.");
         }
 
+        logger.SetContext("publish", "loadSettings");
         var settings = LoadSettings(requireGooglePublishSettings: true);
         ValidateMarkdownPath(arguments[1]);
+        logger.SetContext("publish", "execute");
         using var timeoutSource = CreateTimeoutSource(settings.Cli.OperationTimeoutSeconds, cancellationToken);
         var publishService = CreatePublishService(settings, logger);
         var result = await publishService.PublishAsync(
@@ -169,19 +183,22 @@ internal static class CliApplication
         StructuredPublisherLogger logger,
         CancellationToken cancellationToken)
     {
+        logger.SetContext("verify", "validateArguments");
         if (arguments.Length > 2)
         {
-            return UsageFailure("verify accepts zero or one Markdown file path.");
+            return UsageFailure(logger, "verify accepts zero or one Markdown file path.");
         }
 
+        logger.SetContext("verify", "loadSettings");
         var settings = LoadSettings(requireGooglePublishSettings: false);
         if (arguments.Length == 2)
         {
             ValidateMarkdownPath(arguments[1]);
+            logger.SetContext("verify", "compile");
             await CompileAsync(arguments[1], settings.Publisher, cancellationToken).ConfigureAwait(false);
         }
 
-        logger.Info("CONFIGURATION_VALID", "Configuration validation succeeded.");
+        logger.Info("CONFIGURATION_VALID", "Configuration validation succeeded.", "verify", "summary");
         return CliResult.Success("VERIFY_SUCCEEDED", "Verification succeeded.");
     }
 
@@ -190,13 +207,16 @@ internal static class CliApplication
         StructuredPublisherLogger logger,
         CancellationToken cancellationToken)
     {
+        logger.SetContext("planner", "validateArguments");
         if (arguments.Length != 2)
         {
-            return UsageFailure("dry-run requires exactly one Markdown file path.");
+            return UsageFailure(logger, "dry-run requires exactly one Markdown file path.");
         }
 
+        logger.SetContext("planner", "loadSettings");
         var settings = LoadSettings(requireGooglePublishSettings: false);
         ValidateMarkdownPath(arguments[1]);
+        logger.SetContext("planner", "compile");
         var compiled = await CompileAsync(arguments[1], settings.Publisher, cancellationToken).ConfigureAwait(false);
         logger.PublishPlan("DRY_RUN_PLAN", compiled);
         return CliResult.Success("DRY_RUN_SUCCEEDED", "Dry run completed.");
@@ -207,22 +227,27 @@ internal static class CliApplication
         StructuredPublisherLogger logger,
         CancellationToken cancellationToken)
     {
+        logger.SetContext("verification", "validateArguments");
         if (arguments.Length != 3)
         {
-            return UsageFailure("diff requires before and after Markdown file paths.");
+            return UsageFailure(logger, "diff requires before and after Markdown file paths.");
         }
 
+        logger.SetContext("verification", "loadSettings");
         var settings = LoadSettings(requireGooglePublishSettings: false);
         ValidateMarkdownPath(arguments[1]);
         ValidateMarkdownPath(arguments[2]);
+        logger.SetContext("verification", "compileBefore");
         var before = await CompileAsync(arguments[1], settings.Publisher, cancellationToken).ConfigureAwait(false);
+        logger.SetContext("verification", "compileAfter");
         var after = await CompileAsync(arguments[2], settings.Publisher, cancellationToken).ConfigureAwait(false);
         logger.DiffSummary(before, after);
         return CliResult.Success("DIFF_SUCCEEDED", "Diff completed.");
     }
 
-    private static CliResult UsageFailure(string message)
+    private static CliResult UsageFailure(StructuredPublisherLogger logger, string message)
     {
+        logger.SetContext("cli", "usage");
         Console.Error.WriteLine(message);
         Console.Error.WriteLine(HelpText);
         return CliResult.Failure(ExitUsage, "USAGE_ERROR", message, ErrorClassification.Usage);
@@ -523,7 +548,7 @@ internal static class CliApplication
         {
             throw new CliConfigurationException(
                 "MARKDOWN_FILE_NOT_FOUND",
-                $"Markdown file was not found: {path}");
+                "Markdown file was not found.");
         }
     }
 
@@ -581,8 +606,31 @@ internal static class CliApplication
         } ||
         exception.InnerException is not null && IsTransient(exception.InnerException);
 
-    private static string SafeMessage(Exception exception) =>
-        string.IsNullOrWhiteSpace(exception.Message) ? exception.GetType().Name : exception.Message;
+    private static string SafeMessage(ErrorClassification classification) => classification switch
+    {
+        ErrorClassification.Transient => "A transient external service error occurred.",
+        ErrorClassification.Canceled => "Operation was canceled.",
+        ErrorClassification.Internal => "An internal Publisher error occurred.",
+        _ => "Publisher command failed.",
+    };
+
+    private static string ExceptionType(Exception exception) => exception.GetType().Name;
+
+    private static string NormalizeCommand(string[] arguments)
+    {
+        if (arguments.Length == 0)
+        {
+            return "none";
+        }
+
+        var command = arguments[0].ToLowerInvariant();
+        if (IsHelp(command))
+        {
+            return "help";
+        }
+
+        return command is "publish" or "verify" or "diff" or "dry-run" ? command : "unknown";
+    }
 
     private static bool IsHelp(string value) => value is "-h" or "--help" or "help";
 
@@ -600,7 +648,7 @@ internal static class CliApplication
                 ? parsed
                 : throw new CliConfigurationException(
                     "CONFIG_BOOLEAN_INVALID",
-                    $"Invalid Boolean setting value: {value}");
+                    "Invalid Boolean setting value.");
 
     private static double ParseDouble(string? value, double fallback) =>
         string.IsNullOrWhiteSpace(value)
@@ -609,7 +657,7 @@ internal static class CliApplication
                 ? parsed
                 : throw new CliConfigurationException(
                     "CONFIG_NUMBER_INVALID",
-                    $"Invalid numeric setting value: {value}");
+                    "Invalid numeric setting value.");
 
     private static int ParsePositiveInteger(string? value, int fallback) =>
         string.IsNullOrWhiteSpace(value)
@@ -618,7 +666,7 @@ internal static class CliApplication
                 ? parsed
                 : throw new CliConfigurationException(
                     "CONFIG_INTEGER_INVALID",
-                    $"Invalid positive integer setting value: {value}");
+                    "Invalid positive integer setting value.");
 
     private static GoogleAuthenticationMode ParseAuthenticationMode(
         string? value,
@@ -633,7 +681,7 @@ internal static class CliApplication
             ? mode
             : throw new CliConfigurationException(
                 "CONFIG_AUTHENTICATION_MODE_INVALID",
-                $"Unsupported GoogleApi:AuthenticationMode: {value}");
+                "Unsupported GoogleApi:AuthenticationMode.");
     }
 
     private static string? GetString(JsonElement element, string propertyName) =>
@@ -648,52 +696,89 @@ internal static class CliApplication
 internal sealed class StructuredPublisherLogger : IPublisherLogger
 {
     private readonly string sessionId;
+    private readonly string command;
+    private string phase;
 
-    internal StructuredPublisherLogger(string sessionId)
+    internal StructuredPublisherLogger(string sessionId, string command)
     {
         this.sessionId = sessionId;
+        this.command = command;
+        phase = "session";
     }
 
     public void Warning(string code, string message) =>
-        Write("warning", code, message, null);
+        Write("warning", code, message, WarningPhase(code), WarningOperation(code), null);
 
-    internal void Info(string code, string message) =>
-        Write("info", code, message, null);
+    internal void SessionStarted() =>
+        Write(
+            "info",
+            "SESSION_STARTED",
+            "Publisher diagnostic session started.",
+            "session",
+            "initialize",
+            null);
+
+    internal void CommandStarted() =>
+        Write("info", "COMMAND_STARTED", "Publisher command started.", CommandPhase(), FirstOperation(), null);
+
+    internal void CommandFinished(CliResult result) =>
+        Write(
+            result.Succeeded ? "info" : "error",
+            result.Succeeded ? "COMMAND_COMPLETED" : "COMMAND_FAILED",
+            result.Succeeded ? "Publisher command completed." : "Publisher command failed.",
+            SummaryPhase(),
+            "summary",
+            null);
+
+    internal void Info(string code, string message, string phase, string operation) =>
+        Write("info", code, message, phase, operation, null);
 
     internal void PublishPlan(string code, CompiledDocument document) =>
-        Write("info", code, "Local publish plan compiled.", new Dictionary<string, object?>
+        Write("info", code, "Local publish plan compiled.", "planner", "plan", new Dictionary<string, object?>
         {
-            ["title"] = document.Title,
             ["stepCount"] = document.Steps.Count,
         });
 
     internal void DiffSummary(CompiledDocument before, CompiledDocument after) =>
-        Write("info", "DIFF_SUMMARY", "Local diff summary compiled.", new Dictionary<string, object?>
+        Write("info", "DIFF_SUMMARY", "Local diff summary compiled.", "verification", "diff", new Dictionary<string, object?>
         {
-            ["beforeTitle"] = before.Title,
-            ["afterTitle"] = after.Title,
             ["beforeStepCount"] = before.Steps.Count,
             ["afterStepCount"] = after.Steps.Count,
             ["stepDelta"] = after.Steps.Count - before.Steps.Count,
         });
 
     internal void Summary(CliResult result, TimeSpan elapsed) =>
-        Write(result.Succeeded ? "info" : "error", result.Code, result.Message, new Dictionary<string, object?>
+        Write(result.Succeeded ? "info" : "error", result.Code, result.Message, SummaryPhase(), "summary", new Dictionary<string, object?>
         {
             ["exitCode"] = result.ExitCode,
             ["classification"] = result.Classification.ToString(),
             ["elapsedMilliseconds"] = (long)elapsed.TotalMilliseconds,
+            ["exceptionType"] = result.ExceptionType,
             ["documentId"] = result.DocumentId,
             ["documentUrl"] = result.DocumentUrl,
         });
 
-    private void Write(string level, string code, string message, Dictionary<string, object?>? values)
+    internal void SetContext(string phase, string operation)
+    {
+        this.phase = phase;
+    }
+
+    private void Write(
+        string level,
+        string code,
+        string message,
+        string phase,
+        string operation,
+        Dictionary<string, object?>? values)
     {
         var payload = new Dictionary<string, object?>
         {
             ["timestampUtc"] = DateTimeOffset.UtcNow.ToString("O", CultureInfo.InvariantCulture),
             ["level"] = level,
             ["sessionId"] = sessionId,
+            ["command"] = command,
+            ["phase"] = phase,
+            ["operation"] = operation,
             ["code"] = code,
             ["message"] = message,
         };
@@ -710,6 +795,46 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
 
         Console.Error.WriteLine(JsonSerializer.Serialize(payload));
     }
+
+    private string CommandPhase() => command switch
+    {
+        "publish" => "publish",
+        "verify" => "verify",
+        "dry-run" => "planner",
+        "diff" => "verification",
+        _ => "cli",
+    };
+
+    private string FirstOperation() => command switch
+    {
+        "none" or "help" => "help",
+        "unknown" => "usage",
+        _ => "validateArguments",
+    };
+
+    private string SummaryPhase() => command switch
+    {
+        _ when phase == "cli" => "cli",
+        "publish" => "publish",
+        "verify" => "verify",
+        "dry-run" => "planner",
+        "diff" => "verification",
+        "none" or "help" or "unknown" => "cli",
+        _ => phase,
+    };
+
+    private static string WarningPhase(string code) => code switch
+    {
+        PublishErrorCodes.ImageAltTextUpdateFailed or PublishErrorCodes.ImageTempFileDeleteFailed => "executor",
+        _ => "diagnostic",
+    };
+
+    private static string WarningOperation(string code) => code switch
+    {
+        PublishErrorCodes.ImageAltTextUpdateFailed => "insertImage",
+        PublishErrorCodes.ImageTempFileDeleteFailed => "cleanupTemporaryImage",
+        _ => "summary",
+    };
 }
 
 internal sealed class CliConfigurationException : Exception
@@ -745,7 +870,8 @@ internal sealed record CliResult(
     string Message,
     ErrorClassification Classification,
     string? DocumentId,
-    string? DocumentUrl)
+    string? DocumentUrl,
+    string? ExceptionType)
 {
     internal bool Succeeded => ExitCode == 0;
 
@@ -754,14 +880,15 @@ internal sealed record CliResult(
         string message,
         string? documentId = null,
         string? documentUrl = null) =>
-        new(0, code, message, ErrorClassification.None, documentId, documentUrl);
+        new(0, code, message, ErrorClassification.None, documentId, documentUrl, null);
 
     internal static CliResult Failure(
         int exitCode,
         string code,
         string message,
-        ErrorClassification classification) =>
-        new(exitCode, code, message, classification, null, null);
+        ErrorClassification classification,
+        string? exceptionType = null) =>
+        new(exitCode, code, message, classification, null, null, exceptionType);
 }
 
 internal enum ErrorClassification

@@ -184,7 +184,8 @@ public sealed class PublishPlanExecutorTests
         Assert.Equal(8, client.InsertedImage?.Index);
         Assert.Equal(10, client.Applied[1][0].StartIndex);
         Assert.Contains(logger.Warnings, warning =>
-            warning.Code == PublishErrorCodes.ImageAltTextUpdateFailed);
+            warning.Code == PublishErrorCodes.ImageAltTextUpdateFailed &&
+            warning.Message == "Google Docs image insertion cannot set alt text; alt text remains in the publish model only.");
     }
 
     [Fact]
@@ -254,7 +255,8 @@ public sealed class PublishPlanExecutorTests
 
         Assert.Equal(PublishErrorCodes.ImageInsertFailed, exception.Code);
         Assert.Contains(logger.Warnings, warning =>
-            warning.Code == PublishErrorCodes.ImageTempFileDeleteFailed);
+            warning.Code == PublishErrorCodes.ImageTempFileDeleteFailed &&
+            warning.Message == "Temporary image cleanup failed.");
     }
 
     [Fact]

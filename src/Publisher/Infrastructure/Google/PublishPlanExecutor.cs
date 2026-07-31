@@ -180,7 +180,7 @@ public sealed class PublishPlanExecutor : IPublishPlanExecutor
             {
                 logger.Warning(
                     PublishErrorCodes.ImageAltTextUpdateFailed,
-                    "Google Docs InsertInlineImageRequest cannot set Title or Description; Alt Text remains in the publish model only.");
+                    "Google Docs image insertion cannot set alt text; alt text remains in the publish model only.");
             }
 
             return inserted.ParagraphEndIndex is > 0 and var followingIndex &&
@@ -208,7 +208,7 @@ public sealed class PublishPlanExecutor : IPublishPlanExecutor
                 {
                     logger.Warning(
                         PublishErrorCodes.ImageTempFileDeleteFailed,
-                        "Temporary Drive image cleanup failed.");
+                        "Temporary image cleanup failed.");
                     if (primaryException is null)
                     {
                         throw;

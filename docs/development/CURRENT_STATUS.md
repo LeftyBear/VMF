@@ -26,6 +26,7 @@ modify Frozen specifications.
 | Frozen specifications | Unchanged |
 | Public APIs | Unchanged |
 | Production design | Unchanged |
+| Phase 4-2-1 diagnostic logging | Done as local-only implementation; release state unchanged |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -37,6 +38,7 @@ antivirus vendor clearance.
 
 The completed local-only safety scope covers:
 
+- Phase 4-2-1 diagnostic logging implementation and review;
 - Build;
 - Unit tests;
 - Non-live integration tests;

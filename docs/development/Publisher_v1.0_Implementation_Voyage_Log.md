@@ -854,6 +854,58 @@ phase.
 | `git diff --check` | PASS |
 | Frozen specification changes | None |
 
+## Phase 4-2-1: Diagnostic Logging Specification, Implementation, And Review
+
+Status: DONE as local-only Phase 4 implementation.
+
+Phase 4-2-1 standardized Publisher CLI diagnostic logging without changing
+Frozen specifications, public APIs, persisted schemas, canonical formats,
+release artifacts, Live E2E behavior, Google Docs, Google Drive, or the
+Avast-pending package state.
+
+### Implemented behavior
+
+- Added required structured log fields: `timestampUtc`, `level`, `sessionId`,
+  `command`, `phase`, `operation`, `code`, and `message`.
+- Changed `SESSION_STARTED` to the command-independent message
+  `Publisher diagnostic session started.`
+- Added `COMMAND_STARTED`, `COMMAND_COMPLETED`, and `COMMAND_FAILED`
+  lifecycle events.
+- Preserved existing summary result codes and publish success
+  `documentId` / `documentUrl` compatibility.
+- Replaced external exception message exposure with classified safe messages
+  and optional simple `exceptionType`.
+- Removed local path and invalid setting value echo from diagnostic summaries.
+- Normalized image warning messages while preserving existing warning codes and
+  the `IPublisherLogger.Warning(string code, string message)` public contract.
+
+### Release notes draft
+
+Publisher Phase 4-2-1 improves local CLI diagnostic logs for troubleshooting
+and evidence capture. Structured stderr logs now include command, phase, and
+operation context plus command lifecycle events. Failure summaries use stable
+safe messages instead of raw external exception messages, and image warning
+messages are normalized without changing public APIs or live publish defaults.
+
+This is local implementation work only. It does not approve a release, create
+or update packages, execute Live E2E, mutate Google Docs or Google Drive, or
+change the Avast release-gate status.
+
+### Automated evidence
+
+| Check | Result |
+|---|---|
+| Focused Publisher Unit Tests | PASS - 22/22 |
+| Publisher Unit Tests | PASS - 467/467 |
+| Publisher Integration Tests | PASS - 16/16, non-live |
+| Release solution build | PASS - 0 warnings, 0 errors |
+| `dotnet format --verify-no-changes` | PASS |
+| `git diff --check` | PASS |
+| Frozen specification changes | None |
+| Public API changes | None |
+| Live E2E / Google Docs / Google Drive mutation | Not executed |
+| Release package / dist / tag / publication | Not changed |
+
 ## Phase 3-2D: Update Execution Transaction and Recovery Decisions
 
 ### Scope
