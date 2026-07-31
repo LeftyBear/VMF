@@ -1,27 +1,27 @@
 # Publisher Phase 3-10 Release Gate Checklist
 
-Status  : RELEASE EXECUTION EVIDENCE RECORDED
+Status  : RELEASE COMPLETE
 Scope   : Post Phase 3-10 release gate approval checklist
 Depends : docs/development/Publisher_Phase3-9_ReleaseApprovalPackage.md, docs/distribution/ReleaseChecklist.md, docs/releases/Publisher_Phase3-10_ReleaseNotes.md
 
 This checklist controls the handoff from the Phase 3-9 release approval package
-to any later release, tag, or publication action. It is local-only
-documentation. It records the approved Phase 3-10 release execution evidence.
-It does not create tags, publish artifacts, announce a release, change
+to the completed Phase 3-10 prerelease publication. It is local-only
+documentation. It records the approved Phase 3-10 release execution and
+GitHub Release completion evidence. It does not recreate packages, change
 production behavior, change public APIs, or modify Frozen specifications.
 
 ## 1. Gate Status
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| Current release approval state | EVIDENCE RECORDED | `docs/distribution/ReleaseChecklist.md` and repository-owner Phase 3-10 execution instruction |
+| Current release approval state | COMPLETE | GitHub Release `vmf-publisher-v0.0.0-dev` published at https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.0-dev |
 | Blocking condition | RESOLVED FOR THIS RUN | Repository owner instructed Codex to treat the Avast blocker as resolved on 2026-07-31 |
 | Release approval package baseline | RECORDED | Commit `22359dd` |
-| Release execution | AUTHORIZED / EXECUTED LOCALLY | Release checks, Live E2E, package creation, package verification, and evidence updates executed on 2026-07-31 |
+| Release execution | COMPLETE | Release checks, Live E2E, package creation, package verification, tag, and GitHub Release publication completed on 2026-07-31 |
 
 The Phase 3-9 release readiness evidence remains recorded. The Phase 3-10 run
-adds current build, test, Live E2E, package, and artifact-hash evidence without
-creating a tag or publishing a GitHub Release.
+adds current build, test, Live E2E, package, artifact-hash, tag, and GitHub
+Release publication evidence.
 
 ## 2. Required Approvals
 
@@ -54,8 +54,9 @@ If any precondition is not confirmed, stop before release execution.
 
 The following actions remain blocked unless separately authorized:
 
-- tag creation;
-- publication;
+- tag modification or recreation;
+- package recreation or replacement;
+- GitHub Release modification;
 - release announcement;
 - production behavior changes;
 - public API, schema, or canonical-format changes;
@@ -77,11 +78,15 @@ scope:
   `GoogleDocsEndToEndIntegrationTests` cases;
 - package creation for `0.0.0-dev`;
 - package verification and artifact hash recording;
+- tag `vmf-publisher-v0.0.0-dev` targeting
+  `44eafdb121da56c624ec53b8decdb21fb730df66`;
+- GitHub prerelease publication:
+  https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.0-dev;
 - release notes, changelog, and checklist evidence updates.
 
-No tag, publication, GitHub Release, release announcement, Frozen-specification
-change, public API change, schema change, canonical-format change, or
-production-behavior change was executed.
+No package recreation, package replacement, GitHub Release modification,
+release announcement, Frozen-specification change, public API change, schema
+change, canonical-format change, or production-behavior change was executed.
 
 ## 6. Avast Resolution Condition
 
@@ -113,8 +118,8 @@ false-positive submission alone does not close this blocker.
 10. Run Live E2E only if explicitly enabled and scoped for that run.
 11. Record post-release verification and final release notes confirmation.
 
-Phase 3-10 executed steps 1 through 7 and step 10 for the explicitly scoped
-Live E2E run. Tag creation, publication, and announcement were not executed.
+Phase 3-10 executed steps 1 through 10 for the explicitly scoped release and
+Live E2E run. Release announcement was not executed.
 
 ### 7.2 Pre-Execution Confirmation
 
@@ -151,6 +156,12 @@ After execution, record:
 | Package creation | PASS | `dist\release\Publisher\vmf-publisher-0.0.0-dev-win-x64.zip`; size 973097 bytes |
 | Package verification | PASS | `tools\publisher\verify-package.ps1`; package verification passed |
 | Artifact SHA-256 | PASS | `404F6D4B382132802CEF5F42A00A6B53E7C7177E3ABFC56C3DD518DE435C7742` |
+| Release status | PASS | COMPLETE |
+| Release URL | PASS | https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.0-dev |
+| Release tag | PASS | `vmf-publisher-v0.0.0-dev` |
+| Target commit | PASS | `44eafdb121da56c624ec53b8decdb21fb730df66` |
+| GitHub Release state | PASS | Prerelease `true`; draft `false`; latest `false` |
+| Release asset | PASS | `vmf-publisher-0.0.0-dev-win-x64.zip`; size 973097 bytes; SHA-256 `404F6D4B382132802CEF5F42A00A6B53E7C7177E3ABFC56C3DD518DE435C7742` |
 
 ## 8. Rollback And Stop Conditions
 
@@ -173,12 +184,12 @@ any of these conditions appears:
 
 ## 9. Explicit Non-Actions For This Checklist
 
-This Phase 3-10 evidence update does not:
+This Phase 3-10 completion record does not:
 
-- create a release tag;
-- publish distribution artifacts;
+- recreate, move, or retarget a release tag;
+- recreate, update, or replace distribution artifacts;
 - announce a release;
-- publish a GitHub Release;
+- modify a GitHub Release;
 - mutate Google Docs or Google Drive beyond the explicitly authorized Live E2E
   test scope;
 - use or modify credentials, token stores, or live external resources;

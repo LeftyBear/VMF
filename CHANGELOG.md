@@ -9,6 +9,7 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Changed
 
 - Updated Publisher Phase 3-10 release evidence after repository-owner release execution approval, including synchronized `main` / `origin/main`, Avast blocker resolution, Release build/test, Live E2E, package verification, and artifact hash records.
+- Recorded Publisher Phase 3-10 release completion for GitHub prerelease `vmf-publisher-v0.0.0-dev`, including target commit, release URL, asset size, and SHA-256.
 
 ---
 

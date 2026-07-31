@@ -4,13 +4,13 @@ Date: 2026-07-31
 
 ## Scope
 
-Phase 3-10 executes the repository-owner approved Publisher release gate after
+Phase 3-10 completed the repository-owner approved Publisher release gate after
 Phase 3-9 release readiness evidence was recorded. This phase preserves Frozen
 specifications, public APIs, schemas, canonical formats, and production
 behavior.
 
-This phase does not create tags, publish GitHub Releases, announce public
-distribution, or change package trust posture.
+This phase published the selected Publisher package as a GitHub prerelease. It
+does not announce public distribution or change package trust posture.
 
 ## Release Gate Status
 
@@ -18,8 +18,13 @@ distribution, or change package trust posture.
   owner on 2026-07-31.
 - The Avast blocker is treated as resolved for this release execution and is
   recorded in `docs/distribution/ReleaseChecklist.md`.
-- Release tags, GitHub Release publication, and release announcement remain
-  unexecuted and require separate authorization.
+- Release status: COMPLETE.
+- Release URL:
+  https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.0-dev
+- Tag: `vmf-publisher-v0.0.0-dev`.
+- Target commit: `44eafdb121da56c624ec53b8decdb21fb730df66`.
+- GitHub Release state: prerelease `true`; draft `false`; latest `false`.
+- Release announcement remains unexecuted and requires separate authorization.
 - Google Live E2E was explicitly enabled for the approved run and passed the
   Success, Revision Conflict, Readback Mismatch, and Empty Plan cases.
 
@@ -34,15 +39,17 @@ configuration exclusion, and no VirusTotal detection at the time of the Phase
 The selected Phase 3-10 package artifact is:
 
 - `dist\release\Publisher\vmf-publisher-0.0.0-dev-win-x64.zip`
+- Release asset: `vmf-publisher-0.0.0-dev-win-x64.zip`
 - SHA-256:
   `404F6D4B382132802CEF5F42A00A6B53E7C7177E3ABFC56C3DD518DE435C7742`
 - Size: 973097 bytes
 
 ## Phase 4 Entry Conditions
 
-Phase 4 may proceed only after the Phase 3-10 release execution records remain
-reviewed and no separate tag, publication, production-behavior, public-API, or
-Frozen-specification change is inferred from this evidence update.
+Phase 4 may proceed only after the Phase 3-10 release completion records remain
+reviewed and no separate tag retargeting, package replacement, GitHub Release
+modification, production-behavior, public-API, or Frozen-specification change
+is inferred from this evidence update.
 
 Phase 4 work must preserve Frozen specifications, public APIs, persisted
 schemas, canonical formats, production defaults, package artifacts, and release
