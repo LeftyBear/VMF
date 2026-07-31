@@ -1,29 +1,27 @@
 # Publisher Phase 3-10 Release Gate Checklist
 
-Status  : BLOCKED / PENDING
+Status  : RELEASE EXECUTION EVIDENCE RECORDED
 Scope   : Post Phase 3-10 release gate approval checklist
 Depends : docs/development/Publisher_Phase3-9_ReleaseApprovalPackage.md, docs/distribution/ReleaseChecklist.md, docs/releases/Publisher_Phase3-10_ReleaseNotes.md
 
 This checklist controls the handoff from the Phase 3-9 release approval package
 to any later release, tag, or publication action. It is local-only
-documentation. It does not approve a release, create tags, publish artifacts,
-create or update packages, execute Live E2E, mutate Google Docs or Google
-Drive, re-run the Avast-flagged executable, change production behavior, change
-public APIs, or modify Frozen specifications.
+documentation. It records the approved Phase 3-10 release execution evidence.
+It does not create tags, publish artifacts, announce a release, change
+production behavior, change public APIs, or modify Frozen specifications.
 
 ## 1. Gate Status
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| Current release approval state | BLOCKED / PENDING | `docs/distribution/ReleaseChecklist.md` and `docs/development/Publisher_Phase3-9_ReleaseApprovalPackage.md` |
-| Blocking condition | PENDING | Avast false positive classification pending |
+| Current release approval state | EVIDENCE RECORDED | `docs/distribution/ReleaseChecklist.md` and repository-owner Phase 3-10 execution instruction |
+| Blocking condition | RESOLVED FOR THIS RUN | Repository owner instructed Codex to treat the Avast blocker as resolved on 2026-07-31 |
 | Release approval package baseline | RECORDED | Commit `22359dd` |
-| Release execution | NOT AUTHORIZED | Requires explicit repository-owner approval after the blocker is resolved or accepted |
+| Release execution | AUTHORIZED / EXECUTED LOCALLY | Release checks, Live E2E, package creation, package verification, and evidence updates executed on 2026-07-31 |
 
-The Phase 3-9 release readiness evidence remains recorded, but the package must
-not be treated as production-approved while the Avast false positive
-classification remains pending unless the repository owner explicitly accepts
-the antivirus exception posture as the release approval basis.
+The Phase 3-9 release readiness evidence remains recorded. The Phase 3-10 run
+adds current build, test, Live E2E, package, and artifact-hash evidence without
+creating a tag or publishing a GitHub Release.
 
 ## 2. Required Approvals
 
@@ -41,61 +39,56 @@ All preconditions must be confirmed immediately before release execution:
 
 | Precondition | Required state |
 | --- | --- |
-| Local-only verification | PASS |
-| Working tree | Clean |
-| `origin/main` | Synchronized with local `main` |
+| Local and Live E2E verification | PASS |
+| Working tree before execution | Clean |
+| `origin/main` | Synchronized with local `main` at `59116070f3258e4eb88201195994fb7267fdb9bb` |
 | Phase 3-9 release approval package | Reviewed |
-| Avast blocker | Resolved or explicitly accepted by the repository owner |
-| Release approval | Explicitly recorded by the repository owner |
+| Avast blocker | Resolved for this run by repository-owner instruction |
+| Release approval | Explicitly recorded by repository-owner Phase 3-10 execution instruction |
 | Frozen specifications | Unchanged |
 | Production behavior | Unchanged unless separately approved as release scope |
 
 If any precondition is not confirmed, stop before release execution.
 
-## 4. Blocked Actions Before Approval
+## 4. Actions Still Blocked Without Separate Approval
 
-The following actions remain blocked until the required approvals and
-preconditions are recorded:
+The following actions remain blocked unless separately authorized:
 
-- release execution;
 - tag creation;
 - publication;
-- package creation or update;
-- Live E2E;
-- Google Docs or Google Drive mutation;
 - release announcement;
-- re-running the Avast-flagged executable.
+- production behavior changes;
+- public API, schema, or canonical-format changes;
+- Frozen specification changes.
 
-Local-only documentation, consistency review, Markdown cleanup, and read-only
-Git diff inspection may continue while the gate is blocked.
+Package creation and Google Live E2E were authorized only for the Phase 3-10
+release execution evidence run.
 
 ## 5. Allowed Actions After Approval
 
-After explicit approval, the following actions may proceed only within the
-separately authorized release scope:
+The following actions were executed within the approved Phase 3-10 release
+scope:
 
-- release execution;
-- release tag creation;
-- distribution artifact publication;
-- Live E2E, if explicitly enabled for that run;
-- release notes final confirmation;
-- post-release verification and decision record update.
+- `git fetch origin main` and `main` / `origin/main` synchronization check;
+- `dotnet clean VMF.Publisher.sln --configuration Release`;
+- `dotnet build VMF.Publisher.sln --configuration Release`;
+- `dotnet test VMF.Publisher.sln --configuration Release`;
+- Google Live E2E with `VMF_PUBLISHER_GOOGLE_E2E=1` for the four
+  `GoogleDocsEndToEndIntegrationTests` cases;
+- package creation for `0.0.0-dev`;
+- package verification and artifact hash recording;
+- release notes, changelog, and checklist evidence updates.
 
-Each action still requires the normal release safeguards. Approval to release
-does not automatically authorize Live E2E, Google Docs or Drive mutation, or a
-package rebuild unless those actions are explicitly included.
+No tag, publication, GitHub Release, release announcement, Frozen-specification
+change, public API change, schema change, canonical-format change, or
+production-behavior change was executed.
 
 ## 6. Avast Resolution Condition
 
-The Avast pending blocker can be closed only by recording one of these outcomes:
+The Avast pending blocker was closed for this run by this recorded outcome:
 
-- Avast confirms the package or executable is not malicious, and the repository
-  owner approves release continuation;
-- Avast continues to classify the executable as unsafe, and the repository
-  owner rejects release continuation or requires remediation;
-- the repository owner explicitly accepts the antivirus exception posture
-  without waiting further and records that decision as the release approval
-  basis.
+- the repository owner instructed Codex to treat the Avast blocker as resolved
+  for Phase 3-10 Release Execution on 2026-07-31.
 
 VirusTotal no-detection, an Avast exception, local package verification, or a
 false-positive submission alone does not close this blocker.
@@ -120,6 +113,9 @@ false-positive submission alone does not close this blocker.
 10. Run Live E2E only if explicitly enabled and scoped for that run.
 11. Record post-release verification and final release notes confirmation.
 
+Phase 3-10 executed steps 1 through 7 and step 10 for the explicitly scoped
+Live E2E run. Tag creation, publication, and announcement were not executed.
+
 ### 7.2 Pre-Execution Confirmation
 
 Before the first release command, verify:
@@ -142,6 +138,20 @@ After execution, record:
 - any deviation from the approved release scope;
 - final working-tree and origin synchronization status.
 
+### 7.4 Phase 3-10 Execution Evidence
+
+| Item | Result | Evidence |
+| --- | --- | --- |
+| Source synchronization | PASS | `main` and `origin/main` both at `59116070f3258e4eb88201195994fb7267fdb9bb`; ahead/behind `0 0` |
+| Avast blocker | PASS | Repository-owner instruction: treat Avast blocker as resolved |
+| Clean | PASS | `dotnet clean VMF.Publisher.sln --configuration Release`; 0 warnings, 0 errors |
+| Release build | PASS | `dotnet build VMF.Publisher.sln --configuration Release`; 0 warnings, 0 errors |
+| Release tests | PASS | `dotnet test VMF.Publisher.sln --configuration Release`; integration 16/16 and unit 461/461 passed |
+| Google Live E2E | PASS | 4/4 `GoogleDocsEndToEndIntegrationTests` passed: Success, Revision Conflict, Readback Mismatch, Empty Plan |
+| Package creation | PASS | `dist\release\Publisher\vmf-publisher-0.0.0-dev-win-x64.zip`; size 973097 bytes |
+| Package verification | PASS | `tools\publisher\verify-package.ps1`; package verification passed |
+| Artifact SHA-256 | PASS | `404F6D4B382132802CEF5F42A00A6B53E7C7177E3ABFC56C3DD518DE435C7742` |
+
 ## 8. Rollback And Stop Conditions
 
 Stop before proceeding, or halt the release handoff if already in progress, when
@@ -163,19 +173,16 @@ any of these conditions appears:
 
 ## 9. Explicit Non-Actions For This Checklist
 
-This checklist creation does not:
+This Phase 3-10 evidence update does not:
 
-- approve the Phase 3-9 package release;
-- resolve the Avast false positive classification;
 - create a release tag;
 - publish distribution artifacts;
-- create, rebuild, replace, or update a package;
-- execute Live E2E;
-- mutate Google Docs or Google Drive;
+- announce a release;
+- publish a GitHub Release;
+- mutate Google Docs or Google Drive beyond the explicitly authorized Live E2E
+  test scope;
 - use or modify credentials, token stores, or live external resources;
-- re-run the Avast-flagged executable;
 - change Frozen specifications;
 - change public APIs, persisted schemas, canonical formats, or production
   behavior;
 - stage, commit, push, merge, rebase, reset, stash, or rewrite Git history.
-

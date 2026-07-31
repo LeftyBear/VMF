@@ -4,6 +4,14 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ---
 
+# 2026-07-31
+
+## Changed
+
+- Updated Publisher Phase 3-10 release evidence after repository-owner release execution approval, including synchronized `main` / `origin/main`, Avast blocker resolution, Release build/test, Live E2E, package verification, and artifact hash records.
+
+---
+
 # 2026-07-20
 
 ## Added
