@@ -1,5 +1,7 @@
 using System.Text.Json;
 using System.Reflection;
+using Vmf.Publisher.Application;
+using Vmf.Publisher.Domain;
 
 namespace Vmf.Publisher.UnitTests;
 
@@ -95,17 +97,154 @@ public sealed class CliApplicationTests
 
         var exitCode = await CliApplication.RunAsync(["publish", path], CancellationToken.None);
 
-        Assert.Equal(3, exitCode);
+        Assert.Equal(1, exitCode);
         var summary = LastJsonLine(capture.Error);
         Assert.Equal("MARKDOWN_FILE_NOT_FOUND", summary.GetProperty("code").GetString());
-        Assert.Equal("Configuration", summary.GetProperty("classification").GetString());
+        Assert.Equal("Input", summary.GetProperty("classification").GetString());
         Assert.Equal("publish", summary.GetProperty("command").GetString());
         Assert.Equal("publish", summary.GetProperty("phase").GetString());
         Assert.Equal("summary", summary.GetProperty("operation").GetString());
-        Assert.Equal("Markdown file was not found.", summary.GetProperty("message").GetString());
+        Assert.Equal("Publisher input is invalid.", summary.GetProperty("message").GetString());
         Assert.DoesNotContain(path, capture.Error, StringComparison.Ordinal);
         Assert.Contains(JsonLines(capture.Error), line =>
             line.GetProperty("code").GetString() == "COMMAND_FAILED");
+    }
+
+    [Theory]
+    [InlineData("HELP", "None", 0)]
+    [InlineData("USAGE_ERROR", "Usage", 2)]
+    [InlineData("CONFIG_TIMEOUT_INVALID", "Configuration", 3)]
+    [InlineData("MARKDOWN_EXPLICIT_ID_INVALID", "Input", 1)]
+    [InlineData("PUBLISH_FILE_NOT_FOUND", "Input", 1)]
+    [InlineData("UPDATE_READBACK_MISMATCH", "Verification", 4)]
+    [InlineData("UPDATE_READBACK_FAILED", "Verification", 4)]
+    [InlineData("UPDATE_REVISION_CONFLICT", "Verification", 4)]
+    [InlineData("STATE_VERIFICATION_MISMATCH", "Verification", 4)]
+    [InlineData("HTTP_503", "Transient", 75)]
+    [InlineData("UNKNOWN_CODE", "Internal", 1)]
+    public void ErrorMapping_StableCodesMapToClassificationAndExitCode(
+        string code,
+        string expectedClassification,
+        int expectedExitCode)
+    {
+        var classification = Classify(code);
+
+        Assert.Equal(expectedClassification, classification.ToString());
+        Assert.Equal(expectedExitCode, ExitCodeFor(classification));
+    }
+
+    [Fact]
+    public void ErrorMapping_BlankCodeFallsBackToInternal()
+    {
+        var classification = Classify("");
+
+        Assert.Equal(ErrorClassification.Internal, classification);
+        Assert.Equal(1, ExitCodeFor(classification));
+        Assert.Equal("An internal Publisher error occurred.", SafeMessage(classification));
+    }
+
+    [Fact]
+    public void StableErrorCodeValues_ArePreserved()
+    {
+        Assert.Equal("IMAGE_NOT_FOUND_AFTER_INSERT", PublishErrorCodes.ImageNotFoundAfterInsert);
+        Assert.Equal("TABLE_DIMENSION_MISMATCH", PublishErrorCodes.TableDimensionMismatch);
+        Assert.Equal("UPDATE_READBACK_MISMATCH", UpdateErrorCodes.ReadbackMismatch);
+        Assert.Equal("UPDATE_REVISION_CONFLICT", UpdateErrorCodes.RevisionConflict);
+        Assert.Equal("STATE_VERIFICATION_MISMATCH", StateErrorCodes.VerificationMismatch);
+        Assert.Equal("STATE_DOCUMENT_IDENTITY_MISMATCH", StateErrorCodes.DocumentIdentityMismatch);
+    }
+
+    [Theory]
+    [InlineData("Configuration", "Publisher configuration is invalid.")]
+    [InlineData("Input", "Publisher input is invalid.")]
+    [InlineData("Verification", "Publisher verification failed.")]
+    [InlineData("Transient", "A transient external service error occurred.")]
+    [InlineData("Canceled", "Operation was canceled.")]
+    [InlineData("Internal", "An internal Publisher error occurred.")]
+    public void SafeMessage_UsesClassificationFixedMessage(string classificationName, string expected)
+    {
+        var classification = Enum.Parse<ErrorClassification>(classificationName);
+
+        var message = SafeMessage(classification);
+
+        Assert.Equal(expected, message);
+        Assert.DoesNotContain("https://", message, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("token", message, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("secret", message, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"C:\", message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task RunAsync_CanceledReturnsExit130WithoutRawExceptionMessage()
+    {
+        using var capture = new ConsoleCapture();
+        using var cancellation = new CancellationTokenSource();
+        var path = Path.Combine(Path.GetTempPath(), $"vmf-publisher-canceled-{Guid.NewGuid():N}.md");
+        await File.WriteAllTextAsync(path, "# Title\n\nParagraph.\n");
+        cancellation.Cancel();
+
+        try
+        {
+            var exitCode = await CliApplication.RunAsync(["verify", path], cancellation.Token);
+
+            Assert.Equal(130, exitCode);
+            var summary = LastJsonLine(capture.Error);
+            Assert.Equal("CANCELED", summary.GetProperty("code").GetString());
+            Assert.Equal("Canceled", summary.GetProperty("classification").GetString());
+            Assert.Equal("Operation was canceled.", summary.GetProperty("message").GetString());
+            Assert.DoesNotContain(
+                "OperationCanceledException",
+                summary.GetProperty("message").GetString(),
+                StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public async Task PublishService_DoesNotExposeRawUnexpectedExceptionMessage()
+    {
+        var sensitiveMessage = "boom https://example.test/body C:\\secret\\file.md token=abc secret=value";
+        var service = CreatePublishService(_ => throw new InvalidOperationException(sensitiveMessage));
+
+        var result = await service.PublishAsync(new PublishRequest("input.md"), CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("PUBLISH_FAILED", result.Error?.Code);
+        Assert.Equal("Publication failed.", result.Error?.Message);
+        Assert.DoesNotContain("https://", result.Error?.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"C:\secret", result.Error?.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("token", result.Error?.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("secret", result.Error?.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task PublishService_DoesNotExposeRawStableExceptionMessage()
+    {
+        var sensitiveMessage = "readback mismatch at https://docs.example.test C:\\tmp\\doc token secret";
+        var service = CreatePublishService(_ =>
+            throw new PhysicalUpdateException(UpdateErrorCodes.ReadbackMismatch, sensitiveMessage));
+
+        var result = await service.PublishAsync(new PublishRequest("input.md"), CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(UpdateErrorCodes.ReadbackMismatch, result.Error?.Code);
+        Assert.Equal("Publisher verification failed.", result.Error?.Message);
+        Assert.DoesNotContain("https://", result.Error?.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"C:\tmp", result.Error?.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("token", result.Error?.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("secret", result.Error?.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task PublishService_RethrowsOperationCanceledException()
+    {
+        var service = CreatePublishService(_ => throw new OperationCanceledException("secret cancel message"));
+
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => service.PublishAsync(new PublishRequest("input.md"), CancellationToken.None));
     }
 
     [Fact]
@@ -164,7 +303,7 @@ public sealed class CliApplicationTests
         Assert.Equal(3, exitCode);
         var summary = LastJsonLine(capture.Error);
         Assert.Equal("CONFIG_INTEGER_INVALID", summary.GetProperty("code").GetString());
-        Assert.Equal("Invalid positive integer setting value.", summary.GetProperty("message").GetString());
+        Assert.Equal("Publisher configuration is invalid.", summary.GetProperty("message").GetString());
         Assert.DoesNotContain("secret-token", capture.Error, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(@"C:\Users\biz", capture.Error, StringComparison.OrdinalIgnoreCase);
     }
@@ -192,7 +331,7 @@ public sealed class CliApplicationTests
         var logger = new StructuredPublisherLogger("pub-test", "publish");
 
         logger.Warning(
-            Vmf.Publisher.Application.PublishErrorCodes.ImageAltTextUpdateFailed,
+            PublishErrorCodes.ImageAltTextUpdateFailed,
             "Google Docs image insertion cannot set alt text; alt text remains in the publish model only.");
 
         var warning = LastJsonLine(capture.Error);
@@ -201,7 +340,7 @@ public sealed class CliApplicationTests
         Assert.Equal("executor", warning.GetProperty("phase").GetString());
         Assert.Equal("insertImage", warning.GetProperty("operation").GetString());
         Assert.Equal(
-            Vmf.Publisher.Application.PublishErrorCodes.ImageAltTextUpdateFailed,
+            PublishErrorCodes.ImageAltTextUpdateFailed,
             warning.GetProperty("code").GetString());
         Assert.DoesNotContain("https://", capture.Error, StringComparison.OrdinalIgnoreCase);
     }
@@ -264,6 +403,42 @@ public sealed class CliApplicationTests
         }
     }
 
+    private static ErrorClassification Classify(string? code)
+    {
+        var method = typeof(CliApplication).GetMethod(
+            "Classify",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        return Assert.IsType<ErrorClassification>(method?.Invoke(null, [code]));
+    }
+
+    private static int ExitCodeFor(ErrorClassification classification)
+    {
+        var method = typeof(CliApplication).GetMethod(
+            "ExitCodeFor",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        return Assert.IsType<int>(method?.Invoke(null, [classification]));
+    }
+
+    private static string SafeMessage(ErrorClassification classification)
+    {
+        var method = typeof(CliApplication).GetMethod(
+            "SafeMessage",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        return Assert.IsType<string>(method?.Invoke(null, [classification]));
+    }
+
+    private static PublishService CreatePublishService(Func<CompiledDocument, PublishedDocument> publish)
+    {
+        return new PublishService(
+            new StubLoader(),
+            new StubParser(),
+            new StubCompiler(),
+            new StubPublisher(publish));
+    }
+
     private sealed class EnvironmentScope : IDisposable
     {
         private readonly string name;
@@ -277,6 +452,28 @@ public sealed class CliApplicationTests
         }
 
         public void Dispose() => Environment.SetEnvironmentVariable(name, originalValue);
+    }
+
+    private sealed class StubLoader : IMarkdownDocumentLoader
+    {
+        public Task<string> LoadAsync(string path, CancellationToken cancellationToken) =>
+            Task.FromResult("# Title");
+    }
+
+    private sealed class StubParser : IMarkdownParser
+    {
+        public DocumentModel Parse(string markdown) => new([]);
+    }
+
+    private sealed class StubCompiler : IDocumentCompiler
+    {
+        public CompiledDocument Compile(DocumentModel document, string title) => new(title, []);
+    }
+
+    private sealed class StubPublisher(Func<CompiledDocument, PublishedDocument> publish) : IGoogleDocsPublisher
+    {
+        public Task<PublishedDocument> PublishAsync(CompiledDocument document, CancellationToken cancellationToken) =>
+            Task.FromResult(publish(document));
     }
 
     private sealed class ConsoleCapture : IDisposable

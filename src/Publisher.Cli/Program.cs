@@ -76,11 +76,12 @@ internal static class CliApplication
         }
         catch (CliConfigurationException exception)
         {
+            var classification = Classify(exception.Code);
             var result = CliResult.Failure(
-                ExitConfiguration,
+                ExitCodeFor(classification),
                 exception.Code,
-                exception.Message,
-                ErrorClassification.Configuration);
+                SafeMessage(classification),
+                classification);
             logger.CommandFinished(result);
             logger.Summary(result, stopwatch.Elapsed);
             return result.ExitCode;
@@ -165,9 +166,9 @@ internal static class CliApplication
         {
             var classification = Classify(result.Error?.Code);
             return CliResult.Failure(
-                classification == ErrorClassification.Transient ? ExitTransient : ExitPublishFailed,
+                ExitCodeFor(classification),
                 result.Error?.Code ?? "PUBLISH_FAILED",
-                result.Error?.Message ?? "Publication failed.",
+                SafeMessage(classification),
                 classification);
         }
 
@@ -574,11 +575,20 @@ internal static class CliApplication
             return ErrorClassification.Internal;
         }
 
-        if (errorCode.Contains("TIMEOUT", StringComparison.OrdinalIgnoreCase) ||
-            errorCode.Contains("TRANSIENT", StringComparison.OrdinalIgnoreCase) ||
-            errorCode is "HTTP_429" or "HTTP_500" or "HTTP_502" or "HTTP_503" or "HTTP_504")
+        if (errorCode is "HELP" or "VERIFY_SUCCEEDED" or "DRY_RUN_SUCCEEDED" or "DIFF_SUCCEEDED" or
+            "PUBLISH_SUCCEEDED")
         {
-            return ErrorClassification.Transient;
+            return ErrorClassification.None;
+        }
+
+        if (errorCode is "USAGE_ERROR")
+        {
+            return ErrorClassification.Usage;
+        }
+
+        if (errorCode is "CANCELED")
+        {
+            return ErrorClassification.Canceled;
         }
 
         if (errorCode.StartsWith("CONFIG_", StringComparison.Ordinal))
@@ -586,14 +596,82 @@ internal static class CliApplication
             return ErrorClassification.Configuration;
         }
 
-        if (errorCode.StartsWith("MARKDOWN_", StringComparison.Ordinal) ||
-            errorCode.StartsWith("PUBLISH_INVALID_", StringComparison.Ordinal))
+        if (IsTransientCode(errorCode))
+        {
+            return ErrorClassification.Transient;
+        }
+
+        if (IsInputCode(errorCode))
         {
             return ErrorClassification.Input;
         }
 
+        if (IsVerificationCode(errorCode))
+        {
+            return ErrorClassification.Verification;
+        }
+
         return ErrorClassification.Internal;
     }
+
+    private static bool IsTransientCode(string errorCode) =>
+        errorCode.Contains("TIMEOUT", StringComparison.OrdinalIgnoreCase) ||
+        errorCode.Contains("TRANSIENT", StringComparison.OrdinalIgnoreCase) ||
+        errorCode is "HTTP_429" or "HTTP_500" or "HTTP_502" or "HTTP_503" or "HTTP_504" ||
+        errorCode is PublishErrorCodes.ImageUriResolutionFailed;
+
+    private static bool IsInputCode(string errorCode) =>
+        errorCode.StartsWith("MARKDOWN_", StringComparison.Ordinal) ||
+        errorCode.StartsWith("PUBLISH_INVALID_", StringComparison.Ordinal) ||
+        errorCode is "PUBLISH_FILE_NOT_FOUND" ||
+        errorCode is PublishErrorCodes.BlockExplicitIdDuplicate or
+            PublishErrorCodes.BlockGeneratedIdDuplicate or
+            PublishErrorCodes.ImageSourceEmpty or
+            PublishErrorCodes.ImageFileNotFound or
+            PublishErrorCodes.ImagePathInvalid or
+            PublishErrorCodes.ImageFormatNotSupported or
+            PublishErrorCodes.ImageRemoteUriInvalid or
+            PublishErrorCodes.ImageRemoteHostNotAllowed or
+            PublishErrorCodes.ImageMetadataReadFailed or
+            PublishErrorCodes.ImageSizeInvalid;
+
+    private static bool IsVerificationCode(string errorCode) =>
+        errorCode is PublishErrorCodes.ImagePublicAccessDenied or
+            PublishErrorCodes.ImageInsertFailed or
+            PublishErrorCodes.ImageNotFoundAfterInsert or
+            PublishErrorCodes.ImageAltTextUpdateFailed or
+            PublishErrorCodes.ImageFollowingIndexNotFound or
+            PublishErrorCodes.ImageTempFileDeleteFailed or
+            PublishErrorCodes.TableNotFoundAfterInsert or
+            PublishErrorCodes.TableDimensionMismatch or
+            PublishErrorCodes.TableCellIndexMissing or
+            PublishErrorCodes.TableContentUpdateFailed or
+            UpdateErrorCodes.RevisionConflict or
+            UpdateErrorCodes.ManagedRegionMismatch or
+            UpdateErrorCodes.ApplicationFailed or
+            UpdateErrorCodes.ReadbackFailed or
+            UpdateErrorCodes.ReadbackMismatch or
+            StateErrorCodes.NotFound or
+            StateErrorCodes.Corrupted or
+            StateErrorCodes.SchemaVersionUnsupported or
+            StateErrorCodes.DocumentIdentityMismatch or
+            StateErrorCodes.InvalidTransition or
+            StateErrorCodes.VerificationRequired or
+            StateErrorCodes.VerificationMismatch or
+            StateErrorCodes.SaveFailed or
+            StateErrorCodes.AlgorithmVersionUnsupported;
+
+    private static int ExitCodeFor(ErrorClassification classification) => classification switch
+    {
+        ErrorClassification.None => ExitSuccess,
+        ErrorClassification.Usage => ExitUsage,
+        ErrorClassification.Configuration => ExitConfiguration,
+        ErrorClassification.Verification => ExitVerification,
+        ErrorClassification.Transient => ExitTransient,
+        ErrorClassification.Canceled => ExitCanceled,
+        ErrorClassification.Input or ErrorClassification.Internal => ExitPublishFailed,
+        _ => ExitPublishFailed,
+    };
 
     private static bool IsTransient(Exception exception) =>
         exception is HttpRequestException
@@ -608,6 +686,10 @@ internal static class CliApplication
 
     private static string SafeMessage(ErrorClassification classification) => classification switch
     {
+        ErrorClassification.Usage => "Publisher command usage is invalid.",
+        ErrorClassification.Configuration => "Publisher configuration is invalid.",
+        ErrorClassification.Input => "Publisher input is invalid.",
+        ErrorClassification.Verification => "Publisher verification failed.",
         ErrorClassification.Transient => "A transient external service error occurred.",
         ErrorClassification.Canceled => "Operation was canceled.",
         ErrorClassification.Internal => "An internal Publisher error occurred.",
@@ -897,6 +979,7 @@ internal enum ErrorClassification
     Usage,
     Input,
     Configuration,
+    Verification,
     Transient,
     Canceled,
     Internal,

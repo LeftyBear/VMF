@@ -10,12 +10,17 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 - Added Publisher Phase 4-2-1 diagnostic logging specification, implementation
   review record, and local-only verification evidence.
+- Added Publisher Phase 4-2-2 error handling specification, final review
+  record, and local-only verification evidence.
 
 ## Changed
 
 - Standardized Publisher CLI structured diagnostic logs with command, phase,
   operation, lifecycle events, safe summary messages, and normalized warning
   messages while preserving public APIs and publish result compatibility.
+- Standardized Publisher CLI error classification, verification exit code
+  handling, cancellation exit behavior, and fixed safe failure summaries while
+  preserving public APIs and retry policy.
 
 ---
 

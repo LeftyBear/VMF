@@ -906,6 +906,69 @@ change the Avast release-gate status.
 | Live E2E / Google Docs / Google Drive mutation | Not executed |
 | Release package / dist / tag / publication | Not changed |
 
+## Phase 4-2-2: Error Handling Specification, Implementation, And Review
+
+Status: DONE as local-only Phase 4 implementation.
+
+Phase 4-2-2 standardized Publisher CLI error handling without changing Frozen
+specifications, public APIs, persisted schemas, canonical formats, retry
+policy, release artifacts, Live E2E behavior, Google Docs, Google Drive, or the
+Avast-pending package state.
+
+### Implemented behavior
+
+- Added CLI `Verification` classification and mapped it to exit code `4`.
+- Preserved exit codes `0`, `1`, `2`, `3`, `75`, and `130`.
+- Kept `Input` and `Internal` on the existing generic publish failure exit code
+  `1`.
+- Mapped unknown, blank, or missing stable codes to `Internal`.
+- Replaced publish and configuration failure summaries with
+  classification-based fixed safe messages.
+- Preserved publish success stdout and structured `documentId` / `documentUrl`
+  compatibility.
+- Preserved help / usage stderr behavior.
+- Kept `OperationCanceledException` rethrown below the CLI boundary and
+  converted to `CANCELED` / exit `130` at the CLI boundary.
+- Preserved retry policy and delivery-state retry behavior.
+
+### Release notes draft
+
+Publisher Phase 4-2-2 improves local CLI failure behavior for automation and
+support. Error summaries now use stable classifications and fixed safe messages,
+verification and readback failures return exit code `4`, cancellation returns
+exit code `130`, and unknown codes fall back to internal failure handling.
+Sensitive provider, path, token, secret, and raw exception details are not
+emitted in failure summaries.
+
+This is local implementation work only. It does not approve a release, create
+or update packages, execute Live E2E, mutate Google Docs or Google Drive, or
+change the Avast release-gate status.
+
+### Automated evidence
+
+| Check | Result |
+|---|---|
+| Focused Publisher Unit Tests | PASS - 33/33 |
+| Publisher Unit Tests | PASS - 490/490 |
+| Publisher Integration Tests | PASS - 12/12, non-live |
+| Release solution build | PASS - 0 warnings, 0 errors |
+| `dotnet format --verify-no-changes` | PASS |
+| `git diff --check` | PASS - no whitespace errors; CRLF normalization warnings only |
+| Frozen specification changes | None |
+| Public API changes | None |
+| Live E2E / Google Docs / Google Drive mutation | Not executed |
+| Release package / dist / tag / publication | Not changed |
+
+### Final review
+
+Phase 4-2-2 has no phase-specific release blocker. Continuing blockers remain
+the release gate, Live E2E authorization, Google Docs / Google Drive mutation,
+package / dist / tag / publication authorization, and the unchanged
+Avast-pending package state.
+
+vNext candidate: a separate input-specific public CLI exit code may be proposed
+in a future task, but it was not adopted in Phase 4-2-2.
+
 ## Phase 3-2D: Update Execution Transaction and Recovery Decisions
 
 ### Scope

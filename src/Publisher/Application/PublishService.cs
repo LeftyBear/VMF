@@ -79,18 +79,49 @@ public sealed class PublishService : IPublishService
         {
             throw;
         }
-        catch (FileNotFoundException exception)
+        catch (FileNotFoundException)
         {
-            return PublishResult.Failure(new PublishError("PUBLISH_FILE_NOT_FOUND", exception.Message));
+            return PublishResult.Failure(new PublishError("PUBLISH_FILE_NOT_FOUND", "Markdown file was not found."));
         }
         catch (PublishPipelineException exception)
         {
-            return PublishResult.Failure(new PublishError(exception.Code, exception.Message));
+            return PublishResult.Failure(new PublishError(exception.Code, SafeMessage(exception.Code)));
         }
-        catch (Exception exception)
+        catch (PhysicalUpdateException exception)
         {
-            return PublishResult.Failure(new PublishError("PUBLISH_FAILED", exception.Message));
+            return PublishResult.Failure(new PublishError(exception.Code, SafeMessage(exception.Code)));
         }
+        catch (StateLifecycleException exception)
+        {
+            return PublishResult.Failure(new PublishError(exception.Code, SafeMessage(exception.Code)));
+        }
+        catch (Exception)
+        {
+            return PublishResult.Failure(new PublishError("PUBLISH_FAILED", "Publication failed."));
+        }
+    }
+
+    private static string SafeMessage(string code)
+    {
+        if (code.StartsWith("MARKDOWN_", StringComparison.Ordinal) ||
+            code.StartsWith("PUBLISH_INVALID_", StringComparison.Ordinal) ||
+            code is "PUBLISH_FILE_NOT_FOUND")
+        {
+            return "Publisher input is invalid.";
+        }
+
+        if (code.StartsWith("CONFIG_", StringComparison.Ordinal))
+        {
+            return "Publisher configuration is invalid.";
+        }
+
+        if (code.StartsWith("UPDATE_", StringComparison.Ordinal) ||
+            code.StartsWith("STATE_", StringComparison.Ordinal))
+        {
+            return "Publisher verification failed.";
+        }
+
+        return "Publication failed.";
     }
 
     private async Task<Domain.DocumentModel> PrepareImagesAsync(
