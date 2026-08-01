@@ -8,6 +8,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added Publisher Phase 4-3 release-readiness review records covering release
+  readiness, release candidate verification, artifact audit, security and
+  supply-chain review, and go/no-go state; Phase 4-3 is Done with an overall
+  `DEFERRED` release decision.
 - Added Publisher Phase 4-2-1 diagnostic logging specification, implementation
   review record, and local-only verification evidence.
 - Added Publisher Phase 4-2-2 error handling specification, final review
@@ -17,6 +21,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Synchronized Publisher current status and voyage log to keep local-only
+  verification completion separate from release readiness, with Avast handling,
+  Live E2E, artifact generation/audit, and release approval recorded as
+  unresolved conditions.
 - Standardized Publisher CLI structured diagnostic logs with command, phase,
   operation, lifecycle events, safe summary messages, and normalized warning
   messages while preserving public APIs and publish result compatibility.
