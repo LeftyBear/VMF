@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using Vmf.Publisher.Application;
 using Vmf.Publisher.Domain;
@@ -184,23 +185,48 @@ internal static class CliApplication
         StructuredPublisherLogger logger,
         CancellationToken cancellationToken)
     {
+        var report = LocalVerifyReportBuilder.Start();
         logger.SetContext("verify", "validateArguments");
         if (arguments.Length > 2)
         {
-            return UsageFailure(logger, "verify accepts zero or one Markdown file path.");
+            var result = UsageFailure(logger, "verify accepts zero or one Markdown file path.");
+            logger.LocalVerifyReport(report.Fail(
+                result,
+                "arguments",
+                result.Code,
+                result.Message));
+            return result;
         }
 
-        logger.SetContext("verify", "loadSettings");
-        var settings = LoadSettings(requireGooglePublishSettings: false);
-        if (arguments.Length == 2)
+        try
         {
-            ValidateMarkdownPath(arguments[1]);
-            logger.SetContext("verify", "compile");
-            await CompileAsync(arguments[1], settings.Publisher, cancellationToken).ConfigureAwait(false);
-        }
+            logger.SetContext("verify", "loadSettings");
+            var settings = LoadSettings(requireGooglePublishSettings: false);
+            report.PassConfiguration(settings);
+            if (arguments.Length == 2)
+            {
+                ValidateMarkdownPath(arguments[1]);
+                logger.SetContext("verify", "compile");
+                await CompileAsync(arguments[1], settings.Publisher, cancellationToken).ConfigureAwait(false);
+                report.PassMarkdownCompilation();
+            }
 
-        logger.Info("CONFIGURATION_VALID", "Configuration validation succeeded.", "verify", "summary");
-        return CliResult.Success("VERIFY_SUCCEEDED", "Verification succeeded.");
+            logger.Info("CONFIGURATION_VALID", "Configuration validation succeeded.", "verify", "summary");
+            var result = CliResult.Success("VERIFY_SUCCEEDED", "Verification succeeded.");
+            logger.LocalVerifyReport(report.Succeed(result));
+            return result;
+        }
+        catch (CliConfigurationException exception)
+        {
+            var classification = Classify(exception.Code);
+            var result = CliResult.Failure(
+                ExitCodeFor(classification),
+                exception.Code,
+                SafeMessage(classification),
+                classification);
+            logger.LocalVerifyReport(report.Fail(result, report.CurrentCheck, exception.Code, result.Message));
+            throw;
+        }
     }
 
     private static async Task<CliResult> DryRunAsync(
@@ -840,6 +866,9 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             ["documentUrl"] = result.DocumentUrl,
         });
 
+    internal void LocalVerifyReport(LocalVerifyReport report) =>
+        Write("info", "LOCAL_VERIFY_REPORT", "Local verify report generated.", "verify", "report", report.ToPayload());
+
     internal void SetContext(string phase, string operation)
     {
         this.phase = phase;
@@ -983,6 +1012,205 @@ internal enum ErrorClassification
     Transient,
     Canceled,
     Internal,
+}
+
+internal sealed class LocalVerifyReportBuilder
+{
+    private readonly List<LocalVerifyCheck> checks =
+    [
+        LocalVerifyCheck.Skipped("configuration", "Configuration was not evaluated."),
+        LocalVerifyCheck.Skipped("markdownCompilation", "No Markdown file argument was provided."),
+        LocalVerifyCheck.Passed("localOnlyBoundary", "Local-only verification boundary was enforced."),
+        LocalVerifyCheck.Skipped("liveE2E", "Live E2E is excluded from Local Verify success criteria."),
+        LocalVerifyCheck.Skipped("package", "Package operations are excluded from Local Verify success criteria."),
+        LocalVerifyCheck.Skipped("release", "Release operations are excluded from Local Verify success criteria."),
+        LocalVerifyCheck.Skipped("publication", "Publication is excluded from Local Verify success criteria."),
+    ];
+
+    private readonly Dictionary<string, object?> configuration = new()
+    {
+        ["googlePublishSettingsRequired"] = false,
+        ["localOnly"] = true,
+        ["liveE2EIncludedInSuccessCriteria"] = false,
+        ["packageIncludedInSuccessCriteria"] = false,
+        ["releaseIncludedInSuccessCriteria"] = false,
+        ["publicationIncludedInSuccessCriteria"] = false,
+    };
+
+    internal string CurrentCheck { get; private set; } = "configuration";
+
+    internal static LocalVerifyReportBuilder Start() => new();
+
+    internal void PassConfiguration(PublisherCliSettings settings)
+    {
+        SetCheck(LocalVerifyCheck.Passed("configuration", "Configuration validation succeeded."));
+        configuration["authenticationMode"] = settings.Google.AuthenticationMode.ToString();
+        configuration["allowTemporaryPublicImageHosting"] = settings.Publisher.AllowTemporaryPublicImageHosting;
+        configuration["allowImageUpscale"] = settings.Publisher.AllowImageUpscale;
+        configuration["imageMaxWidthPoints"] = settings.Publisher.ImageMaxWidthPoints;
+        configuration["operationTimeoutSeconds"] = settings.Cli.OperationTimeoutSeconds;
+        configuration["httpTimeoutSeconds"] = settings.Cli.HttpTimeoutSeconds;
+        CurrentCheck = "markdownCompilation";
+    }
+
+    internal void PassMarkdownCompilation()
+    {
+        SetCheck(LocalVerifyCheck.Passed("markdownCompilation", "Markdown compilation succeeded."));
+    }
+
+    internal LocalVerifyReport Succeed(CliResult result) =>
+        Build("PASS", result);
+
+    internal LocalVerifyReport Fail(CliResult result, string checkName, string failureCode, string safeSummary)
+    {
+        SetCheck(LocalVerifyCheck.Failed(checkName, failureCode, safeSummary));
+        return Build("FAIL", result);
+    }
+
+    private LocalVerifyReport Build(string overallResult, CliResult result) =>
+        new(
+            DateTimeOffset.UtcNow.ToString("O", CultureInfo.InvariantCulture),
+            overallResult,
+            result.ExitCode,
+            result.Code,
+            result.Message,
+            checks,
+            configuration,
+            LocalVerifyEnvironment.Current(),
+            LocalVerifyConstraints.Current());
+
+    private void SetCheck(LocalVerifyCheck check)
+    {
+        for (var index = 0; index < checks.Count; index++)
+        {
+            if (string.Equals(checks[index].Name, check.Name, StringComparison.Ordinal))
+            {
+                checks[index] = check;
+                return;
+            }
+        }
+    }
+}
+
+internal sealed record LocalVerifyReport(
+    string ExecutedAtUtc,
+    string OverallResult,
+    int ExitCode,
+    string Code,
+    string SafeSummary,
+    IReadOnlyList<LocalVerifyCheck> Checks,
+    IReadOnlyDictionary<string, object?> Configuration,
+    LocalVerifyEnvironment Environment,
+    LocalVerifyConstraints Constraints)
+{
+    internal Dictionary<string, object?> ToPayload() => new()
+    {
+        ["reportType"] = "localVerify",
+        ["schemaVersion"] = 1,
+        ["executedAtUtc"] = ExecutedAtUtc,
+        ["overallResult"] = OverallResult,
+        ["exitCode"] = ExitCode,
+        ["resultCode"] = Code,
+        ["safeSummary"] = SafeSummary,
+        ["checks"] = Checks.Select(check => check.ToPayload()).ToArray(),
+        ["configuration"] = Configuration,
+        ["environment"] = Environment.ToPayload(),
+        ["constraints"] = Constraints.ToPayload(),
+    };
+}
+
+internal sealed record LocalVerifyCheck(
+    string Name,
+    string Status,
+    string? FailureCode,
+    string SafeSummary)
+{
+    internal static LocalVerifyCheck Passed(string name, string safeSummary) =>
+        new(name, "PASS", null, safeSummary);
+
+    internal static LocalVerifyCheck Failed(string name, string failureCode, string safeSummary) =>
+        new(name, "FAIL", failureCode, safeSummary);
+
+    internal static LocalVerifyCheck Skipped(string name, string safeSummary) =>
+        new(name, "SKIPPED", null, safeSummary);
+
+    internal Dictionary<string, object?> ToPayload()
+    {
+        var payload = new Dictionary<string, object?>
+        {
+            ["name"] = Name,
+            ["status"] = Status,
+            ["safeSummary"] = SafeSummary,
+        };
+        if (FailureCode is not null)
+        {
+            payload["failureCode"] = FailureCode;
+        }
+
+        return payload;
+    }
+}
+
+internal sealed record LocalVerifyEnvironment(
+    string DotNetRuntime,
+    string OsDescription,
+    string OsArchitecture,
+    string ProcessArchitecture)
+{
+    internal static LocalVerifyEnvironment Current() =>
+        new(
+            RuntimeInformation.FrameworkDescription,
+            RuntimeInformation.OSDescription,
+            RuntimeInformation.OSArchitecture.ToString(),
+            RuntimeInformation.ProcessArchitecture.ToString());
+
+    internal Dictionary<string, object?> ToPayload() => new()
+    {
+        ["dotNetRuntime"] = DotNetRuntime,
+        ["osDescription"] = OsDescription,
+        ["osArchitecture"] = OsArchitecture,
+        ["processArchitecture"] = ProcessArchitecture,
+    };
+}
+
+internal sealed record LocalVerifyConstraints(
+    bool LocalOnly,
+    bool LiveE2EIncludedInSuccessCriteria,
+    bool PackageIncludedInSuccessCriteria,
+    bool ReleaseIncludedInSuccessCriteria,
+    bool PublicationIncludedInSuccessCriteria,
+    string LiveE2EStatus,
+    string GoogleDocsDriveMutationStatus,
+    string PackageStatus,
+    string ReleaseStatus,
+    string PublicationStatus)
+{
+    internal static LocalVerifyConstraints Current() =>
+        new(
+            true,
+            false,
+            false,
+            false,
+            false,
+            "SKIPPED",
+            "SKIPPED",
+            "SKIPPED",
+            "SKIPPED",
+            "SKIPPED");
+
+    internal Dictionary<string, object?> ToPayload() => new()
+    {
+        ["localOnly"] = LocalOnly,
+        ["liveE2EIncludedInSuccessCriteria"] = LiveE2EIncludedInSuccessCriteria,
+        ["packageIncludedInSuccessCriteria"] = PackageIncludedInSuccessCriteria,
+        ["releaseIncludedInSuccessCriteria"] = ReleaseIncludedInSuccessCriteria,
+        ["publicationIncludedInSuccessCriteria"] = PublicationIncludedInSuccessCriteria,
+        ["liveE2EStatus"] = LiveE2EStatus,
+        ["googleDocsDriveMutationStatus"] = GoogleDocsDriveMutationStatus,
+        ["packageStatus"] = PackageStatus,
+        ["releaseStatus"] = ReleaseStatus,
+        ["publicationStatus"] = PublicationStatus,
+    };
 }
 
 internal sealed record LocalPublisherServices(

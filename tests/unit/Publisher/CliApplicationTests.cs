@@ -52,6 +52,24 @@ public sealed class CliApplicationTests
             Assert.Equal("verify", summary.GetProperty("phase").GetString());
             Assert.Equal("summary", summary.GetProperty("operation").GetString());
             AssertStructuredFields(JsonLines(capture.Error));
+
+            var report = LocalVerifyReport(capture.Error);
+            Assert.Equal("localVerify", report.GetProperty("reportType").GetString());
+            Assert.Equal(1, report.GetProperty("schemaVersion").GetInt32());
+            Assert.Equal("PASS", report.GetProperty("overallResult").GetString());
+            Assert.Equal(0, report.GetProperty("exitCode").GetInt32());
+            Assert.Equal("VERIFY_SUCCEEDED", report.GetProperty("resultCode").GetString());
+            Assert.Equal("Verification succeeded.", report.GetProperty("safeSummary").GetString());
+            Assert.True(report.TryGetProperty("executedAtUtc", out _));
+            AssertLocalVerifyCheckOrder(report);
+            AssertLocalVerifyCheck(report, "configuration", "PASS", null);
+            AssertLocalVerifyCheck(report, "markdownCompilation", "PASS", null);
+            AssertLocalVerifyCheck(report, "localOnlyBoundary", "PASS", null);
+            AssertLocalVerifyCheck(report, "liveE2E", "SKIPPED", null);
+            AssertLocalVerifyCheck(report, "package", "SKIPPED", null);
+            AssertLocalVerifyCheck(report, "release", "SKIPPED", null);
+            AssertLocalVerifyCheck(report, "publication", "SKIPPED", null);
+            AssertLocalVerifyMetadata(report);
         }
         finally
         {
@@ -306,6 +324,60 @@ public sealed class CliApplicationTests
         Assert.Equal("Publisher configuration is invalid.", summary.GetProperty("message").GetString());
         Assert.DoesNotContain("secret-token", capture.Error, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(@"C:\Users\biz", capture.Error, StringComparison.OrdinalIgnoreCase);
+
+        var report = LocalVerifyReport(capture.Error);
+        Assert.Equal("FAIL", report.GetProperty("overallResult").GetString());
+        Assert.Equal(3, report.GetProperty("exitCode").GetInt32());
+        Assert.Equal("CONFIG_INTEGER_INVALID", report.GetProperty("resultCode").GetString());
+        Assert.Equal("Publisher configuration is invalid.", report.GetProperty("safeSummary").GetString());
+        AssertLocalVerifyCheckOrder(report);
+        AssertLocalVerifyCheck(report, "configuration", "FAIL", "CONFIG_INTEGER_INVALID");
+        AssertLocalVerifyCheck(report, "markdownCompilation", "SKIPPED", null);
+        AssertLocalVerifyCheck(report, "liveE2E", "SKIPPED", null);
+        AssertLocalVerifyMetadata(report);
+        Assert.DoesNotContain("secret-token", report.GetRawText(), StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"C:\Users\biz", report.GetRawText(), StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task RunAsync_VerifyWithoutMarkdownReportsCompilationSkipped()
+    {
+        using var capture = new ConsoleCapture();
+
+        var exitCode = await CliApplication.RunAsync(["verify"], CancellationToken.None);
+
+        Assert.Equal(0, exitCode);
+        var report = LocalVerifyReport(capture.Error);
+        Assert.Equal("PASS", report.GetProperty("overallResult").GetString());
+        Assert.Equal(0, report.GetProperty("exitCode").GetInt32());
+        AssertLocalVerifyCheckOrder(report);
+        AssertLocalVerifyCheck(report, "configuration", "PASS", null);
+        AssertLocalVerifyCheck(report, "markdownCompilation", "SKIPPED", null);
+        AssertLocalVerifyCheck(report, "liveE2E", "SKIPPED", null);
+        AssertLocalVerifyCheck(report, "package", "SKIPPED", null);
+        AssertLocalVerifyCheck(report, "release", "SKIPPED", null);
+        AssertLocalVerifyCheck(report, "publication", "SKIPPED", null);
+    }
+
+    [Fact]
+    public async Task RunAsync_VerifyMissingMarkdownReportsSafeFailure()
+    {
+        using var capture = new ConsoleCapture();
+        var path = Path.Combine(Path.GetTempPath(), $"missing-token-secret-{Guid.NewGuid():N}.md");
+
+        var exitCode = await CliApplication.RunAsync(["verify", path], CancellationToken.None);
+
+        Assert.Equal(1, exitCode);
+        var report = LocalVerifyReport(capture.Error);
+        Assert.Equal("FAIL", report.GetProperty("overallResult").GetString());
+        Assert.Equal(1, report.GetProperty("exitCode").GetInt32());
+        Assert.Equal("MARKDOWN_FILE_NOT_FOUND", report.GetProperty("resultCode").GetString());
+        Assert.Equal("Publisher input is invalid.", report.GetProperty("safeSummary").GetString());
+        AssertLocalVerifyCheck(report, "configuration", "PASS", null);
+        AssertLocalVerifyCheck(report, "markdownCompilation", "FAIL", "MARKDOWN_FILE_NOT_FOUND");
+        AssertLocalVerifyCheck(report, "liveE2E", "SKIPPED", null);
+        Assert.DoesNotContain(path, capture.Error, StringComparison.Ordinal);
+        Assert.DoesNotContain("token-secret", report.GetRawText(), StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -378,6 +450,13 @@ public sealed class CliApplicationTests
         return document.RootElement.Clone();
     }
 
+    private static JsonElement LocalVerifyReport(string text)
+    {
+        var line = JsonLines(text)
+            .Single(value => value.GetProperty("code").GetString() == "LOCAL_VERIFY_REPORT");
+        return line;
+    }
+
     private static IEnumerable<JsonElement> JsonLines(string text)
     {
         foreach (var line in text.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries)
@@ -401,6 +480,77 @@ public sealed class CliApplicationTests
             Assert.True(line.TryGetProperty("code", out _));
             Assert.True(line.TryGetProperty("message", out _));
         }
+    }
+
+    private static void AssertLocalVerifyCheckOrder(JsonElement report)
+    {
+        var names = report.GetProperty("checks")
+            .EnumerateArray()
+            .Select(check => check.GetProperty("name").GetString())
+            .ToArray();
+
+        Assert.Equal(
+            [
+                "configuration",
+                "markdownCompilation",
+                "localOnlyBoundary",
+                "liveE2E",
+                "package",
+                "release",
+                "publication",
+            ],
+            names);
+    }
+
+    private static void AssertLocalVerifyCheck(
+        JsonElement report,
+        string name,
+        string expectedStatus,
+        string? expectedFailureCode)
+    {
+        var check = report.GetProperty("checks")
+            .EnumerateArray()
+            .Single(value => value.GetProperty("name").GetString() == name);
+
+        Assert.Equal(expectedStatus, check.GetProperty("status").GetString());
+        Assert.True(check.TryGetProperty("safeSummary", out _));
+        if (expectedFailureCode is null)
+        {
+            Assert.False(check.TryGetProperty("failureCode", out _));
+        }
+        else
+        {
+            Assert.Equal(expectedFailureCode, check.GetProperty("failureCode").GetString());
+        }
+    }
+
+    private static void AssertLocalVerifyMetadata(JsonElement report)
+    {
+        var configuration = report.GetProperty("configuration");
+        Assert.False(configuration.GetProperty("googlePublishSettingsRequired").GetBoolean());
+        Assert.True(configuration.GetProperty("localOnly").GetBoolean());
+        Assert.False(configuration.GetProperty("liveE2EIncludedInSuccessCriteria").GetBoolean());
+        Assert.False(configuration.GetProperty("packageIncludedInSuccessCriteria").GetBoolean());
+        Assert.False(configuration.GetProperty("releaseIncludedInSuccessCriteria").GetBoolean());
+        Assert.False(configuration.GetProperty("publicationIncludedInSuccessCriteria").GetBoolean());
+
+        var environment = report.GetProperty("environment");
+        Assert.False(string.IsNullOrWhiteSpace(environment.GetProperty("dotNetRuntime").GetString()));
+        Assert.False(string.IsNullOrWhiteSpace(environment.GetProperty("osDescription").GetString()));
+        Assert.False(string.IsNullOrWhiteSpace(environment.GetProperty("osArchitecture").GetString()));
+        Assert.False(string.IsNullOrWhiteSpace(environment.GetProperty("processArchitecture").GetString()));
+
+        var constraints = report.GetProperty("constraints");
+        Assert.True(constraints.GetProperty("localOnly").GetBoolean());
+        Assert.False(constraints.GetProperty("liveE2EIncludedInSuccessCriteria").GetBoolean());
+        Assert.False(constraints.GetProperty("packageIncludedInSuccessCriteria").GetBoolean());
+        Assert.False(constraints.GetProperty("releaseIncludedInSuccessCriteria").GetBoolean());
+        Assert.False(constraints.GetProperty("publicationIncludedInSuccessCriteria").GetBoolean());
+        Assert.Equal("SKIPPED", constraints.GetProperty("liveE2EStatus").GetString());
+        Assert.Equal("SKIPPED", constraints.GetProperty("googleDocsDriveMutationStatus").GetString());
+        Assert.Equal("SKIPPED", constraints.GetProperty("packageStatus").GetString());
+        Assert.Equal("SKIPPED", constraints.GetProperty("releaseStatus").GetString());
+        Assert.Equal("SKIPPED", constraints.GetProperty("publicationStatus").GetString());
     }
 
     private static ErrorClassification Classify(string? code)

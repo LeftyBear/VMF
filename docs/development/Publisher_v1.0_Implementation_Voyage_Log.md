@@ -969,6 +969,69 @@ Avast-pending package state.
 vNext candidate: a separate input-specific public CLI exit code may be proposed
 in a future task, but it was not adopted in Phase 4-2-2.
 
+## Phase 4-2-3: Local Verify Report Improvement
+
+Status: DONE as local-only Phase 4 implementation.
+
+Phase 4-2-3 standardized the Publisher CLI `verify` report for human and
+machine review without changing Frozen specifications, public APIs, persisted
+schemas, canonical formats, validation logic, retry policy, release artifacts,
+Live E2E behavior, Google Docs, Google Drive, or the Avast-pending package
+state.
+
+### Implemented behavior
+
+- Added a `LOCAL_VERIFY_REPORT` JSON Lines diagnostic entry for the `verify`
+  command while preserving existing lifecycle and summary diagnostics.
+- Reported stable top-level `overallResult`, `exitCode`, `resultCode`,
+  `safeSummary`, and `executedAtUtc` fields.
+- Reported checks in stable order with `PASS`, `FAIL`, and `SKIPPED` statuses:
+  `configuration`, `markdownCompilation`, `localOnlyBoundary`, `liveE2E`,
+  `package`, `release`, and `publication`.
+- Marked unexecuted Markdown compilation, Live E2E, package, release, and
+  publication scope as `SKIPPED` instead of treating them as implicit success.
+- Kept Live E2E, package, release, and publication outside the Local Verify
+  success criteria.
+- Included safe configuration and environment metadata such as .NET runtime,
+  OS description, OS architecture, and process architecture.
+- Continued to suppress raw exceptions, URIs, local paths, tokens, secrets,
+  credential values, and HTTP bodies from Local Verify failure output.
+
+### Release notes draft
+
+Publisher Phase 4-2-3 improves local `verify` evidence for automation and
+review. The CLI now emits a stable Local Verify report with explicit result,
+exit code, check statuses, safe failure code and summary, execution timestamp,
+configuration metadata, environment metadata, and local-only constraints.
+Skipped external and release operations are reported explicitly and are not
+part of the Local Verify success criteria.
+
+This is local implementation work only. It does not approve a release, create
+or update packages, execute Live E2E, mutate Google Docs or Google Drive, or
+change the Avast release-gate status.
+
+### Automated evidence
+
+| Check | Result |
+|---|---|
+| Focused Publisher Unit Tests | PASS - 35/35 |
+| Publisher Unit Tests | PASS - 492/492 |
+| Publisher Integration Tests | PASS - 16/16, non-live |
+| Release solution build | PASS - 0 warnings, 0 errors |
+| `dotnet format --verify-no-changes` | PASS |
+| `git diff --check` | PASS - no whitespace errors; CRLF normalization warnings only |
+| Frozen specification changes | None |
+| Public API changes | None |
+| Live E2E / Google Docs / Google Drive mutation | Not executed |
+| Release package / dist / tag / publication | Not changed |
+
+### Final review
+
+Phase 4-2-3 has no phase-specific release blocker. Continuing blockers remain
+the release gate, Live E2E authorization, Google Docs / Google Drive mutation,
+package / dist / tag / publication authorization, and the unchanged
+Avast-pending package state.
+
 ## Phase 3-2D: Update Execution Transaction and Recovery Decisions
 
 ### Scope

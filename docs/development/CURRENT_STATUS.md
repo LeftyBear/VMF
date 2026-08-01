@@ -28,6 +28,7 @@ modify Frozen specifications.
 | Production design | Unchanged |
 | Phase 4-2-1 diagnostic logging | Done as local-only implementation; release state unchanged |
 | Phase 4-2-2 error handling | Done as local-only implementation; release state unchanged |
+| Phase 4-2-3 Local Verify Report | Done as local-only implementation; release state unchanged |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -41,6 +42,7 @@ The completed local-only safety scope covers:
 
 - Phase 4-2-1 diagnostic logging implementation and review;
 - Phase 4-2-2 error handling implementation and review;
+- Phase 4-2-3 Local Verify Report implementation and review;
 - Build;
 - Unit tests;
 - Non-live integration tests;
@@ -83,6 +85,7 @@ verification.
 | Avast false positive resolution | Pending | Vendor response or repository-owner acceptance of the antivirus exception posture. |
 | vNext hardening backlog | Pending | Candidate treatment before adoption. |
 | Input-specific CLI exit code | Candidate | Future public CLI behavior proposal only; not adopted in Phase 4-2-2. |
+| Local Verify report schema evolution | Candidate | Future additions must preserve existing JSON Lines diagnostics and current report field compatibility. |
 
 The vNext hardening backlog includes:
 

@@ -12,6 +12,8 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   review record, and local-only verification evidence.
 - Added Publisher Phase 4-2-2 error handling specification, final review
   record, and local-only verification evidence.
+- Added Publisher Phase 4-2-3 Local Verify Report implementation record and
+  local-only verification report tests.
 
 ## Changed
 
@@ -21,6 +23,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Standardized Publisher CLI error classification, verification exit code
   handling, cancellation exit behavior, and fixed safe failure summaries while
   preserving public APIs and retry policy.
+- Standardized Publisher CLI `verify` report output with stable PASS / FAIL /
+  SKIPPED check rows, exit code, safe failure summaries, execution timestamp,
+  configuration, environment metadata, and explicit local-only constraints.
 
 ---
 
