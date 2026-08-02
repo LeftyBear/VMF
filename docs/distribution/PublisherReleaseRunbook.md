@@ -34,6 +34,7 @@ gate is treated as available.
 Before starting a release operation, read:
 
 - `docs/development/CURRENT_STATUS.md`;
+- `docs/development/Publisher_ReleaseApprovalPackage.md`;
 - `docs/development/Publisher_TestClassification.md`;
 - `docs/distribution/ReleaseChecklist.md`;
 - `docs/distribution/LiveE2EOperations.md`;

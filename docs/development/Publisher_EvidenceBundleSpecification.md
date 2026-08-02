@@ -431,4 +431,3 @@ only expected companion updates are minimal synchronization entries in:
 Those updates must preserve the current release hold and must not mark any
 pending release, security, Live E2E, package, vendor, or publication condition
 as passed.
-

@@ -36,6 +36,7 @@ modify Frozen specifications.
 | Publisher operator guidance for Avast hold | Done as documentation-only operator guidance; release state unchanged. |
 | Publisher Evidence Bundle Specification | Done as documentation-only evidence bundle design; release state unchanged. |
 | Publisher Preflight Hardening | Done as documentation-only hard-stop consolidation; release state unchanged. |
+| Publisher Release Approval Package | Done as documentation-only / local-only approval package organization; recommendation Hold; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -191,7 +192,28 @@ artifact identity, the repository owner to reopen only the required next gate,
 and separate authorization for package work, packaged executable smoke, Live
 E2E, and publication.
 
-## 10. vNext Hardening Backlog
+## 10. Publisher Release Approval Package
+
+`Publisher_ReleaseApprovalPackage.md` summarizes the current approval package
+for review. It preserves the formal state:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+Approval Recommendation = Hold.
+
+Avast false-positive handling remains pending, and vendor clearance has not
+been obtained. The package does not approve a release, create or update
+packages, create tags, publish artifacts, execute Live E2E, mutate Google Docs
+or Google Drive, re-run flagged executables, change production code, change
+tests, change public APIs, modify Frozen specifications, write to `dist`, or
+push commits.
+
+Resume requires the Avast response to be recorded against the exact selected
+artifact identity, repository-owner reopening of the required next gate, and
+separate operation-specific authorization for package work, packaged
+executable smoke, Live E2E, and publication.
+
+## 11. vNext Hardening Backlog
 
 The vNext hardening backlog includes:
 
@@ -200,7 +222,7 @@ The vNext hardening backlog includes:
 - distribution verification;
 - security / trust workflow.
 
-## 11. Related Commits
+## 12. Related Commits
 
 | Commit | Meaning |
 | --- | --- |
@@ -211,7 +233,7 @@ The vNext hardening backlog includes:
 | `cf77964` | Checklist |
 | `e59a7ec` | Execution order |
 
-## 12. Status Interpretation
+## 13. Status Interpretation
 
 Use this status as:
 

@@ -4,6 +4,25 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ---
 
+# 2026-08-02
+
+## Added
+
+- Added `docs/development/Publisher_ReleaseApprovalPackage.md` to summarize
+  the current docs-only / local-only approval package, evidence index, ahead
+  commits, blocked operations, resume conditions, and approval recommendation:
+  Hold.
+
+## Changed
+
+- Recorded that vendor clearance has not been obtained and the release remains
+  blocked; the approval package did not perform release, tag, publication,
+  Live E2E, Google Docs or Drive mutation, package or distribution artifact
+  creation/update, flagged executable re-run, production code/test changes,
+  Frozen specification changes, public API changes, or push.
+
+---
+
 # 2026-08-01
 
 ## Added
