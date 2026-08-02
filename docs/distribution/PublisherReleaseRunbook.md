@@ -109,6 +109,30 @@ Expected result:
 Stop if unrelated changes are present and their ownership or release impact is
 unclear.
 
+### 5.1 Avast-Pending Hard Stops
+
+While Avast false-positive handling remains pending, also read
+`docs/development/Publisher_PreflightHardening.md` before proceeding past
+local-only checks.
+
+Stop before the next command if preflight would cross any of these boundaries
+without separate operation-specific authorization:
+
+- package creation, replacement, update, or any write under `dist/`;
+- release tag creation, GitHub Release creation or update, artifact
+  publication, or release announcement;
+- Live E2E or setting `VMF_PUBLISHER_GOOGLE_E2E=1`;
+- Google Docs mutation, Google Drive mutation, token-store mutation, or
+  temporary public image hosting;
+- re-running the Avast-pending flagged executable;
+- treating local-only evidence as release readiness, Live E2E readback,
+  package approval, publication approval, or antivirus vendor clearance.
+
+If any hard stop is reached, record the operation as `BLOCKED`, `PENDING`,
+`NOT EXECUTED`, or `DEFERRED`. Do not continue toward release until the Avast
+response, selected artifact identity, and repository-owner gate decision are
+recorded.
+
 ## 6. Local Verification
 
 Run local verification in this order unless the release-specific instructions

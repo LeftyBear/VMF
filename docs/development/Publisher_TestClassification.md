@@ -108,7 +108,16 @@ When an Avast response is received, resume in this order:
 12. Publish only after a separate publication authorization records tag, target
    commit, release state, asset path, and SHA-256.
 
-## 6. Stop Conditions
+## 6. Preflight Hard Stops
+
+`Publisher_PreflightHardening.md` is the local-only hard-stop reference while
+Avast false-positive handling remains pending. In addition to the stop
+conditions below, do not proceed if a proposed command would move from local
+verification into package, release, Live E2E, Google Docs or Google Drive
+mutation, publication, or flagged executable execution without separate
+operation-specific authorization.
+
+## 7. Stop Conditions
 
 Stop and report if any of these occur:
 
@@ -127,7 +136,7 @@ Stop and report if any of these occur:
 - Frozen specifications, public APIs, persisted schemas, canonical formats, or
   production defaults would need to change.
 
-## 7. Reporting Requirements
+## 8. Reporting Requirements
 
 Every resumed verification report must state:
 

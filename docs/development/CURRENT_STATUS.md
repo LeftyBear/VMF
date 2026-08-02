@@ -35,6 +35,7 @@ modify Frozen specifications.
 | Failure report diagnostic summary | Done as documentation-only status record; current decision Hold. Await Avast response. |
 | Publisher operator guidance for Avast hold | Done as documentation-only operator guidance; release state unchanged. |
 | Publisher Evidence Bundle Specification | Done as documentation-only evidence bundle design; release state unchanged. |
+| Publisher Preflight Hardening | Done as documentation-only hard-stop consolidation; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -167,7 +168,30 @@ pending, and the formal state remains:
 
 `Phase 4 local-only verification complete / release blocked`.
 
-## 9. vNext Hardening Backlog
+## 9. Publisher Preflight Hardening
+
+`Publisher_PreflightHardening.md` records the current Avast-pending preflight
+hard stops and resume conditions. It preserves the formal state:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+Allowed work remains local-only: read-only investigation, documentation
+updates, source build, unit tests, non-live integration tests, mock-backed
+verification, dry-run verification that does not cross the release boundary,
+and explicitly scoped static inspection of an existing package only.
+
+Blocked work remains release approval or rejection, tag creation, GitHub
+Release creation or update, artifact publication, package creation or update,
+writing to `dist`, Live E2E, setting `VMF_PUBLISHER_GOOGLE_E2E=1`, Google Docs
+or Google Drive mutation, token-store mutation, temporary public image hosting,
+and re-running the Avast-pending flagged executable.
+
+Resume requires the Avast response to be recorded against the exact selected
+artifact identity, the repository owner to reopen only the required next gate,
+and separate authorization for package work, packaged executable smoke, Live
+E2E, and publication.
+
+## 10. vNext Hardening Backlog
 
 The vNext hardening backlog includes:
 
@@ -176,7 +200,7 @@ The vNext hardening backlog includes:
 - distribution verification;
 - security / trust workflow.
 
-## 10. Related Commits
+## 11. Related Commits
 
 | Commit | Meaning |
 | --- | --- |
@@ -187,7 +211,7 @@ The vNext hardening backlog includes:
 | `cf77964` | Checklist |
 | `e59a7ec` | Execution order |
 
-## 11. Status Interpretation
+## 12. Status Interpretation
 
 Use this status as:
 

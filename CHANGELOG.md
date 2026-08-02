@@ -8,6 +8,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added `docs/development/Publisher_PreflightHardening.md` to consolidate
+  Avast-pending allowed work, blocked work, preflight hard stops, resume
+  conditions, and reporting requirements for Publisher release-boundary
+  control.
 - Added `docs/development/Publisher_EvidenceBundleSpecification.md` to define
   a redacted Publisher evidence bundle structure for release review, security
   review, Avast false-positive appeal, internal audit, and regression
@@ -44,6 +48,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Maintained the Avast pending gate and unchanged release boundary: no release,
   tag, publication, Live E2E, Google Docs or Drive mutation, package or
   distribution artifact creation/update, flagged executable re-run, or push.
+- Hardened Publisher runbook and test classification preflight rules so local
+  evidence cannot be promoted into release readiness, Live E2E readback,
+  package approval, publication approval, or antivirus vendor clearance.
 - Clarified that operators must treat the current Avast hold as operational,
   not a product regression, and must not proceed to the release path before the
   Avast response is recorded.
