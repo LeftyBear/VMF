@@ -8,6 +8,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added `docs/development/Publisher_AvastResponseIntakeTemplate.md` to define
+  a safe docs-only / local-only intake record for a future Avast
+  false-positive response while preserving the current release hold.
 - Added `docs/development/Publisher_vNext_Backlog.md` to record Publisher
   vNext resume-gate, release-safety, hardening, and enhancement candidates
   while preserving the current docs-only / local-only release hold.
@@ -18,6 +21,11 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Recorded that the Avast response intake template does not assert a response
+  was received, does not resolve Avast pending, and does not authorize release,
+  tag, publication, Live E2E, Google Docs or Drive mutation, package or
+  distribution artifact creation/update, flagged executable re-run, production
+  code changes, Frozen specification changes, public API changes, or push.
 - Recorded that vendor clearance has not been obtained and the release remains
   blocked; the approval package did not perform release, tag, publication,
   Live E2E, Google Docs or Drive mutation, package or distribution artifact

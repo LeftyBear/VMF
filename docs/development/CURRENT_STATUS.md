@@ -38,6 +38,7 @@ modify Frozen specifications.
 | Publisher Preflight Hardening | Done as documentation-only hard-stop consolidation; release state unchanged. |
 | Publisher Release Approval Package | Done as documentation-only / local-only approval package organization; recommendation Hold; release state unchanged. |
 | Publisher vNext Backlog | Done as documentation-only / local-only backlog record; release state unchanged. |
+| Publisher Avast Response Intake Template | Done as documentation-only / local-only template; no Avast response received; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -233,7 +234,22 @@ The vNext hardening backlog includes:
 - distribution verification;
 - security / trust workflow.
 
-## 12. Related Commits
+## 12. Publisher Avast Response Intake Template
+
+`Publisher_AvastResponseIntakeTemplate.md` defines a safe intake record for a
+future Avast false-positive response. It preserves the formal state:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+No Avast response has been recorded by this template addition. Avast
+false-positive handling remains pending.
+
+The template does not approve a release, create or update packages, modify
+`dist/`, create tags, publish artifacts, execute Live E2E, mutate Google Docs
+or Google Drive, re-run flagged executables, change Frozen specifications,
+change public APIs, change production code, or change production design.
+
+## 13. Related Commits
 
 | Commit | Meaning |
 | --- | --- |
@@ -244,7 +260,7 @@ The vNext hardening backlog includes:
 | `cf77964` | Checklist |
 | `e59a7ec` | Execution order |
 
-## 13. Status Interpretation
+## 14. Status Interpretation
 
 Use this status as:
 

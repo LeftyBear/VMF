@@ -34,6 +34,7 @@ gate is treated as available.
 Before starting a release operation, read:
 
 - `docs/development/CURRENT_STATUS.md`;
+- `docs/development/Publisher_AvastResponseIntakeTemplate.md`;
 - `docs/development/Publisher_ReleaseApprovalPackage.md`;
 - `docs/development/Publisher_TestClassification.md`;
 - `docs/distribution/ReleaseChecklist.md`;
@@ -133,6 +134,11 @@ If any hard stop is reached, record the operation as `BLOCKED`, `PENDING`,
 `NOT EXECUTED`, or `DEFERRED`. Do not continue toward release until the Avast
 response, selected artifact identity, and repository-owner gate decision are
 recorded.
+
+Use `docs/development/Publisher_AvastResponseIntakeTemplate.md` to record a
+future Avast response safely. The template addition itself does not mean a
+response was received, does not resolve Avast pending, and does not reopen the
+release gate.
 
 ## 6. Local Verification
 
