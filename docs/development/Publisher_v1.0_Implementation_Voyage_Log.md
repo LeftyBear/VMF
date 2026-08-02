@@ -1032,6 +1032,36 @@ the release gate, Live E2E authorization, Google Docs / Google Drive mutation,
 package / dist / tag / publication authorization, and the unchanged
 Avast-pending package state.
 
+## Phase 4-2-3: Retry Policy Specification Consolidation
+
+Status: DONE as documentation-only specification consolidation.
+
+Added `docs/development/Publisher_Phase4-2-3_RetryPolicySpecification.md` to
+make Publisher retry behavior explicit without changing production code,
+Frozen specifications, public APIs, persisted schemas, canonical formats,
+validation logic, release artifacts, Live E2E behavior, Google Docs, Google
+Drive, or the Avast-pending package state.
+
+The specification records retryable and non-retryable failure classes, exit
+code relationships, stable error-code relationships, transient failure
+handling, verification failure non-retry policy, idempotency and safe retry
+conditions, bounded backoff expectations, CLI behavior, structured logging
+requirements, local-only test viewpoints, non-goals, and release-hold
+continuation conditions.
+
+The existing `Phase 4-2-3 Local Verify Report Improvement` implementation
+record remains authoritative for the local verify report work. The retry-policy
+record is a docs-only consolidation and does not renumber or replace that
+implementation record.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, Frozen
+specifications, public APIs, persisted schemas, canonical formats, release
+artifacts, packages, tags, publication state, Live E2E behavior, Google Docs,
+Google Drive, token stores, credentials, temporary public hosting, or the
+Avast-pending executable/package state.
+
 ## Phase 4-3: Release Readiness Review Records
 
 Status: DONE as documentation-only Phase 4 release-readiness review.

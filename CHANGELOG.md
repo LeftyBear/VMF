@@ -24,6 +24,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   review record, and local-only verification evidence.
 - Added Publisher Phase 4-2-2 error handling specification, final review
   record, and local-only verification evidence.
+- Added Publisher Phase 4-2-3 retry policy specification consolidation,
+  including retry classification, exit-code and stable-code relationships,
+  safe retry conditions, structured logging requirements, and local-only test
+  matrix.
 - Added Publisher Phase 4-2-3 Local Verify Report implementation record and
   local-only verification report tests.
 
