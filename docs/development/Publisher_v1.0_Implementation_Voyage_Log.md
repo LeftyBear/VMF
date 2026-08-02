@@ -1070,6 +1070,35 @@ packages, execute Live E2E, mutate Google Docs or Google Drive, re-run flagged
 artifacts, change Frozen specifications, change public APIs, or change
 production design.
 
+## Publisher Existing Test Classification And Resume Procedure Hardening
+
+Status: DONE as documentation-only release-boundary hardening.
+
+Added `docs/development/Publisher_TestClassification.md` to classify existing
+Publisher verification targets while Avast false-positive handling remains
+pending. The document separates documentation checks, Release build, unit
+tests, focused unit tests, non-live integration tests, Live Google Docs E2E,
+local CLI verification, packaged executable smoke, existing-package static
+verification, package creation, and publication operations.
+
+The classification preserves the current formal state:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+It also records the resume order after an Avast response: record the vendor
+response and artifact identity first, reopen only the explicitly authorized
+gate, rerun local source verification, verify the selected package, run
+packaged executable smoke only after clearance or owner exception, run Live E2E
+only after separate per-run authorization, complete security review, record
+go/no-go, and publish only after separate publication authorization.
+
+### Explicit non-actions
+
+This documentation hardening did not execute Live E2E, mutate Google Docs or
+Google Drive, create or update packages, run flagged artifacts, create tags,
+publish artifacts, change Frozen specifications, change public APIs, or change
+production design.
+
 ## Phase 3-2D: Update Execution Transaction and Recovery Decisions
 
 ### Scope

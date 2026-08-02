@@ -30,6 +30,7 @@ modify Frozen specifications.
 | Phase 4-2-2 error handling | Done as local-only implementation; release state unchanged |
 | Phase 4-2-3 Local Verify Report | Done as local-only implementation; release state unchanged |
 | Phase 4-3 release-readiness review | Done; overall decision DEFERRED; release readiness not established |
+| Publisher test classification | Done as documentation-only hardening; release state unchanged |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -44,6 +45,7 @@ The completed local-only safety scope covers:
 - Phase 4-2-1 diagnostic logging implementation and review;
 - Phase 4-2-2 error handling implementation and review;
 - Phase 4-2-3 Local Verify Report implementation and review;
+- Publisher existing test classification and resume procedure hardening;
 - Build;
 - Unit tests;
 - Non-live integration tests;

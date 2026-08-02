@@ -2,7 +2,7 @@
 
 Status  : Draft
 Scope   : VMF Publisher release operation procedure
-Depends : docs/distribution/ReleaseChecklist.md, docs/distribution/LiveE2EOperations.md, docs/development/CURRENT_STATUS.md
+Depends : docs/distribution/ReleaseChecklist.md, docs/distribution/LiveE2EOperations.md, docs/development/CURRENT_STATUS.md, docs/development/Publisher_TestClassification.md
 
 This runbook defines the controlled operating procedure for a VMF Publisher
 release. It is an operations guide only. It does not approve a release, create
@@ -34,6 +34,7 @@ gate is treated as available.
 Before starting a release operation, read:
 
 - `docs/development/CURRENT_STATUS.md`;
+- `docs/development/Publisher_TestClassification.md`;
 - `docs/distribution/ReleaseChecklist.md`;
 - `docs/distribution/LiveE2EOperations.md`;
 - the release-specific notes or readiness documents for the target version.
@@ -328,4 +329,3 @@ Stop and report if any of these occur:
 | Publication complete or explicitly not performed | PENDING |  |
 | Post-release records updated | PENDING |  |
 | Git state recorded | PENDING |  |
-
