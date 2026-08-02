@@ -8,6 +8,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added `docs/development/Publisher_vNext_Backlog.md` to record Publisher
+  vNext resume-gate, release-safety, hardening, and enhancement candidates
+  while preserving the current docs-only / local-only release hold.
 - Added `docs/development/Publisher_ReleaseApprovalPackage.md` to summarize
   the current docs-only / local-only approval package, evidence index, ahead
   commits, blocked operations, resume conditions, and approval recommendation:
@@ -20,6 +23,11 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   Live E2E, Google Docs or Drive mutation, package or distribution artifact
   creation/update, flagged executable re-run, production code/test changes,
   Frozen specification changes, public API changes, or push.
+- Recorded that the Publisher vNext backlog does not change the release state:
+  Avast false-positive handling remains pending, release remains blocked, and
+  no Live E2E, Google Docs or Drive mutation, package or distribution artifact
+  update, release, tag, publication, or flagged executable re-run was
+  performed.
 
 ---
 

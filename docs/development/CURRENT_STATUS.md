@@ -37,6 +37,7 @@ modify Frozen specifications.
 | Publisher Evidence Bundle Specification | Done as documentation-only evidence bundle design; release state unchanged. |
 | Publisher Preflight Hardening | Done as documentation-only hard-stop consolidation; release state unchanged. |
 | Publisher Release Approval Package | Done as documentation-only / local-only approval package organization; recommendation Hold; release state unchanged. |
+| Publisher vNext Backlog | Done as documentation-only / local-only backlog record; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -214,6 +215,16 @@ separate operation-specific authorization for package work, packaged
 executable smoke, Live E2E, and publication.
 
 ## 11. vNext Hardening Backlog
+
+`Publisher_vNext_Backlog.md` records Publisher vNext candidate work while
+preserving the formal state:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+It is documentation-only and local-only. It does not approve a release, create
+or update packages, modify `dist/`, create tags, publish artifacts, execute
+Live E2E, mutate Google Docs or Google Drive, re-run flagged executables,
+change Frozen specifications, change public APIs, or change production design.
 
 The vNext hardening backlog includes:
 
