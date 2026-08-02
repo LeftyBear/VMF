@@ -1186,6 +1186,34 @@ or distribution artifacts, re-run flagged executables, push commits, change
 Frozen specifications, change public APIs, change production code, or change
 production design.
 
+## Publisher Evidence Bundle Specification
+
+Status: DONE as documentation-only evidence bundle design.
+
+Added `docs/development/Publisher_EvidenceBundleSpecification.md` to define the
+intended structure of a redacted Publisher evidence bundle for release review,
+security review, Avast false-positive appeal, internal audit, and regression
+investigation.
+
+The specification records bundle sections for build evidence, unit test
+evidence, integration/mock evidence, diagnostic log samples, error handling,
+retry policy, release runbook references, hold/resume conditions, prohibited
+contents, naming and folder conventions, redaction review, verification, and
+future automation candidates.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+### Explicit non-actions
+
+This documentation update did not assemble a concrete evidence bundle, release,
+create tags, publish artifacts, execute Live E2E, mutate Google Docs or Google
+Drive, create or update packages or distribution artifacts, re-run flagged
+executables, submit files to vendors, push commits, change Frozen
+specifications, change public APIs, change production code, or change
+production design.
+
 ## Phase 3-2D: Update Execution Transaction and Recovery Decisions
 
 ### Scope

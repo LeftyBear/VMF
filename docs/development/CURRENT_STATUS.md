@@ -34,6 +34,7 @@ modify Frozen specifications.
 | Publisher test classification | Done as documentation-only hardening; release state unchanged |
 | Failure report diagnostic summary | Done as documentation-only status record; current decision Hold. Await Avast response. |
 | Publisher operator guidance for Avast hold | Done as documentation-only operator guidance; release state unchanged. |
+| Publisher Evidence Bundle Specification | Done as documentation-only evidence bundle design; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -147,7 +148,26 @@ received and recorded. Treat the current hold as operational, not a product
 regression. Resume record synchronization in this order: Runbook,
 TestClassification, CURRENT_STATUS, Voyage Log.
 
-## 8. vNext Hardening Backlog
+## 8. Publisher Evidence Bundle Specification
+
+`Publisher_EvidenceBundleSpecification.md` defines the intended structure,
+naming convention, redaction policy, verification checklist, and future
+automation candidates for Publisher evidence bundles used by release review,
+security review, Avast false-positive appeal, internal audit, and regression
+investigation.
+
+The specification is documentation-only. It does not assemble a concrete
+bundle, create or update packages, modify `dist/`, execute Live E2E, mutate
+Google Docs or Google Drive, re-run flagged executables, submit files to
+vendors, approve release continuation, change Frozen specifications, change
+public APIs, or change production code.
+
+The release boundary is unchanged: Avast false-positive handling remains
+pending, and the formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+## 9. vNext Hardening Backlog
 
 The vNext hardening backlog includes:
 
@@ -156,7 +176,7 @@ The vNext hardening backlog includes:
 - distribution verification;
 - security / trust workflow.
 
-## 9. Related Commits
+## 10. Related Commits
 
 | Commit | Meaning |
 | --- | --- |
@@ -167,7 +187,7 @@ The vNext hardening backlog includes:
 | `cf77964` | Checklist |
 | `e59a7ec` | Execution order |
 
-## 10. Status Interpretation
+## 11. Status Interpretation
 
 Use this status as:
 

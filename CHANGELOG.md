@@ -8,6 +8,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added `docs/development/Publisher_EvidenceBundleSpecification.md` to define
+  a redacted Publisher evidence bundle structure for release review, security
+  review, Avast false-positive appeal, internal audit, and regression
+  investigation while preserving the current release hold.
 - Added `docs/development/Publisher_FailureReport_DiagnosticSummary.md` to
   record the Avast-pending release gate hold, Phase 4 local-only verification
   completion, Diagnostic Logging and Error Handling state, resume conditions,
