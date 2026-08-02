@@ -31,6 +31,8 @@ modify Frozen specifications.
 | Phase 4-2-3 Local Verify Report | Done as local-only implementation; release state unchanged |
 | Phase 4-3 release-readiness review | Done; overall decision DEFERRED; release readiness not established |
 | Publisher test classification | Done as documentation-only hardening; release state unchanged |
+| Failure report diagnostic summary | Done as documentation-only status record; current decision Hold. Await Avast response. |
+| Publisher operator guidance for Avast hold | Done as documentation-only operator guidance; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -109,7 +111,41 @@ No release, tag, publication, package creation or update, Live E2E, Google
 Docs mutation, Google Drive mutation, Frozen specification change, public API
 change, or production design change was performed by Phase 4-3.
 
-## 6. vNext Hardening Backlog
+## 6. Failure Report Diagnostic Summary
+
+`Publisher_FailureReport_DiagnosticSummary.md` records the current stop as an
+intentional operational release-blocking condition, not a product regression.
+It preserves the Avast pending gate and the formal state:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+The release boundary is unchanged: no release, tag, publication, Live E2E,
+Google Docs mutation, Google Drive mutation, package or distribution artifact
+creation or update, flagged executable re-run, or push is authorized.
+
+Current decision: Hold. Await Avast response.
+
+## 7. Publisher Operator Guidance For Avast Hold
+
+`Publisher_OperatorGuidance_AvastHold.md` records local-only operator guidance
+for the Avast-pending release hold. It preserves the formal state:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+Allowed actions are limited to build, unit tests, mock-backed verification,
+dry-run verification that does not cross the release boundary, documentation
+updates, and static existing-package inspection only.
+
+Blocked actions remain Live E2E, Google Docs mutation, Google Drive mutation,
+package or distribution artifact creation or update, release, tag,
+publication, flagged executable re-run, and push.
+
+Decision rule: do not proceed to the release path before the Avast response is
+received and recorded. Treat the current hold as operational, not a product
+regression. Resume record synchronization in this order: Runbook,
+TestClassification, CURRENT_STATUS, Voyage Log.
+
+## 8. vNext Hardening Backlog
 
 The vNext hardening backlog includes:
 
@@ -118,7 +154,7 @@ The vNext hardening backlog includes:
 - distribution verification;
 - security / trust workflow.
 
-## 7. Related Commits
+## 9. Related Commits
 
 | Commit | Meaning |
 | --- | --- |
@@ -129,7 +165,7 @@ The vNext hardening backlog includes:
 | `cf77964` | Checklist |
 | `e59a7ec` | Execution order |
 
-## 8. Status Interpretation
+## 10. Status Interpretation
 
 Use this status as:
 

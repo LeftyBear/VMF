@@ -1099,6 +1099,63 @@ Google Drive, create or update packages, run flagged artifacts, create tags,
 publish artifacts, change Frozen specifications, change public APIs, or change
 production design.
 
+## Publisher Failure Report Diagnostic Summary
+
+Status: DONE as documentation-only diagnostic status record.
+
+Added `docs/development/Publisher_FailureReport_DiagnosticSummary.md` to record
+the current failure-report interpretation while Avast false-positive handling
+remains pending. The diagnostic summary preserves the formal state:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+The current stop is intentional and operational. It is not recorded as a
+product regression. Diagnostic Logging and Error Handling remain done as
+local-only Phase 4 implementation work, and neither changes the release gate.
+
+### Decision
+
+Current decision: Hold. Await Avast response.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, create or update packages
+or distribution artifacts, re-run flagged executables, push commits, change
+Frozen specifications, change public APIs, change production code, or change
+production design.
+
+## Publisher Operator Guidance For Avast Hold
+
+Status: DONE as documentation-only operator guidance.
+
+Added `docs/development/Publisher_OperatorGuidance_AvastHold.md` to record the
+local-only operator boundary while Avast false-positive handling remains
+pending. The guidance preserves the formal state:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+Allowed work is limited to build, unit tests, mock-backed verification, dry-run
+verification that does not cross the release boundary, documentation updates,
+and static existing-package inspection only. Blocked work remains Live E2E,
+Google Docs or Google Drive mutation, package or distribution artifact creation
+or update, release, tag, publication, flagged executable re-run, and push.
+
+### Decision
+
+Do not proceed to the release path before the Avast response is received and
+recorded. Treat the current hold as operational, not a product regression.
+Resume record synchronization in this order: Runbook, TestClassification,
+CURRENT_STATUS, Voyage Log.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, create or update packages
+or distribution artifacts, re-run flagged executables, push commits, change
+Frozen specifications, change public APIs, change production code, or change
+production design.
+
 ## Phase 3-2D: Update Execution Transaction and Recovery Decisions
 
 ### Scope

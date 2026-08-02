@@ -8,6 +8,14 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added `docs/development/Publisher_FailureReport_DiagnosticSummary.md` to
+  record the Avast-pending release gate hold, Phase 4 local-only verification
+  completion, Diagnostic Logging and Error Handling state, resume conditions,
+  recommended resume order, and current decision: Hold. Await Avast response.
+- Added `docs/development/Publisher_OperatorGuidance_AvastHold.md` to record
+  local-only operator guidance for the Avast-pending release hold, including
+  allowed actions, blocked actions, decision rules, and the required resume
+  order.
 - Added Publisher Phase 4-3 release-readiness review records covering release
   readiness, release candidate verification, artifact audit, security and
   supply-chain review, and go/no-go state; Phase 4-3 is Done with an overall
@@ -25,6 +33,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   verification completion separate from release readiness, with Avast handling,
   Live E2E, artifact generation/audit, and release approval recorded as
   unresolved conditions.
+- Maintained the Avast pending gate and unchanged release boundary: no release,
+  tag, publication, Live E2E, Google Docs or Drive mutation, package or
+  distribution artifact creation/update, flagged executable re-run, or push.
+- Clarified that operators must treat the current Avast hold as operational,
+  not a product regression, and must not proceed to the release path before the
+  Avast response is recorded.
 - Standardized Publisher CLI structured diagnostic logs with command, phase,
   operation, lifecycle events, safe summary messages, and normalized warning
   messages while preserving public APIs and publish result compatibility.
