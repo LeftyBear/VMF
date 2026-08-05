@@ -42,6 +42,7 @@ modify Frozen specifications.
 | ADR operating basis | Done as documentation-only / local-only architecture decision record process; release state unchanged. |
 | ADR-0002 OAuth Desktop authentication | Done as documentation-only / local-only authentication decision record; release state unchanged. |
 | ADR-0003 release gate and vendor clearance | Done as documentation-only / local-only release governance decision record; release state unchanged. |
+| ADR-0004 Verified State and differential update safety | Done as documentation-only / local-only update-safety decision record; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -303,6 +304,23 @@ Frozen specification change, public API change, vendor clearance, Avast
 false-positive resolution, risk acceptance, or push. The release boundary
 remains unchanged: release is blocked, Avast false-positive handling remains
 pending, and vendor clearance has not been obtained.
+
+`docs/architecture/ADR-0004-verified-state-and-differential-update-safety.md`
+records Verified State as the trusted baseline for Publisher differential
+updates. It requires revision conflicts to abort update, preserves the Phase
+3-2C physical update ordering, requires post-apply Readback Verification, and
+allows atomic Verified State save only after verification succeeds.
+
+ADR-0004 does not replace Phase 3-2B or Phase 3-2C implementation records,
+Frozen Specifications, public APIs, persisted schema definitions, tests,
+runbooks, release records, verification evidence, or current status records.
+It does not authorize release, tag, publication, package or distribution
+artifact creation or update, Live E2E, Google Docs mutation, Google Drive
+mutation, token-store mutation, flagged executable re-run, production code
+change, test change, Frozen specification change, public API change, vendor
+clearance, Avast false-positive resolution, risk acceptance, or push. The
+release boundary remains unchanged: release is blocked, Avast false-positive
+handling remains pending, and vendor clearance has not been obtained.
 
 ## 14. Related Commits
 

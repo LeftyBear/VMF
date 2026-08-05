@@ -1402,6 +1402,13 @@ application service. `Diverged` stops without saving state.
 
 ## Phase 3-2C: Physical Update Planning and Verification Decisions
 
+Architecture decision reference: `docs/architecture/ADR-0004-verified-state-and-differential-update-safety.md`
+records the durable safety decision for Verified State as the trusted
+differential-update baseline, revision-conflict abort behavior, safe physical
+update ordering, mandatory Readback Verification, and post-verification-only
+Verified State persistence. The ADR is documentation-only and does not replace
+this Phase 3-2C implementation record.
+
 | Field | Value |
 |---|---|
 | Date | 2026-07-22 |

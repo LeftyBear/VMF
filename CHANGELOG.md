@@ -8,6 +8,11 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added `docs/architecture/ADR-0004-verified-state-and-differential-update-safety.md`
+  to record Verified State as the trusted baseline for Publisher differential
+  update safety, revision-conflict abort behavior, safe physical update
+  ordering, mandatory readback verification, and post-verification-only
+  atomic state promotion.
 - Added `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md` to
   record Publisher release gate, vendor clearance, Avast false-positive review,
   release authorization, and final release verification as long-term release
@@ -23,6 +28,8 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0004 and link it to ADR-0001 through
+  ADR-0003 plus the existing Phase 3-2B / Phase 3-2C voyage-log records.
 - Updated the ADR index to track ADR-0003 and keep runbook procedure separate
   from ADR governance: the ADR records the long-term release-control decision
   and does not authorize release, clearance, risk acceptance, publication, tag
