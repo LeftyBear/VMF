@@ -9,6 +9,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Added
 
 - Added
+  `docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md`
+  to record the Publisher evidence bundle as a design, collection,
+  validation, and redaction boundary; the release approval package as a review
+  record with `Approval Recommendation = Hold`; and the default `Hold
+  continues` decision when no Avast response has been received.
+- Added
   `docs/architecture/ADR-0008-preflight-hard-stop-and-release-boundary.md`
   to record Publisher preflight hard stops, Avast-pending prohibited
   operations, local-only allowed work, release-resume conditions, and the
@@ -51,6 +57,11 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0009 and keep evidence bundle creation,
+  evidence validation, evidence redaction, and approval package preparation
+  separate from release authorization, vendor clearance, Avast resolution,
+  package or distribution artifact updates, release, tag, publication, Live
+  E2E, Google Docs or Drive mutation, and flagged executable re-run.
 - Updated the ADR index to track ADR-0008 and keep ADR-0003 as the release
   gate and vendor-clearance governance basis while ADR-0008 records the
   operational preflight hard stop and release boundary.

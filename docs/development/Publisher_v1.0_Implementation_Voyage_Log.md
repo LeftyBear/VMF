@@ -1841,3 +1841,53 @@ flagged executables, push commits, change Frozen specifications, change public
 APIs, change tests, change production code, or change production design. Avast
 false-positive handling remains pending, vendor clearance has not been
 obtained, and release remains blocked.
+
+## ADR-0009 Evidence Bundle and Release Approval Package Boundary
+
+Status: DONE as documentation-only / local-only evidence and approval-package
+boundary decision record.
+
+Added
+`docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md`
+and updated `docs/architecture/ADR_INDEX.md` to record Publisher evidence
+bundle and release approval package boundary control as an accepted
+Architecture Decision.
+
+ADR-0009 records the evidence bundle as a design, collection, validation, and
+redaction boundary. It is not a release artifact, publication artifact,
+package artifact, distribution artifact, release authorization, vendor
+clearance, or Avast false-positive resolution.
+
+The release approval package remains a review record. The current package
+records `Approval Recommendation = Hold`. If no Avast response has been
+received and recorded, the default decision is `Hold continues`.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+### Decision
+
+Evidence bundle creation, evidence validation, evidence redaction, release
+approval package preparation, or approval package review does not authorize
+package or distribution artifact creation or update, release, tag creation,
+publication, Live E2E, Google Docs mutation, Google Drive mutation,
+token-store mutation, or flagged executable re-run.
+
+ADR-0009 keeps ADR-0003 as the release gate and vendor-clearance governance
+basis and ADR-0008 as the operational preflight hard stop. ADR-0005 remains
+responsible for retry policy, ADR-0006 for diagnostic logging and safe
+observability, and ADR-0007 for CLI error handling and stable failure surface.
+
+Vendor clearance has not been obtained. That means no approval, no release
+authorization, and no permission to publish.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, mutate token stores,
+create or update packages or distribution artifacts, write to `dist`, re-run
+flagged executables, push commits, change Frozen specifications, change public
+APIs, change tests, change production code, or change production design. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, and release remains blocked.

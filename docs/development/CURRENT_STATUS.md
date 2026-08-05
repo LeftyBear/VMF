@@ -47,6 +47,7 @@ modify Frozen specifications.
 | ADR-0006 diagnostic logging and safe observability | Done as documentation-only / local-only observability decision record; release state unchanged. |
 | ADR-0007 error handling and failure classification | Done as documentation-only / local-only error handling decision record; release state unchanged. |
 | ADR-0008 preflight hard stop and release boundary | Done as documentation-only / local-only operational gate decision record; release state unchanged. |
+| ADR-0009 evidence bundle and release approval package boundary | Done as documentation-only / local-only evidence and approval-package boundary decision record; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -426,6 +427,34 @@ Frozen specification change, public API change, vendor clearance, Avast
 false-positive resolution, risk acceptance, or push. The release boundary
 remains unchanged: release is blocked, Avast false-positive handling remains
 pending, and vendor clearance has not been obtained.
+
+`docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md`
+records Publisher evidence bundle and release approval package boundary control
+as a durable architecture decision. It fixes the evidence bundle as a design,
+collection, validation, and redaction boundary, not a release artifact,
+publication artifact, package artifact, distribution artifact, release
+authorization, vendor clearance, or Avast false-positive resolution.
+
+ADR-0009 records the release approval package as a review record, not
+executable approval. The current approval package records `Approval
+Recommendation = Hold`. If no Avast response has been received and recorded in
+`Publisher_AvastResponseIntakeTemplate.md`, the default decision is `Hold
+continues`.
+
+ADR-0009 keeps ADR-0003 as the release gate and vendor-clearance governance
+basis and ADR-0008 as the operational preflight hard stop. ADR-0005 remains
+responsible for retry policy, ADR-0006 for diagnostic logging and safe
+observability, and ADR-0007 for CLI error handling and stable failure surface.
+
+ADR-0009 does not replace runbooks, release records, verification evidence,
+approval packages, Frozen Specifications, public APIs, or tests. It does not
+authorize release, tag, publication, package or distribution artifact creation
+or update, Live E2E, Google Docs mutation, Google Drive mutation, token-store
+mutation, flagged executable re-run, production code change, test change,
+Frozen specification change, public API change, vendor clearance, Avast
+false-positive resolution, risk acceptance, approval granted, or push. The
+release boundary remains unchanged: release is blocked, Avast false-positive
+handling remains pending, and vendor clearance has not been obtained.
 
 ## 14. Related Commits
 
