@@ -19,6 +19,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   backoff, safe message policy, and non-retry behavior for revision conflicts,
   verification failures, configuration errors, unknown or blank stable codes,
   and cancellation.
+- Added
+  `docs/architecture/ADR-0006-diagnostic-logging-and-safe-observability.md`
+  to record Publisher structured JSON diagnostic logging, stdout/stderr
+  separation, stable diagnostic event fields, lifecycle events, safe message
+  requirements, redaction policy, and rejected alternatives for unsafe or
+  unbounded logging.
 - Added `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md` to
   record Publisher release gate, vendor clearance, Avast false-positive review,
   release authorization, and final release verification as long-term release
@@ -39,6 +45,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Updated the ADR index to track ADR-0005 and keep ADR-0004 focused on update
   safety while ADR-0005 records failure-time retry judgment and failure
   classification.
+- Updated the ADR index to track ADR-0006 and keep Phase 4-2-1 as the detailed
+  Diagnostic Logging Specification while ADR-0006 records the durable
+  safe-observability decision.
 - Updated the ADR index to track ADR-0003 and keep runbook procedure separate
   from ADR governance: the ADR records the long-term release-control decision
   and does not authorize release, clearance, risk acceptance, publication, tag

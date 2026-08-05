@@ -856,6 +856,13 @@ phase.
 
 ## Phase 4-2-1: Diagnostic Logging Specification, Implementation, And Review
 
+Architecture decision reference:
+`docs/architecture/ADR-0006-diagnostic-logging-and-safe-observability.md`
+records the durable observability decision for Publisher structured JSON
+diagnostics, stdout/stderr separation, lifecycle events, safe messages, and
+redaction policy. The ADR is documentation-only and does not replace this
+Phase 4-2-1 implementation record.
+
 Status: DONE as local-only Phase 4 implementation.
 
 Phase 4-2-1 standardized Publisher CLI diagnostic logging without changing
@@ -1688,6 +1695,48 @@ backoff, and safe message policy.
 Safe user-facing and evidence messages must not expose raw exception text,
 stack traces, raw HTTP bodies, tokens, credentials, private URLs, temporary
 public URLs, local paths, or implementation-specific exception details.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, mutate token stores,
+create or update packages or distribution artifacts, write to `dist`, re-run
+flagged executables, push commits, change Frozen specifications, change public
+APIs, change tests, change production code, or change production design. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, and release remains blocked.
+
+## ADR-0006 Diagnostic Logging and Safe Observability
+
+Status: DONE as documentation-only / local-only observability decision record.
+
+Added
+`docs/architecture/ADR-0006-diagnostic-logging-and-safe-observability.md` and
+updated `docs/architecture/ADR_INDEX.md` to record Publisher diagnostic
+logging and safe observability as an accepted Architecture Decision.
+
+ADR-0006 records structured JSON diagnostic logs as the standard, stdout as
+the user-facing result stream, and stderr as the structured diagnostic log
+stream. It records `sessionId`, stable event `code`, `level`, and
+`timestampUtc` as basic fields, with command, phase, operation, and safe
+message context governed by the Phase 4-2-1 Diagnostic Logging Specification.
+It also records session, command, phase, operation, summary, and warning
+lifecycle events.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+### Decision
+
+Safe messages and redaction policy are required before diagnostic events are
+serialized. Logs must not expose raw exception messages, stack traces, raw
+HTTP bodies, OAuth tokens, credentials, Authorization headers, private URLs,
+temporary public URLs, local paths, or secrets.
+
+Plain text only logging, raw exception logging, and unbounded verbose logging
+are not adopted. External log collection infrastructure, OpenTelemetry,
+distributed tracing, and monitoring service integration are out of scope.
 
 ### Explicit non-actions
 
