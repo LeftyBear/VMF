@@ -1545,3 +1545,39 @@ Snapshot, Recovery, Archived restoration, or schema migration was introduced.
 | `dotnet format --verify-no-changes` | PASS |
 | `git diff --check` | PASS |
 | Frozen specification changes | None |
+
+## ADR Operating Basis
+
+Status: DONE as documentation-only / local-only architecture decision record
+process.
+
+Added `docs/architecture/ADR_INDEX.md`,
+`docs/architecture/adr-template.md`, and
+`docs/architecture/ADR-0001-architecture-decision-record-process.md` to define
+the VMF repository ADR operating basis.
+
+ADR numbering starts at `ADR-0001` and continues as a zero-padded sequence.
+ADR statuses are limited to Proposed, Accepted, Superseded, and Deprecated.
+The ADR index tracks number, title, current status, successor ADR, and related
+documents. Accepted ADR body content is stable by default; meaningful changes
+are recorded by a later ADR that supersedes the earlier ADR.
+
+### Decision
+
+ADRs record durable architecture decision rationale only. They do not replace
+Canon v2.0, VMF v1.0 Frozen Specification, Publisher implementation
+specifications, public API contracts, persisted schemas, canonical formats,
+release checklists, runbooks, release notes, verification evidence, or current
+status records.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, create or update packages
+or distribution artifacts, write to `dist`, re-run flagged executables, push
+commits, change Frozen specifications, change public APIs, change tests,
+change production code, or change production design.

@@ -39,6 +39,7 @@ modify Frozen specifications.
 | Publisher Release Approval Package | Done as documentation-only / local-only approval package organization; recommendation Hold; release state unchanged. |
 | Publisher vNext Backlog | Done as documentation-only / local-only backlog record; release state unchanged. |
 | Publisher Avast Response Intake Template | Done as documentation-only / local-only template; no Avast response received; release state unchanged. |
+| ADR operating basis | Done as documentation-only / local-only architecture decision record process; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -249,7 +250,28 @@ The template does not approve a release, create or update packages, modify
 or Google Drive, re-run flagged executables, change Frozen specifications,
 change public APIs, change production code, or change production design.
 
-## 13. Related Commits
+## 13. ADR Operating Basis
+
+`docs/architecture/ADR_INDEX.md`,
+`docs/architecture/adr-template.md`, and
+`docs/architecture/ADR-0001-architecture-decision-record-process.md` define the
+repository ADR operating basis. ADR numbering starts at `ADR-0001`; statuses
+are limited to Proposed, Accepted, Superseded, and Deprecated; and Accepted ADR
+body content remains stable except for non-semantic corrections or replacement
+by a later ADR.
+
+The ADR process is documentation-only and local-only. It does not replace
+Frozen Specifications, implementation specifications, public API contracts,
+runbooks, release records, verification evidence, or current status records.
+
+The release boundary is unchanged: Avast false-positive handling remains
+pending, vendor clearance has not been obtained, and no release, tag,
+publication, package or distribution artifact creation or update, Live E2E,
+Google Docs mutation, Google Drive mutation, flagged executable re-run,
+production code change, test change, Frozen specification change, public API
+change, or push is authorized by the ADR operating basis.
+
+## 14. Related Commits
 
 | Commit | Meaning |
 | --- | --- |
@@ -260,7 +282,7 @@ change public APIs, change production code, or change production design.
 | `cf77964` | Checklist |
 | `e59a7ec` | Execution order |
 
-## 14. Status Interpretation
+## 15. Status Interpretation
 
 Use this status as:
 

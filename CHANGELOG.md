@@ -4,6 +4,34 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ---
 
+# 2026-08-05
+
+## Added
+
+- Added `docs/architecture/ADR_INDEX.md`,
+  `docs/architecture/adr-template.md`, and
+  `docs/architecture/ADR-0001-architecture-decision-record-process.md` to
+  establish the VMF repository ADR operating basis as docs-only / local-only
+  architecture decision tracking.
+
+## Changed
+
+- Recorded that ADR numbering starts at `ADR-0001`, ADR statuses are limited
+  to Proposed, Accepted, Superseded, and Deprecated, the ADR index tracks
+  successor ADRs and related documents, and Accepted ADRs are replaced by later
+  ADRs rather than rewritten for new meaning.
+- Recorded that ADRs do not replace Frozen Specifications, implementation
+  specifications, public API contracts, runbooks, release records,
+  verification evidence, or current status records.
+- Maintained the existing release boundary: Avast false-positive handling
+  remains pending, vendor clearance has not been obtained, release remains
+  blocked, and no Live E2E, Google Docs or Drive mutation, package or
+  distribution artifact update, release, tag, publication, flagged executable
+  re-run, production code change, test change, Frozen specification change,
+  public API change, or push was performed.
+
+---
+
 # 2026-08-02
 
 ## Added
