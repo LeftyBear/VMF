@@ -1747,3 +1747,46 @@ flagged executables, push commits, change Frozen specifications, change public
 APIs, change tests, change production code, or change production design. Avast
 false-positive handling remains pending, vendor clearance has not been
 obtained, and release remains blocked.
+
+## ADR-0007 Error Handling and Failure Classification
+
+Status: DONE as documentation-only / local-only error handling decision
+record.
+
+Added
+`docs/architecture/ADR-0007-error-handling-and-failure-classification.md` and
+updated `docs/architecture/ADR_INDEX.md` to record Publisher CLI error
+handling and failure classification as an accepted Architecture Decision.
+
+ADR-0007 records the existing Phase 4-2-2 error handling behavior:
+verification failures return exit code `4`, transient failures return exit
+code `75`, cancellation returns exit code `130`, and unknown, blank, or
+missing stable error codes fall back to `Internal`.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+### Decision
+
+Publisher CLI owns final failure classification, exit-code conversion, and
+fixed safe summary messages. Stable error codes remain separate from safe
+user-facing messages. Raw exception messages, stack traces, raw HTTP bodies,
+provider payloads, private URLs, local paths, tokens, credentials, and
+implementation-specific exception details must not be emitted to user-facing
+output or structured diagnostics.
+
+ADR-0007 keeps ADR-0005 focused on retry policy and ADR-0006 focused on
+diagnostic logging. `OperationCanceledException` must be rethrown through
+lower layers and handled only at the CLI boundary or an owning test harness
+boundary.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, mutate token stores,
+create or update packages or distribution artifacts, write to `dist`, re-run
+flagged executables, push commits, change Frozen specifications, change public
+APIs, change tests, change production code, or change production design. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, and release remains blocked.

@@ -45,6 +45,7 @@ modify Frozen specifications.
 | ADR-0004 Verified State and differential update safety | Done as documentation-only / local-only update-safety decision record; release state unchanged. |
 | ADR-0005 retry policy and failure classification | Done as documentation-only / local-only retry decision record; release state unchanged. |
 | ADR-0006 diagnostic logging and safe observability | Done as documentation-only / local-only observability decision record; release state unchanged. |
+| ADR-0007 error handling and failure classification | Done as documentation-only / local-only error handling decision record; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -366,6 +367,32 @@ external log collection infrastructure, OpenTelemetry, distributed tracing, or
 monitoring services.
 
 ADR-0006 does not replace Phase 4-2-1 development records, Frozen
+Specifications, public APIs, tests, runbooks, release records, verification
+evidence, or current status records. It does not authorize release, tag,
+publication, package or distribution artifact creation or update, Live E2E,
+Google Docs mutation, Google Drive mutation, token-store mutation, flagged
+executable re-run, production code change, test change, Frozen specification
+change, public API change, vendor clearance, Avast false-positive resolution,
+risk acceptance, or push. The release boundary remains unchanged: release is
+blocked, Avast false-positive handling remains pending, and vendor clearance
+has not been obtained.
+
+`docs/architecture/ADR-0007-error-handling-and-failure-classification.md`
+records Publisher CLI error handling and failure classification as a durable
+architecture decision. It preserves the Phase 4-2-2 Error Handling
+Specification and implemented behavior: verification failures return exit
+code `4`, transient failures return exit code `75`, cancellation returns exit
+code `130`, unknown or blank stable error codes fall back to `Internal`, raw
+exception messages are not emitted to user-facing output, and stable error
+codes remain separate from fixed safe messages.
+
+ADR-0007 keeps ADR-0005 focused on retry policy and ADR-0006 focused on
+diagnostic logging. ADR-0007 records the final CLI classification,
+exit-code conversion, safe summary behavior, and requirement that
+`OperationCanceledException` be rethrown through lower layers to the CLI
+boundary.
+
+ADR-0007 does not replace Phase 4-2-2 development records, Frozen
 Specifications, public APIs, tests, runbooks, release records, verification
 evidence, or current status records. It does not authorize release, tag,
 publication, package or distribution artifact creation or update, Live E2E,

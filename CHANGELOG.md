@@ -25,6 +25,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   separation, stable diagnostic event fields, lifecycle events, safe message
   requirements, redaction policy, and rejected alternatives for unsafe or
   unbounded logging.
+- Added
+  `docs/architecture/ADR-0007-error-handling-and-failure-classification.md`
+  to record Publisher CLI failure classification, exit-code mapping,
+  verification exit `4`, transient exit `75`, cancellation exit `130`,
+  internal fallback for unknown or blank stable codes, safe message separation,
+  and `OperationCanceledException` propagation to the CLI boundary.
 - Added `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md` to
   record Publisher release gate, vendor clearance, Avast false-positive review,
   release authorization, and final release verification as long-term release
@@ -48,6 +54,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Updated the ADR index to track ADR-0006 and keep Phase 4-2-1 as the detailed
   Diagnostic Logging Specification while ADR-0006 records the durable
   safe-observability decision.
+- Updated the ADR index to track ADR-0007 and keep Phase 4-2-2 as the detailed
+  Error Handling Specification while ADR-0007 records the durable CLI error
+  handling and failure classification decision.
 - Updated the ADR index to track ADR-0003 and keep runbook procedure separate
   from ADR governance: the ADR records the long-term release-control decision
   and does not authorize release, clearance, risk acceptance, publication, tag
