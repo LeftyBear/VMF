@@ -1581,3 +1581,33 @@ execute Live E2E, mutate Google Docs or Google Drive, create or update packages
 or distribution artifacts, write to `dist`, re-run flagged executables, push
 commits, change Frozen specifications, change public APIs, change tests,
 change production code, or change production design.
+
+## ADR-0002 OAuth Desktop Authentication
+
+Status: DONE as documentation-only / local-only authentication decision
+record.
+
+Added `docs/architecture/ADR-0002-oauth-2-0-desktop-authentication.md` and
+updated `docs/architecture/ADR_INDEX.md` to record OAuth 2.0 Desktop as the
+Publisher Google API authentication decision for personal Gmail and local
+operator workflows.
+
+The ADR records that Service Account authentication remains available for
+automation and Shared Drive workflows where the target location is explicitly
+accessible to the service identity. It records token-store persistence as local
+sensitive state that must remain outside the repository, packages, logs, and
+evidence records. It also records the current Documents and Drive scopes and
+defers Google Picker plus `drive.file` least-privilege routing to vNext
+reconsideration.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, mutate token stores,
+create or update packages or distribution artifacts, write to `dist`, re-run
+flagged executables, push commits, change Frozen specifications, change public
+APIs, change tests, change production code, or change production design.

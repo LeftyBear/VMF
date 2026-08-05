@@ -40,6 +40,7 @@ modify Frozen specifications.
 | Publisher vNext Backlog | Done as documentation-only / local-only backlog record; release state unchanged. |
 | Publisher Avast Response Intake Template | Done as documentation-only / local-only template; no Avast response received; release state unchanged. |
 | ADR operating basis | Done as documentation-only / local-only architecture decision record process; release state unchanged. |
+| ADR-0002 OAuth Desktop authentication | Done as documentation-only / local-only authentication decision record; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -270,6 +271,20 @@ publication, package or distribution artifact creation or update, Live E2E,
 Google Docs mutation, Google Drive mutation, flagged executable re-run,
 production code change, test change, Frozen specification change, public API
 change, or push is authorized by the ADR operating basis.
+
+`docs/architecture/ADR-0002-oauth-2-0-desktop-authentication.md` records OAuth
+2.0 Desktop as the Publisher Google API authentication decision for personal
+Gmail and local operator workflows. It preserves Service Account support for
+automation and explicitly prepared Shared Drive access. It records Google
+Picker plus `drive.file` least-privilege routing as a vNext reconsideration
+item, not as adopted behavior.
+
+ADR-0002 does not authorize release, tag, publication, package or distribution
+artifact creation or update, Live E2E, Google Docs mutation, Google Drive
+mutation, token-store mutation, flagged executable re-run, production code
+change, test change, Frozen specification change, public API change, or push.
+The release boundary remains unchanged: Avast false-positive handling remains
+pending and vendor clearance has not been obtained.
 
 ## 14. Related Commits
 

@@ -23,6 +23,7 @@ ADR status values are limited to:
 | Number | Title | Status | Successor ADR | Related Documents |
 | --- | --- | --- | --- | --- |
 | ADR-0001 | Architecture Decision Record Process | Accepted | - | `docs/architecture/adr-template.md`; `docs/architecture/ADR_INDEX.md`; `AGENTS.md`; `VMF_CODEX_PLAYBOOK.md`; `docs/development/CURRENT_STATUS.md` |
+| ADR-0002 | OAuth 2.0 Desktop Authentication | Accepted | - | `docs/distribution/InstallationGuide.md`; `docs/distribution/LiveE2EOperations.md`; `src/Publisher/Infrastructure/Google/GooglePublisherOptions.cs`; `src/Publisher/Infrastructure/Google/OAuthDesktopGoogleCredentialProvider.cs` |
 
 ## Numbering
 

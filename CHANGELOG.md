@@ -8,6 +8,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added `docs/architecture/ADR-0002-oauth-2-0-desktop-authentication.md` to
+  record OAuth 2.0 Desktop as the Publisher Google API authentication decision
+  for personal Gmail and local operator workflows.
 - Added `docs/architecture/ADR_INDEX.md`,
   `docs/architecture/adr-template.md`, and
   `docs/architecture/ADR-0001-architecture-decision-record-process.md` to
@@ -16,6 +19,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0002 and record Google Picker plus
+  `drive.file` least-privilege routing as a vNext reconsideration item rather
+  than an adopted behavior.
 - Recorded that ADR numbering starts at `ADR-0001`, ADR statuses are limited
   to Proposed, Accepted, Superseded, and Deprecated, the ADR index tracks
   successor ADRs and related documents, and Accepted ADRs are replaced by later
