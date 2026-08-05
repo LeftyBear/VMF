@@ -1790,3 +1790,54 @@ flagged executables, push commits, change Frozen specifications, change public
 APIs, change tests, change production code, or change production design. Avast
 false-positive handling remains pending, vendor clearance has not been
 obtained, and release remains blocked.
+
+## ADR-0008 Preflight Hard Stop and Release Boundary
+
+Status: DONE as documentation-only / local-only operational gate decision
+record.
+
+Added
+`docs/architecture/ADR-0008-preflight-hard-stop-and-release-boundary.md` and
+updated `docs/architecture/ADR_INDEX.md` to record Publisher preflight hard
+stop and release boundary enforcement as an accepted Architecture Decision.
+
+ADR-0008 records the current formal state:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+Avast false-positive handling remains pending, and vendor clearance has not
+been obtained. While that remains true, the preflight hard stop prohibits Live
+E2E, Google Docs mutation, Google Drive mutation, package or distribution
+artifact update, release, tag creation, publication, and flagged executable
+re-run.
+
+### Decision
+
+ADR-0008 fixes the operational boundary that prevents local-only evidence from
+being promoted into release authorization. Allowed work during the hold remains
+limited to documentation, build, unit tests, mock-backed verification,
+dry-run verification that does not publish or execute the flagged package
+executable, static inspection, and non-changing confirmation of package
+contents when explicitly in scope.
+
+ADR-0003 remains the release gate and vendor-clearance governance basis.
+ADR-0008 records the preflight hard stop that enforces that basis before
+release-path work begins. ADR-0005 remains responsible for retry and failure
+classification, ADR-0006 for diagnostic logging and safe observability, and
+ADR-0007 for CLI error handling and stable failure surface.
+
+Release-path work may resume only after Avast false-positive handling is
+complete, vendor clearance or another ADR-0003 owner-decision path is
+explicitly recorded, the runbook resume gate is rechecked, required
+re-verification is completed, and each later operation-specific gate is
+separately authorized.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, mutate token stores,
+create or update packages or distribution artifacts, write to `dist`, re-run
+flagged executables, push commits, change Frozen specifications, change public
+APIs, change tests, change production code, or change production design. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, and release remains blocked.

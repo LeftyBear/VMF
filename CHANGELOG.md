@@ -8,6 +8,11 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added
+  `docs/architecture/ADR-0008-preflight-hard-stop-and-release-boundary.md`
+  to record Publisher preflight hard stops, Avast-pending prohibited
+  operations, local-only allowed work, release-resume conditions, and the
+  separation between local-only verification and release authorization.
 - Added `docs/architecture/ADR-0004-verified-state-and-differential-update-safety.md`
   to record Verified State as the trusted baseline for Publisher differential
   update safety, revision-conflict abort behavior, safe physical update
@@ -46,6 +51,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0008 and keep ADR-0003 as the release
+  gate and vendor-clearance governance basis while ADR-0008 records the
+  operational preflight hard stop and release boundary.
 - Updated the ADR index to track ADR-0004 and link it to ADR-0001 through
   ADR-0003 plus the existing Phase 3-2B / Phase 3-2C voyage-log records.
 - Updated the ADR index to track ADR-0005 and keep ADR-0004 focused on update
