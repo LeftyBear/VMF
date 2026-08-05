@@ -1655,3 +1655,46 @@ flagged executables, push commits, change Frozen specifications, change public
 APIs, change tests, change production code, or change production design. Avast
 false-positive handling remains pending, vendor clearance has not been
 obtained, and release remains blocked.
+
+## ADR-0005 Retry Policy and Failure Classification
+
+Status: DONE as documentation-only / local-only retry decision record.
+
+Added
+`docs/architecture/ADR-0005-retry-policy-and-failure-classification.md` and
+updated `docs/architecture/ADR_INDEX.md` to record Publisher failure-time retry
+judgment as an accepted Architecture Decision.
+
+ADR-0005 records that automatic retry is limited to retryable,
+definitely-not-sent, idempotent operations under bounded backoff. It preserves
+the existing Phase 4-2-2 exit-code relationship and Phase 4-2-3 retry policy:
+exhausted safe transient retry maps to `Transient` / exit code `75`,
+verification and revision-conflict failures map to verification handling,
+configuration errors are not retried, unknown or blank stable codes remain
+`Internal` fallback cases, and `OperationCanceled` is not retried.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+### Decision
+
+ADR-0004 remains the update-safety ADR: Verified State, revision conflict hard
+stops, physical update ordering, readback verification, and state promotion.
+ADR-0005 records the failure-time retry decision: retry eligibility, transient
+classification, exit-code relationship, idempotency requirement, bounded
+backoff, and safe message policy.
+
+Safe user-facing and evidence messages must not expose raw exception text,
+stack traces, raw HTTP bodies, tokens, credentials, private URLs, temporary
+public URLs, local paths, or implementation-specific exception details.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, mutate token stores,
+create or update packages or distribution artifacts, write to `dist`, re-run
+flagged executables, push commits, change Frozen specifications, change public
+APIs, change tests, change production code, or change production design. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, and release remains blocked.

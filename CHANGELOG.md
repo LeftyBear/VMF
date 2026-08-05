@@ -13,6 +13,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   update safety, revision-conflict abort behavior, safe physical update
   ordering, mandatory readback verification, and post-verification-only
   atomic state promotion.
+- Added `docs/architecture/ADR-0005-retry-policy-and-failure-classification.md`
+  to record Publisher retryable and non-retryable failure classification,
+  transient handling, exit-code mapping, idempotency-limited retry, bounded
+  backoff, safe message policy, and non-retry behavior for revision conflicts,
+  verification failures, configuration errors, unknown or blank stable codes,
+  and cancellation.
 - Added `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md` to
   record Publisher release gate, vendor clearance, Avast false-positive review,
   release authorization, and final release verification as long-term release
@@ -30,6 +36,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 - Updated the ADR index to track ADR-0004 and link it to ADR-0001 through
   ADR-0003 plus the existing Phase 3-2B / Phase 3-2C voyage-log records.
+- Updated the ADR index to track ADR-0005 and keep ADR-0004 focused on update
+  safety while ADR-0005 records failure-time retry judgment and failure
+  classification.
 - Updated the ADR index to track ADR-0003 and keep runbook procedure separate
   from ADR governance: the ADR records the long-term release-control decision
   and does not authorize release, clearance, risk acceptance, publication, tag

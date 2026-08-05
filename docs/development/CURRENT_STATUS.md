@@ -43,6 +43,7 @@ modify Frozen specifications.
 | ADR-0002 OAuth Desktop authentication | Done as documentation-only / local-only authentication decision record; release state unchanged. |
 | ADR-0003 release gate and vendor clearance | Done as documentation-only / local-only release governance decision record; release state unchanged. |
 | ADR-0004 Verified State and differential update safety | Done as documentation-only / local-only update-safety decision record; release state unchanged. |
+| ADR-0005 retry policy and failure classification | Done as documentation-only / local-only retry decision record; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -321,6 +322,31 @@ change, test change, Frozen specification change, public API change, vendor
 clearance, Avast false-positive resolution, risk acceptance, or push. The
 release boundary remains unchanged: release is blocked, Avast false-positive
 handling remains pending, and vendor clearance has not been obtained.
+
+`docs/architecture/ADR-0005-retry-policy-and-failure-classification.md`
+records Publisher failure-time retry judgment. It preserves the Phase 4-2-2
+error handling and Phase 4-2-3 retry policy decisions: only retryable,
+definitely-not-sent, idempotent operations may be retried automatically;
+revision conflicts, verification failures, configuration errors, unknown or
+blank stable codes, and `OperationCanceled` are not automatic retry
+candidates.
+
+ADR-0005 keeps ADR-0004 focused on update safety. ADR-0004 governs Verified
+State, revision conflict hard stops, physical update ordering, readback
+verification, and state promotion. ADR-0005 governs retry eligibility,
+transient classification, exit-code relationship, bounded backoff, and safe
+message policy after a failure is observed.
+
+ADR-0005 does not replace Phase 4-2-2 or Phase 4-2-3 development records,
+Frozen Specifications, public APIs, tests, runbooks, release records,
+verification evidence, or current status records. It does not authorize
+release, tag, publication, package or distribution artifact creation or
+update, Live E2E, Google Docs mutation, Google Drive mutation, token-store
+mutation, flagged executable re-run, production code change, test change,
+Frozen specification change, public API change, vendor clearance, Avast
+false-positive resolution, risk acceptance, or push. The release boundary
+remains unchanged: release is blocked, Avast false-positive handling remains
+pending, and vendor clearance has not been obtained.
 
 ## 14. Related Commits
 

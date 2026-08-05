@@ -26,6 +26,7 @@ ADR status values are limited to:
 | ADR-0002 | OAuth 2.0 Desktop Authentication | Accepted | - | `docs/distribution/InstallationGuide.md`; `docs/distribution/LiveE2EOperations.md`; `src/Publisher/Infrastructure/Google/GooglePublisherOptions.cs`; `src/Publisher/Infrastructure/Google/OAuthDesktopGoogleCredentialProvider.cs` |
 | ADR-0003 | Release Gate and Vendor Clearance | Accepted | - | `docs/development/CURRENT_STATUS.md`; `docs/development/Publisher_PreflightHardening.md`; `docs/development/Publisher_AvastResponseIntakeTemplate.md`; `docs/development/Publisher_ReleaseApprovalPackage.md`; `docs/distribution/PublisherReleaseRunbook.md` |
 | ADR-0004 | Verified State and Differential Update Safety | Accepted | - | `docs/development/Publisher_v1.0_Implementation_Voyage_Log.md`; `docs/development/CURRENT_STATUS.md`; `docs/architecture/ADR-0001-architecture-decision-record-process.md`; `docs/architecture/ADR-0002-oauth-2-0-desktop-authentication.md`; `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md` |
+| ADR-0005 | Retry Policy and Failure Classification | Accepted | - | `docs/development/Publisher_Phase4-2-2_ErrorHandlingSpecification.md`; `docs/development/Publisher_Phase4-2-3_RetryPolicySpecification.md`; `docs/development/CURRENT_STATUS.md`; `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md`; `docs/architecture/ADR-0004-verified-state-and-differential-update-safety.md` |
 
 ## Numbering
 
