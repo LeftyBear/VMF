@@ -8,6 +8,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md` to
+  record Publisher release gate, vendor clearance, Avast false-positive review,
+  release authorization, and final release verification as long-term release
+  governance boundaries.
 - Added `docs/architecture/ADR-0002-oauth-2-0-desktop-authentication.md` to
   record OAuth 2.0 Desktop as the Publisher Google API authentication decision
   for personal Gmail and local operator workflows.
@@ -19,6 +23,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0003 and keep runbook procedure separate
+  from ADR governance: the ADR records the long-term release-control decision
+  and does not authorize release, clearance, risk acceptance, publication, tag
+  creation, package publication, Live E2E, or Google Docs / Drive mutation.
 - Updated the ADR index to track ADR-0002 and record Google Picker plus
   `drive.file` least-privilege routing as a vNext reconsideration item rather
   than an adopted behavior.

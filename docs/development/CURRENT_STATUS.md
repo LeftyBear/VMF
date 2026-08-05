@@ -41,6 +41,7 @@ modify Frozen specifications.
 | Publisher Avast Response Intake Template | Done as documentation-only / local-only template; no Avast response received; release state unchanged. |
 | ADR operating basis | Done as documentation-only / local-only architecture decision record process; release state unchanged. |
 | ADR-0002 OAuth Desktop authentication | Done as documentation-only / local-only authentication decision record; release state unchanged. |
+| ADR-0003 release gate and vendor clearance | Done as documentation-only / local-only release governance decision record; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -285,6 +286,23 @@ mutation, token-store mutation, flagged executable re-run, production code
 change, test change, Frozen specification change, public API change, or push.
 The release boundary remains unchanged: Avast false-positive handling remains
 pending and vendor clearance has not been obtained.
+
+`docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md` records the
+Publisher release gate and vendor clearance as a long-term governance decision.
+It requires successful required verification, vendor clearance, Avast
+false-positive review resolution or formal repository-owner risk acceptance,
+explicit release authorization, and successful final release verification
+before release publication, production release tag creation, production package
+publication, or unauthorized Live Google Docs / Drive mutation may proceed.
+
+ADR-0003 keeps runbook procedure separate from ADR governance. It does not
+authorize release, tag, publication, package or distribution artifact creation
+or update, Live E2E, Google Docs mutation, Google Drive mutation, token-store
+mutation, flagged executable re-run, production code change, test change,
+Frozen specification change, public API change, vendor clearance, Avast
+false-positive resolution, risk acceptance, or push. The release boundary
+remains unchanged: release is blocked, Avast false-positive handling remains
+pending, and vendor clearance has not been obtained.
 
 ## 14. Related Commits
 

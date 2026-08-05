@@ -1611,3 +1611,40 @@ execute Live E2E, mutate Google Docs or Google Drive, mutate token stores,
 create or update packages or distribution artifacts, write to `dist`, re-run
 flagged executables, push commits, change Frozen specifications, change public
 APIs, change tests, change production code, or change production design.
+
+## ADR-0003 Release Gate and Vendor Clearance
+
+Status: DONE as documentation-only / local-only release governance decision
+record.
+
+Added `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md` and
+updated `docs/architecture/ADR_INDEX.md` to record Publisher release gate and
+vendor clearance as long-term release governance boundaries.
+
+The ADR records required verification success, vendor clearance, Avast
+false-positive review resolution or formal repository-owner risk acceptance,
+explicit release authorization, and final release verification success as
+required release conditions. Until all gates are satisfied, release
+publication, production release tag creation, production package publication,
+and unauthorized Live Google Docs / Drive mutation remain prohibited.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+### Decision
+
+Runbooks remain operational procedure. ADR-0003 records the durable governance
+decision only and does not replace the runbook, approve release execution,
+obtain vendor clearance, resolve Avast false-positive handling, or accept
+antivirus risk.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, mutate token stores,
+create or update packages or distribution artifacts, write to `dist`, re-run
+flagged executables, push commits, change Frozen specifications, change public
+APIs, change tests, change production code, or change production design. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, and release remains blocked.
