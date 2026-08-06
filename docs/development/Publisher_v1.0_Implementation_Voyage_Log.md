@@ -1990,3 +1990,44 @@ APIs, change tests, change production code, or change production design. Avast
 false-positive handling remains pending, vendor clearance has not been
 obtained, the current Release Approval Package recommendation remains Hold,
 and release remains blocked.
+
+## ADR-0012 Release Resumption Procedure and Final Verification Order
+
+Status: DONE as documentation-only / local-only release-resumption-order
+decision record.
+
+Added
+`docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md`
+and updated `docs/architecture/ADR_INDEX.md` to record the final release
+resumption order as an accepted Architecture Decision.
+
+ADR-0012 applies only after vendor clearance is obtained and Avast response /
+false-positive disposition is received and reviewed. It records that vendor
+clearance alone is not release authorization, Avast response alone is not
+release authorization, and the Release Approval Package is not approval by
+itself.
+
+The required order is intake and preserve vendor / Avast response evidence,
+validate evidence authenticity and scope, confirm no remaining release
+blockers, re-run approved local verification only, review Evidence Bundle
+completeness and redaction, prepare the Release Approval Package, record an
+explicit release authorization decision, permit final release verification only
+after authorization, and permit package/dist update, tag, publication, and
+release only after final verification succeeds.
+
+ADR-0012 keeps ADR-0003 as the release gate and vendor-clearance governance
+basis, ADR-0008 as the operational preflight hard stop, ADR-0009 as the
+evidence and Release Approval Package review boundary, and ADR-0011 as the
+explicit release authorization boundary.
+
+The recommendation remains `Approval Recommendation = Hold` until explicit
+release authorization is recorded. Any ambiguity, mismatch, missing evidence,
+remaining blocker, incomplete redaction, missing approval decision, or failed
+final verification returns the state to Hold.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, create or update package
+or distribution artifacts, re-run flagged executables, change production code,
+change tests, modify Frozen specifications, or change public APIs.

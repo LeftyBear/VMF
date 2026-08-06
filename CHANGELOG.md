@@ -9,6 +9,13 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Added
 
 - Added
+  `docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md`
+  to record the post-clearance release resumption procedure and final
+  verification order, preserving the rule that vendor clearance alone, Avast
+  response alone, and the Release Approval Package alone are not release
+  authorization.
+
+- Added
   `docs/architecture/ADR-0011-release-authorization-record-and-explicit-approval-boundary.md`
   to record that release authorization must be a separate
   release-governance record, not an ADR, and that Accepted ADRs do not imply
@@ -25,6 +32,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0012 and keep release resumption
+  ordered behind vendor clearance, Avast disposition review, evidence
+  validation, blocker review, approved local verification, Release Approval
+  Package preparation, explicit release authorization, and final release
+  verification success.
+
 - Updated the ADR index to track ADR-0011 and keep ADR acceptance separate
   from release authorization, while preserving ADR-0003 as the release gate,
   ADR-0008 as the operational preflight hard stop, and ADR-0009 as the
@@ -38,6 +51,8 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Maintained the existing release boundary: Avast false-positive handling
   remains pending, vendor clearance has not been obtained, release remains
   blocked, the current Release Approval Package recommendation remains Hold,
+  ADR-0012 does not authorize release resumption, and any ambiguity, mismatch,
+  missing evidence, or failed final verification returns the state to Hold,
   and no Live E2E, Google Docs or Drive mutation, package or distribution
   artifact update, release, tag, publication, flagged executable re-run,
   production code change, test change, Frozen specification change, or public

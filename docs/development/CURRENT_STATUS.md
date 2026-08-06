@@ -50,6 +50,7 @@ modify Frozen specifications.
 | ADR-0009 evidence bundle and release approval package boundary | Done as documentation-only / local-only evidence and approval-package boundary decision record; release state unchanged. |
 | ADR-0010 vNext backlog and deferred scope boundary | Done as documentation-only / local-only backlog-boundary decision record; release state unchanged. |
 | ADR-0011 release authorization record and explicit approval boundary | Done as documentation-only / local-only release-authorization-boundary decision record; release state unchanged; recommendation Hold remains. |
+| ADR-0012 release resumption procedure and final verification order | Done as documentation-only / local-only release-resumption-order decision record; release state unchanged; recommendation Hold remains until explicit release authorization is recorded. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -93,7 +94,10 @@ separate operation-specific authorization is recorded:
 - Google Docs mutation;
 - Google Drive mutation;
 - Re-running flagged artifacts before Avast false positive handling is
-  resolved.
+  resolved;
+- Final release verification before explicit release authorization is recorded;
+- Package/dist update, tag creation, publication, or release before final
+  release verification succeeds.
 
 None of these blocked operations were performed by Phase 4 local-only
 verification.
@@ -103,7 +107,7 @@ verification.
 | Item | Status | Required Decision |
 | --- | --- | --- |
 | Phase 3-9 release approval | Pending | Repository-owner release approval or rejection after Avast handling is resolved or explicitly accepted. |
-| Release / tag / publication decision | Pending | Explicit release-gate reopening and owner authorization. |
+| Release / tag / publication decision | Pending | Explicit release-gate reopening and owner authorization after ADR-0012 release resumption order is satisfied. |
 | Live E2E decision | Pending | Explicit per-run authorization, credentials scope, destination scope, and cleanup expectations. |
 | Avast false positive resolution | Pending | Vendor response or repository-owner acceptance of the antivirus exception posture. |
 | vNext hardening backlog | Pending | Candidate treatment before adoption. |
@@ -539,3 +543,13 @@ Do not use this status as:
 - Google Docs or Google Drive mutation approval;
 - approval to re-run flagged artifacts;
 - approval to change Frozen specifications, public APIs, or production design.
+
+## 16. ADR-0012 Release Resumption Procedure And Final Verification Order
+
+`docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md` is Accepted as a documentation-only / local-only governance-boundary decision. It applies only after vendor clearance is obtained and Avast response / false-positive disposition is received and reviewed.
+
+ADR-0012 does not authorize release resumption. Vendor clearance alone is not release authorization. Avast response alone is not release authorization. The Release Approval Package is not approval by itself.
+
+The recommendation remains `Approval Recommendation = Hold` until an explicit release authorization decision is recorded. Any ambiguity, mismatch, missing evidence, remaining blocker, incomplete redaction, missing approval decision, or failed final verification returns the state to Hold.
+
+No release, tag, publication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0012.
