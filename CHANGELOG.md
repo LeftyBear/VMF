@@ -9,6 +9,14 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Added
 
 - Added
+  `docs/architecture/ADR-0016-release-versioning-tag-and-artifact-identity.md`
+  to record canonical release identity fields for future release version,
+  commit, tag, artifact or package, evidence bundle, and approval or
+  authorization record traceability, while preserving that no tag, artifact,
+  package, release version, evidence bundle, or approval record is created by
+  this ADR.
+
+- Added
   `docs/architecture/ADR-0018-emergency-release-exception-boundary.md`
   to record the emergency release exception boundary, preserving that an
   emergency exception is not normal release gate reopening and requires
@@ -67,6 +75,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0016 and record that it fills the
+  previously absent numbering slot without changing, superseding, renumbering,
+  weakening, or reinterpreting ADR-0017 or ADR-0018.
+
 - Updated the ADR index to track ADR-0018 and keep emergency release
   exception consideration separate from normal release gate reopening, vendor
   clearance, Avast false-positive resolution, release authorization, package
@@ -114,6 +126,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Maintained the existing release boundary: Avast false-positive handling
   remains pending, vendor clearance has not been obtained, release remains
   blocked, the current Release Approval Package recommendation remains Hold,
+  ADR-0016 does not create a tag or artifact and requires tag/package/artifact
+  identity to be derived only after final release authorization and final
+  verification,
   ADR-0017 does not create archive artifacts and no archive entry may imply
   release approval, publication, production readiness, vendor clearance, or
   Avast resolution while the gate remains blocked, ADR-0018 does not approve

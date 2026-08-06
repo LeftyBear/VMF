@@ -2178,6 +2178,59 @@ execute Live E2E, mutate Google Docs or Google Drive, create or update package
 or distribution artifacts, re-run flagged executables, change production code,
 change tests, modify Frozen specifications, or change public APIs.
 
+## ADR-0016 Release Versioning / Tag / Artifact Identity
+
+Status: DONE as documentation-only / local-only release-identity boundary
+decision record.
+
+Added
+`docs/architecture/ADR-0016-release-versioning-tag-and-artifact-identity.md`
+and updated `docs/architecture/ADR_INDEX.md` to record release versioning,
+tag, package, artifact, evidence bundle, and approval or authorization record
+identity responsibilities as an accepted Architecture Decision.
+
+ADR-0016 defines canonical release identity fields for future release records:
+release version, git commit, git tag, artifact or package identity, evidence
+bundle identity, and approval or authorization record identity.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, no release authorization has been granted, no Release Decision
+Record has been created, no publication has occurred, and no release identity,
+tag, package, artifact, evidence bundle, approval record, or authorization
+record has been created or finalized.
+
+### Decision
+
+Tag, package, and artifact identity must be derived only after final release
+authorization and final verification in the authorized release scope. Future
+release traceability must be preserved from tag to commit to package or
+artifact to evidence bundle to approval or authorization record.
+
+ADR-0016 prevents ambiguous release identities such as `latest`, local build
+folders, mutable package names, private local paths, and unverifiable
+artifacts. If any identity field is missing, ambiguous, mutable,
+unverifiable, derived too early, or inconsistent with final verification, the
+release state remains Hold and release-path work must stop.
+
+ADR-0016 fills the previously absent numbering slot. It does not change,
+supersede, renumber, weaken, or reinterpret ADR-0017 or ADR-0018.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, create or update package
+or distribution artifacts, write to `dist`, re-run flagged executables, change
+production code, change tests, modify Frozen specifications, change public
+APIs, obtain vendor clearance, resolve Avast false-positive handling, create
+release identity, create artifacts, create packages, finalize package
+identity, create evidence bundles, create approval records, create
+authorization records, stage changes, commit changes, or push commits.
+
 ## ADR-0017 Release Retention / Archival / Audit Trail
 
 Status: DONE as documentation-only / local-only retention, archival, and

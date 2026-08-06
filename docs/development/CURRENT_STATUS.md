@@ -54,6 +54,7 @@ modify Frozen specifications.
 | ADR-0013 release decision record and post-authorization traceability | Done as documentation-only / local-only post-authorization traceability decision record; release state unchanged; recommendation Hold remains; no Release Decision Record has been created. |
 | ADR-0014 release publication record and post-release evidence boundary | Done as documentation-only / local-only publication-record and post-release-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Publication Record or Post-Release Evidence has been created. |
 | ADR-0015 release withdrawal / rollback record and incident evidence boundary | Done as documentation-only / local-only withdrawal, rollback, and incident-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Withdrawal Record, Rollback Record, or Incident Evidence Bundle has been created. |
+| ADR-0016 release versioning / tag / artifact identity | Done as documentation-only / local-only release-identity boundary decision record; release state unchanged; recommendation Hold remains; no tag, artifact, package, release version, evidence bundle, approval record, authorization record, or release identity has been created or finalized. |
 | ADR-0017 release retention / archival / audit trail | Done as documentation-only / local-only retention, archival, and audit-trail boundary decision record; release state unchanged; recommendation Hold remains; no archive entry may imply release approval, publication, production readiness, vendor clearance, or Avast resolution while the gate remains blocked. |
 | ADR-0018 emergency release exception boundary | Done as documentation-only / local-only emergency-exception-boundary decision record; release state unchanged; recommendation Hold remains; no emergency exception approval has been granted and no blocked operation is authorized. |
 
@@ -597,7 +598,43 @@ The recommendation remains `Approval Recommendation = Hold`. Avast false-positiv
 
 No release, tag, publication, republication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0015.
 
-## 20. ADR-0017 Release Retention / Archival / Audit Trail
+## 20. ADR-0016 Release Versioning / Tag / Artifact Identity
+
+`docs/architecture/ADR-0016-release-versioning-tag-and-artifact-identity.md`
+is Accepted as a documentation-only / local-only release-identity boundary
+decision record.
+
+ADR-0016 defines the canonical release identity fields that future release
+records must preserve: release version, git commit, git tag, artifact or
+package identity, evidence bundle identity, and approval or authorization
+record identity.
+
+ADR-0016 does not create a tag, package, artifact, evidence bundle, approval
+record, authorization record, Release Decision Record, Publication Record, or
+release identity. Tag, package, and artifact identity must be derived only
+after final release authorization and final verification in the authorized
+release scope.
+
+ADR-0016 rejects ambiguous or mutable canonical identities such as `latest`,
+local build folders, mutable package names, private local paths, and
+unverifiable artifacts. It fills the previously absent numbering slot and does
+not change, supersede, renumber, weaken, or reinterpret ADR-0017 or ADR-0018.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, no release authorization has been granted, no Release Decision
+Record has been created, no publication has occurred, and no release identity,
+tag, package, artifact, evidence bundle, approval record, or authorization
+record has been created or finalized.
+
+No release, tag, publication, Live E2E, Google Docs mutation, Google Drive
+mutation, package or distribution artifact creation or update, `dist` write,
+flagged executable re-run, production code change, test change, Frozen
+specification change, public API change, vendor clearance, Avast resolution,
+artifact creation, package creation, approval record creation, authorization
+record creation, or release identity finalization was performed by ADR-0016.
+
+## 21. ADR-0017 Release Retention / Archival / Audit Trail
 
 `docs/architecture/ADR-0017-release-retention-archival-audit-trail.md` is Accepted as a documentation-only / local-only retention, archival, and audit-trail boundary decision record.
 
@@ -611,7 +648,7 @@ The recommendation remains `Approval Recommendation = Hold`. Avast false-positiv
 
 No release, tag, publication, republication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, public API change, vendor clearance, Avast resolution, or archive artifact creation was performed by ADR-0017.
 
-## 21. ADR-0018 Emergency Release Exception Boundary
+## 22. ADR-0018 Emergency Release Exception Boundary
 
 `docs/architecture/ADR-0018-emergency-release-exception-boundary.md` is
 Accepted as a documentation-only / local-only emergency-exception-boundary
