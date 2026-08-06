@@ -9,6 +9,13 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Added
 
 - Added
+  `docs/architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md`
+  to record the future Release Publication Record responsibility and
+  Post-Release Evidence boundary, preserving separation between the Evidence
+  Bundle, Release Approval Package, Release Authorization, Release Decision
+  Record, Publication Record, and post-release observation or audit evidence.
+
+- Added
   `docs/architecture/ADR-0013-release-decision-record-and-post-authorization-traceability.md`
   to record the future Release Decision Record requirement and
   post-authorization traceability boundary, preserving separation between the
@@ -39,6 +46,11 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0014 and keep post-release evidence from
+  retroactively satisfying pre-release approval, release authorization,
+  required release gates, vendor clearance, Avast false-positive resolution,
+  final release verification, or Release Decision Record completeness.
+
 - Updated the ADR index to track ADR-0013 and require future Release Decision
   Records to link decision date/time, decision owner / authorizer, authorized
   release scope, evidence bundle reference, final verification reference,
@@ -65,7 +77,8 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   remains pending, vendor clearance has not been obtained, release remains
   blocked, the current Release Approval Package recommendation remains Hold,
   ADR-0012 does not authorize release resumption, ADR-0013 does not create a
-  Release Decision Record, and any ambiguity, mismatch, missing evidence, or
+  Release Decision Record, ADR-0014 does not create a Publication Record or
+  Post-Release Evidence, and any ambiguity, mismatch, missing evidence, or
   failed final verification returns the state to Hold, and no Live E2E, Google
   Docs or Drive mutation, package or distribution artifact update, release,
   tag, publication, flagged executable re-run, production code change, test

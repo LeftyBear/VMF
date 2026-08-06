@@ -52,6 +52,7 @@ modify Frozen specifications.
 | ADR-0011 release authorization record and explicit approval boundary | Done as documentation-only / local-only release-authorization-boundary decision record; release state unchanged; recommendation Hold remains. |
 | ADR-0012 release resumption procedure and final verification order | Done as documentation-only / local-only release-resumption-order decision record; release state unchanged; recommendation Hold remains until explicit release authorization is recorded. |
 | ADR-0013 release decision record and post-authorization traceability | Done as documentation-only / local-only post-authorization traceability decision record; release state unchanged; recommendation Hold remains; no Release Decision Record has been created. |
+| ADR-0014 release publication record and post-release evidence boundary | Done as documentation-only / local-only publication-record and post-release-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Publication Record or Post-Release Evidence has been created. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -566,3 +567,15 @@ The Release Decision Record is not itself a release artifact, package, publicati
 The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, and no publication record has been created.
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0013.
+
+## 18. ADR-0014 Release Publication Record And Post-Release Evidence Boundary
+
+`docs/architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md` is Accepted as a documentation-only / local-only governance-boundary decision. It applies only after actual publication has occurred.
+
+ADR-0014 defines the future Release Publication Record as the record of the facts actually published, including publication date/time, operator, version, commit / tag / release identifier, package or distribution artifact identity, destination, publication command or workflow reference, linked Release Decision Record or authorization reference, and post-publication verification or observation references.
+
+Post-Release Evidence is evidence collected after publication. It may document observations, confirmations, or audit evidence, but it must not be used to retroactively satisfy or repair pre-release approval, release authorization, required release gates, vendor clearance, Avast false-positive resolution, final release verification required before publication, or Release Decision Record completeness.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, no publication has occurred, no Publication Record has been created, and no Post-Release Evidence has been created.
+
+No release, tag, publication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0014.

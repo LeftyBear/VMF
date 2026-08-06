@@ -2032,6 +2032,51 @@ execute Live E2E, mutate Google Docs or Google Drive, create or update package
 or distribution artifacts, re-run flagged executables, change production code,
 change tests, modify Frozen specifications, or change public APIs.
 
+## ADR-0014 Release Publication Record and Post-Release Evidence Boundary
+
+Status: DONE as documentation-only / local-only publication-record and
+post-release-evidence boundary decision record.
+
+Added
+`docs/architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md`
+and updated `docs/architecture/ADR_INDEX.md` to record the Release Publication
+Record and Post-Release Evidence boundary as an accepted Architecture
+Decision.
+
+ADR-0014 applies only after actual publication has occurred. It records that a
+future Release Publication Record must identify the facts actually published,
+including publication date/time, operator, version, commit / tag / release
+identifier, package or distribution artifact identity, publication
+destination, publication command or workflow reference, linked Release
+Decision Record or authorization reference, and post-publication verification
+or observation references.
+
+Post-Release Evidence is evidence collected after publication. It may record
+observations, confirmations, or audit evidence, but it must not retroactively
+satisfy or repair pre-release approval, release authorization, required
+release gates, vendor clearance, Avast false-positive resolution, final
+release verification required before publication, or Release Decision Record
+completeness.
+
+ADR-0014 keeps ADR-0003 as the release gate and vendor-clearance governance
+basis, ADR-0009 as the Evidence Bundle and Release Approval Package review
+boundary, ADR-0012 as the release resumption and final verification order, and
+ADR-0013 as the Release Decision Record and post-authorization traceability
+boundary.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, no release authorization has been granted, no Release Decision
+Record has been created, no publication has occurred, no Publication Record
+has been created, and no Post-Release Evidence has been created.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, create or update package
+or distribution artifacts, re-run flagged executables, change production code,
+change tests, modify Frozen specifications, or change public APIs.
+
 ## ADR-0013 Release Decision Record and Post-Authorization Traceability
 
 Status: DONE as documentation-only / local-only post-authorization
