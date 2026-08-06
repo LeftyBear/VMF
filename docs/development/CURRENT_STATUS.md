@@ -48,6 +48,7 @@ modify Frozen specifications.
 | ADR-0007 error handling and failure classification | Done as documentation-only / local-only error handling decision record; release state unchanged. |
 | ADR-0008 preflight hard stop and release boundary | Done as documentation-only / local-only operational gate decision record; release state unchanged. |
 | ADR-0009 evidence bundle and release approval package boundary | Done as documentation-only / local-only evidence and approval-package boundary decision record; release state unchanged. |
+| ADR-0010 vNext backlog and deferred scope boundary | Done as documentation-only / local-only backlog-boundary decision record; release state unchanged. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -455,6 +456,32 @@ Frozen specification change, public API change, vendor clearance, Avast
 false-positive resolution, risk acceptance, approval granted, or push. The
 release boundary remains unchanged: release is blocked, Avast false-positive
 handling remains pending, and vendor clearance has not been obtained.
+
+`docs/architecture/ADR-0010-vnext-backlog-and-deferred-scope-boundary.md`
+records Publisher vNext backlog classification and deferred scope as a
+docs-only / local-only planning-boundary decision.
+
+ADR-0010 fixes that P0, P1, P2, Blocked, and Deferred classifications in
+`docs/development/Publisher_vNext_Backlog.md` are planning, triage,
+sequencing, and traceability labels only. They are not implementation
+approval, vNext feature adoption, v1.0 release authorization, vendor
+clearance, Avast false-positive resolution, Live E2E authorization, Google
+Docs / Drive mutation approval, package or distribution artifact approval, tag
+approval, or publication approval.
+
+Google Picker plus `drive.file` remains a vNext reconsideration candidate. It
+is not an adopted design decision for the current v1.0 release boundary.
+
+ADR-0010 does not replace backlog records, runbooks, release records,
+verification evidence, approval packages, Frozen Specifications, public APIs,
+or tests. It does not authorize release, tag, publication, package or
+distribution artifact creation or update, Live E2E, Google Docs mutation,
+Google Drive mutation, token-store mutation, flagged executable re-run,
+production code change, test change, Frozen specification change, public API
+change, vendor clearance, Avast false-positive resolution, risk acceptance,
+approval granted, or push. The release boundary remains unchanged: release is
+blocked, Avast false-positive handling remains pending, and vendor clearance
+has not been obtained.
 
 ## 14. Related Commits
 

@@ -4,6 +4,35 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ---
 
+# 2026-08-06
+
+## Added
+
+- Added
+  `docs/architecture/ADR-0010-vnext-backlog-and-deferred-scope-boundary.md`
+  to record Publisher vNext backlog classification and deferred scope as a
+  docs-only / local-only planning boundary, not vNext feature adoption, v1.0
+  release authorization, vendor clearance, Avast resolution, Live E2E
+  authorization, Google Docs / Drive mutation approval, package approval, tag
+  approval, or publication approval.
+
+## Changed
+
+- Updated the ADR index to track ADR-0010 and keep P0, P1, P2, Blocked, and
+  Deferred backlog labels as planning, triage, and sequencing classifications
+  rather than implementation approval or release authorization.
+- Recorded that Google Picker plus `drive.file` remains a vNext
+  reconsideration candidate and is not an adopted design decision for the
+  current v1.0 release boundary.
+- Maintained the existing release boundary: Avast false-positive handling
+  remains pending, vendor clearance has not been obtained, release remains
+  blocked, and no Live E2E, Google Docs or Drive mutation, package or
+  distribution artifact update, release, tag, publication, flagged executable
+  re-run, production code change, test change, Frozen specification change, or
+  public API change was performed.
+
+---
+
 # 2026-08-05
 
 ## Added

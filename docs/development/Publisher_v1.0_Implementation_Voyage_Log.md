@@ -1891,3 +1891,48 @@ flagged executables, push commits, change Frozen specifications, change public
 APIs, change tests, change production code, or change production design. Avast
 false-positive handling remains pending, vendor clearance has not been
 obtained, and release remains blocked.
+
+## ADR-0010 vNext Backlog and Deferred Scope Boundary
+
+Status: DONE as documentation-only / local-only backlog-boundary decision
+record.
+
+Added
+`docs/architecture/ADR-0010-vnext-backlog-and-deferred-scope-boundary.md` and
+updated `docs/architecture/ADR_INDEX.md` to record Publisher vNext backlog
+classification and deferred scope as an accepted Architecture Decision.
+
+ADR-0010 records that `docs/development/Publisher_vNext_Backlog.md` is a
+planning, triage, sequencing, and traceability record only. Its P0, P1, P2,
+Blocked, and Deferred classifications are not implementation approval, vNext
+feature adoption, v1.0 release authorization, vendor clearance, Avast
+false-positive resolution, Live E2E authorization, Google Docs / Drive
+mutation approval, package or distribution artifact approval, tag approval, or
+publication approval.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+### Decision
+
+vNext candidates are not v1.0 release authorization. Google Picker plus
+`drive.file` least-privilege routing remains a vNext reconsideration
+candidate, not an adopted design decision for the current v1.0 release
+boundary.
+
+Backlog organization is allowed during the current hold only as docs-only /
+local-only work. It may clarify future sequence and deferred scope, but it
+must preserve Frozen Specifications, public APIs, production code, tests,
+package artifacts, distribution artifacts, release records, and the
+release-blocked state.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, mutate token stores,
+create or update packages or distribution artifacts, write to `dist`, re-run
+flagged executables, push commits, change Frozen specifications, change public
+APIs, change tests, change production code, or change production design. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, and release remains blocked.
