@@ -9,6 +9,13 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Added
 
 - Added
+  `docs/architecture/ADR-0017-release-retention-archival-audit-trail.md`
+  to record release retention, archival, and audit trail responsibilities,
+  preserving the boundary that immutable audit evidence is documentation and
+  evidence preservation, not release authorization, publication approval,
+  vendor clearance, Avast resolution, or production readiness.
+
+- Added
   `docs/architecture/ADR-0015-release-withdrawal-rollback-record-and-incident-evidence-boundary.md`
   to record the future Release Withdrawal Record, Rollback Record, and
   Incident Evidence Bundle boundaries, preserving separation from the Release
@@ -53,6 +60,11 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0017 and require archived evidence to
+  preserve traceability from release decision to verification, vendor
+  clearance, release approval evidence, and package/release identifiers when
+  those records exist and are authorized to be recorded.
+
 - Updated the ADR index to track ADR-0015 and require future withdrawal or
   rollback records to identify trigger, affected artifact or publication
   target, detection timestamp, containment action, rollback or withdrawal
@@ -89,6 +101,9 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Maintained the existing release boundary: Avast false-positive handling
   remains pending, vendor clearance has not been obtained, release remains
   blocked, the current Release Approval Package recommendation remains Hold,
+  ADR-0017 does not create archive artifacts and no archive entry may imply
+  release approval, publication, production readiness, vendor clearance, or
+  Avast resolution while the gate remains blocked,
   ADR-0012 does not authorize release resumption, ADR-0013 does not create a
   Release Decision Record, ADR-0014 does not create a Publication Record or
   Post-Release Evidence, ADR-0015 does not create a Withdrawal Record,

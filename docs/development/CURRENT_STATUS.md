@@ -54,6 +54,7 @@ modify Frozen specifications.
 | ADR-0013 release decision record and post-authorization traceability | Done as documentation-only / local-only post-authorization traceability decision record; release state unchanged; recommendation Hold remains; no Release Decision Record has been created. |
 | ADR-0014 release publication record and post-release evidence boundary | Done as documentation-only / local-only publication-record and post-release-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Publication Record or Post-Release Evidence has been created. |
 | ADR-0015 release withdrawal / rollback record and incident evidence boundary | Done as documentation-only / local-only withdrawal, rollback, and incident-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Withdrawal Record, Rollback Record, or Incident Evidence Bundle has been created. |
+| ADR-0017 release retention / archival / audit trail | Done as documentation-only / local-only retention, archival, and audit-trail boundary decision record; release state unchanged; recommendation Hold remains; no archive entry may imply release approval, publication, production readiness, vendor clearance, or Avast resolution while the gate remains blocked. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -594,3 +595,17 @@ Incident evidence must follow safe evidence rules: no credentials, tokens, priva
 The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, no publication has occurred, no Publication Record has been created, no Post-Release Evidence has been created, no Withdrawal Record has been created, no Rollback Record has been created, and no Incident Evidence Bundle has been created.
 
 No release, tag, publication, republication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0015.
+
+## 20. ADR-0017 Release Retention / Archival / Audit Trail
+
+`docs/architecture/ADR-0017-release-retention-archival-audit-trail.md` is Accepted as a documentation-only / local-only retention, archival, and audit-trail boundary decision record.
+
+ADR-0017 requires finalized release evidence, approval packages, vendor clearance responses, final verification records, release authorization records, release decision records, publication records, post-release evidence, withdrawal records, rollback records, and incident evidence bundles to be retained as immutable audit evidence.
+
+Archival is documentation and evidence preservation only. It is not release authorization, release approval, package approval, publication approval, vendor clearance, Avast false-positive resolution, Live E2E authorization, Google Docs / Drive mutation authorization, tag authorization, or production readiness.
+
+Archived evidence must preserve traceability from release decision to verification, vendor clearance, Release Approval Package, Evidence Bundle, and package/release identifiers when those source records exist and are authorized to be recorded.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, no publication has occurred, no archive entry may imply release approval or production readiness, and release remains blocked.
+
+No release, tag, publication, republication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, public API change, vendor clearance, Avast resolution, or archive artifact creation was performed by ADR-0017.

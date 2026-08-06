@@ -37,13 +37,20 @@ ADR status values are limited to:
 | ADR-0013 | Release Decision Record and Post-Authorization Traceability | Accepted | - | `docs/development/Publisher_ReleaseApprovalPackage.md`; `docs/development/Publisher_AvastResponseIntakeTemplate.md`; `docs/development/CURRENT_STATUS.md`; `docs/development/Publisher_v1.0_Implementation_Voyage_Log.md`; `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md`; `docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md`; `docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md` |
 | ADR-0014 | Release Publication Record and Post-Release Evidence Boundary | Accepted | - | `docs/development/Publisher_ReleaseApprovalPackage.md`; `docs/development/Publisher_AvastResponseIntakeTemplate.md`; `docs/development/CURRENT_STATUS.md`; `docs/development/Publisher_v1.0_Implementation_Voyage_Log.md`; `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md`; `docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md`; `docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md`; `docs/architecture/ADR-0013-release-decision-record-and-post-authorization-traceability.md` |
 | ADR-0015 | Release Withdrawal / Rollback Record and Incident Evidence Boundary | Accepted | - | `docs/development/Publisher_ReleaseApprovalPackage.md`; `docs/development/Publisher_AvastResponseIntakeTemplate.md`; `docs/development/CURRENT_STATUS.md`; `docs/development/Publisher_v1.0_Implementation_Voyage_Log.md`; `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md`; `docs/architecture/ADR-0008-preflight-hard-stop-and-release-boundary.md`; `docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md`; `docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md`; `docs/architecture/ADR-0013-release-decision-record-and-post-authorization-traceability.md`; `docs/architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md` |
+| ADR-0017 | Release Retention / Archival / Audit Trail | Accepted | - | `docs/development/Publisher_ReleaseApprovalPackage.md`; `docs/development/Publisher_AvastResponseIntakeTemplate.md`; `docs/development/CURRENT_STATUS.md`; `docs/development/Publisher_v1.0_Implementation_Voyage_Log.md`; `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md`; `docs/architecture/ADR-0008-preflight-hard-stop-and-release-boundary.md`; `docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md`; `docs/architecture/ADR-0011-release-authorization-record-and-explicit-approval-boundary.md`; `docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md`; `docs/architecture/ADR-0013-release-decision-record-and-post-authorization-traceability.md`; `docs/architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md`; `docs/architecture/ADR-0015-release-withdrawal-rollback-record-and-incident-evidence-boundary.md` |
 
 ## Numbering
 
 ADR numbers are assigned as a zero-padded sequence beginning at `ADR-0001`.
-The next ADR number is the next unused number in this index.
+The next ADR number is normally the next unused number in this index.
 
 Numbers are never reused, even when an ADR is superseded or deprecated.
+
+When task-specific instructions explicitly assign a later ADR number, the
+index may record that assigned number without inferring, reserving, or creating
+the skipped number. ADR-0016 is not present in this checkout at the time
+ADR-0017 is accepted, and this index does not create an ADR-0016 record by
+implication.
 
 ## Index Maintenance
 
