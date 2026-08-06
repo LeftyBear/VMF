@@ -55,6 +55,7 @@ modify Frozen specifications.
 | ADR-0014 release publication record and post-release evidence boundary | Done as documentation-only / local-only publication-record and post-release-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Publication Record or Post-Release Evidence has been created. |
 | ADR-0015 release withdrawal / rollback record and incident evidence boundary | Done as documentation-only / local-only withdrawal, rollback, and incident-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Withdrawal Record, Rollback Record, or Incident Evidence Bundle has been created. |
 | ADR-0017 release retention / archival / audit trail | Done as documentation-only / local-only retention, archival, and audit-trail boundary decision record; release state unchanged; recommendation Hold remains; no archive entry may imply release approval, publication, production readiness, vendor clearance, or Avast resolution while the gate remains blocked. |
+| ADR-0018 emergency release exception boundary | Done as documentation-only / local-only emergency-exception-boundary decision record; release state unchanged; recommendation Hold remains; no emergency exception approval has been granted and no blocked operation is authorized. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -609,3 +610,32 @@ Archived evidence must preserve traceability from release decision to verificati
 The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, no publication has occurred, no archive entry may imply release approval or production readiness, and release remains blocked.
 
 No release, tag, publication, republication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, public API change, vendor clearance, Avast resolution, or archive artifact creation was performed by ADR-0017.
+
+## 21. ADR-0018 Emergency Release Exception Boundary
+
+`docs/architecture/ADR-0018-emergency-release-exception-boundary.md` is
+Accepted as a documentation-only / local-only emergency-exception-boundary
+decision record.
+
+ADR-0018 records that an emergency release exception is not normal release gate
+reopening. It does not clear Avast pending, does not obtain vendor clearance,
+does not change `Approval Recommendation = Hold`, and does not convert a
+blocked release into an approved release path.
+
+Emergency release exception consideration requires explicit authority, exact
+scope, risk acceptance naming unresolved release-gate conditions, evidence,
+rollback or withdrawal planning, operator responsibility, post-incident
+review, and traceability to a later ADR or release decision record.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, no release authorization has been granted, no emergency exception
+approval has been granted, no Release Decision Record has been created, and no
+publication has occurred.
+
+No release, tag, publication, Live E2E, Google Docs mutation, Google Drive
+mutation, package or distribution artifact creation or update, `dist` write,
+flagged executable re-run, production code change, test change, Frozen
+specification change, public API change, vendor clearance, Avast resolution,
+risk acceptance, emergency exception approval, or normal release gate reopening
+was performed by ADR-0018.

@@ -2229,3 +2229,57 @@ or distribution artifacts, write to `dist`, re-run flagged executables, change
 production code, change tests, modify Frozen specifications, change public
 APIs, obtain vendor clearance, resolve Avast false-positive handling, create
 archive artifacts, stage changes, commit changes, or push commits.
+
+## ADR-0018 Emergency Release Exception Boundary
+
+Status: DONE as documentation-only / local-only emergency-exception-boundary
+decision record.
+
+Added
+`docs/architecture/ADR-0018-emergency-release-exception-boundary.md`
+and updated `docs/architecture/ADR_INDEX.md` to record the emergency release
+exception boundary as an accepted Architecture Decision.
+
+ADR-0018 records that an emergency release exception is not normal release gate
+reopening. It does not clear Avast pending, does not obtain vendor clearance,
+does not change `Approval Recommendation = Hold`, and does not convert a
+blocked release into an approved release path.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, no release authorization has been granted, no emergency exception
+approval has been granted, no Release Decision Record has been created, and no
+publication has occurred.
+
+### Decision
+
+Emergency release exception consideration requires explicit authority, exact
+scope, risk acceptance naming unresolved release-gate conditions, evidence,
+rollback or withdrawal planning, operator responsibility, post-incident
+review, and traceability to a later ADR or release decision record.
+
+Unless an emergency exception is explicitly approved and recorded with the
+required authority, scope, risk acceptance, evidence, rollback plan, and
+post-incident review requirement, release, tag creation, publication, package
+creation or update, distribution artifact update, writing to `dist`, Live E2E,
+Google Docs mutation, Google Drive mutation, token-store mutation, flagged
+executable re-run, and flagged-executable-dependent vendor submission remain
+prohibited.
+
+An emergency exception is not a permanent precedent. After containment, it
+must be followed by post-incident review and tracked by a later ADR or release
+decision record.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, create or update package
+or distribution artifacts, write to `dist`, re-run flagged executables, change
+production code, change tests, modify Frozen specifications, change public
+APIs, obtain vendor clearance, resolve Avast false-positive handling, accept
+risk, approve emergency exception use, reopen the normal release gate, stage
+changes, commit changes, or push commits.
