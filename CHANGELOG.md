@@ -9,6 +9,13 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Added
 
 - Added
+  `docs/architecture/ADR-0011-release-authorization-record-and-explicit-approval-boundary.md`
+  to record that release authorization must be a separate
+  release-governance record, not an ADR, and that Accepted ADRs do not imply
+  release approval, production readiness, vendor clearance, or authorization
+  to publish, tag, package, distribute, run Live E2E, mutate Google Docs /
+  Drive, or re-run flagged executables.
+- Added
   `docs/architecture/ADR-0010-vnext-backlog-and-deferred-scope-boundary.md`
   to record Publisher vNext backlog classification and deferred scope as a
   docs-only / local-only planning boundary, not vNext feature adoption, v1.0
@@ -18,6 +25,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0011 and keep ADR acceptance separate
+  from release authorization, while preserving ADR-0003 as the release gate,
+  ADR-0008 as the operational preflight hard stop, and ADR-0009 as the
+  evidence and Release Approval Package review boundary.
 - Updated the ADR index to track ADR-0010 and keep P0, P1, P2, Blocked, and
   Deferred backlog labels as planning, triage, and sequencing classifications
   rather than implementation approval or release authorization.
@@ -26,10 +37,11 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   current v1.0 release boundary.
 - Maintained the existing release boundary: Avast false-positive handling
   remains pending, vendor clearance has not been obtained, release remains
-  blocked, and no Live E2E, Google Docs or Drive mutation, package or
-  distribution artifact update, release, tag, publication, flagged executable
-  re-run, production code change, test change, Frozen specification change, or
-  public API change was performed.
+  blocked, the current Release Approval Package recommendation remains Hold,
+  and no Live E2E, Google Docs or Drive mutation, package or distribution
+  artifact update, release, tag, publication, flagged executable re-run,
+  production code change, test change, Frozen specification change, or public
+  API change was performed.
 
 ---
 

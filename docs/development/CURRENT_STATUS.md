@@ -49,6 +49,7 @@ modify Frozen specifications.
 | ADR-0008 preflight hard stop and release boundary | Done as documentation-only / local-only operational gate decision record; release state unchanged. |
 | ADR-0009 evidence bundle and release approval package boundary | Done as documentation-only / local-only evidence and approval-package boundary decision record; release state unchanged. |
 | ADR-0010 vNext backlog and deferred scope boundary | Done as documentation-only / local-only backlog-boundary decision record; release state unchanged. |
+| ADR-0011 release authorization record and explicit approval boundary | Done as documentation-only / local-only release-authorization-boundary decision record; release state unchanged; recommendation Hold remains. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -482,6 +483,31 @@ change, vendor clearance, Avast false-positive resolution, risk acceptance,
 approval granted, or push. The release boundary remains unchanged: release is
 blocked, Avast false-positive handling remains pending, and vendor clearance
 has not been obtained.
+
+`docs/architecture/ADR-0011-release-authorization-record-and-explicit-approval-boundary.md`
+records that release authorization must be a separate release-governance
+record, not an ADR.
+
+ADR-0011 fixes that Accepted ADRs document architectural and operational
+decisions only. Accepted ADRs do not imply release approval, production
+readiness, vendor clearance, or authorization to publish, tag, package,
+distribute, re-run flagged executables, perform Live E2E, or mutate live
+Google Docs / Drive resources.
+
+ADR-0011 keeps ADR-0003 as the release gate and vendor-clearance governance
+basis, ADR-0008 as the operational preflight hard stop, and ADR-0009 as the
+evidence and Release Approval Package review boundary.
+
+The Release Approval Package remains evidence for review, not approval itself.
+The current recommendation remains `Approval Recommendation = Hold`. A `Hold`
+recommendation cannot authorize release, package publication, tagging, Live
+E2E, Google Docs / Drive mutation, distribution, or flagged executable re-run.
+
+If vendor clearance or an Avast response arrives later, release remains
+blocked until a separate explicit release authorization record is created and
+approved. The release boundary remains unchanged: release is blocked, Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, and no release authorization has been created.
 
 ## 14. Related Commits
 

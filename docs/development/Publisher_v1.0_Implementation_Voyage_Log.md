@@ -1936,3 +1936,57 @@ flagged executables, push commits, change Frozen specifications, change public
 APIs, change tests, change production code, or change production design. Avast
 false-positive handling remains pending, vendor clearance has not been
 obtained, and release remains blocked.
+
+## ADR-0011 Release Authorization Record and Explicit Approval Boundary
+
+Status: DONE as documentation-only / local-only release-authorization-boundary
+decision record.
+
+Added
+`docs/architecture/ADR-0011-release-authorization-record-and-explicit-approval-boundary.md`
+and updated `docs/architecture/ADR_INDEX.md` to record that release
+authorization must be a separate release-governance record, not an ADR.
+
+ADR-0011 records that Accepted ADRs document architectural and operational
+decisions only. Accepted ADRs do not imply release approval, production
+readiness, vendor clearance, or authorization to publish, tag, package,
+distribute, re-run flagged executables, perform Live E2E, or mutate live
+Google Docs / Drive resources.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+The Release Approval Package remains evidence for review, not approval itself.
+The current recommendation remains `Approval Recommendation = Hold`.
+
+### Decision
+
+A release authorization record is a separate release-governance artifact. At
+minimum, it must include vendor clearance, Avast response or explicit risk
+acceptance, final verification result, explicit approver identity, approval
+timestamp, approved release scope, release target/version, and confirmation
+that named blocked operations are permitted.
+
+A `Hold` recommendation cannot authorize release, package publication,
+tagging, Live E2E, Google Docs / Drive mutation, distribution, or flagged
+executable re-run.
+
+If vendor clearance or an Avast response arrives later, release remains
+blocked until a separate explicit release authorization record is created and
+approved.
+
+ADR-0011 keeps ADR-0003 as the release gate and vendor-clearance governance
+basis, ADR-0008 as the operational preflight hard stop, and ADR-0009 as the
+evidence and Release Approval Package review boundary.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, mutate token stores,
+create or update packages or distribution artifacts, write to `dist`, re-run
+flagged executables, push commits, change Frozen specifications, change public
+APIs, change tests, change production code, or change production design. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, the current Release Approval Package recommendation remains Hold,
+and release remains blocked.
