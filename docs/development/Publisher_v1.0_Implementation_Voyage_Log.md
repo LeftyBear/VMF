@@ -2032,6 +2032,68 @@ execute Live E2E, mutate Google Docs or Google Drive, create or update package
 or distribution artifacts, re-run flagged executables, change production code,
 change tests, modify Frozen specifications, or change public APIs.
 
+## ADR-0015 Release Withdrawal / Rollback Record and Incident Evidence Boundary
+
+Status: DONE as documentation-only / local-only withdrawal, rollback, and
+incident-evidence boundary decision record.
+
+Added
+`docs/architecture/ADR-0015-release-withdrawal-rollback-record-and-incident-evidence-boundary.md`
+and updated `docs/architecture/ADR_INDEX.md` to record the Release Withdrawal
+Record, Rollback Record, and Incident Evidence Bundle boundary as an accepted
+Architecture Decision.
+
+ADR-0015 defines the boundary between Release Withdrawal Record, Rollback
+Record, Incident Evidence Bundle, Release Evidence Bundle, and Release
+Approval / Authorization. It records that withdrawal or rollback records are
+not release approval, release authorization, vendor clearance, Avast
+false-positive resolution, risk acceptance for a future release, or permission
+to republish.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, no release authorization has been granted, no Release Decision
+Record has been created, no publication has occurred, no Publication Record
+has been created, no Post-Release Evidence has been created, no Withdrawal
+Record has been created, no Rollback Record has been created, and no Incident
+Evidence Bundle has been created.
+
+### Decision
+
+A Withdrawal or Rollback Record must include, at minimum: trigger, affected
+artifact or publication target, detection timestamp, containment action,
+rollback or withdrawal action, verification performed, evidence references,
+residual risk, follow-up owner, and final status.
+
+Incident evidence must follow safe evidence rules. It must not include
+credentials, tokens, private URLs, raw local paths, unredacted logs, or
+sensitive Google Docs / Drive identifiers unless explicitly redacted or
+approved.
+
+Any re-release, re-publication, package replacement, tag replacement, or
+publication restoration after withdrawal or rollback must re-enter the release
+gate and verification order defined by ADR-0003, ADR-0008, ADR-0009,
+ADR-0012, ADR-0013, and any applicable release-authorization prerequisite.
+
+ADR-0015 keeps ADR-0003 as the release gate and vendor-clearance governance
+basis, ADR-0008 as the operational preflight hard stop, ADR-0009 as the
+Evidence Bundle and Release Approval Package boundary, ADR-0012 as the release
+resumption and final verification order, ADR-0013 as the Release Decision
+Record and post-authorization traceability boundary, and ADR-0014 as the
+Release Publication Record and Post-Release Evidence boundary.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+republish, execute Live E2E, mutate Google Docs or Google Drive, create or
+update package or distribution artifacts, re-run flagged executables, change
+production code, change tests, modify Frozen specifications, or change public
+APIs.
+
 ## ADR-0014 Release Publication Record and Post-Release Evidence Boundary
 
 Status: DONE as documentation-only / local-only publication-record and

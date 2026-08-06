@@ -53,6 +53,7 @@ modify Frozen specifications.
 | ADR-0012 release resumption procedure and final verification order | Done as documentation-only / local-only release-resumption-order decision record; release state unchanged; recommendation Hold remains until explicit release authorization is recorded. |
 | ADR-0013 release decision record and post-authorization traceability | Done as documentation-only / local-only post-authorization traceability decision record; release state unchanged; recommendation Hold remains; no Release Decision Record has been created. |
 | ADR-0014 release publication record and post-release evidence boundary | Done as documentation-only / local-only publication-record and post-release-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Publication Record or Post-Release Evidence has been created. |
+| ADR-0015 release withdrawal / rollback record and incident evidence boundary | Done as documentation-only / local-only withdrawal, rollback, and incident-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Withdrawal Record, Rollback Record, or Incident Evidence Bundle has been created. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -579,3 +580,17 @@ Post-Release Evidence is evidence collected after publication. It may document o
 The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, no publication has occurred, no Publication Record has been created, and no Post-Release Evidence has been created.
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0014.
+
+## 19. ADR-0015 Release Withdrawal / Rollback Record And Incident Evidence Boundary
+
+`docs/architecture/ADR-0015-release-withdrawal-rollback-record-and-incident-evidence-boundary.md` is Accepted as a documentation-only / local-only governance-boundary decision. It applies to future release withdrawal records, rollback records, and incident evidence bundles.
+
+ADR-0015 defines the boundary between Release Withdrawal Record, Rollback Record, Incident Evidence Bundle, Release Evidence Bundle, and Release Approval / Authorization. Withdrawal or rollback records are not release approval, release authorization, vendor clearance, Avast false-positive resolution, risk acceptance for a future release, or permission to republish.
+
+Any re-release, re-publication, package replacement, tag replacement, or publication restoration after withdrawal or rollback must re-enter the release gate and verification order defined by ADR-0003, ADR-0008, ADR-0009, ADR-0012, ADR-0013, and any applicable release-authorization prerequisite.
+
+Incident evidence must follow safe evidence rules: no credentials, tokens, private URLs, raw local paths, unredacted logs, or sensitive Google Docs / Drive identifiers unless explicitly redacted or approved.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, no publication has occurred, no Publication Record has been created, no Post-Release Evidence has been created, no Withdrawal Record has been created, no Rollback Record has been created, and no Incident Evidence Bundle has been created.
+
+No release, tag, publication, republication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0015.

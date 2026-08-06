@@ -9,6 +9,13 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Added
 
 - Added
+  `docs/architecture/ADR-0015-release-withdrawal-rollback-record-and-incident-evidence-boundary.md`
+  to record the future Release Withdrawal Record, Rollback Record, and
+  Incident Evidence Bundle boundaries, preserving separation from the Release
+  Evidence Bundle, Release Approval Package, Release Authorization, Release
+  Decision Record, Publication Record, and permission to republish.
+
+- Added
   `docs/architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md`
   to record the future Release Publication Record responsibility and
   Post-Release Evidence boundary, preserving separation between the Evidence
@@ -46,6 +53,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0015 and require future withdrawal or
+  rollback records to identify trigger, affected artifact or publication
+  target, detection timestamp, containment action, rollback or withdrawal
+  action, verification performed, evidence references, residual risk,
+  follow-up owner, and final status.
+
 - Updated the ADR index to track ADR-0014 and keep post-release evidence from
   retroactively satisfying pre-release approval, release authorization,
   required release gates, vendor clearance, Avast false-positive resolution,
@@ -78,11 +91,14 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   blocked, the current Release Approval Package recommendation remains Hold,
   ADR-0012 does not authorize release resumption, ADR-0013 does not create a
   Release Decision Record, ADR-0014 does not create a Publication Record or
-  Post-Release Evidence, and any ambiguity, mismatch, missing evidence, or
-  failed final verification returns the state to Hold, and no Live E2E, Google
+  Post-Release Evidence, ADR-0015 does not create a Withdrawal Record,
+  Rollback Record, or Incident Evidence Bundle, and any ambiguity, mismatch,
+  missing evidence, or failed final verification returns the state to Hold,
+  and no Live E2E, Google
   Docs or Drive mutation, package or distribution artifact update, release,
-  tag, publication, flagged executable re-run, production code change, test
-  change, Frozen specification change, or public API change was performed.
+  tag, publication, republication, flagged executable re-run, production code
+  change, test change, Frozen specification change, or public API change was
+  performed.
 
 ---
 
