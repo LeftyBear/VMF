@@ -2031,3 +2031,42 @@ This documentation update did not release, create tags, publish artifacts,
 execute Live E2E, mutate Google Docs or Google Drive, create or update package
 or distribution artifacts, re-run flagged executables, change production code,
 change tests, modify Frozen specifications, or change public APIs.
+
+## ADR-0013 Release Decision Record and Post-Authorization Traceability
+
+Status: DONE as documentation-only / local-only post-authorization
+traceability decision record.
+
+Added
+`docs/architecture/ADR-0013-release-decision-record-and-post-authorization-traceability.md`
+and updated `docs/architecture/ADR_INDEX.md` to record the Release Decision
+Record and post-authorization traceability boundary as an accepted
+Architecture Decision.
+
+ADR-0013 applies only after release authorization is granted. It records that
+a future Release Decision Record must link the decision date/time, decision
+owner / authorizer, authorized release scope, evidence bundle reference, final
+verification reference, vendor clearance / Avast resolution reference,
+explicit authorization outcome, any accepted residual risk, and the next
+allowed operation boundary.
+
+The Release Decision Record is not itself a release artifact, package,
+publication, tag, deployment, or publication record. It must not be backdated
+or used to imply authorization before ADR-0003, ADR-0009, ADR-0012, and any
+applicable release-authorization prerequisites are satisfied.
+
+ADR-0013 keeps ADR-0003 as the release gate and vendor-clearance governance
+basis, ADR-0009 as the evidence and Release Approval Package review boundary,
+and ADR-0012 as the release resumption and final verification order.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, no release authorization has been granted, no Release Decision
+Record has been created, and no publication record has been created.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, create or update package
+or distribution artifacts, re-run flagged executables, change production code,
+change tests, modify Frozen specifications, or change public APIs.

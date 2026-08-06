@@ -9,6 +9,13 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Added
 
 - Added
+  `docs/architecture/ADR-0013-release-decision-record-and-post-authorization-traceability.md`
+  to record the future Release Decision Record requirement and
+  post-authorization traceability boundary, preserving separation between the
+  release approval / authorization decision, actual release work, release
+  artifact, and publication record.
+
+- Added
   `docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md`
   to record the post-clearance release resumption procedure and final
   verification order, preserving the rule that vendor clearance alone, Avast
@@ -32,6 +39,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated the ADR index to track ADR-0013 and require future Release Decision
+  Records to link decision date/time, decision owner / authorizer, authorized
+  release scope, evidence bundle reference, final verification reference,
+  vendor clearance / Avast resolution reference, explicit authorization
+  outcome, accepted residual risk, and the next allowed operation boundary.
+
 - Updated the ADR index to track ADR-0012 and keep release resumption
   ordered behind vendor clearance, Avast disposition review, evidence
   validation, blocker review, approved local verification, Release Approval
@@ -51,12 +64,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 - Maintained the existing release boundary: Avast false-positive handling
   remains pending, vendor clearance has not been obtained, release remains
   blocked, the current Release Approval Package recommendation remains Hold,
-  ADR-0012 does not authorize release resumption, and any ambiguity, mismatch,
-  missing evidence, or failed final verification returns the state to Hold,
-  and no Live E2E, Google Docs or Drive mutation, package or distribution
-  artifact update, release, tag, publication, flagged executable re-run,
-  production code change, test change, Frozen specification change, or public
-  API change was performed.
+  ADR-0012 does not authorize release resumption, ADR-0013 does not create a
+  Release Decision Record, and any ambiguity, mismatch, missing evidence, or
+  failed final verification returns the state to Hold, and no Live E2E, Google
+  Docs or Drive mutation, package or distribution artifact update, release,
+  tag, publication, flagged executable re-run, production code change, test
+  change, Frozen specification change, or public API change was performed.
 
 ---
 

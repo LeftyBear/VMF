@@ -51,6 +51,7 @@ modify Frozen specifications.
 | ADR-0010 vNext backlog and deferred scope boundary | Done as documentation-only / local-only backlog-boundary decision record; release state unchanged. |
 | ADR-0011 release authorization record and explicit approval boundary | Done as documentation-only / local-only release-authorization-boundary decision record; release state unchanged; recommendation Hold remains. |
 | ADR-0012 release resumption procedure and final verification order | Done as documentation-only / local-only release-resumption-order decision record; release state unchanged; recommendation Hold remains until explicit release authorization is recorded. |
+| ADR-0013 release decision record and post-authorization traceability | Done as documentation-only / local-only post-authorization traceability decision record; release state unchanged; recommendation Hold remains; no Release Decision Record has been created. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -553,3 +554,15 @@ ADR-0012 does not authorize release resumption. Vendor clearance alone is not re
 The recommendation remains `Approval Recommendation = Hold` until an explicit release authorization decision is recorded. Any ambiguity, mismatch, missing evidence, remaining blocker, incomplete redaction, missing approval decision, or failed final verification returns the state to Hold.
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0012.
+
+## 17. ADR-0013 Release Decision Record And Post-Authorization Traceability
+
+`docs/architecture/ADR-0013-release-decision-record-and-post-authorization-traceability.md` is Accepted as a documentation-only / local-only governance-boundary decision. It applies only after release authorization is granted.
+
+ADR-0013 requires a future Release Decision Record to link decision date/time, decision owner / authorizer, authorized release scope, evidence bundle reference, final verification reference, vendor clearance / Avast resolution reference, explicit authorization outcome, any accepted residual risk, and the next allowed operation boundary.
+
+The Release Decision Record is not itself a release artifact, package, publication, tag, deployment, or publication record. It must not be backdated or used to imply authorization before ADR-0003, ADR-0009, ADR-0012, and any applicable release-authorization prerequisites are satisfied.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, and no publication record has been created.
+
+No release, tag, publication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0013.
