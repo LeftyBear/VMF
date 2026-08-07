@@ -2,7 +2,7 @@
 
 Status  : Phase 4 local-only verification complete / release blocked
 Scope   : Current Publisher release-gate and local-verification state
-Depends : docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/distribution/ReleaseChecklist.md
+Depends : docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/ReleaseChecklist.md
 
 This document fixes the current VMF Publisher state after Phase 4 local-only
 verification. It is a status record only. It does not approve a release, create
@@ -39,6 +39,7 @@ modify Frozen specifications.
 | Publisher Release Approval Package | Done as documentation-only / local-only approval package organization; recommendation Hold; release state unchanged. |
 | Publisher vNext Backlog | Done as documentation-only / local-only backlog record; release state unchanged. |
 | Publisher Avast Response Intake Template | Done as documentation-only / local-only template; no Avast response received; release state unchanged. |
+| Publisher Test Traceability Matrix | Done as documentation-only / local-only traceability index; release state unchanged. |
 | ADR operating basis | Done as documentation-only / local-only architecture decision record process; release state unchanged. |
 | ADR-0002 OAuth Desktop authentication | Done as documentation-only / local-only authentication decision record; release state unchanged. |
 | ADR-0003 release gate and vendor clearance | Done as documentation-only / local-only release governance decision record; release state unchanged. |
@@ -270,7 +271,25 @@ The template does not approve a release, create or update packages, modify
 or Google Drive, re-run flagged executables, change Frozen specifications,
 change public APIs, change production code, or change production design.
 
-## 13. ADR Operating Basis
+## 13. Publisher Test Traceability Matrix
+
+`Test_Traceability_Matrix.md` records Publisher requirement, ADR,
+implementation, test, operational-verification, and evidence traceability for
+ADR-0001 through ADR-0018.
+
+The matrix is documentation-only and local-only. It does not approve a
+release, create or update packages, modify `dist/`, create tags, publish
+artifacts, execute Live E2E, mutate Google Docs or Google Drive, re-run
+flagged executables, change Frozen specifications, change public APIs, change
+production code, change tests, create release authorization, create release
+decision records, create publication records, create rollback records, create
+archive artifacts, or approve emergency release execution.
+
+The release boundary is unchanged: Avast false-positive handling remains
+pending, vendor clearance has not been obtained, and the recommendation
+remains `Approval Recommendation = Hold`.
+
+## 14. ADR Operating Basis
 
 `docs/architecture/ADR_INDEX.md`,
 `docs/architecture/adr-template.md`, and
@@ -519,7 +538,7 @@ approved. The release boundary remains unchanged: release is blocked, Avast
 false-positive handling remains pending, vendor clearance has not been
 obtained, and no release authorization has been created.
 
-## 14. Related Commits
+## 15. Related Commits
 
 | Commit | Meaning |
 | --- | --- |
@@ -530,7 +549,7 @@ obtained, and no release authorization has been created.
 | `cf77964` | Checklist |
 | `e59a7ec` | Execution order |
 
-## 15. Status Interpretation
+## 16. Status Interpretation
 
 Use this status as:
 
@@ -550,7 +569,7 @@ Do not use this status as:
 - approval to re-run flagged artifacts;
 - approval to change Frozen specifications, public APIs, or production design.
 
-## 16. ADR-0012 Release Resumption Procedure And Final Verification Order
+## 17. ADR-0012 Release Resumption Procedure And Final Verification Order
 
 `docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md` is Accepted as a documentation-only / local-only governance-boundary decision. It applies only after vendor clearance is obtained and Avast response / false-positive disposition is received and reviewed.
 
@@ -560,7 +579,7 @@ The recommendation remains `Approval Recommendation = Hold` until an explicit re
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0012.
 
-## 17. ADR-0013 Release Decision Record And Post-Authorization Traceability
+## 18. ADR-0013 Release Decision Record And Post-Authorization Traceability
 
 `docs/architecture/ADR-0013-release-decision-record-and-post-authorization-traceability.md` is Accepted as a documentation-only / local-only governance-boundary decision. It applies only after release authorization is granted.
 
@@ -572,7 +591,7 @@ The recommendation remains `Approval Recommendation = Hold`. Avast false-positiv
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0013.
 
-## 18. ADR-0014 Release Publication Record And Post-Release Evidence Boundary
+## 19. ADR-0014 Release Publication Record And Post-Release Evidence Boundary
 
 `docs/architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md` is Accepted as a documentation-only / local-only governance-boundary decision. It applies only after actual publication has occurred.
 
@@ -584,7 +603,7 @@ The recommendation remains `Approval Recommendation = Hold`. Avast false-positiv
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0014.
 
-## 19. ADR-0015 Release Withdrawal / Rollback Record And Incident Evidence Boundary
+## 20. ADR-0015 Release Withdrawal / Rollback Record And Incident Evidence Boundary
 
 `docs/architecture/ADR-0015-release-withdrawal-rollback-record-and-incident-evidence-boundary.md` is Accepted as a documentation-only / local-only governance-boundary decision. It applies to future release withdrawal records, rollback records, and incident evidence bundles.
 
@@ -598,7 +617,7 @@ The recommendation remains `Approval Recommendation = Hold`. Avast false-positiv
 
 No release, tag, publication, republication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0015.
 
-## 20. ADR-0016 Release Versioning / Tag / Artifact Identity
+## 21. ADR-0016 Release Versioning / Tag / Artifact Identity
 
 `docs/architecture/ADR-0016-release-versioning-tag-and-artifact-identity.md`
 is Accepted as a documentation-only / local-only release-identity boundary
@@ -634,7 +653,7 @@ specification change, public API change, vendor clearance, Avast resolution,
 artifact creation, package creation, approval record creation, authorization
 record creation, or release identity finalization was performed by ADR-0016.
 
-## 21. ADR-0017 Release Retention / Archival / Audit Trail
+## 22. ADR-0017 Release Retention / Archival / Audit Trail
 
 `docs/architecture/ADR-0017-release-retention-archival-audit-trail.md` is Accepted as a documentation-only / local-only retention, archival, and audit-trail boundary decision record.
 
@@ -648,7 +667,7 @@ The recommendation remains `Approval Recommendation = Hold`. Avast false-positiv
 
 No release, tag, publication, republication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, public API change, vendor clearance, Avast resolution, or archive artifact creation was performed by ADR-0017.
 
-## 22. ADR-0018 Emergency Release Exception Boundary
+## 23. ADR-0018 Emergency Release Exception Boundary
 
 `docs/architecture/ADR-0018-emergency-release-exception-boundary.md` is
 Accepted as a documentation-only / local-only emergency-exception-boundary

@@ -2336,3 +2336,40 @@ production code, change tests, modify Frozen specifications, change public
 APIs, obtain vendor clearance, resolve Avast false-positive handling, accept
 risk, approve emergency exception use, reopen the normal release gate, stage
 changes, commit changes, or push commits.
+
+## Publisher Test Traceability Matrix
+
+Status: DONE as documentation-only / local-only traceability index.
+
+Added `docs/development/Test_Traceability_Matrix.md` to map Publisher
+requirements and controls to governing documents, ADRs, implementation, unit
+tests, integration tests, E2E / operational verification, evidence, and status.
+
+The matrix covers ADR-0001 through ADR-0018, all currently Accepted. It keeps
+Accepted ADR status separate from executed test evidence and operational
+verification. It also keeps governance coverage separate from executable test
+coverage where the control is a release decision, approval boundary, runbook
+rule, or future-operation record.
+
+The current formal state remains:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+The recommendation remains `Approval Recommendation = Hold`. Avast
+false-positive handling remains pending, vendor clearance has not been
+obtained, no release authorization has been granted, no Release Decision
+Record has been created, no publication has occurred, no rollback or
+withdrawal record has been created, no archive artifact has been created, and
+no emergency release exception has been approved.
+
+### Explicit non-actions
+
+This documentation update did not create a new ADR, change ADR-0001 through
+ADR-0018 decisions or statuses, release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, create or update package
+or distribution artifacts, write to `dist`, re-run flagged executables, change
+production code, change tests, modify Frozen specifications, change public
+APIs, obtain vendor clearance, resolve Avast false-positive handling, create
+release authorization, create release decision records, create publication
+records, create rollback records, create archive artifacts, or approve
+emergency release execution.

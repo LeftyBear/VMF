@@ -2,13 +2,17 @@
 
 Status  : Done
 Scope   : Existing Publisher test classification and Avast-response resume procedure
-Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/distribution/PublisherReleaseRunbook.md
+Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md
 
 This document classifies existing Publisher verification targets after the
 release runbook work. It is documentation only. It does not approve a release,
 create or update packages, create tags, publish artifacts, execute Live E2E,
 mutate Google Docs or Google Drive, re-run flagged artifacts, change production
 design, change public APIs, or modify Frozen specifications.
+
+`Test_Traceability_Matrix.md` is the companion traceability index for mapping
+Publisher requirements and ADRs to implementation, test, operational
+verification, evidence, and current coverage status.
 
 ## 1. Current Boundary
 
