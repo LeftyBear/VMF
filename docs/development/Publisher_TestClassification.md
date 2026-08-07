@@ -2,7 +2,7 @@
 
 Status  : Done
 Scope   : Existing Publisher test classification and Avast-response resume procedure
-Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md
+Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md
 
 This document classifies existing Publisher verification targets after the
 release runbook work. It is documentation only. It does not approve a release,
@@ -20,11 +20,14 @@ The current formal state remains:
 
 `Phase 4 local-only verification complete / release blocked`.
 
-Avast false-positive handling remains pending. Until it is resolved, verification
+Avast false-positive handling remains pending. Vendor clearance has not been
+obtained, and the approval recommendation remains `Hold`. Until the release
+gate is reopened with explicit operation-specific authorization, verification
 may use read-only investigation, source build, unit tests, mock-backed
-integration tests, local dry-run paths that do not re-run flagged artifacts, and
-static documentation checks. Verification must not cross into release, package
-mutation, live Google operations, publication, or flagged executable re-run.
+integration tests, local dry-run paths that do not re-run flagged artifacts,
+and static documentation checks. Verification must not cross into release,
+package mutation, live Google operations, publication, vendor-clearance
+dependent work, or flagged executable re-run.
 
 ## 2. Test Classification
 
@@ -87,29 +90,33 @@ publication, or flagged executable smoke testing.
 When an Avast response is received, resume in this order:
 
 1. Record the exact Avast response, date, affected artifact identity, and
-   interpretation in the approved release record or security review document.
+   interpretation in `Publisher_AvastResponseIntakeTemplate.md`.
 2. If Avast confirms the detection, stop release work and decide whether to
    remediate, rebuild, repackage, or abandon the candidate under a new task.
 3. If Avast clears the artifact, verify that the cleared artifact identity
    matches the selected package path and SHA-256 before any executable smoke
    run.
-4. Reopen only the necessary release gate with explicit repository-owner
+4. Synchronize `PublisherReleaseRunbook.md`,
+   `Publisher_EvidenceBundleSpecification.md`,
+   `Publisher_ReleaseApprovalPackage.md`, `CURRENT_STATUS.md`, and the Voyage
+   Log without changing the release boundary.
+5. Reopen only the necessary release gate with explicit repository-owner
    authorization.
-5. Run local source verification first: build, focused tests as needed, unit
+6. Run local source verification first: build, focused tests as needed, unit
    tests, non-live integration tests with Live E2E disabled, format if source
    changed, and `git diff --check`.
-6. Select or generate a release candidate artifact only under explicit package
+7. Select or generate a release candidate artifact only under explicit package
    authorization. If a package is created or updated, restart artifact
    verification for the new path and SHA-256.
-7. Run package static verification for the selected artifact.
-8. Run packaged executable smoke only if the artifact is cleared or an explicit
+8. Run package static verification for the selected artifact.
+9. Run packaged executable smoke only if the artifact is cleared or an explicit
    owner exception authorizes that exact executable run.
-9. Run Live E2E only after separate per-run authorization records the account
+10. Run Live E2E only after separate per-run authorization records the account
    or service identity, destination folder, template decision, temporary public
    image hosting decision, cleanup expectation, and exact command.
-10. Complete security and supply-chain review for the selected artifact.
-11. Prepare go/no-go review and record repository-owner approval or rejection.
-12. Publish only after a separate publication authorization records tag, target
+11. Complete security and supply-chain review for the selected artifact.
+12. Prepare go/no-go review and record repository-owner approval or rejection.
+13. Publish only after a separate publication authorization records tag, target
    commit, release state, asset path, and SHA-256.
 
 ## 6. Preflight Hard Stops

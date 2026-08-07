@@ -2373,3 +2373,45 @@ APIs, obtain vendor clearance, resolve Avast false-positive handling, create
 release authorization, create release decision records, create publication
 records, create rollback records, create archive artifacts, or approve
 emergency release execution.
+
+## Operational Documentation Final Alignment
+
+Status: DONE as documentation-only / local-only operational documentation
+alignment.
+
+Aligned operational release-boundary language across the Publisher runbook,
+Avast-hold operator guidance, release approval package, evidence bundle
+specification, current status record, and test classification record.
+
+The aligned records preserve the current formal state:
+
+`Phase 4 local-only verification complete / release blocked`.
+
+The release gate remains blocked. Avast false-positive handling remains
+pending. Vendor clearance has not been obtained. The recommendation remains
+`Approval Recommendation = Hold`.
+
+### Alignment
+
+The updated operational guidance separates:
+
+- allowed local-only work;
+- blocked release, live, package, publication, and mutation work;
+- Avast-response intake work;
+- vendor-clearance-dependent work;
+- final release-resume work.
+
+The records now cross-reference the runbook, Avast response intake template,
+evidence bundle specification, release approval package, test classification,
+current status, and Voyage Log where those relationships are part of the
+release-boundary operating model.
+
+### Explicit non-actions
+
+This documentation update did not release, create tags, publish artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, create or update package
+or distribution artifacts, write to `dist`, re-run flagged executables, change
+production code, change tests, modify Frozen specifications, change public
+APIs, obtain vendor clearance, resolve Avast false-positive handling, create
+release authorization, create release decision records, approve emergency
+release execution, stage changes, commit changes, or push commits.

@@ -2,7 +2,7 @@
 
 Status  : Draft
 Scope   : VMF Publisher release operation procedure
-Depends : docs/distribution/ReleaseChecklist.md, docs/distribution/LiveE2EOperations.md, docs/development/CURRENT_STATUS.md, docs/development/Publisher_TestClassification.md
+Depends : docs/distribution/ReleaseChecklist.md, docs/distribution/LiveE2EOperations.md, docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_TestClassification.md
 
 This runbook defines the controlled operating procedure for a VMF Publisher
 release. It is an operations guide only. It does not approve a release, create
@@ -43,6 +43,16 @@ Before starting a release operation, read:
 
 If the current status records the release gate as blocked or deferred, do not
 proceed past local-only checks without explicit repository-owner authorization.
+
+Current operating snapshot:
+
+| Item | State |
+| --- | --- |
+| Formal state | Phase 4 local-only verification complete / release blocked |
+| Release gate | Blocked |
+| Avast false-positive handling | Pending |
+| Vendor clearance | Not obtained |
+| Approval recommendation | Hold |
 
 Local-only verification does not establish:
 
@@ -139,6 +149,18 @@ Use `docs/development/Publisher_AvastResponseIntakeTemplate.md` to record a
 future Avast response safely. The template addition itself does not mean a
 response was received, does not resolve Avast pending, and does not reopen the
 release gate.
+
+### 5.2 Workstream Separation During Hold
+
+Keep each workstream separate while the release boundary remains blocked:
+
+| Workstream | Current Handling |
+| --- | --- |
+| Allowed local-only work | Documentation updates, read-only investigation, source build, unit tests, non-live integration tests with Live E2E disabled, mock-backed verification, dry-run checks that do not publish or execute the flagged package, and static existing-package inspection when explicitly in scope. |
+| Blocked release/live/mutation work | Package or `dist` writes, tagged release work, publication, Live E2E, Google Docs or Google Drive mutation, token-store mutation, temporary public image hosting, and flagged executable re-run remain blocked unless separately authorized after the gate is reopened. |
+| Avast-response intake work | Record only a received vendor response, artifact identity, SHA-256, classification, redaction review, and decision in `Publisher_AvastResponseIntakeTemplate.md`; default decision remains `Hold continues` until the record is complete. |
+| Vendor-clearance-dependent work | Treat vendor clearance as not obtained until the response is tied to the selected artifact identity and reviewed; do not infer clearance from submission, acknowledgement, exception, or scanner no-detection elsewhere. |
+| Final release-resume work | Resume only after the intake record, current status, evidence bundle references, release approval package, test classification, and required owner authorizations are synchronized and final verification is explicitly authorized. |
 
 ## 6. Local Verification
 

@@ -2,7 +2,7 @@
 
 Status  : Hold. Await Avast response.
 Scope   : Local-only operator guidance while the Publisher release gate remains blocked by Avast false-positive handling
-Depends : docs/distribution/PublisherReleaseRunbook.md, docs/development/Publisher_TestClassification.md, docs/development/CURRENT_STATUS.md, docs/development/Publisher_v1.0_Implementation_Voyage_Log.md
+Depends : docs/distribution/PublisherReleaseRunbook.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_TestClassification.md, docs/development/CURRENT_STATUS.md, docs/development/Publisher_v1.0_Implementation_Voyage_Log.md
 
 This document gives operators the current allowed and blocked actions while the
 Publisher release gate is held for Avast false-positive handling. It is
@@ -19,6 +19,8 @@ change public APIs, or modify Frozen specifications.
 | Release gate | Blocked |
 | Current decision | Hold. Await Avast response. |
 | Avast false positive | Pending |
+| Vendor clearance | Not obtained |
+| Approval recommendation | Hold |
 | Product regression | Not indicated by the current records |
 
 The current hold is operational. It records an unresolved release-gate
@@ -72,13 +74,28 @@ source-level defect is identified.
 When the Avast response arrives, resume documentation and release-gate records
 in this order:
 
-1. Runbook;
-2. TestClassification;
-3. CURRENT_STATUS;
-4. Voyage Log.
+1. Avast Response Intake Template;
+2. Runbook;
+3. TestClassification;
+4. Evidence Bundle references;
+5. Release Approval Package;
+6. CURRENT_STATUS;
+7. Voyage Log.
 
 After those records are synchronized, reopen only the operation-specific gate
 that has explicit repository-owner authorization.
+
+## 4.1 Common Recovery Procedures
+
+Use these procedures when the hold affects an operator workflow:
+
+| Situation | Recovery |
+| --- | --- |
+| A local command would cross the release boundary | Stop before execution, record the operation as `BLOCKED` or `NOT EXECUTED`, and return to local-only documentation or source checks. |
+| An Avast response is received | Record it first in `Publisher_AvastResponseIntakeTemplate.md` with artifact path and SHA-256 redacted or summarized safely, then reassess the gate before any release-path command. |
+| Vendor response is inconclusive, mismatched, or asks for more information | Keep `Approval Recommendation = Hold`, keep release blocked, and do not run package, Live E2E, publication, or flagged executable work. |
+| Local-only verification evidence is being reused | Keep the evidence label local-only, non-live, mock-backed, dry-run, or static; do not relabel it as release readiness or vendor clearance. |
+| Final release resume is requested | Confirm the intake record, vendor-clearance state, release approval package, evidence references, test classification, and current status are synchronized before requesting separate authorization for each next gate. |
 
 ## 5. Stop Conditions
 

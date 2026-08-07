@@ -2,7 +2,7 @@
 
 Status  : Hold
 Scope   : Docs-only / local-only release approval package organization
-Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/distribution/PublisherReleaseRunbook.md
+Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_TestClassification.md, docs/distribution/PublisherReleaseRunbook.md
 
 This package summarizes the current VMF Publisher approval state for review. It
 is documentation only. It does not approve a release, create or update packages,
@@ -65,6 +65,7 @@ gate.
 | `docs/development/Publisher_Phase4-3-4_SecurityAndSupplyChainReview.md` | Done / DEFERRED security review | Records unresolved Avast and security review conditions. |
 | `docs/development/Publisher_Phase4-3-5_GoNoGoReview.md` | Done / DEFERRED go/no-go | Records release go/no-go as deferred. |
 | `docs/development/Publisher_PreflightHardening.md` | Done | Defines hard stops while Avast handling remains pending. |
+| `docs/development/Publisher_AvastResponseIntakeTemplate.md` | Template only / no Avast response received | Defines safe Avast response intake; default decision remains `Hold continues`. |
 | `docs/development/Publisher_EvidenceBundleSpecification.md` | Done | Defines redacted evidence bundle structure without assembling a concrete bundle. |
 | `docs/development/Publisher_TestClassification.md` | Done | Separates documentation, local, non-live, package, Live E2E, and publication checks. |
 | `docs/distribution/PublisherReleaseRunbook.md` | Draft | Defines release operation sequencing and authorization gates. |
@@ -92,6 +93,11 @@ publication, package work, Live E2E, Google Docs or Google Drive mutation, or
 flagged executable re-run.
 
 ## 5. Blocked Operations
+
+Allowed work remains limited to local-only documentation, read-only
+investigation, source checks, non-live verification, mock-backed verification,
+dry-run checks that do not publish or execute the flagged package, and static
+existing-package inspection when explicitly in scope.
 
 The following operations remain blocked:
 

@@ -2,7 +2,7 @@
 
 Status  : Phase 4 local-only verification complete / release blocked
 Scope   : Current Publisher release-gate and local-verification state
-Depends : docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/ReleaseChecklist.md
+Depends : docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_TestClassification.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
 
 This document fixes the current VMF Publisher state after Phase 4 local-only
 verification. It is a status record only. It does not approve a release, create
@@ -19,6 +19,8 @@ modify Frozen specifications.
 | Release readiness | Not established by Phase 4 local-only verification |
 | Release gate | Blocked |
 | Avast false positive handling | Pending |
+| Vendor clearance | Not obtained |
+| Approval recommendation | Hold |
 | Live E2E | Not executed; remains blocked without explicit per-run authorization |
 | Google Docs / Google Drive mutation | Not performed; remains blocked |
 | Package creation or update | Not performed; remains blocked |
@@ -288,6 +290,19 @@ archive artifacts, or approve emergency release execution.
 The release boundary is unchanged: Avast false-positive handling remains
 pending, vendor clearance has not been obtained, and the recommendation
 remains `Approval Recommendation = Hold`.
+
+## 13.1 Operational Workstream Separation
+
+Use the current operational records as separate gates, not interchangeable
+approval evidence:
+
+| Workstream | Current State |
+| --- | --- |
+| Allowed local-only work | Documentation updates, read-only investigation, source build, unit tests, non-live integration tests with Live E2E disabled, mock-backed verification, dry-run checks that do not publish or execute the flagged package, and scoped static existing-package inspection. |
+| Blocked release/live/mutation work | Release, tag, publication, package or `dist` update, Live E2E, Google Docs mutation, Google Drive mutation, token-store mutation, temporary public image hosting, and flagged executable re-run remain blocked. |
+| Avast-response intake work | `Publisher_AvastResponseIntakeTemplate.md` is the only current intake template; no Avast response has been recorded, so default decision remains `Hold continues`. |
+| Vendor-clearance-dependent work | Vendor clearance has not been obtained; do not infer it from local checks, previous submissions, local exceptions, scanner no-detection, or evidence-bundle preparation. |
+| Final release-resume work | Final release verification, release authorization, package/dist changes, tag creation, and publication require synchronized records and separate explicit authorization after the Avast/vendor gate is resolved. |
 
 ## 14. ADR Operating Basis
 

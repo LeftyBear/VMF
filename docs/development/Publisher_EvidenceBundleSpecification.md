@@ -2,7 +2,7 @@
 
 Status  : Done
 Scope   : Documentation-only evidence bundle design for Publisher release, security review, false-positive appeal, and internal audit
-Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4-2-1_DiagnosticLoggingSpecification.md, docs/development/Publisher_Phase4-2-2_ErrorHandlingSpecification.md, docs/development/Publisher_Phase4-2-3_RetryPolicySpecification.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
+Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4-2-1_DiagnosticLoggingSpecification.md, docs/development/Publisher_Phase4-2-2_ErrorHandlingSpecification.md, docs/development/Publisher_Phase4-2-3_RetryPolicySpecification.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
 
 This document defines the intended structure of a VMF Publisher evidence
 bundle. It is documentation only. It does not create or update packages,
@@ -17,6 +17,16 @@ The current formal state remains:
 Avast false-positive handling remains pending. The bundle design must not be
 used as antivirus vendor clearance, package approval, Live E2E evidence,
 release readiness, or permission to resume the release path.
+
+Current operating snapshot:
+
+| Item | State |
+| --- | --- |
+| Formal state | Phase 4 local-only verification complete / release blocked |
+| Release gate | Blocked |
+| Avast false-positive handling | Pending |
+| Vendor clearance | Not obtained |
+| Approval recommendation | Hold |
 
 ## 1. Purpose
 
@@ -242,6 +252,8 @@ Required references:
 - `docs/distribution/PublisherReleaseRunbook.md`;
 - `docs/distribution/ReleaseChecklist.md`;
 - `docs/development/CURRENT_STATUS.md`;
+- `docs/development/Publisher_AvastResponseIntakeTemplate.md`;
+- `docs/development/Publisher_ReleaseApprovalPackage.md`;
 - `docs/development/Publisher_TestClassification.md`;
 - relevant Phase 4-3 review records;
 - release notes for the target release, when applicable.
