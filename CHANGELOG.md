@@ -22,6 +22,22 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated Publisher `0.0.1-dev` release notes, release checklist, runbook,
+  approval package, current status, Voyage Log, and traceability matrix to
+  record the final package identity: target commit
+  `f08eef306ba82e3ea7f031ef652666178f2f0acf`, package
+  `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`, size 983404
+  bytes, SHA-256
+  `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`,
+  package generation `PASS`, package verification `PASS`, manifest files 14,
+  and secret/static package inspection `PASS`.
+- Recorded that final verification `PASS`, Live E2E 4/4 `PASS`, result review
+  complete, package generation `PASS`, and package verification `PASS` form
+  the `0.0.1-dev` identity chain, while intended tag
+  `vmf-publisher-v0.0.1-dev` is not created, GitHub Release is not created,
+  publication is not performed, and this docs-only update is not tag/release
+  execution authorization.
+
 - Updated Publisher release status, checklist, approval package, runbook,
   traceability matrix, and Voyage Log records to preserve the completed
   `0.0.0-dev` release identity as immutable history and to keep the

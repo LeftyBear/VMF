@@ -15,21 +15,22 @@ modify Frozen specifications, change tests, write to `dist`, or push commits.
 | Item | State |
 | --- | --- |
 | Formal release state | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance |
-| Approval recommendation | Proceed to final verification sequence after explicit operation-specific authorization |
+| Approval recommendation | Await explicit tag/release execution authorization after package verification |
 | Avast false-positive handling | Vendor response pending; VMF residual risk accepted |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
 | False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
-| Release readiness | Pending package/dist and tag/release sequence after final verification PASS, Live E2E PASS, and result review recorded |
-| Next release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` recorded for the next release; target commit will be fixed after this docs-only change is committed and pushed |
+| Release readiness | Pending tag/release sequence after final verification PASS, Live E2E PASS, result review, package generation PASS, and package verification PASS are recorded |
+| Next release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` recorded for the next release; target commit fixed at `f08eef306ba82e3ea7f031ef652666178f2f0acf` |
 | Final verification | PASS before Live E2E: Release build PASS warnings 0 / errors 0; Unit tests 492 passed / 0 failed / 0 skipped; Integration tests 16 passed / 0 failed / 0 skipped; `dotnet format --verify-no-changes` PASS; `git diff --check` PASS |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
 | Result review | Recorded; initial Live E2E failure was attributed to stale, revoked, or inconsistent saved OAuth token state; rerun passed after token deletion and OAuth Desktop reauthorization |
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
-| Package creation or update | Not performed |
-| Package path / size / SHA-256 | Pending for `0.0.1-dev`; package not generated |
+| Package creation or update by this docs update | Not performed; no `dist` write by this documentation-only update |
+| Package path / size / SHA-256 | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
+| Package generation / verification | PASS / PASS; manifest files 14; secret/static package inspection PASS |
 | Flagged executable re-run | Not performed |
 | Release, tag, publication, push | Not performed |
 
@@ -76,15 +77,16 @@ gate.
 | `docs/development/Publisher_AvastResponseIntakeTemplate.md` | Template only / no Avast response received | Defines safe Avast response intake; vendor clearance remains not obtained while ADR-0019 records VMF risk acceptance separately. |
 | `docs/development/Publisher_EvidenceBundleSpecification.md` | Done | Defines redacted evidence bundle structure without assembling a concrete bundle. |
 | `docs/development/Publisher_TestClassification.md` | Done | Separates documentation, local, non-live, package, Live E2E, and publication checks. |
-| ADR-0019 result review | Recorded in this package | Reviews final verification and Live E2E results; keeps package/dist, tag/release, and publication unexecuted. |
+| ADR-0019 result review | Recorded in this package | Reviews final verification and Live E2E results; package generation and verification are recorded; keeps tag/release and publication unexecuted. |
 | `docs/distribution/PublisherReleaseRunbook.md` | Draft | Defines release operation sequencing and authorization gates. |
-| `docs/distribution/ReleaseChecklist.md` | Existing release checklist plus next identity record | Preserves completed `0.0.0-dev` evidence and records `0.0.1-dev` as the next docs-only identity. |
-| `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Next identity notes | Records `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` as the next docs-only release identity. |
+| `docs/distribution/ReleaseChecklist.md` | Existing release checklist plus final package identity record | Preserves completed `0.0.0-dev` evidence and records `0.0.1-dev` target commit, package identity, package generation PASS, and package verification PASS. |
+| `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Release identity notes | Records `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`, target commit, verified package path, size, SHA-256, package verification, and remaining non-actions. |
 
-No new `PASS` package, publication, or vendor-clearance evidence is created by
-this approval package. The recorded `PASS` evidence is limited to the supplied
-final verification and Live E2E result review facts. ADR-0019 records risk
-acceptance and Hold lift only.
+No new publication or vendor-clearance evidence is created by this approval
+package. The recorded `PASS` package evidence is limited to the supplied
+package generation, package verification, and static package inspection facts
+for the fixed package identity. ADR-0019 records risk acceptance and Hold lift
+only.
 
 ## 4. Ahead Commits Summary
 
@@ -159,10 +161,14 @@ The next Publisher release identity is:
 | Runtime | `win-x64` |
 | Configuration | `Release` |
 | Package type | Framework-dependent (`selfContained=false`) |
-| Target commit | Pending; to be fixed after this docs-only identity record is committed and pushed |
-| Package path | Pending; package not generated |
-| Package size | Pending; package not generated |
-| Package SHA-256 | Pending; package not generated |
+| Target commit | `f08eef306ba82e3ea7f031ef652666178f2f0acf` |
+| Package path | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip` |
+| Package size | 983404 bytes |
+| Package SHA-256 | `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
+| Package generation | PASS |
+| Package verification | PASS |
+| Manifest files | 14 |
+| Secret/static package inspection | PASS |
 | Tag state | Not created |
 | GitHub Release state | Not created |
 | Publication state | Not performed |
@@ -173,9 +179,11 @@ replaced, or reused.
 
 This record satisfies the ADR-0016 requirement to keep version, commit, tag,
 package or artifact, evidence, and authorization identity fields explicit.
-Only the version and intended tag are selected now. The commit, package,
-evidence, and authorization fields remain pending until their separate gates
-are reached and authorized.
+Version, target commit, intended tag, and verified package identity are now
+fixed. Final verification `PASS`, Live E2E 4/4 `PASS`, result review complete,
+package generation `PASS`, and package verification `PASS` are the recorded
+identity-chain evidence. Tag creation, GitHub Release creation, publication,
+and tag/release execution authorization remain pending.
 
 ## 8. ADR-0019 Result Review
 
@@ -230,15 +238,18 @@ Execution-after checks:
 | Tag/release/publication | not executed |
 
 This result review completes only the ADR-0019 result review record for the
-facts above. It does not authorize or perform package/dist work, tag creation,
-release publication, artifact publication, flagged executable smoke, staging,
-commit, push, production code changes, test changes, Frozen specification
-changes, public API changes, vendor clearance, or Avast safety certification.
+facts above. Package generation and package verification are recorded
+separately in this approval package for the fixed `0.0.1-dev` identity. This
+docs-only update does not authorize or perform package/dist work, tag
+creation, release publication, artifact publication, flagged executable smoke,
+staging, commit, push, production code changes, test changes, Frozen
+specification changes, public API changes, vendor clearance, or Avast safety
+certification.
 
 ## 9. Approval Recommendation
 
-Approval Recommendation = Proceed to final verification sequence after
-explicit operation-specific authorization.
+Approval Recommendation = Await explicit tag/release execution authorization
+after package verification.
 
 Basis:
 
@@ -247,7 +258,9 @@ Basis:
 - vendor clearance has not been obtained;
 - Avast safety certification is not claimed;
 - final verification and Live E2E have passed and result review is recorded;
-- no current package creation, package update, package verification, or
-  flagged executable smoke was performed;
+- package generation and package verification are recorded as `PASS` for the
+  fixed `0.0.1-dev` package identity;
+- no package creation, package update, package verification, `dist` write, or
+  flagged executable smoke was performed by this docs-only update;
 - repository-owner go/no-go approval has not been recorded;
 - publication, tag creation, and push were not authorized.

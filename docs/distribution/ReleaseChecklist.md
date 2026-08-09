@@ -29,15 +29,18 @@ This section records the next Publisher release identity after the completed
 | --- | --- | --- | --- | --- | --- |
 | Next release version adopted | PASS | `0.0.1-dev` | Codex | 2026-08-09 | Adopted as the next release identity because `0.0.0-dev` is already used as tag, GitHub Release, and asset identity. |
 | Next git tag adopted | PASS | `vmf-publisher-v0.0.1-dev` | Codex | 2026-08-09 | Tag name is reserved for the next identity; tag has not been created. |
-| Runtime identifier recorded | PASS | `win-x64` | Codex | 2026-08-09 | Target runtime only; no package was generated. |
-| Configuration recorded | PASS | `Release` | Codex | 2026-08-09 | Target configuration only; no build or package command was run. |
-| Package type recorded | PASS | `selfContained=false` | Codex | 2026-08-09 | Framework-dependent target identity only. |
-| Target commit pending | PENDING | Planned after docs-only commit/push | Codex | 2026-08-09 | Current pre-change `HEAD` and `origin/main` were `322e59c24985cb78a1f482accca3cb24b82566a7`; the target commit will be fixed only after this docs-only change is committed and pushed. |
-| Package artifact pending | PENDING | Package not generated | Codex | 2026-08-09 | Planned package path, size, and SHA-256 are not yet fixed. |
+| Runtime identifier recorded | PASS | `win-x64` | Codex | 2026-08-09 | Recorded from the fixed package identity. |
+| Configuration recorded | PASS | `Release` | Codex | 2026-08-09 | Recorded from the fixed package identity. |
+| Package type recorded | PASS | `selfContained=false` | Codex | 2026-08-09 | Framework-dependent package identity. |
+| Target commit fixed | PASS | `f08eef306ba82e3ea7f031ef652666178f2f0acf` | Codex | 2026-08-09 | `HEAD == origin/main == target commit` at identity-recording time. |
+| Package artifact recorded | PASS | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` | Codex | 2026-08-09 | Package identity fixed after package generation and verification. |
+| Package generation recorded | PASS | `0.0.1-dev`; `win-x64`; `Release`; `selfContained=false`; manifest files 14 | Codex | 2026-08-09 | This checklist records supplied package-generation evidence; this docs update did not regenerate or modify the package. |
+| Package verification recorded | PASS | Package verification PASS; secret/static package inspection PASS | Codex | 2026-08-09 | Verification applies to the fixed package path, size, and SHA-256 above. |
+| Identity chain reviewed | PASS | Final verification PASS; Live E2E 4/4 PASS; result review complete; package generation PASS; package verification PASS | Codex | 2026-08-09 | Identity chain is version -> target commit -> intended tag -> verified package -> evidence/review record. |
 | Tag creation pending | PENDING | Tag not created | Codex | 2026-08-09 | Existing `vmf-publisher-v0.0.0-dev` tag must not be retargeted, deleted, or reused. |
 | GitHub Release pending | PENDING | GitHub Release not created | Codex | 2026-08-09 | Existing `0.0.0-dev` GitHub Release and asset remain immutable past identity. |
 | Publication pending | PENDING | Publication not performed | Codex | 2026-08-09 | Release announcement and publication remain separately gated. |
-| Release authorization pending | PENDING | No tag/release execution approval | Codex | 2026-08-09 | This docs-only identity record is not authorization to package, tag, release, publish, or push. |
+| Release authorization pending | PENDING | No tag/release execution approval | Codex | 2026-08-09 | This docs-only identity record is not authorization to create tags, create GitHub Releases, publish, stage, commit, or push. |
 
 ## 1. Release Identity
 

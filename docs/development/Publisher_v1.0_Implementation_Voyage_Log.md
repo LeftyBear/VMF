@@ -2533,17 +2533,20 @@ and asset as immutable historical release identity. It does not retarget the
 existing tag, replace the existing asset, reuse the existing version, or modify
 the existing GitHub Release.
 
-### Pending Identity Fields
+### Finalized Identity Fields
 
-The target commit remains pending and is planned to be fixed after this
-docs-only identity record is committed and pushed. Before this docs-only
-change, both `HEAD` and `origin/main` were
-`322e59c24985cb78a1f482accca3cb24b82566a7`.
+The target commit is fixed at
+`f08eef306ba82e3ea7f031ef652666178f2f0acf`.
 
-The `0.0.1-dev` package has not been generated. Package path, package size,
-and package SHA-256 remain pending. The tag has not been created. The GitHub
-Release has not been created. Publication has not been performed. Release
-authorization for tag/release execution has not been granted.
+The `0.0.1-dev` package identity is fixed as
+`dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`, 983404 bytes,
+SHA-256
+`73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`.
+Package generation and package verification are recorded as `PASS`.
+
+The tag has not been created. The GitHub Release has not been created.
+Publication has not been performed. Release authorization for tag/release
+execution has not been granted.
 
 ### ADR-0016 Alignment
 
@@ -2551,9 +2554,10 @@ The identity chain remains:
 
 `version -> commit -> tag -> package/artifact -> evidence/authorization`.
 
-Only the version and intended tag are selected by this docs-only update. The
-commit, package or artifact, evidence, and authorization records remain
-pending until the corresponding gate is explicitly authorized and executed.
+Version, target commit, intended tag, package identity, and evidence chain are
+now recorded. Tag creation, GitHub Release creation, publication, and
+tag/release execution authorization remain pending until the corresponding
+gate is explicitly authorized and executed.
 
 ### Explicit non-actions
 
@@ -2563,3 +2567,59 @@ assets, publish artifacts, announce a release, run Live E2E, mutate Google
 Docs or Google Drive, change production code, change tests, modify Frozen
 specifications, change public APIs, stage changes, commit changes, or push
 commits.
+
+## Publisher 0.0.1-dev Final Package Identity
+
+Status: RECORDED as docs-only final package identity.
+
+Recorded the final VMF Publisher `0.0.1-dev` package identity after package
+generation and package verification were completed.
+
+The fixed identity is:
+
+- version: `0.0.1-dev`;
+- target commit: `f08eef306ba82e3ea7f031ef652666178f2f0acf`;
+- intended tag: `vmf-publisher-v0.0.1-dev`;
+- package:
+  `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`;
+- size: 983404 bytes;
+- SHA-256:
+  `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`;
+- runtimeIdentifier: `win-x64`;
+- configuration: `Release`;
+- selfContained: `false`;
+- manifest files: 14.
+
+Package generation is recorded as `PASS`. Package verification is recorded as
+`PASS`. Secret/static package inspection is recorded as `PASS`.
+
+The identity chain is:
+
+`final verification PASS -> Live E2E 4/4 PASS -> result review complete -> package generation PASS -> package verification PASS -> target commit/package identity fixed`.
+
+At identity-recording time, `HEAD == origin/main ==
+f08eef306ba82e3ea7f031ef652666178f2f0acf` and the working tree was clean
+before this docs-only update.
+
+The intended tag `vmf-publisher-v0.0.1-dev` has not been created. No GitHub
+Release has been created. Publication has not been performed.
+
+### ADR-0016 / Runbook Alignment
+
+ADR-0016 identity fields are explicit: version, target commit, intended tag,
+verified package path, package size, package SHA-256, and evidence chain are
+recorded. The release runbook boundary is preserved because tag creation,
+GitHub Release creation, publication, staging, commit, and push remain separate
+authorization gates.
+
+The existing `0.0.0-dev` tag, GitHub Release, and asset identity remain
+immutable historical release records.
+
+### Explicit non-actions
+
+This documentation update did not regenerate packages, modify `dist`, create,
+delete, move, or retarget tags, push tags, create or update GitHub Releases,
+replace assets, publish artifacts, announce a release, run Live E2E, mutate
+Google Docs or Google Drive, change production code, change tests, modify
+Frozen specifications, change public APIs, stage changes, commit changes, or
+push commits. It is not tag/release execution authorization.

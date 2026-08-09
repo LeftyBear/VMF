@@ -49,14 +49,18 @@ Current operating snapshot:
 | Item | State |
 | --- | --- |
 | Formal state | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance |
-| Release gate | Hold lifted by ADR-0019; release execution advanced through result review only |
+| Release gate | Hold lifted by ADR-0019; release execution advanced through package verification only |
 | Next release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` recorded as docs-only identity selection |
-| Next package identity | Pending; package path, size, and SHA-256 not fixed because no package was generated |
-| Next target commit | Pending; to be fixed after the docs-only identity record is committed and pushed |
+| Next package identity | Fixed: `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
+| Next target commit | Fixed: `f08eef306ba82e3ea7f031ef652666178f2f0acf`; `HEAD == origin/main == target commit` at identity-recording time |
 | Avast false-positive handling | Vendor response pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
-| Approval recommendation | Proceed to final verification sequence after explicit operation-specific authorization |
+| Approval recommendation | Await explicit tag/release execution authorization after package verification |
+| Final verification / Live E2E / result review | PASS / Live E2E 4 of 4 PASS / result review complete |
+| Package generation / verification | PASS / PASS; manifest files 14; secret/static package inspection PASS |
+| Intended tag state | `vmf-publisher-v0.0.1-dev` intended, not created |
+| GitHub Release / publication | Not created / not performed |
 
 Local-only verification does not establish:
 
