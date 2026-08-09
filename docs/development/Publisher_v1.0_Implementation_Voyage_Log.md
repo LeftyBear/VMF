@@ -2638,3 +2638,29 @@ code, change tests, modify Frozen specifications, change public APIs, stage
 changes, commit changes, or push commits. It is not new tag/release execution
 authorization. Avast vendor clearance remains not obtained; ADR-0019 VMF-side
 risk acceptance remains the release basis.
+
+## Publisher vNext Backlog Reprioritization
+
+Status: RECORDED as docs-only backlog reprioritization.
+
+Reprioritized `docs/development/Publisher_vNext_Backlog.md` after the
+published `0.0.1-dev` GitHub prerelease state. The backlog now orders next
+release-path gate basis, Avast outcome intake, go/no-go reconciliation, Live
+E2E / Google Docs authorization, and authorized artifact audit before evidence
+hardening and vNext enhancement candidates.
+
+P1 now focuses on evidence and release-safety hardening. P2 keeps functional
+and operational enhancement candidates, including Google Picker plus
+`drive.file` least-privilege routing, as future scoped design work rather than
+adopted behavior.
+
+### Explicit non-actions
+
+This documentation update did not implement vNext behavior, regenerate
+packages, modify `dist`, create, delete, move, retarget, or replace tags, push
+tags, create, update, delete, or replace GitHub Releases, replace assets,
+publish new artifacts, announce a release, run Live E2E, mutate Google Docs or
+Google Drive, change production code, change tests, modify Frozen
+specifications, change public APIs, stage changes, commit changes, or push
+commits. It does not create vendor clearance, claim Avast safety
+certification, or authorize future release-path operations.

@@ -65,6 +65,13 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   current state records ADR-0019 VMF-side residual risk acceptance and the
   published `0.0.1-dev` GitHub prerelease. Avast vendor clearance remains not
   obtained and Avast safety certification is not claimed.
+- Reprioritized `docs/development/Publisher_vNext_Backlog.md` so next
+  release-path gate basis, Avast outcome intake, go/no-go reconciliation, Live
+  E2E / Google Docs authorization, and authorized artifact audit precede
+  evidence hardening and vNext enhancement candidates. This documentation-only
+  change does not authorize implementation, package work, Live E2E, Google
+  Docs / Drive mutation, tag creation, publication, vendor clearance, or Avast
+  safety certification.
 
 ---
 

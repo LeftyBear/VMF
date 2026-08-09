@@ -55,7 +55,7 @@ claim Avast vendor clearance or Avast safety certification.
 | Publisher Evidence Bundle Specification | Done as documentation-only evidence bundle design; release state unchanged. |
 | Publisher Preflight Hardening | Done as documentation-only hard-stop consolidation; release state unchanged. |
 | Publisher Release Approval Package | Updated with ADR-0019 result review evidence and later `0.0.1-dev` release completion evidence; final verification PASS, Live E2E PASS, package/dist, tag/release, and publication are recorded complete for `0.0.1-dev`; this docs-only update performs no new release operation. |
-| Publisher vNext Backlog | Done as documentation-only / local-only backlog record; updated to preserve published `0.0.1-dev` state while keeping future release-path work separately gated. |
+| Publisher vNext Backlog | Done as documentation-only / local-only backlog record; reprioritized to put next release-path gate basis, Avast outcome intake, go/no-go reconciliation, Live E2E / Google Docs authorization, and artifact audit ahead of evidence hardening and vNext enhancements while preserving published `0.0.1-dev` state and separate authorization gates. |
 | Publisher Avast Response Intake Template | Done as documentation-only / local-only template; no Avast response received; vendor clearance remains not obtained. |
 | Publisher Test Traceability Matrix | Done as documentation-only / local-only traceability index; updated through ADR-0019. |
 | ADR operating basis | Done as documentation-only / local-only architecture decision record process; release state unchanged. |
@@ -276,10 +276,15 @@ change Frozen specifications, change public APIs, or change production design.
 
 The vNext hardening backlog includes:
 
-- signing;
-- MSI / installer;
-- distribution verification;
-- security / trust workflow.
+- P0 next release-path gate items: Avast outcome intake, next release-path
+  basis, go/no-go reconciliation, Live E2E / Google Docs authorization, and
+  artifact audit after package-generation scope is authorized;
+- P1 evidence and release-safety hardening: post-release evidence summary,
+  checklist cross-links, approved-artifact supply-chain checks, Live E2E
+  documentation, package-verification output, and AV triage checklist lessons;
+- P2 vNext enhancements: Google Picker plus `drive.file` reconsideration,
+  diagnostics, dry-run output, release-note generation, OAuth Desktop
+  documentation, and managed-document readback reporting.
 
 ## 12. Publisher Avast Response Intake Template
 

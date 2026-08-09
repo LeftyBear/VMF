@@ -51,36 +51,43 @@ Priority does not authorize implementation. Each item still requires a
 separate scoped task, explicit verification plan, and any required approval
 gate.
 
-## P0 — Resume-Gate / Release-Safety Items
+## P0 — Next Release-Path Gate Items
 
 - Record Avast false positive outcome and owner decision once the vendor
   response is available.
-- Reconcile release-readiness records after Avast clearance or rejection.
-- Confirm whether Live E2E is authorized, not applicable, or remains deferred.
-- Confirm whether Google Docs / Drive readback or mutation checks are
-  authorized, not applicable, or remain deferred.
-- Re-run release artifact audit only after package-generation scope is
-  explicitly authorized.
-- Re-check supply-chain and package evidence only after the approved release
-  artifact exists.
+- Confirm whether the next release-path decision proceeds on Avast vendor
+  clearance, continued VMF-side risk acceptance, or a new owner decision.
+- Reconcile release-readiness records after Avast clearance, rejection, or
+  continued pending status is reviewed.
 - Update go/no-go review only after all release-blocking dependencies are
   resolved or explicitly waived by the owner.
+- Confirm whether Live E2E is authorized, not applicable, or remains deferred
+  for the next release-path scope.
+- Confirm whether Google Docs / Drive readback or mutation checks are
+  authorized, not applicable, or remain deferred for the next release-path
+  scope.
+- Re-run release artifact audit only after package-generation scope is
+  explicitly authorized.
 
-## P1 — Post-Release Hardening Candidates
+## P1 — Evidence / Release-Safety Hardening Candidates
 
-- Improve release-readiness checklist cross-links so blocked, deferred, and
-  local-only evidence remain easy to audit.
 - Add a compact post-release evidence summary template for future Publisher
   release candidates.
-- Review AV triage notes and convert durable lessons into a repeatable
-  release-safety checklist.
+- Improve release-readiness checklist cross-links so blocked, deferred,
+  risk-accepted, and local-only evidence remain easy to audit.
+- Re-check supply-chain and package evidence only after the approved release
+  artifact exists.
 - Review Live E2E setup documentation for clearer authorization, credential,
   and cleanup boundaries.
 - Review package verification scripts for clearer output that distinguishes
   local verification from release clearance.
+- Review AV triage notes and convert durable lessons into a repeatable
+  release-safety checklist.
 
 ## P2 — vNext Enhancements
 
+- Evaluate whether Google Picker plus `drive.file` least-privilege routing
+  should be adopted by a future scoped design task.
 - Evaluate additional Publisher diagnostics that improve troubleshooting
   without changing published document semantics.
 - Evaluate clearer dry-run output for Google Docs publication planning.
@@ -135,10 +142,12 @@ clearance boundary.
 ## Recommended Next Review Order
 
 1. Avast false positive response and any owner follow-up decision.
-2. Current release-readiness checklist state.
-3. Release candidate verification record.
-4. Release artifact audit status.
-5. Security and supply-chain review status.
-6. Go/no-go review status.
-7. Live E2E and Google Docs / Drive authorization status.
-8. vNext backlog reprioritization after release state changes.
+2. Next release-path basis: Avast clearance, continued VMF-side risk
+   acceptance, or new owner decision.
+3. Current release-readiness checklist state and go/no-go review status.
+4. Live E2E and Google Docs / Drive authorization status for the next scoped
+   release-path task.
+5. Release artifact audit status after package-generation scope is authorized.
+6. Security and supply-chain review status for the approved release artifact.
+7. Evidence-summary and checklist hardening items.
+8. vNext enhancement candidates.
