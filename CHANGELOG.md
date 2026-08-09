@@ -59,6 +59,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   or Drive mutation, flagged executable execution, production code changes,
   test changes, Frozen specification changes, public API changes, staging,
   commit, or push.
+- Reconciled post-release Publisher handoff, vNext backlog, Phase 4-3
+  readiness/go-no-go records, current status, and approval-package wording so
+  older hold/block records remain accepted-at-the-time evidence while the
+  current state records ADR-0019 VMF-side residual risk acceptance and the
+  published `0.0.1-dev` GitHub prerelease. Avast vendor clearance remains not
+  obtained and Avast safety certification is not claimed.
 
 ---
 

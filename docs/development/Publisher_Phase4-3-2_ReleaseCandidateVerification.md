@@ -9,6 +9,13 @@ verification. It does not create, update, select, publish, or approve a
 package. It does not execute Live E2E, mutate Google Docs or Google Drive, or
 change release state.
 
+Subsequent update: this document preserves the Phase 4-3 result as
+accepted-at-the-time evidence. The current state is maintained in
+`CURRENT_STATUS.md`: ADR-0019 records VMF-side residual risk acceptance,
+Release Hold lift, and later `0.0.1-dev` GitHub prerelease publication. Avast
+vendor clearance remains not obtained and Avast safety certification is not
+claimed.
+
 ## 1. Current Result
 
 | Item | Result | Evidence / Reason |

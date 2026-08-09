@@ -3,28 +3,31 @@
 ## Status
 
 - Current state: Phase 4 local-only verification complete.
-- Release state: Blocked.
-- External dependency: Avast false positive response pending.
+- Release state: `0.0.1-dev` GitHub prerelease published after ADR-0019
+  VMF-side residual risk acceptance; any new release-path work remains
+  separately gated.
+- External dependency: Avast false positive response pending; vendor clearance
+  has not been obtained and Avast safety certification is not claimed.
 - This backlog is documentation-only and does not authorize release, publication, Live E2E, package generation, or Google Docs/Drive mutation.
 - Live E2E has not been executed for this backlog.
 - Google Docs / Drive mutation has not been executed for this backlog.
 - Package and `dist/` artifacts have not been updated for this backlog.
-- No release, tag, or publication has been performed for this backlog.
+- No new release, tag, or publication has been performed for this backlog.
 - The flagged executable has not been re-run for this backlog.
 
 ## Scope
 
-This backlog records candidate work for Publisher vNext after the current
-Phase 4 local-only verification state. It is a planning and traceability
-document only.
+This backlog records candidate work for Publisher vNext after the Phase 4
+local-only verification state and the subsequent `0.0.1-dev` GitHub prerelease
+publication. It is a planning and traceability document only.
 
 Allowed scope:
 
 - Identify resume-gate and release-safety follow-up items.
 - Identify post-release hardening candidates.
 - Identify vNext enhancement candidates.
-- Preserve the current release-blocked state until external clearance is
-  available.
+- Preserve that Avast vendor clearance is not obtained and that any new
+  release-path operation requires separate authorization.
 
 Out of scope:
 
@@ -33,13 +36,14 @@ Out of scope:
 - Executing Live E2E.
 - Mutating Google Docs or Google Drive resources.
 - Re-running the flagged executable.
-- Creating a release, tag, publication, or external repository update.
+- Creating a new release, tag, publication, or external repository update.
 
 ## Priority Definitions
 
-- P0: Required before release activity may resume or before a blocked release
-  decision can be re-evaluated.
-- P1: Hardening candidate after release-blocking items are resolved.
+- P0: Required before future release-path activity or vendor-clearance follow-up
+  can be re-evaluated.
+- P1: Hardening candidate after future release-path or vendor-clearance
+  follow-up items are resolved.
 - P2: Enhancement candidate for vNext planning; not required for release
   resumption.
 
@@ -86,16 +90,17 @@ gate.
 - Evaluate whether vNext should include more explicit managed-document
   readback reporting.
 
-## Blocked Until Avast Clearance
+## Vendor-Clearance Boundary
 
-The following work remains blocked until the Avast false positive response is
-available and the owner records the release decision:
+The following work remains gated because the Avast false positive response is
+not available and vendor clearance has not been obtained:
 
-- Treating the current candidate as releasable.
-- Performing release publication.
-- Creating or updating release tags.
-- Publishing package artifacts.
-- Re-running the flagged executable.
+- Treating Avast vendor clearance as complete.
+- Claiming Avast safety certification.
+- Performing a new release publication.
+- Creating or updating release tags for new release work.
+- Publishing or replacing package artifacts.
+- Re-running the flagged executable without exact authorization.
 - Treating local package or smoke evidence as AV/vendor clearance.
 
 VirusTotal no-detection, local exception handling, or a submitted
@@ -106,8 +111,8 @@ false-positive report is not equivalent to vendor clearance.
 - No Live E2E execution is included in this backlog.
 - No Google Docs / Drive mutation is included in this backlog.
 - No package generation or `dist/` update is included in this backlog.
-- No release, tag, publication, or external repository update is included in
-  this backlog.
+- No new release, tag, publication, or external repository update is included
+  in this backlog.
 - No flagged executable re-run is included in this backlog.
 - No frozen specification, public API, persistence schema, or canonical format
   change is included in this backlog.
@@ -122,12 +127,14 @@ This backlog should remain consistent with:
 - Publisher Phase 4 release-readiness records
 - Avast false-positive tracking record
 
-The backlog does not replace any release-readiness record. It only identifies
-candidate next work while the release remains blocked.
+The backlog does not replace any release-readiness record. It identifies
+candidate next work while preserving the current published `0.0.1-dev` record,
+the ADR-0019 VMF risk acceptance basis, and the unresolved Avast vendor
+clearance boundary.
 
 ## Recommended Next Review Order
 
-1. Avast false positive response and owner release decision.
+1. Avast false positive response and any owner follow-up decision.
 2. Current release-readiness checklist state.
 3. Release candidate verification record.
 4. Release artifact audit status.

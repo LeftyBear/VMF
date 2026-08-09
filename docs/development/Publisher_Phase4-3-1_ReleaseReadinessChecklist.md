@@ -10,6 +10,13 @@ create tags, publish artifacts, execute Live E2E, mutate Google Docs or Google
 Drive, change production design, change public APIs, or modify Frozen
 specifications.
 
+Subsequent update: this document preserves the Phase 4-3 decision as
+accepted-at-the-time evidence. The current state is maintained in
+`CURRENT_STATUS.md`: ADR-0019 records VMF-side residual risk acceptance,
+Release Hold lift, and later `0.0.1-dev` GitHub prerelease publication. Avast
+vendor clearance remains not obtained and Avast safety certification is not
+claimed.
+
 ## 1. Summary
 
 | Item | Result | Evidence / Reason |

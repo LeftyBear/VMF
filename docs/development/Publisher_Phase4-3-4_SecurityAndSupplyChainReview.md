@@ -9,6 +9,13 @@ does not submit files to vendors, run scanners, change dependencies, create or
 update packages, execute Live E2E, mutate external services, or approve release
 continuation.
 
+Subsequent update: this document preserves the Phase 4-3 review result as
+accepted-at-the-time evidence. The current state is maintained in
+`CURRENT_STATUS.md`: ADR-0019 records VMF-side residual risk acceptance,
+Release Hold lift, and later `0.0.1-dev` GitHub prerelease publication. Avast
+vendor clearance remains not obtained and Avast safety certification is not
+claimed.
+
 ## 1. Current Review Result
 
 | Item | Result | Evidence / Reason |

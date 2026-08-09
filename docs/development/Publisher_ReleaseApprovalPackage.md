@@ -14,7 +14,7 @@ modify Frozen specifications, change tests, write to `dist`, or push commits.
 
 | Item | State |
 | --- | --- |
-| Formal release state | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance |
+| Formal release state | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance / `0.0.1-dev` GitHub prerelease published |
 | Approval recommendation | Record release completion evidence; commit/push of this docs-only update remains pending separate authorization |
 | Avast false-positive handling | Vendor response pending; VMF residual risk accepted |
 | Vendor clearance | Not obtained |
@@ -44,10 +44,12 @@ vendor clearance.
 ## 2. Approval Boundary
 
 This approval package is limited to recording and indexing existing release
-gate information. It may be used to decide what remains required before a later
-release approval review, but it is not itself an approval record.
+gate information. For future release-path work or a new release decision, it
+may be used to decide what remains required before a later release approval
+review, but it is not itself an approval record.
 
-The following remain separate authorization gates:
+The following remain separate authorization gates for future release-path work
+or a new decision:
 
 - package creation or package update;
 - package verification and packaged executable smoke;
@@ -69,7 +71,7 @@ gate.
 
 | Evidence | Status | Use |
 | --- | --- | --- |
-| `docs/development/CURRENT_STATUS.md` | Current status record | Source of the formal release-blocked state and open release gates. |
+| `docs/development/CURRENT_STATUS.md` | Current status record | Source of the formal current state, published `0.0.1-dev` evidence, unresolved Avast vendor-clearance boundary, and future gated operations. |
 | `docs/development/Publisher_Phase4-3-1_ReleaseReadinessChecklist.md` | Done / DEFERRED release readiness | Confirms local-only evidence does not establish release readiness. |
 | `docs/development/Publisher_Phase4-3-2_ReleaseCandidateVerification.md` | Done / DEFERRED candidate verification | Records that no current candidate artifact verification was executed. |
 | `docs/development/Publisher_Phase4-3-3_ReleaseArtifactAudit.md` | Done / DEFERRED artifact audit | Records missing current artifact audit evidence. |
@@ -79,7 +81,7 @@ gate.
 | `docs/development/Publisher_AvastResponseIntakeTemplate.md` | Template only / no Avast response received | Defines safe Avast response intake; vendor clearance remains not obtained while ADR-0019 records VMF risk acceptance separately. |
 | `docs/development/Publisher_EvidenceBundleSpecification.md` | Done | Defines redacted evidence bundle structure without assembling a concrete bundle. |
 | `docs/development/Publisher_TestClassification.md` | Done | Separates documentation, local, non-live, package, Live E2E, and publication checks. |
-| ADR-0019 result review | Recorded in this package | Reviews final verification and Live E2E results; package generation and verification are recorded; keeps tag/release and publication unexecuted. |
+| ADR-0019 result review | Recorded in this package | Reviews final verification and Live E2E results; package generation, package verification, tag/release, GitHub prerelease publication, and asset upload are recorded complete for `0.0.1-dev`. |
 | `docs/distribution/PublisherReleaseRunbook.md` | Draft | Defines release operation sequencing and authorization gates. |
 | `docs/distribution/ReleaseChecklist.md` | Existing release checklist plus release completion record | Preserves completed `0.0.0-dev` evidence and records `0.0.1-dev` annotated tag object, peeled/package target commit, evidence docs commit, GitHub prerelease URL, asset identity, remote/local digest match, package generation PASS, and package verification PASS. |
 | `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Release completion notes | Records `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`, tag object, peeled/package target commit, evidence docs commit, GitHub Release URL, asset name, size, SHA-256, package verification, remote digest match, and publication result. |
@@ -115,14 +117,15 @@ investigation, source checks, non-live verification, mock-backed verification,
 dry-run checks that do not publish or execute the flagged package, and static
 existing-package inspection when explicitly in scope.
 
-The following operations remain gated and must follow ADR-0019 order:
+The following future operations remain gated and must follow ADR-0019 order or
+a later operation-specific authorization:
 
-- final verification;
-- Live E2E;
-- result review;
-- package creation, replacement, update, or any `dist` write;
-- tag creation, GitHub Release creation or update, artifact publication, or
-  release announcement;
+- final verification for a new decision;
+- Live E2E for a new decision;
+- result review for a new decision;
+- package creation, replacement, update, or any new `dist` write;
+- tag creation, GitHub Release creation or update, artifact replacement,
+  publication, or release announcement;
 - packaged executable smoke for any previously flagged executable;
 - setting `VMF_PUBLISHER_GOOGLE_E2E=1`;
 - Google Docs mutation;

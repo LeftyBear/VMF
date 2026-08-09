@@ -8,6 +8,13 @@ This document records the audit boundary for Publisher release artifacts. It
 does not create, replace, update, publish, or approve an artifact. It does not
 run the flagged executable or perform live external operations.
 
+Subsequent update: this document preserves the Phase 4-3 audit result as
+accepted-at-the-time evidence. The current state is maintained in
+`CURRENT_STATUS.md`: ADR-0019 records VMF-side residual risk acceptance,
+Release Hold lift, and later `0.0.1-dev` GitHub prerelease publication. Avast
+vendor clearance remains not obtained and Avast safety certification is not
+claimed.
+
 ## 1. Current Audit Result
 
 | Item | Result | Evidence / Reason |
