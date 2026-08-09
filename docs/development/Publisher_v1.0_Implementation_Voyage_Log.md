@@ -2515,12 +2515,13 @@ specifications, change public APIs, obtain vendor clearance, claim Avast
 safety certification, create a Release Decision Record, create a Publication
 Record, stage changes, commit changes, or push commits.
 
-## Publisher 0.0.1-dev Next Release Identity
+## Publisher 0.0.1-dev Release Identity
 
-Status: RECORDED as docs-only / local-only next release identity.
+Status: COMPLETE as published GitHub prerelease; completion evidence recorded
+docs-only.
 
-Recorded `0.0.1-dev` as the next VMF Publisher release version and
-`vmf-publisher-v0.0.1-dev` as the corresponding next tag identity.
+Recorded `0.0.1-dev` as the VMF Publisher release version and
+`vmf-publisher-v0.0.1-dev` as the corresponding tag identity.
 
 The target package parameters are:
 
@@ -2535,8 +2536,10 @@ the existing GitHub Release.
 
 ### Finalized Identity Fields
 
-The target commit is fixed at
-`f08eef306ba82e3ea7f031ef652666178f2f0acf`.
+The package target / peeled commit is fixed at
+`f08eef306ba82e3ea7f031ef652666178f2f0acf`. The evidence docs commit is
+`39df8bedd848da42a4de3cb9461ce4cc86b51197`. The annotated tag object is
+`a962e19ba2b0a494d1158011ae823d579e41711f`.
 
 The `0.0.1-dev` package identity is fixed as
 `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`, 983404 bytes,
@@ -2544,9 +2547,11 @@ SHA-256
 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`.
 Package generation and package verification are recorded as `PASS`.
 
-The tag has not been created. The GitHub Release has not been created.
-Publication has not been performed. Release authorization for tag/release
-execution has not been granted.
+The tag push is complete. Remote tag readback is `PASS`. The GitHub
+prerelease is published at
+https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev with
+release name `VMF Publisher 0.0.1-dev` and prerelease `true`. Asset upload is
+complete for `vmf-publisher-0.0.1-dev-win-x64.zip`.
 
 ### ADR-0016 Alignment
 
@@ -2554,19 +2559,20 @@ The identity chain remains:
 
 `version -> commit -> tag -> package/artifact -> evidence/authorization`.
 
-Version, target commit, intended tag, package identity, and evidence chain are
-now recorded. Tag creation, GitHub Release creation, publication, and
-tag/release execution authorization remain pending until the corresponding
-gate is explicitly authorized and executed.
+Version, peeled/package target commit, annotated tag object, package identity,
+evidence docs commit, GitHub Release URL, asset identity, and evidence chain
+are now recorded. The remote asset digest and local verified package SHA-256
+match:
+`73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`.
 
 ### Explicit non-actions
 
 This documentation update did not generate packages, modify `dist`, create,
-delete, move, or retarget tags, create or update GitHub Releases, replace
-assets, publish artifacts, announce a release, run Live E2E, mutate Google
-Docs or Google Drive, change production code, change tests, modify Frozen
-specifications, change public APIs, stage changes, commit changes, or push
-commits.
+delete, move, retarget, or replace tags, create, update, delete, or replace
+GitHub Releases, replace assets, publish new artifacts, announce a release,
+run Live E2E, mutate Google Docs or Google Drive, change production code,
+change tests, modify Frozen specifications, change public APIs, stage changes,
+commit changes, or push commits.
 
 ## Publisher 0.0.1-dev Final Package Identity
 
@@ -2578,10 +2584,17 @@ generation and package verification were completed.
 The fixed identity is:
 
 - version: `0.0.1-dev`;
-- target commit: `f08eef306ba82e3ea7f031ef652666178f2f0acf`;
-- intended tag: `vmf-publisher-v0.0.1-dev`;
+- peeled/package target commit:
+  `f08eef306ba82e3ea7f031ef652666178f2f0acf`;
+- evidence docs commit:
+  `39df8bedd848da42a4de3cb9461ce4cc86b51197`;
+- tag: `vmf-publisher-v0.0.1-dev`;
+- annotated tag object:
+  `a962e19ba2b0a494d1158011ae823d579e41711f`;
 - package:
   `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`;
+- asset:
+  `vmf-publisher-0.0.1-dev-win-x64.zip`;
 - size: 983404 bytes;
 - SHA-256:
   `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`;
@@ -2595,22 +2608,22 @@ Package generation is recorded as `PASS`. Package verification is recorded as
 
 The identity chain is:
 
-`final verification PASS -> Live E2E 4/4 PASS -> result review complete -> package generation PASS -> package verification PASS -> target commit/package identity fixed`.
+`final verification PASS -> Live E2E 4/4 PASS -> result review complete -> package generation PASS -> package verification PASS -> package target commit/package identity fixed -> tag push complete -> remote tag readback PASS -> GitHub prerelease creation complete -> asset upload complete -> remote/local digest match`.
 
-At identity-recording time, `HEAD == origin/main ==
-f08eef306ba82e3ea7f031ef652666178f2f0acf` and the working tree was clean
-before this docs-only update.
-
-The intended tag `vmf-publisher-v0.0.1-dev` has not been created. No GitHub
-Release has been created. Publication has not been performed.
+The GitHub prerelease is published at
+https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev with
+release name `VMF Publisher 0.0.1-dev` and prerelease `true`. The remote asset
+digest matches the local verified package SHA-256:
+`73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`.
 
 ### ADR-0016 / Runbook Alignment
 
-ADR-0016 identity fields are explicit: version, target commit, intended tag,
-verified package path, package size, package SHA-256, and evidence chain are
-recorded. The release runbook boundary is preserved because tag creation,
-GitHub Release creation, publication, staging, commit, and push remain separate
-authorization gates.
+ADR-0016 identity fields are explicit: version, peeled/package target commit,
+annotated tag object, verified package path, asset name, package size, package
+SHA-256, GitHub Release URL, evidence docs commit, and evidence chain are
+recorded. The release runbook boundary is preserved because this docs-only
+update does not perform any new package, tag, release, asset, staging, commit,
+or push operation.
 
 The existing `0.0.0-dev` tag, GitHub Release, and asset identity remain
 immutable historical release records.
@@ -2618,8 +2631,10 @@ immutable historical release records.
 ### Explicit non-actions
 
 This documentation update did not regenerate packages, modify `dist`, create,
-delete, move, or retarget tags, push tags, create or update GitHub Releases,
-replace assets, publish artifacts, announce a release, run Live E2E, mutate
-Google Docs or Google Drive, change production code, change tests, modify
-Frozen specifications, change public APIs, stage changes, commit changes, or
-push commits. It is not tag/release execution authorization.
+delete, move, retarget, or replace tags, push tags, create, update, delete, or
+replace GitHub Releases, replace assets, publish new artifacts, announce a
+release, run Live E2E, mutate Google Docs or Google Drive, change production
+code, change tests, modify Frozen specifications, change public APIs, stage
+changes, commit changes, or push commits. It is not new tag/release execution
+authorization. Avast vendor clearance remains not obtained; ADR-0019 VMF-side
+risk acceptance remains the release basis.

@@ -10,8 +10,7 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 - Added `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` to record
   `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` as the next Publisher release
-  identity, with package path, size, SHA-256, target commit, tag creation,
-  GitHub Release, publication, and release authorization still pending.
+  identity, later completed as a published GitHub prerelease.
 
 - Added
   `docs/architecture/ADR-0019-vmf-risk-acceptance-and-release-hold-lift.md`
@@ -24,7 +23,7 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 - Updated Publisher `0.0.1-dev` release notes, release checklist, runbook,
   approval package, current status, Voyage Log, and traceability matrix to
-  record the final package identity: target commit
+  record the final package identity: package target / peeled commit
   `f08eef306ba82e3ea7f031ef652666178f2f0acf`, package
   `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`, size 983404
   bytes, SHA-256
@@ -33,16 +32,23 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   and secret/static package inspection `PASS`.
 - Recorded that final verification `PASS`, Live E2E 4/4 `PASS`, result review
   complete, package generation `PASS`, and package verification `PASS` form
-  the `0.0.1-dev` identity chain, while intended tag
-  `vmf-publisher-v0.0.1-dev` is not created, GitHub Release is not created,
-  publication is not performed, and this docs-only update is not tag/release
-  execution authorization.
+  the `0.0.1-dev` package identity chain.
+- Updated Publisher `0.0.1-dev` release completion records to document the
+  published GitHub prerelease:
+  https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev,
+  release name `VMF Publisher 0.0.1-dev`, prerelease `true`, annotated tag
+  object `a962e19ba2b0a494d1158011ae823d579e41711f`, peeled/package target
+  commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`, evidence docs commit
+  `39df8bedd848da42a4de3cb9461ce4cc86b51197`, asset
+  `vmf-publisher-0.0.1-dev-win-x64.zip`, size 983404 bytes, and matching
+  remote asset digest / local package SHA-256
+  `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`.
 
 - Updated Publisher release status, checklist, approval package, runbook,
   traceability matrix, and Voyage Log records to preserve the completed
   `0.0.0-dev` release identity as immutable history and to keep the
-  `0.0.1-dev` identity as docs-only pre-package planning, not
-  package/tag/release authorization.
+  `0.0.1-dev` release completion record separate from the historical
+  `0.0.0-dev` identity.
 
 - Updated Publisher release-status, runbook, approval-package, Avast intake,
   operator guidance, and test-classification records to lift the Release Hold

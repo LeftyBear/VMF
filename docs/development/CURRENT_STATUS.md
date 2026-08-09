@@ -1,6 +1,6 @@
 # VMF Publisher Current Status
 
-Status  : Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance
+Status  : Phase 4 local-only verification complete / 0.0.1-dev GitHub prerelease published
 Scope   : Current Publisher release-gate and local-verification state
 Depends : docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_TestClassification.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
 
@@ -18,11 +18,11 @@ claim Avast vendor clearance or Avast safety certification.
 
 | Item | State |
 | --- | --- |
-| Overall status | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance |
+| Overall status | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance / `0.0.1-dev` GitHub prerelease published |
 | Local verification | Complete within the approved local-only safety boundary |
-| Release readiness | Pending tag/release sequence after final verification PASS, Live E2E PASS, result review, package generation PASS, and package verification PASS are recorded |
-| Release gate | Hold lifted by VMF-side residual risk acceptance; release execution advanced through package verification only |
-| Next release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` recorded as docs-only final package identity; tag creation, GitHub Release, publication, and tag/release execution authorization remain pending |
+| Release readiness | Completed for the `0.0.1-dev` GitHub prerelease; release completion evidence recorded docs-only |
+| Release gate | Hold lifted by VMF-side residual risk acceptance; release execution advanced through GitHub prerelease publication |
+| Release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled/package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
 | Avast false positive handling | Vendor response still pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
@@ -30,15 +30,17 @@ claim Avast vendor clearance or Avast safety certification.
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
 | False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
 | VMF residual risk acceptance | Accepted by ADR-0019 |
-| Approval recommendation | Await explicit tag/release execution authorization after package verification |
+| Approval recommendation | Record release completion evidence; commit/push of this docs-only update remains pending separate authorization |
 | Post-hold execution order | final verification -> Live E2E -> result review -> package/dist -> tag/release |
 | Final verification | PASS before Live E2E: Release build PASS warnings 0 / errors 0; Unit tests 492 passed / 0 failed / 0 skipped; Integration tests 16 passed / 0 failed / 0 skipped; `dotnet format --verify-no-changes` PASS; `git diff --check` PASS |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
-| Result review | Recorded in `Publisher_ReleaseApprovalPackage.md`; package generation and verification are recorded; tag/release remain unexecuted |
+| Result review | Recorded in `Publisher_ReleaseApprovalPackage.md`; package generation and verification are recorded; tag/release/publication completion evidence is recorded |
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
 | Package identity | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; package verification PASS |
+| GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
+| Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
 | Package creation or update by this docs update | Not performed; no `dist` write by this documentation-only update |
-| Release, tag, or publication | Not performed; intended tag `vmf-publisher-v0.0.1-dev` has not been created |
+| Release, tag, or publication | Tag push complete; remote tag readback PASS; GitHub prerelease creation complete; asset upload complete; this docs-only update performed no new release operation |
 | Frozen specifications | Unchanged |
 | Public APIs | Unchanged |
 | Production design | Unchanged |
@@ -71,10 +73,10 @@ claim Avast vendor clearance or Avast safety certification.
 | ADR-0013 release decision record and post-authorization traceability | Done as documentation-only / local-only post-authorization traceability decision record; release state unchanged; recommendation Hold remains; no Release Decision Record has been created. |
 | ADR-0014 release publication record and post-release evidence boundary | Done as documentation-only / local-only publication-record and post-release-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Publication Record or Post-Release Evidence has been created. |
 | ADR-0015 release withdrawal / rollback record and incident evidence boundary | Done as documentation-only / local-only withdrawal, rollback, and incident-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Withdrawal Record, Rollback Record, or Incident Evidence Bundle has been created. |
-| ADR-0016 release versioning / tag / artifact identity | Done as documentation-only / local-only release-identity boundary decision record; `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` is recorded with fixed target commit and verified package identity while tag creation, GitHub Release, publication, and tag/release execution authorization remain pending. |
+| ADR-0016 release versioning / tag / artifact identity | Done as documentation-only / local-only release-identity boundary decision record; `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` is recorded with annotated tag object, peeled/package target commit, evidence docs commit, verified package identity, GitHub prerelease URL, uploaded asset, and matching remote/local digest. |
 | ADR-0017 release retention / archival / audit trail | Done as documentation-only / local-only retention, archival, and audit-trail boundary decision record; release state unchanged; recommendation Hold remains; no archive entry may imply release approval, publication, production readiness, vendor clearance, or Avast resolution while the gate remains blocked. |
 | ADR-0018 emergency release exception boundary | Done as documentation-only / local-only emergency-exception-boundary decision record; release state unchanged; recommendation Hold remains; no emergency exception approval has been granted and no blocked operation is authorized. |
-| ADR-0019 VMF risk acceptance and Release Hold lift | Done as documentation-only / local-only risk-acceptance decision record; Avast vendor clearance remains not obtained; Avast safety certification is not claimed; Release Hold lifted; post-hold release execution sequence advanced through package verification only. |
+| ADR-0019 VMF risk acceptance and Release Hold lift | Done as documentation-only / local-only risk-acceptance decision record; Avast vendor clearance remains not obtained; Avast safety certification is not claimed; Release Hold lifted; post-hold release execution sequence advanced through GitHub prerelease publication. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -130,8 +132,8 @@ update.
 | Item | Status | Required Decision |
 | --- | --- | --- |
 | Phase 3-9 release approval | Pending | Repository-owner release approval or rejection after package/dist and tag/release gating are satisfied. |
-| Release / tag / publication decision | Pending | Explicit owner authorization after package verification; intended tag `vmf-publisher-v0.0.1-dev` is not created. |
-| `0.0.1-dev` target commit | Fixed | `f08eef306ba82e3ea7f031ef652666178f2f0acf`; `HEAD == origin/main == target commit` at identity-recording time. |
+| Release / tag / publication decision | Complete for `0.0.1-dev` | Tag push, remote tag readback, GitHub prerelease creation, and asset upload are recorded complete; this docs-only update does not authorize new release operations. |
+| `0.0.1-dev` package target / evidence docs commits | Fixed | Package target / peeled commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197`. |
 | `0.0.1-dev` package path / size / SHA-256 | Fixed | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; package verification PASS. |
 | Live E2E decision | Completed for the reviewed run | Final verification passed first; Live E2E rerun passed after OAuth Desktop reauthorization refreshed the local authentication state. |
 | Avast false positive resolution | Risk accepted / vendor response pending | VMF residual risk acceptance recorded by ADR-0019; Avast vendor clearance remains not obtained. |
@@ -240,21 +242,21 @@ E2E, and publication.
 `Publisher_ReleaseApprovalPackage.md` summarizes the current approval package
 for review. It preserves the formal state:
 
-`Phase 4 local-only verification complete / release blocked`.
+`Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance / 0.0.1-dev GitHub prerelease published`.
 
-Approval Recommendation = Hold.
+Approval recommendation: record release completion evidence; commit/push of
+this docs-only update remains pending separate authorization.
 
 Avast false-positive handling remains pending, and vendor clearance has not
-been obtained. The package does not approve a release, create or update
-packages, create tags, publish artifacts, execute Live E2E, mutate Google Docs
-or Google Drive, re-run flagged executables, change production code, change
-tests, change public APIs, modify Frozen specifications, write to `dist`, or
-push commits.
+been obtained. This docs-only update does not approve a new release, create or
+update packages, create or modify tags, publish or replace artifacts, execute
+Live E2E, mutate Google Docs or Google Drive, re-run flagged executables,
+change production code, change tests, change public APIs, modify Frozen
+specifications, write to `dist`, or push commits.
 
-Resume requires the Avast response to be recorded against the exact selected
-artifact identity, repository-owner reopening of the required next gate, and
-separate operation-specific authorization for package work, packaged
-executable smoke, Live E2E, and publication.
+Any future package work, packaged executable smoke, Live E2E, publication
+replacement, asset replacement, or release follow-up still requires separate
+operation-specific authorization.
 
 ## 11. vNext Hardening Backlog
 
@@ -296,17 +298,17 @@ change public APIs, change production code, or change production design.
 implementation, test, operational-verification, and evidence traceability for
 ADR-0001 through ADR-0019.
 
-The matrix is documentation-only and local-only. It does not approve a
-release, create or update packages, modify `dist/`, create tags, publish
-artifacts, execute Live E2E, mutate Google Docs or Google Drive, re-run
-flagged executables, change Frozen specifications, change public APIs, change
-production code, change tests, create release authorization, create release
-decision records, create publication records, create rollback records, create
-archive artifacts, or approve emergency release execution.
+The matrix is documentation-only and local-only. It records release completion
+evidence after the fact; it does not approve a new release, create or update
+packages, modify `dist/`, create or modify tags, publish or replace artifacts,
+execute Live E2E, mutate Google Docs or Google Drive, re-run flagged
+executables, change Frozen specifications, change public APIs, change
+production code, change tests, create release decision records, create
+rollback records, create archive artifacts, or approve emergency release
+execution.
 
-The release boundary is unchanged: Avast false-positive handling remains
-pending, vendor clearance has not been obtained, and the recommendation
-remains `Approval Recommendation = Hold`.
+The release boundary is unchanged for Avast: Avast false-positive handling
+remains pending and vendor clearance has not been obtained.
 
 ## 13.1 Operational Workstream Separation
 
@@ -587,15 +589,17 @@ Use this status as:
 
 - confirmation that the approved Phase 4 local-only verification safety range
   is complete;
-- confirmation that the release gate is still blocked;
-- a guard against interpreting local verification as release readiness.
+- confirmation that the `0.0.1-dev` GitHub prerelease publication evidence is
+  recorded;
+- a guard against interpreting local verification or publication evidence as
+  Avast vendor clearance.
 
 Do not use this status as:
 
-- release approval;
-- package approval;
-- tag authorization;
-- publication authorization;
+- new release approval;
+- new package approval;
+- new tag authorization;
+- new publication authorization;
 - Live E2E approval;
 - Google Docs or Google Drive mutation approval;
 - approval to re-run flagged artifacts;
@@ -619,7 +623,10 @@ ADR-0013 requires a future Release Decision Record to link decision date/time, d
 
 The Release Decision Record is not itself a release artifact, package, publication, tag, deployment, or publication record. It must not be backdated or used to imply authorization before ADR-0003, ADR-0009, ADR-0012, and any applicable release-authorization prerequisites are satisfied.
 
-The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, and no publication record has been created.
+Avast false-positive handling remains pending, and vendor clearance has not
+been obtained. The `0.0.1-dev` release completion evidence is recorded; no
+new Release Decision Record, publication replacement, asset replacement, or
+Avast clearance record is created by this docs-only update.
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0013.
 
@@ -631,7 +638,11 @@ ADR-0014 defines the future Release Publication Record as the record of the fact
 
 Post-Release Evidence is evidence collected after publication. It may document observations, confirmations, or audit evidence, but it must not be used to retroactively satisfy or repair pre-release approval, release authorization, required release gates, vendor clearance, Avast false-positive resolution, final release verification required before publication, or Release Decision Record completeness.
 
-The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, no publication has occurred, no Publication Record has been created, and no Post-Release Evidence has been created.
+Avast false-positive handling remains pending, and vendor clearance has not
+been obtained. The `0.0.1-dev` GitHub prerelease publication evidence is now
+recorded; no Avast vendor clearance, Avast safety certification, publication
+replacement, asset replacement, or post-release corrective action is implied by
+that evidence.
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0014.
 
@@ -645,7 +656,11 @@ Any re-release, re-publication, package replacement, tag replacement, or publica
 
 Incident evidence must follow safe evidence rules: no credentials, tokens, private URLs, raw local paths, unredacted logs, or sensitive Google Docs / Drive identifiers unless explicitly redacted or approved.
 
-The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, no publication has occurred, no Publication Record has been created, no Post-Release Evidence has been created, no Withdrawal Record has been created, no Rollback Record has been created, and no Incident Evidence Bundle has been created.
+Avast false-positive handling remains pending, and vendor clearance has not
+been obtained. The `0.0.1-dev` GitHub prerelease publication evidence is now
+recorded; no Withdrawal Record, Rollback Record, Incident Evidence Bundle,
+publication replacement, asset replacement, or Avast clearance record has been
+created.
 
 No release, tag, publication, republication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, or public API change was performed by ADR-0015.
 
@@ -662,14 +677,18 @@ record identity.
 
 ADR-0016 itself did not create a tag, package, artifact, evidence bundle,
 approval record, authorization record, Release Decision Record, Publication
-Record, or release identity. The next version and intended tag are recorded as
-`0.0.1-dev` / `vmf-publisher-v0.0.1-dev`. The final package identity is now
-recorded as `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`,
-983404 bytes, SHA-256
-`73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`, target
-commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`, package generation `PASS`,
-package verification `PASS`, manifest files 14, and secret/static package
-inspection `PASS`.
+Record, or release identity. The `0.0.1-dev` release identity is now recorded
+as `vmf-publisher-v0.0.1-dev`, annotated tag object
+`a962e19ba2b0a494d1158011ae823d579e41711f`, peeled/package target commit
+`f08eef306ba82e3ea7f031ef652666178f2f0acf`, evidence docs commit
+`39df8bedd848da42a4de3cb9461ce4cc86b51197`, package
+`dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`, asset
+`vmf-publisher-0.0.1-dev-win-x64.zip`, 983404 bytes, SHA-256
+`73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`,
+package generation `PASS`, package verification `PASS`, manifest files 14,
+secret/static package inspection `PASS`, GitHub prerelease URL
+https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev, and
+remote/local digest match.
 
 ADR-0016 rejects ambiguous or mutable canonical identities such as `latest`,
 local build folders, mutable package names, private local paths, and
@@ -677,18 +696,18 @@ unverifiable artifacts. It fills the previously absent numbering slot and does
 not change, supersede, renumber, weaken, or reinterpret ADR-0017 or ADR-0018.
 
 Avast false-positive handling remains pending and vendor clearance has not
-been obtained. No release authorization has been granted, no Release Decision
-Record has been created, no publication has occurred, and no tag, GitHub
-Release, publication record, approval record, or authorization record has been
-created for `0.0.1-dev`.
+been obtained. The `0.0.1-dev` GitHub prerelease publication is complete on
+the ADR-0019 VMF-side residual risk acceptance basis, not Avast vendor
+clearance or Avast safety certification.
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive
-mutation, package or distribution artifact creation or update by this docs-only update, `dist` write,
-flagged executable re-run, production code change, test change, Frozen
-specification change, public API change, vendor clearance, Avast resolution,
-artifact creation, package creation, approval record creation, authorization
-record creation, tag/release execution authorization, GitHub Release creation,
-or publication was performed by this docs-only package identity update.
+mutation, package or distribution artifact creation or update by this docs-only
+update, `dist` write, flagged executable re-run, production code change, test
+change, Frozen specification change, public API change, vendor clearance,
+Avast resolution, artifact creation, package creation, approval record
+creation, authorization record creation, tag/release execution authorization,
+GitHub Release creation, or publication was performed by this docs-only
+release completion evidence update.
 
 ## 22. ADR-0017 Release Retention / Archival / Audit Trail
 
@@ -700,7 +719,11 @@ Archival is documentation and evidence preservation only. It is not release auth
 
 Archived evidence must preserve traceability from release decision to verification, vendor clearance, Release Approval Package, Evidence Bundle, and package/release identifiers when those source records exist and are authorized to be recorded.
 
-The recommendation remains `Approval Recommendation = Hold`. Avast false-positive handling remains pending, vendor clearance has not been obtained, no release authorization has been granted, no Release Decision Record has been created, no publication has occurred, no archive entry may imply release approval or production readiness, and release remains blocked.
+Avast false-positive handling remains pending, and vendor clearance has not
+been obtained. The `0.0.1-dev` GitHub prerelease publication evidence is now
+recorded; no archive entry may imply Avast vendor clearance, Avast safety
+certification, publication replacement, asset replacement, or production
+readiness beyond the published prerelease record.
 
 No release, tag, publication, republication, Live E2E, Google Docs mutation, Google Drive mutation, package or distribution artifact creation or update, flagged executable re-run, production code change, test change, Frozen specification change, public API change, vendor clearance, Avast resolution, or archive artifact creation was performed by ADR-0017.
 
@@ -757,7 +780,7 @@ The current formal state is:
 `Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance`.
 
 Avast vendor clearance remains not obtained. Avast safety certification is not
-claimed. Release execution has advanced through package verification only.
+claimed. Release execution has advanced through GitHub prerelease publication.
 
 The next required order is fixed:
 
@@ -775,8 +798,9 @@ no OAuth token, refresh token, credential, client secret, Authorization header,
 token-store content, private URL, or provider payload is recorded.
 
 Package generation and package verification are recorded as `PASS` for the
-fixed `0.0.1-dev` package identity. No package/dist work, tag creation,
-release publication, artifact publication, flagged executable smoke,
-production code change, test change, Frozen specification change, public API
-change, staging, commit, or push was performed by this result review
-documentation update.
+fixed `0.0.1-dev` package identity. Tag push, remote tag readback, GitHub
+prerelease creation, asset upload, and remote/local digest match are recorded
+complete. No package/dist work, tag creation, release publication, artifact
+publication, flagged executable smoke, production code change, test change,
+Frozen specification change, public API change, staging, commit, or push was
+performed by this release completion documentation update.

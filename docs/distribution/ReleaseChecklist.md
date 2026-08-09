@@ -1,6 +1,6 @@
 # Publisher Release Checklist
 
-Status  : Phase 3-10 Release COMPLETE; next release identity recorded
+Status  : Phase 3-10 Release COMPLETE; 0.0.1-dev GitHub prerelease published
 Scope   : VMF Publisher package release readiness
 Depends : VMF.Publisher.sln, docs/development/Publisher_Phase3-9_DesignNotes.md, tools/publisher/package-publisher.ps1, tools/publisher/verify-package.ps1
 
@@ -17,9 +17,10 @@ Result codes:
 | PENDING | The item is waiting on an external response or repository-owner decision. |
 | N/A | The item is explicitly not applicable and the reason is recorded. |
 
-## 0. Next Release Identity: 0.0.1-dev
+## 0. Release Identity: 0.0.1-dev
 
-Status: RECORDED as docs-only next release identity.
+Status: COMPLETE as published GitHub prerelease; completion evidence recorded
+docs-only.
 
 This section records the next Publisher release identity after the completed
 `0.0.0-dev` release. It does not modify the completed Phase 3-10
@@ -28,19 +29,21 @@ This section records the next Publisher release identity after the completed
 | Item | Result | Evidence | Reviewer | Date | Remarks |
 | --- | --- | --- | --- | --- | --- |
 | Next release version adopted | PASS | `0.0.1-dev` | Codex | 2026-08-09 | Adopted as the next release identity because `0.0.0-dev` is already used as tag, GitHub Release, and asset identity. |
-| Next git tag adopted | PASS | `vmf-publisher-v0.0.1-dev` | Codex | 2026-08-09 | Tag name is reserved for the next identity; tag has not been created. |
+| Git tag published | PASS | `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled commit `f08eef306ba82e3ea7f031ef652666178f2f0acf` | Codex | 2026-08-09 | Tag push complete; remote tag readback PASS. |
 | Runtime identifier recorded | PASS | `win-x64` | Codex | 2026-08-09 | Recorded from the fixed package identity. |
 | Configuration recorded | PASS | `Release` | Codex | 2026-08-09 | Recorded from the fixed package identity. |
 | Package type recorded | PASS | `selfContained=false` | Codex | 2026-08-09 | Framework-dependent package identity. |
-| Target commit fixed | PASS | `f08eef306ba82e3ea7f031ef652666178f2f0acf` | Codex | 2026-08-09 | `HEAD == origin/main == target commit` at identity-recording time. |
-| Package artifact recorded | PASS | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` | Codex | 2026-08-09 | Package identity fixed after package generation and verification. |
+| Package target commit fixed | PASS | `f08eef306ba82e3ea7f031ef652666178f2f0acf` | Codex | 2026-08-09 | Peeled commit used for package/release target. |
+| Evidence docs commit recorded | PASS | `39df8bedd848da42a4de3cb9461ce4cc86b51197` | Codex | 2026-08-09 | Kept distinct from the package target commit. |
+| Package artifact recorded | PASS | Asset `vmf-publisher-0.0.1-dev-win-x64.zip`; `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` | Codex | 2026-08-09 | Package identity fixed after package generation and verification. |
 | Package generation recorded | PASS | `0.0.1-dev`; `win-x64`; `Release`; `selfContained=false`; manifest files 14 | Codex | 2026-08-09 | This checklist records supplied package-generation evidence; this docs update did not regenerate or modify the package. |
 | Package verification recorded | PASS | Package verification PASS; secret/static package inspection PASS | Codex | 2026-08-09 | Verification applies to the fixed package path, size, and SHA-256 above. |
-| Identity chain reviewed | PASS | Final verification PASS; Live E2E 4/4 PASS; result review complete; package generation PASS; package verification PASS | Codex | 2026-08-09 | Identity chain is version -> target commit -> intended tag -> verified package -> evidence/review record. |
-| Tag creation pending | PENDING | Tag not created | Codex | 2026-08-09 | Existing `vmf-publisher-v0.0.0-dev` tag must not be retargeted, deleted, or reused. |
-| GitHub Release pending | PENDING | GitHub Release not created | Codex | 2026-08-09 | Existing `0.0.0-dev` GitHub Release and asset remain immutable past identity. |
-| Publication pending | PENDING | Publication not performed | Codex | 2026-08-09 | Release announcement and publication remain separately gated. |
-| Release authorization pending | PENDING | No tag/release execution approval | Codex | 2026-08-09 | This docs-only identity record is not authorization to create tags, create GitHub Releases, publish, stage, commit, or push. |
+| Identity chain reviewed | PASS | Final verification PASS; Live E2E 4/4 PASS; result review complete; package generation PASS; package verification PASS; tag push complete; remote tag readback PASS; GitHub prerelease creation complete; asset upload complete | Codex | 2026-08-09 | ADR-0016 identity chain is version -> package target commit -> annotated tag / peeled commit -> verified package -> GitHub prerelease asset -> evidence docs commit. |
+| GitHub Release published | PASS | https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev`; prerelease `true` | Codex | 2026-08-09 | GitHub prerelease creation complete. |
+| Asset upload verified | PASS | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` | Codex | 2026-08-09 | Asset upload complete; remote asset digest / local verified package SHA-256 match. |
+| Prior release identity unchanged | PASS | Existing `0.0.0-dev` tag, GitHub Release, and asset identity unchanged | Codex | 2026-08-09 | Historical identity was not retargeted, deleted, replaced, or reused. |
+| Avast clearance boundary preserved | PASS | Vendor clearance not obtained; ADR-0019 VMF-side residual risk acceptance basis retained | Codex | 2026-08-09 | Publication record does not claim Avast vendor clearance or Avast safety certification. |
+| Documentation update boundary | PASS | Docs-only release completion evidence update | Codex | 2026-08-09 | This update did not modify production code, tests, package, `dist`, tags, GitHub Release, or assets; no staging, commit, or push performed. |
 
 ## 1. Release Identity
 

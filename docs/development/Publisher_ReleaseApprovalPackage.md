@@ -1,6 +1,6 @@
 # Publisher Release Approval Package
 
-Status  : Hold lifted by VMF risk acceptance; release execution pending
+Status  : Hold lifted by VMF risk acceptance; 0.0.1-dev GitHub prerelease published
 Scope   : Docs-only / local-only release approval package organization after ADR-0019 risk acceptance
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_TestClassification.md, docs/distribution/PublisherReleaseRunbook.md
 
@@ -15,15 +15,15 @@ modify Frozen specifications, change tests, write to `dist`, or push commits.
 | Item | State |
 | --- | --- |
 | Formal release state | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance |
-| Approval recommendation | Await explicit tag/release execution authorization after package verification |
+| Approval recommendation | Record release completion evidence; commit/push of this docs-only update remains pending separate authorization |
 | Avast false-positive handling | Vendor response pending; VMF residual risk accepted |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
 | False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
-| Release readiness | Pending tag/release sequence after final verification PASS, Live E2E PASS, result review, package generation PASS, and package verification PASS are recorded |
-| Next release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` recorded for the next release; target commit fixed at `f08eef306ba82e3ea7f031ef652666178f2f0acf` |
+| Release readiness | Completed for the `0.0.1-dev` GitHub prerelease; release completion evidence recorded docs-only |
+| Release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled/package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
 | Final verification | PASS before Live E2E: Release build PASS warnings 0 / errors 0; Unit tests 492 passed / 0 failed / 0 skipped; Integration tests 16 passed / 0 failed / 0 skipped; `dotnet format --verify-no-changes` PASS; `git diff --check` PASS |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
 | Result review | Recorded; initial Live E2E failure was attributed to stale, revoked, or inconsistent saved OAuth token state; rerun passed after token deletion and OAuth Desktop reauthorization |
@@ -31,8 +31,10 @@ modify Frozen specifications, change tests, write to `dist`, or push commits.
 | Package creation or update by this docs update | Not performed; no `dist` write by this documentation-only update |
 | Package path / size / SHA-256 | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
 | Package generation / verification | PASS / PASS; manifest files 14; secret/static package inspection PASS |
+| GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
+| Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
 | Flagged executable re-run | Not performed |
-| Release, tag, publication, push | Not performed |
+| Release, tag, publication, push | Tag push, GitHub prerelease creation, and asset upload are complete; this docs-only update did not perform a new release operation or push |
 
 Local-only verification remains useful evidence for source quality inside its
 approved boundary. It is not release readiness, package approval, Live E2E
@@ -79,8 +81,8 @@ gate.
 | `docs/development/Publisher_TestClassification.md` | Done | Separates documentation, local, non-live, package, Live E2E, and publication checks. |
 | ADR-0019 result review | Recorded in this package | Reviews final verification and Live E2E results; package generation and verification are recorded; keeps tag/release and publication unexecuted. |
 | `docs/distribution/PublisherReleaseRunbook.md` | Draft | Defines release operation sequencing and authorization gates. |
-| `docs/distribution/ReleaseChecklist.md` | Existing release checklist plus final package identity record | Preserves completed `0.0.0-dev` evidence and records `0.0.1-dev` target commit, package identity, package generation PASS, and package verification PASS. |
-| `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Release identity notes | Records `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`, target commit, verified package path, size, SHA-256, package verification, and remaining non-actions. |
+| `docs/distribution/ReleaseChecklist.md` | Existing release checklist plus release completion record | Preserves completed `0.0.0-dev` evidence and records `0.0.1-dev` annotated tag object, peeled/package target commit, evidence docs commit, GitHub prerelease URL, asset identity, remote/local digest match, package generation PASS, and package verification PASS. |
+| `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Release completion notes | Records `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`, tag object, peeled/package target commit, evidence docs commit, GitHub Release URL, asset name, size, SHA-256, package verification, remote digest match, and publication result. |
 
 No new publication or vendor-clearance evidence is created by this approval
 package. The recorded `PASS` package evidence is limited to the supplied
@@ -148,9 +150,10 @@ If any step fails, lacks authorization, produces ambiguous evidence, or changes
 artifact identity, the sequence stops until a separate recorded decision
 defines the next action.
 
-## 7. Next Release Identity
+## 7. Release Identity
 
-Status: RECORDED as docs-only identity selection.
+Status: COMPLETE as published GitHub prerelease; completion evidence recorded
+docs-only.
 
 The next Publisher release identity is:
 
@@ -158,20 +161,24 @@ The next Publisher release identity is:
 | --- | --- |
 | Version | `0.0.1-dev` |
 | Tag | `vmf-publisher-v0.0.1-dev` |
+| Annotated tag object | `a962e19ba2b0a494d1158011ae823d579e41711f` |
+| Peeled/package target commit | `f08eef306ba82e3ea7f031ef652666178f2f0acf` |
+| Evidence docs commit | `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
 | Runtime | `win-x64` |
 | Configuration | `Release` |
 | Package type | Framework-dependent (`selfContained=false`) |
-| Target commit | `f08eef306ba82e3ea7f031ef652666178f2f0acf` |
 | Package path | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip` |
+| Asset name | `vmf-publisher-0.0.1-dev-win-x64.zip` |
 | Package size | 983404 bytes |
 | Package SHA-256 | `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
 | Package generation | PASS |
 | Package verification | PASS |
 | Manifest files | 14 |
 | Secret/static package inspection | PASS |
-| Tag state | Not created |
-| GitHub Release state | Not created |
-| Publication state | Not performed |
+| Tag state | Pushed; remote tag readback PASS |
+| GitHub Release state | Published prerelease `true`; release name `VMF Publisher 0.0.1-dev`; https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev |
+| Asset upload | Complete; remote asset digest matched local verified package SHA-256 |
+| Publication state | GitHub prerelease publication complete |
 
 The prior `0.0.0-dev` identity remains immutable historical release evidence:
 existing tag, GitHub Release, and asset identities must not be retargeted,
@@ -179,11 +186,13 @@ replaced, or reused.
 
 This record satisfies the ADR-0016 requirement to keep version, commit, tag,
 package or artifact, evidence, and authorization identity fields explicit.
-Version, target commit, intended tag, and verified package identity are now
+Version, peeled/package target commit, annotated tag object, verified package
+identity, GitHub Release URL, asset identity, and evidence docs commit are now
 fixed. Final verification `PASS`, Live E2E 4/4 `PASS`, result review complete,
-package generation `PASS`, and package verification `PASS` are the recorded
-identity-chain evidence. Tag creation, GitHub Release creation, publication,
-and tag/release execution authorization remain pending.
+package generation `PASS`, package verification `PASS`, tag push complete,
+remote tag readback `PASS`, GitHub prerelease creation complete, asset upload
+complete, and remote/local digest match are the recorded identity-chain
+evidence.
 
 ## 8. ADR-0019 Result Review
 
@@ -248,8 +257,8 @@ certification.
 
 ## 9. Approval Recommendation
 
-Approval Recommendation = Await explicit tag/release execution authorization
-after package verification.
+Approval Recommendation = Record release completion evidence; commit/push of
+this docs-only update remains pending separate authorization.
 
 Basis:
 
@@ -260,7 +269,10 @@ Basis:
 - final verification and Live E2E have passed and result review is recorded;
 - package generation and package verification are recorded as `PASS` for the
   fixed `0.0.1-dev` package identity;
+- tag push, remote tag readback, GitHub prerelease creation, asset upload, and
+  remote/local digest match are recorded as complete for `0.0.1-dev`;
 - no package creation, package update, package verification, `dist` write, or
   flagged executable smoke was performed by this docs-only update;
-- repository-owner go/no-go approval has not been recorded;
-- publication, tag creation, and push were not authorized.
+- this docs-only update did not modify tags, GitHub Release, assets,
+  production code, tests, package, or `dist`;
+- staging, commit, and push of this docs-only update were not authorized.
