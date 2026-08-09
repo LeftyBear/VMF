@@ -20,8 +20,8 @@ claim Avast vendor clearance or Avast safety certification.
 | --- | --- |
 | Overall status | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance |
 | Local verification | Complete within the approved local-only safety boundary |
-| Release readiness | Pending final verification, Live E2E, result review, package/dist, and tag/release sequence |
-| Release gate | Hold lifted by VMF-side residual risk acceptance; release execution not yet started |
+| Release readiness | Pending package/dist and tag/release sequence after final verification PASS, Live E2E PASS, and result review recorded |
+| Release gate | Hold lifted by VMF-side residual risk acceptance; release execution advanced through result review only |
 | Avast false positive handling | Vendor response still pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
@@ -31,8 +31,10 @@ claim Avast vendor clearance or Avast safety certification.
 | VMF residual risk acceptance | Accepted by ADR-0019 |
 | Approval recommendation | Proceed to final verification sequence after explicit operation-specific authorization |
 | Post-hold execution order | final verification -> Live E2E -> result review -> package/dist -> tag/release |
-| Live E2E | Not executed; requires explicit per-run authorization after final verification |
-| Google Docs / Google Drive mutation | Not performed; gated by Live E2E or operation-specific authorization |
+| Final verification | PASS before Live E2E: Release build PASS warnings 0 / errors 0; Unit tests 492 passed / 0 failed / 0 skipped; Integration tests 16 passed / 0 failed / 0 skipped; `dotnet format --verify-no-changes` PASS; `git diff --check` PASS |
+| Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
+| Result review | Recorded in `Publisher_ReleaseApprovalPackage.md`; package/dist and tag/release remain unexecuted |
+| Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
 | Package creation or update | Not performed; gated after result review |
 | Release, tag, or publication | Not performed; gated after package/dist |
 | Frozen specifications | Unchanged |
@@ -48,7 +50,7 @@ claim Avast vendor clearance or Avast safety certification.
 | Publisher operator guidance for Avast hold | Done as documentation-only operator guidance; release state unchanged. |
 | Publisher Evidence Bundle Specification | Done as documentation-only evidence bundle design; release state unchanged. |
 | Publisher Preflight Hardening | Done as documentation-only hard-stop consolidation; release state unchanged. |
-| Publisher Release Approval Package | Done as documentation-only / local-only approval package organization; recommendation Hold; release state unchanged. |
+| Publisher Release Approval Package | Updated with ADR-0019 result review evidence; final verification PASS and Live E2E PASS recorded; package/dist, tag/release, and publication remain unexecuted. |
 | Publisher vNext Backlog | Done as documentation-only / local-only backlog record; release state unchanged. |
 | Publisher Avast Response Intake Template | Done as documentation-only / local-only template; no Avast response received; release state unchanged. |
 | Publisher Test Traceability Matrix | Done as documentation-only / local-only traceability index; updated through ADR-0019. |
@@ -70,7 +72,7 @@ claim Avast vendor clearance or Avast safety certification.
 | ADR-0016 release versioning / tag / artifact identity | Done as documentation-only / local-only release-identity boundary decision record; release state unchanged; recommendation Hold remains; no tag, artifact, package, release version, evidence bundle, approval record, authorization record, or release identity has been created or finalized. |
 | ADR-0017 release retention / archival / audit trail | Done as documentation-only / local-only retention, archival, and audit-trail boundary decision record; release state unchanged; recommendation Hold remains; no archive entry may imply release approval, publication, production readiness, vendor clearance, or Avast resolution while the gate remains blocked. |
 | ADR-0018 emergency release exception boundary | Done as documentation-only / local-only emergency-exception-boundary decision record; release state unchanged; recommendation Hold remains; no emergency exception approval has been granted and no blocked operation is authorized. |
-| ADR-0019 VMF risk acceptance and Release Hold lift | Done as documentation-only / local-only risk-acceptance decision record; Avast vendor clearance remains not obtained; Avast safety certification is not claimed; Release Hold lifted; post-hold release execution sequence fixed but not executed. |
+| ADR-0019 VMF risk acceptance and Release Hold lift | Done as documentation-only / local-only risk-acceptance decision record; Avast vendor clearance remains not obtained; Avast safety certification is not claimed; Release Hold lifted; post-hold release execution sequence advanced through result review only. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -125,9 +127,9 @@ update.
 
 | Item | Status | Required Decision |
 | --- | --- | --- |
-| Phase 3-9 release approval | Pending | Repository-owner release approval or rejection after final verification, Live E2E, result review, package/dist, and tag/release gating are satisfied. |
+| Phase 3-9 release approval | Pending | Repository-owner release approval or rejection after package/dist and tag/release gating are satisfied. |
 | Release / tag / publication decision | Pending | Explicit owner authorization after the fixed ADR-0019 post-hold sequence reaches tag/release. |
-| Live E2E decision | Pending | Explicit per-run authorization, credentials scope, destination scope, and cleanup expectations after final verification. |
+| Live E2E decision | Completed for the reviewed run | Final verification passed first; Live E2E rerun passed after OAuth Desktop reauthorization refreshed the local authentication state. |
 | Avast false positive resolution | Risk accepted / vendor response pending | VMF residual risk acceptance recorded by ADR-0019; Avast vendor clearance remains not obtained. |
 | vNext hardening backlog | Pending | Candidate treatment before adoption. |
 | Input-specific CLI exit code | Candidate | Future public CLI behavior proposal only; not adopted in Phase 4-2-2. |
@@ -746,7 +748,7 @@ The current formal state is:
 `Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance`.
 
 Avast vendor clearance remains not obtained. Avast safety certification is not
-claimed. Release execution has not started.
+claimed. Release execution has advanced through result review only.
 
 The next required order is fixed:
 
@@ -756,8 +758,14 @@ The next required order is fixed:
 4. package/dist;
 5. tag/release.
 
-No final verification, Live E2E, result review, package/dist work, tag
-creation, release publication, Google Docs mutation, Google Drive mutation,
-token-store mutation, flagged executable execution, production code change,
-test change, Frozen specification change, public API change, staging, commit,
-or push was performed by ADR-0019.
+Final verification PASS, Live E2E PASS, and result review are now recorded in
+`docs/development/Publisher_ReleaseApprovalPackage.md`. The initial Live E2E
+failure was attributed to stale, revoked, or inconsistent saved OAuth token
+state. OAuth Desktop reauthorization refreshed the local authentication state;
+no OAuth token, refresh token, credential, client secret, Authorization header,
+token-store content, private URL, or provider payload is recorded.
+
+No package/dist work, tag creation, release publication, artifact publication,
+flagged executable smoke, production code change, test change, Frozen
+specification change, public API change, staging, commit, or push was performed
+by this result review documentation update.

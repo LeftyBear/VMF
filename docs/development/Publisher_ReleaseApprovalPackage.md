@@ -22,9 +22,11 @@ modify Frozen specifications, change tests, write to `dist`, or push commits.
 | False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
-| Release readiness | Pending final verification, Live E2E, result review, package/dist, and tag/release sequence |
-| Live E2E | Not executed in this package; requires explicit authorization after final verification |
-| Google Docs / Google Drive mutation | Not performed |
+| Release readiness | Pending package/dist and tag/release sequence after final verification PASS, Live E2E PASS, and result review recorded |
+| Final verification | PASS before Live E2E: Release build PASS warnings 0 / errors 0; Unit tests 492 passed / 0 failed / 0 skipped; Integration tests 16 passed / 0 failed / 0 skipped; `dotnet format --verify-no-changes` PASS; `git diff --check` PASS |
+| Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
+| Result review | Recorded; initial Live E2E failure was attributed to stale, revoked, or inconsistent saved OAuth token state; rerun passed after token deletion and OAuth Desktop reauthorization |
+| Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
 | Package creation or update | Not performed |
 | Flagged executable re-run | Not performed |
 | Release, tag, publication, push | Not performed |
@@ -72,12 +74,14 @@ gate.
 | `docs/development/Publisher_AvastResponseIntakeTemplate.md` | Template only / no Avast response received | Defines safe Avast response intake; vendor clearance remains not obtained while ADR-0019 records VMF risk acceptance separately. |
 | `docs/development/Publisher_EvidenceBundleSpecification.md` | Done | Defines redacted evidence bundle structure without assembling a concrete bundle. |
 | `docs/development/Publisher_TestClassification.md` | Done | Separates documentation, local, non-live, package, Live E2E, and publication checks. |
+| ADR-0019 result review | Recorded in this package | Reviews final verification and Live E2E results; keeps package/dist, tag/release, and publication unexecuted. |
 | `docs/distribution/PublisherReleaseRunbook.md` | Draft | Defines release operation sequencing and authorization gates. |
 | `docs/distribution/ReleaseChecklist.md` | Existing release checklist | Release checklist reference only; this package does not update checklist results. |
 
-No new `PASS` release, package, Live E2E, Google Docs/Drive, publication, or
-vendor-clearance evidence is created by this approval package. ADR-0019
-records risk acceptance and Hold lift only.
+No new `PASS` package, publication, or vendor-clearance evidence is created by
+this approval package. The recorded `PASS` evidence is limited to the supplied
+final verification and Live E2E result review facts. ADR-0019 records risk
+acceptance and Hold lift only.
 
 ## 4. Ahead Commits Summary
 
@@ -139,7 +143,65 @@ If any step fails, lacks authorization, produces ambiguous evidence, or changes
 artifact identity, the sequence stops until a separate recorded decision
 defines the next action.
 
-## 7. Approval Recommendation
+## 7. ADR-0019 Result Review
+
+Status: Recorded as docs-only result review evidence.
+
+Final verification was completed before Live E2E and is recorded as `PASS`:
+
+| Check | Result |
+| --- | --- |
+| Release build | PASS; warnings 0 / errors 0 |
+| Unit tests | PASS; 492 passed / 0 failed / 0 skipped |
+| Integration tests | PASS; 16 passed / 0 failed / 0 skipped |
+| `dotnet format --verify-no-changes` | PASS |
+| `git diff --check` | PASS |
+
+The initial Live E2E run produced total 4 / passed 3 / failed 1. The failed
+test was `RevisionConflict_ReturnsConflictBeforeVerification`. The failure was
+Google OAuth API HTTP 400 `invalid_grant`.
+
+Result review conclusion: the failure was attributed to stale, revoked, or
+inconsistent saved OAuth token state. The existing OAuth token was deleted,
+OAuth Desktop reauthorization was performed, and the local authentication state
+was refreshed. No OAuth token, refresh token, credential, client secret,
+Authorization header, token-store content, private URL, or provider payload is
+recorded in this package.
+
+The Live E2E rerun passed:
+
+| Check | Result |
+| --- | --- |
+| Live E2E rerun | PASS |
+| Total | 4 |
+| Passed | 4 |
+| Failed | 0 |
+| Skipped | 0 |
+
+Passing Live E2E cases:
+
+- `RevisionConflict_ReturnsConflictBeforeVerification`;
+- `EmptyPlan_DoesNotCallGoogleDocsBatchUpdateAndStillVerifies`;
+- `Success_AppliesReadsBackVerifiesAndAllowsVerifiedStateCommit`;
+- `ReadbackMismatch_DisallowsVerifiedStateCommit`.
+
+Execution-after checks:
+
+| Item | State |
+| --- | --- |
+| `VMF_PUBLISHER_GOOGLE_E2E` | unset |
+| Working tree at run completion | clean |
+| `dist` | unchanged |
+| Package/dist | not executed |
+| Tag/release/publication | not executed |
+
+This result review completes only the ADR-0019 result review record for the
+facts above. It does not authorize or perform package/dist work, tag creation,
+release publication, artifact publication, flagged executable smoke, staging,
+commit, push, production code changes, test changes, Frozen specification
+changes, public API changes, vendor clearance, or Avast safety certification.
+
+## 8. Approval Recommendation
 
 Approval Recommendation = Proceed to final verification sequence after
 explicit operation-specific authorization.
@@ -150,7 +212,7 @@ Basis:
 - Avast vendor response remains pending;
 - vendor clearance has not been obtained;
 - Avast safety certification is not claimed;
-- Live E2E has not been authorized or executed for this approval package;
+- final verification and Live E2E have passed and result review is recorded;
 - no current package creation, package update, package verification, or
   flagged executable smoke was performed;
 - repository-owner go/no-go approval has not been recorded;
