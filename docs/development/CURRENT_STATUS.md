@@ -1,6 +1,6 @@
 # VMF Publisher Current Status
 
-Status  : Phase 4 local-only verification complete / release blocked
+Status  : Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance
 Scope   : Current Publisher release-gate and local-verification state
 Depends : docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_TestClassification.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
 
@@ -10,21 +10,31 @@ or update packages, create tags, publish artifacts, execute Live E2E, mutate
 Google Docs or Google Drive, change production design, change public APIs, or
 modify Frozen specifications.
 
+ADR-0019 is the latest current-state update. Earlier ADR sections preserve the
+meaning of the Accepted ADRs as originally recorded and are not rewritten to
+claim Avast vendor clearance or Avast safety certification.
+
 ## 1. Current State
 
 | Item | State |
 | --- | --- |
-| Overall status | Phase 4 local-only verification complete / release blocked |
+| Overall status | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance |
 | Local verification | Complete within the approved local-only safety boundary |
-| Release readiness | Not established by Phase 4 local-only verification |
-| Release gate | Blocked |
-| Avast false positive handling | Pending |
+| Release readiness | Pending final verification, Live E2E, result review, package/dist, and tag/release sequence |
+| Release gate | Hold lifted by VMF-side residual risk acceptance; release execution not yet started |
+| Avast false positive handling | Vendor response still pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
-| Approval recommendation | Hold |
-| Live E2E | Not executed; remains blocked without explicit per-run authorization |
-| Google Docs / Google Drive mutation | Not performed; remains blocked |
-| Package creation or update | Not performed; remains blocked |
-| Release, tag, or publication | Not performed; remains blocked |
+| Avast safety certification | Not claimed |
+| Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
+| Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
+| False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
+| VMF residual risk acceptance | Accepted by ADR-0019 |
+| Approval recommendation | Proceed to final verification sequence after explicit operation-specific authorization |
+| Post-hold execution order | final verification -> Live E2E -> result review -> package/dist -> tag/release |
+| Live E2E | Not executed; requires explicit per-run authorization after final verification |
+| Google Docs / Google Drive mutation | Not performed; gated by Live E2E or operation-specific authorization |
+| Package creation or update | Not performed; gated after result review |
+| Release, tag, or publication | Not performed; gated after package/dist |
 | Frozen specifications | Unchanged |
 | Public APIs | Unchanged |
 | Production design | Unchanged |
@@ -41,7 +51,7 @@ modify Frozen specifications.
 | Publisher Release Approval Package | Done as documentation-only / local-only approval package organization; recommendation Hold; release state unchanged. |
 | Publisher vNext Backlog | Done as documentation-only / local-only backlog record; release state unchanged. |
 | Publisher Avast Response Intake Template | Done as documentation-only / local-only template; no Avast response received; release state unchanged. |
-| Publisher Test Traceability Matrix | Done as documentation-only / local-only traceability index; release state unchanged. |
+| Publisher Test Traceability Matrix | Done as documentation-only / local-only traceability index; updated through ADR-0019. |
 | ADR operating basis | Done as documentation-only / local-only architecture decision record process; release state unchanged. |
 | ADR-0002 OAuth Desktop authentication | Done as documentation-only / local-only authentication decision record; release state unchanged. |
 | ADR-0003 release gate and vendor clearance | Done as documentation-only / local-only release governance decision record; release state unchanged. |
@@ -60,6 +70,7 @@ modify Frozen specifications.
 | ADR-0016 release versioning / tag / artifact identity | Done as documentation-only / local-only release-identity boundary decision record; release state unchanged; recommendation Hold remains; no tag, artifact, package, release version, evidence bundle, approval record, authorization record, or release identity has been created or finalized. |
 | ADR-0017 release retention / archival / audit trail | Done as documentation-only / local-only retention, archival, and audit-trail boundary decision record; release state unchanged; recommendation Hold remains; no archive entry may imply release approval, publication, production readiness, vendor clearance, or Avast resolution while the gate remains blocked. |
 | ADR-0018 emergency release exception boundary | Done as documentation-only / local-only emergency-exception-boundary decision record; release state unchanged; recommendation Hold remains; no emergency exception approval has been granted and no blocked operation is authorized. |
+| ADR-0019 VMF risk acceptance and Release Hold lift | Done as documentation-only / local-only risk-acceptance decision record; Avast vendor clearance remains not obtained; Avast safety certification is not claimed; Release Hold lifted; post-hold release execution sequence fixed but not executed. |
 
 Phase 4 local-only verification passing means only that the approved local,
 non-live, mock-backed, and static verification scope has completed. It must not
@@ -89,10 +100,11 @@ The completed local-only safety scope covers:
 The recorded Phase 4 local-only verification evidence classifies the result as
 local, non-live, mock-backed, and static evidence only.
 
-## 3. Blocked Scope
+## 3. Post-Hold Gated Scope
 
-The following remain blocked until the release gate is explicitly reopened or a
-separate operation-specific authorization is recorded:
+The Avast-pending Release Hold is lifted by ADR-0019 VMF-side risk acceptance.
+The following release-path operations remain gated until their sequence step is
+reached and separate operation-specific authorization is recorded:
 
 - Release;
 - Git tag creation;
@@ -102,23 +114,21 @@ separate operation-specific authorization is recorded:
 - Live E2E;
 - Google Docs mutation;
 - Google Drive mutation;
-- Re-running flagged artifacts before Avast false positive handling is
-  resolved;
-- Final release verification before explicit release authorization is recorded;
+- Re-running flagged artifacts before the exact run is authorized;
 - Package/dist update, tag creation, publication, or release before final
-  release verification succeeds.
+  verification, Live E2E, and result review succeed.
 
-None of these blocked operations were performed by Phase 4 local-only
-verification.
+None of these gated operations were performed by this documentation-only
+update.
 
 ## 4. Open Items
 
 | Item | Status | Required Decision |
 | --- | --- | --- |
-| Phase 3-9 release approval | Pending | Repository-owner release approval or rejection after Avast handling is resolved or explicitly accepted. |
-| Release / tag / publication decision | Pending | Explicit release-gate reopening and owner authorization after ADR-0012 release resumption order is satisfied. |
-| Live E2E decision | Pending | Explicit per-run authorization, credentials scope, destination scope, and cleanup expectations. |
-| Avast false positive resolution | Pending | Vendor response or repository-owner acceptance of the antivirus exception posture. |
+| Phase 3-9 release approval | Pending | Repository-owner release approval or rejection after final verification, Live E2E, result review, package/dist, and tag/release gating are satisfied. |
+| Release / tag / publication decision | Pending | Explicit owner authorization after the fixed ADR-0019 post-hold sequence reaches tag/release. |
+| Live E2E decision | Pending | Explicit per-run authorization, credentials scope, destination scope, and cleanup expectations after final verification. |
+| Avast false positive resolution | Risk accepted / vendor response pending | VMF residual risk acceptance recorded by ADR-0019; Avast vendor clearance remains not obtained. |
 | vNext hardening backlog | Pending | Candidate treatment before adoption. |
 | Input-specific CLI exit code | Candidate | Future public CLI behavior proposal only; not adopted in Phase 4-2-2. |
 | Local Verify report schema evolution | Candidate | Future additions must preserve existing JSON Lines diagnostics and current report field compatibility. |
@@ -148,13 +158,14 @@ change, or production design change was performed by Phase 4-3.
 intentional operational release-blocking condition, not a product regression.
 It preserves the Avast pending gate and the formal state:
 
-`Phase 4 local-only verification complete / release blocked`.
+`Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance`.
 
 The release boundary is unchanged: no release, tag, publication, Live E2E,
 Google Docs mutation, Google Drive mutation, package or distribution artifact
 creation or update, flagged executable re-run, or push is authorized.
 
-Current decision: Hold. Await Avast response.
+Current decision: Release Hold lifted by ADR-0019 VMF residual risk
+acceptance; Avast vendor response remains pending.
 
 ## 7. Publisher Operator Guidance For Avast Hold
 
@@ -277,7 +288,7 @@ change public APIs, change production code, or change production design.
 
 `Test_Traceability_Matrix.md` records Publisher requirement, ADR,
 implementation, test, operational-verification, and evidence traceability for
-ADR-0001 through ADR-0018.
+ADR-0001 through ADR-0019.
 
 The matrix is documentation-only and local-only. It does not approve a
 release, create or update packages, modify `dist/`, create tags, publish
@@ -299,10 +310,10 @@ approval evidence:
 | Workstream | Current State |
 | --- | --- |
 | Allowed local-only work | Documentation updates, read-only investigation, source build, unit tests, non-live integration tests with Live E2E disabled, mock-backed verification, dry-run checks that do not publish or execute the flagged package, and scoped static existing-package inspection. |
-| Blocked release/live/mutation work | Release, tag, publication, package or `dist` update, Live E2E, Google Docs mutation, Google Drive mutation, token-store mutation, temporary public image hosting, and flagged executable re-run remain blocked. |
-| Avast-response intake work | `Publisher_AvastResponseIntakeTemplate.md` is the only current intake template; no Avast response has been recorded, so default decision remains `Hold continues`. |
-| Vendor-clearance-dependent work | Vendor clearance has not been obtained; do not infer it from local checks, previous submissions, local exceptions, scanner no-detection, or evidence-bundle preparation. |
-| Final release-resume work | Final release verification, release authorization, package/dist changes, tag creation, and publication require synchronized records and separate explicit authorization after the Avast/vendor gate is resolved. |
+| Gated release/live/mutation work | Release, tag, publication, package or `dist` update, Live E2E, Google Docs mutation, Google Drive mutation, token-store mutation, temporary public image hosting, and flagged executable re-run remain gated by ADR-0019 order and operation-specific authorization. |
+| Avast-response intake work | `Publisher_AvastResponseIntakeTemplate.md` remains the vendor-response intake template; no Avast response has been recorded, and vendor clearance remains not obtained. |
+| Vendor-clearance-dependent work | Vendor clearance has not been obtained; do not infer it from local checks, previous submissions, local exceptions, scanner no-detection, setting-dependent behavior, or evidence-bundle preparation. |
+| Final release-resume work | Follow ADR-0019 order: final verification, Live E2E, result review, package/dist, tag/release. |
 
 ## 14. ADR Operating Basis
 
@@ -710,3 +721,43 @@ flagged executable re-run, production code change, test change, Frozen
 specification change, public API change, vendor clearance, Avast resolution,
 risk acceptance, emergency exception approval, or normal release gate reopening
 was performed by ADR-0018.
+
+## 24. ADR-0019 VMF Risk Acceptance And Release Hold Lift
+
+`docs/architecture/ADR-0019-vmf-risk-acceptance-and-release-hold-lift.md` is
+Accepted as a documentation-only / local-only VMF risk-acceptance decision
+record.
+
+ADR-0019 records that the Avast-pending Release Hold is lifted by VMF-side
+residual risk acceptance, not by Avast vendor clearance and not by Avast safety
+certification.
+
+The recorded decision inputs are:
+
+- `vmf-publisher.exe` standalone Avast scan observed no detection;
+- Avast was configured to automatically submit suspicious files for Avast
+  inspection;
+- changing that setting to user-choice handling stopped the reported message;
+- the 2026-07-25 False Positive submission remains unanswered as of
+  2026-08-09.
+
+The current formal state is:
+
+`Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance`.
+
+Avast vendor clearance remains not obtained. Avast safety certification is not
+claimed. Release execution has not started.
+
+The next required order is fixed:
+
+1. final verification;
+2. Live E2E;
+3. result review;
+4. package/dist;
+5. tag/release.
+
+No final verification, Live E2E, result review, package/dist work, tag
+creation, release publication, Google Docs mutation, Google Drive mutation,
+token-store mutation, flagged executable execution, production code change,
+test change, Frozen specification change, public API change, staging, commit,
+or push was performed by ADR-0019.

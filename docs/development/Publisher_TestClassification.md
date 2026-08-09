@@ -1,7 +1,7 @@
 # Publisher Existing Test Classification
 
-Status  : Done
-Scope   : Existing Publisher test classification and Avast-response resume procedure
+Status  : Done / post-hold sequence updated by ADR-0019
+Scope   : Existing Publisher test classification and post-hold release execution procedure
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md
 
 This document classifies existing Publisher verification targets after the
@@ -18,16 +18,14 @@ verification, evidence, and current coverage status.
 
 The current formal state remains:
 
-`Phase 4 local-only verification complete / release blocked`.
+`Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance`.
 
-Avast false-positive handling remains pending. Vendor clearance has not been
-obtained, and the approval recommendation remains `Hold`. Until the release
-gate is reopened with explicit operation-specific authorization, verification
-may use read-only investigation, source build, unit tests, mock-backed
-integration tests, local dry-run paths that do not re-run flagged artifacts,
-and static documentation checks. Verification must not cross into release,
-package mutation, live Google operations, publication, vendor-clearance
-dependent work, or flagged executable re-run.
+Avast vendor clearance has not been obtained, Avast safety certification is
+not claimed, and the 2026-07-25 False Positive submission remains unanswered.
+ADR-0019 records VMF-side residual risk acceptance and lifts the Release Hold.
+Verification and release execution must follow this order: final verification,
+Live E2E, result review, package/dist, tag/release. Each step remains a
+separate authorization gate.
 
 ## 2. Test Classification
 
@@ -38,16 +36,16 @@ dependent work, or flagged executable re-run.
 | Publisher unit tests | `dotnet test tests\unit\Publisher\Vmf.Publisher.UnitTests.csproj --configuration Release --no-restore` | Parser, compiler, diff, planning, CLI boundary, Google request mapping, state, and infrastructure behavior through local or fake dependencies. | No | Allowed | Source verification |
 | Focused unit tests | `dotnet test tests\unit\Publisher\Vmf.Publisher.UnitTests.csproj --configuration Release --no-restore --filter "FullyQualifiedName~CliApplicationTests"` | Narrow source-level regression checks for the affected area. | No | Allowed | Source verification |
 | Non-live integration tests | `dotnet test tests\integration\Publisher\Vmf.Publisher.IntegrationTests.csproj --configuration Release --no-restore` with `VMF_PUBLISHER_GOOGLE_E2E` unset | Publish pipeline, verified state lifecycle, physical update lifecycle, image pipeline, and transaction behavior using local or in-memory collaborators. | No | Allowed only with Live E2E disabled | Source verification |
-| Live Google Docs E2E tests | `dotnet test tests\integration\Publisher\Vmf.Publisher.IntegrationTests.csproj --configuration Release --no-restore --filter "FullyQualifiedName~GoogleDocsEndToEndIntegrationTests"` with `VMF_PUBLISHER_GOOGLE_E2E=1` | Credentialed Google Docs / Drive create, copy, batchUpdate, readback, conflict, mismatch, and cleanup behavior. | Yes | Blocked | Live E2E gate |
+| Live Google Docs E2E tests | `dotnet test tests\integration\Publisher\Vmf.Publisher.IntegrationTests.csproj --configuration Release --no-restore --filter "FullyQualifiedName~GoogleDocsEndToEndIntegrationTests"` with `VMF_PUBLISHER_GOOGLE_E2E=1` | Credentialed Google Docs / Drive create, copy, batchUpdate, readback, conflict, mismatch, and cleanup behavior. | Yes | Allowed only after final verification and explicit per-run authorization | Live E2E gate |
 | CLI local commands through project output | `dotnet run --project src\Publisher.Cli -- verify <markdown-file>` or equivalent non-packaged build output | Local configuration validation, Markdown compilation, diff, and dry-run planning. | No for `verify`, `diff`, and `dry-run`; `publish` is excluded | Allowed only when the command does not use a flagged package executable and does not publish | Local CLI verification |
-| Packaged executable smoke | `vmf-publisher.exe --help`, `vmf-publisher.exe verify`, `vmf-publisher.exe dry-run <markdown-file>` from an extracted package | Installation and package executable behavior for the selected artifact. | No by command intent, but executes flagged artifact | Blocked unless repository owner explicitly authorizes that exact run | Installation smoke |
+| Packaged executable smoke | `vmf-publisher.exe --help`, `vmf-publisher.exe verify`, `vmf-publisher.exe dry-run <markdown-file>` from an extracted package | Installation and package executable behavior for the selected artifact. | No by command intent, but executes flagged artifact | Allowed only when the exact run is explicitly authorized after ADR-0019 risk acceptance | Installation smoke |
 | Existing-package static verification | `powershell -NoProfile -ExecutionPolicy Bypass -File tools\publisher\verify-package.ps1 -PackagePath dist\release\Publisher\vmf-publisher-<version>-win-x64.zip` | Package manifest, paths, hashes, required files, secret-like filenames, and secret-like content for an existing artifact. | No | Allowed only when explicitly in scope and no package is created or executable is run | Artifact audit |
-| Package creation or update | `powershell -NoProfile -ExecutionPolicy Bypass -File tools\publisher\package-publisher.ps1 -Version <version>` | Builds or updates release distribution artifacts. | Writes `dist` artifacts | Blocked | Package gate |
-| Release publication checks | Git tag, GitHub Release, release asset upload, announcement, or publication command | Release distribution and public repository state. | Yes | Blocked | Publication gate |
+| Package creation or update | `powershell -NoProfile -ExecutionPolicy Bypass -File tools\publisher\package-publisher.ps1 -Version <version>` | Builds or updates release distribution artifacts. | Writes `dist` artifacts | Allowed only after final verification, Live E2E, result review, and explicit package/dist authorization | Package gate |
+| Release publication checks | Git tag, GitHub Release, release asset upload, announcement, or publication command | Release distribution and public repository state. | Yes | Allowed only after package/dist review and explicit tag/release authorization | Publication gate |
 
-## 3. Allowed Policy During Avast Pending
+## 3. Allowed Policy After Risk Acceptance
 
-Allowed work during Avast pending is limited to:
+Allowed work before release execution remains limited to:
 
 - read-only investigation;
 - documentation updates;
@@ -65,19 +63,21 @@ static evidence. They must not be promoted to release readiness, Google Docs
 readback, Google Drive cleanup, package approval, publication approval, or
 antivirus vendor clearance.
 
-## 4. Blocked Policy During Avast Pending
+## 4. Gated Policy After Hold Lift
 
-The following remain blocked:
+The following remain gated by ADR-0019 order and explicit authorization:
 
+- final verification;
 - Live E2E;
-- Google Docs mutation;
-- Google Drive mutation;
+- result review;
 - package creation or package update;
 - release tag creation;
 - GitHub Release creation or update;
 - artifact publication;
 - release announcement;
-- re-running the Avast-pending flagged executable;
+- Google Docs mutation;
+- Google Drive mutation;
+- re-running a previously flagged executable;
 - treating VirusTotal no-detection, a local exception, or a false-positive
   submission as vendor clearance.
 
@@ -85,39 +85,23 @@ Authorization for one blocked operation does not authorize any other operation.
 For example, approval to run Live E2E would not approve package creation,
 publication, or flagged executable smoke testing.
 
-## 5. Resume Order After Avast Response
+## 5. Post-Hold Execution Order
 
-When an Avast response is received, resume in this order:
+After ADR-0019 risk acceptance, execute the release path only in this order:
 
-1. Record the exact Avast response, date, affected artifact identity, and
-   interpretation in `Publisher_AvastResponseIntakeTemplate.md`.
-2. If Avast confirms the detection, stop release work and decide whether to
-   remediate, rebuild, repackage, or abandon the candidate under a new task.
-3. If Avast clears the artifact, verify that the cleared artifact identity
-   matches the selected package path and SHA-256 before any executable smoke
-   run.
-4. Synchronize `PublisherReleaseRunbook.md`,
-   `Publisher_EvidenceBundleSpecification.md`,
-   `Publisher_ReleaseApprovalPackage.md`, `CURRENT_STATUS.md`, and the Voyage
-   Log without changing the release boundary.
-5. Reopen only the necessary release gate with explicit repository-owner
-   authorization.
-6. Run local source verification first: build, focused tests as needed, unit
+1. Run final verification first: build, focused tests as needed, unit
    tests, non-live integration tests with Live E2E disabled, format if source
    changed, and `git diff --check`.
-7. Select or generate a release candidate artifact only under explicit package
-   authorization. If a package is created or updated, restart artifact
-   verification for the new path and SHA-256.
-8. Run package static verification for the selected artifact.
-9. Run packaged executable smoke only if the artifact is cleared or an explicit
-   owner exception authorizes that exact executable run.
-10. Run Live E2E only after separate per-run authorization records the account
+2. Run Live E2E only after separate per-run authorization records the account
    or service identity, destination folder, template decision, temporary public
    image hosting decision, cleanup expectation, and exact command.
-11. Complete security and supply-chain review for the selected artifact.
-12. Prepare go/no-go review and record repository-owner approval or rejection.
-13. Publish only after a separate publication authorization records tag, target
-   commit, release state, asset path, and SHA-256.
+3. Review final verification and Live E2E results, including security and
+   supply-chain implications and the ADR-0019 no-vendor-clearance risk basis.
+4. Create or update package/dist only under explicit package/dist
+   authorization. If a package is created or updated, restart artifact
+   verification for the new path and SHA-256.
+5. Tag/release only after a separate publication authorization records tag,
+   target commit, release state, asset path, and SHA-256.
 
 ## 6. Preflight Hard Stops
 

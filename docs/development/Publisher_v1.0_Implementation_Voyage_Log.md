@@ -2415,3 +2415,58 @@ production code, change tests, modify Frozen specifications, change public
 APIs, obtain vendor clearance, resolve Avast false-positive handling, create
 release authorization, create release decision records, approve emergency
 release execution, stage changes, commit changes, or push commits.
+
+## ADR-0019 VMF Risk Acceptance And Release Hold Lift
+
+Status: DONE as documentation-only / local-only VMF risk-acceptance decision
+record.
+
+Added
+`docs/architecture/ADR-0019-vmf-risk-acceptance-and-release-hold-lift.md`
+and updated `docs/architecture/ADR_INDEX.md` to record VMF-side residual risk
+acceptance for the Publisher Avast false-positive posture.
+
+ADR-0019 records the following decision inputs without treating them as Avast
+vendor clearance or Avast safety certification:
+
+- `vmf-publisher.exe` standalone Avast scan observed no detection;
+- Avast was configured to automatically submit suspicious files to Avast for
+  inspection;
+- changing that setting to user-choice handling stopped the reported message;
+- the False Positive submission sent to Avast on 2026-07-25 remains
+  unanswered as of 2026-08-09.
+
+The current formal state is:
+
+`Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance`.
+
+Avast vendor clearance remains not obtained. Avast safety certification is not
+claimed. The Release Hold is lifted by VMF residual risk acceptance, not by a
+vendor response.
+
+### Decision
+
+VMF formally accepts the residual antivirus false-positive risk and lifts the
+Release Hold. Existing Accepted ADR meanings are unchanged.
+
+The post-hold execution order is fixed:
+
+1. final verification;
+2. Live E2E;
+3. result review;
+4. package/dist;
+5. tag/release.
+
+Each step remains a separate authorization gate. ADR-0019 does not authorize
+any step by implication.
+
+### Explicit non-actions
+
+This documentation update did not run final verification, execute Live E2E,
+review execution results, create or update package or distribution artifacts,
+write to `dist`, create tags, publish artifacts, mutate Google Docs or Google
+Drive, mutate token stores, re-run flagged executables, change production
+code, change tests, modify Frozen specifications, change public APIs, obtain
+vendor clearance, claim Avast safety certification, create a Release Decision
+Record, create a Publication Record, stage changes, commit changes, or push
+commits.

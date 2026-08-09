@@ -48,11 +48,12 @@ Current operating snapshot:
 
 | Item | State |
 | --- | --- |
-| Formal state | Phase 4 local-only verification complete / release blocked |
-| Release gate | Blocked |
-| Avast false-positive handling | Pending |
+| Formal state | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance |
+| Release gate | Hold lifted by ADR-0019; release execution not yet started |
+| Avast false-positive handling | Vendor response pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
-| Approval recommendation | Hold |
+| Avast safety certification | Not claimed |
+| Approval recommendation | Proceed to final verification sequence after explicit operation-specific authorization |
 
 Local-only verification does not establish:
 
@@ -121,46 +122,48 @@ Expected result:
 Stop if unrelated changes are present and their ownership or release impact is
 unclear.
 
-### 5.1 Avast-Pending Hard Stops
+### 5.1 Post-Hold Hard Stops
 
-While Avast false-positive handling remains pending, also read
-`docs/development/Publisher_PreflightHardening.md` before proceeding past
-local-only checks.
+After ADR-0019 VMF risk acceptance, also read
+`docs/development/Publisher_PreflightHardening.md` before proceeding into
+final verification or later release-path checks.
 
 Stop before the next command if preflight would cross any of these boundaries
 without separate operation-specific authorization:
 
+- final verification;
+- Live E2E or setting `VMF_PUBLISHER_GOOGLE_E2E=1`;
+- result review;
 - package creation, replacement, update, or any write under `dist/`;
 - release tag creation, GitHub Release creation or update, artifact
   publication, or release announcement;
-- Live E2E or setting `VMF_PUBLISHER_GOOGLE_E2E=1`;
 - Google Docs mutation, Google Drive mutation, token-store mutation, or
   temporary public image hosting;
-- re-running the Avast-pending flagged executable;
+- re-running a previously flagged executable;
 - treating local-only evidence as release readiness, Live E2E readback,
   package approval, publication approval, or antivirus vendor clearance.
 
 If any hard stop is reached, record the operation as `BLOCKED`, `PENDING`,
-`NOT EXECUTED`, or `DEFERRED`. Do not continue toward release until the Avast
-response, selected artifact identity, and repository-owner gate decision are
-recorded.
+`NOT EXECUTED`, or `DEFERRED`. Do not continue toward the next release step
+until ADR-0019 risk acceptance, selected artifact identity, and the
+operation-specific repository-owner decision are recorded.
 
 Use `docs/development/Publisher_AvastResponseIntakeTemplate.md` to record a
 future Avast response safely. The template addition itself does not mean a
-response was received, does not resolve Avast pending, and does not reopen the
-release gate.
+response was received, does not create vendor clearance, and does not change
+ADR-0019 into Avast safety certification.
 
-### 5.2 Workstream Separation During Hold
+### 5.2 Workstream Separation After Hold Lift
 
-Keep each workstream separate while the release boundary remains blocked:
+Keep each workstream separate after Release Hold lift:
 
 | Workstream | Current Handling |
 | --- | --- |
 | Allowed local-only work | Documentation updates, read-only investigation, source build, unit tests, non-live integration tests with Live E2E disabled, mock-backed verification, dry-run checks that do not publish or execute the flagged package, and static existing-package inspection when explicitly in scope. |
-| Blocked release/live/mutation work | Package or `dist` writes, tagged release work, publication, Live E2E, Google Docs or Google Drive mutation, token-store mutation, temporary public image hosting, and flagged executable re-run remain blocked unless separately authorized after the gate is reopened. |
-| Avast-response intake work | Record only a received vendor response, artifact identity, SHA-256, classification, redaction review, and decision in `Publisher_AvastResponseIntakeTemplate.md`; default decision remains `Hold continues` until the record is complete. |
-| Vendor-clearance-dependent work | Treat vendor clearance as not obtained until the response is tied to the selected artifact identity and reviewed; do not infer clearance from submission, acknowledgement, exception, or scanner no-detection elsewhere. |
-| Final release-resume work | Resume only after the intake record, current status, evidence bundle references, release approval package, test classification, and required owner authorizations are synchronized and final verification is explicitly authorized. |
+| Gated release/live/mutation work | Final verification, Live E2E, result review, package or `dist` writes, tagged release work, publication, Google Docs or Google Drive mutation, token-store mutation, temporary public image hosting, and flagged executable re-run require the fixed ADR-0019 order and separate authorization. |
+| Avast-response intake work | Record only a received vendor response, artifact identity, SHA-256, classification, redaction review, and decision in `Publisher_AvastResponseIntakeTemplate.md`; vendor clearance remains not obtained until a future response explicitly supports it. |
+| Vendor-clearance-dependent work | Do not treat vendor clearance as obtained. The release path relies on ADR-0019 VMF residual risk acceptance unless a future Avast response changes the vendor-clearance record. |
+| Final release-resume work | Proceed in fixed order: final verification, Live E2E, result review, package/dist, tag/release. |
 
 ## 6. Local Verification
 
@@ -283,9 +286,9 @@ Before publication, record current security evidence for the selected package:
 - absence of credentials, token stores, local configuration, and secret-like
   content in the package.
 
-Release remains blocked if a required scanner is disabled, inconclusive, or
-reports an unresolved detection and no repository-owner exception decision has
-been recorded.
+Release execution stops if a required scanner is disabled, inconclusive, or
+reports an unresolved detection and no repository-owner risk acceptance or
+exception decision has been recorded.
 
 ## 12. Go / No-Go
 

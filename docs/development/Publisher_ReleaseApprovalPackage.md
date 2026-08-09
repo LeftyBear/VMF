@@ -1,7 +1,7 @@
 # Publisher Release Approval Package
 
-Status  : Hold
-Scope   : Docs-only / local-only release approval package organization
+Status  : Hold lifted by VMF risk acceptance; release execution pending
+Scope   : Docs-only / local-only release approval package organization after ADR-0019 risk acceptance
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_TestClassification.md, docs/distribution/PublisherReleaseRunbook.md
 
 This package summarizes the current VMF Publisher approval state for review. It
@@ -14,12 +14,16 @@ modify Frozen specifications, change tests, write to `dist`, or push commits.
 
 | Item | State |
 | --- | --- |
-| Formal release state | Phase 4 local-only verification complete / release blocked |
-| Approval recommendation | Hold |
-| Avast false-positive handling | Pending |
+| Formal release state | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance |
+| Approval recommendation | Proceed to final verification sequence after explicit operation-specific authorization |
+| Avast false-positive handling | Vendor response pending; VMF residual risk accepted |
 | Vendor clearance | Not obtained |
-| Release readiness | Not established |
-| Live E2E | Not executed in this package; blocked without explicit authorization |
+| Avast safety certification | Not claimed |
+| False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
+| Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
+| Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
+| Release readiness | Pending final verification, Live E2E, result review, package/dist, and tag/release sequence |
+| Live E2E | Not executed in this package; requires explicit authorization after final verification |
 | Google Docs / Google Drive mutation | Not performed |
 | Package creation or update | Not performed |
 | Flagged executable re-run | Not performed |
@@ -65,14 +69,15 @@ gate.
 | `docs/development/Publisher_Phase4-3-4_SecurityAndSupplyChainReview.md` | Done / DEFERRED security review | Records unresolved Avast and security review conditions. |
 | `docs/development/Publisher_Phase4-3-5_GoNoGoReview.md` | Done / DEFERRED go/no-go | Records release go/no-go as deferred. |
 | `docs/development/Publisher_PreflightHardening.md` | Done | Defines hard stops while Avast handling remains pending. |
-| `docs/development/Publisher_AvastResponseIntakeTemplate.md` | Template only / no Avast response received | Defines safe Avast response intake; default decision remains `Hold continues`. |
+| `docs/development/Publisher_AvastResponseIntakeTemplate.md` | Template only / no Avast response received | Defines safe Avast response intake; vendor clearance remains not obtained while ADR-0019 records VMF risk acceptance separately. |
 | `docs/development/Publisher_EvidenceBundleSpecification.md` | Done | Defines redacted evidence bundle structure without assembling a concrete bundle. |
 | `docs/development/Publisher_TestClassification.md` | Done | Separates documentation, local, non-live, package, Live E2E, and publication checks. |
 | `docs/distribution/PublisherReleaseRunbook.md` | Draft | Defines release operation sequencing and authorization gates. |
 | `docs/distribution/ReleaseChecklist.md` | Existing release checklist | Release checklist reference only; this package does not update checklist results. |
 
 No new `PASS` release, package, Live E2E, Google Docs/Drive, publication, or
-vendor-clearance evidence is created by this approval package.
+vendor-clearance evidence is created by this approval package. ADR-0019
+records risk acceptance and Hold lift only.
 
 ## 4. Ahead Commits Summary
 
@@ -99,61 +104,52 @@ investigation, source checks, non-live verification, mock-backed verification,
 dry-run checks that do not publish or execute the flagged package, and static
 existing-package inspection when explicitly in scope.
 
-The following operations remain blocked:
+The following operations remain gated and must follow ADR-0019 order:
 
-- release approval or rejection;
-- tag creation;
-- GitHub Release creation or update;
-- artifact publication;
-- package creation, replacement, or update;
-- writing release or package artifacts under `dist`;
-- packaged executable smoke for the Avast-pending flagged executable;
+- final verification;
 - Live E2E;
+- result review;
+- package creation, replacement, update, or any `dist` write;
+- tag creation, GitHub Release creation or update, artifact publication, or
+  release announcement;
+- packaged executable smoke for any previously flagged executable;
 - setting `VMF_PUBLISHER_GOOGLE_E2E=1`;
 - Google Docs mutation;
 - Google Drive mutation;
 - token-store mutation;
 - temporary public image hosting;
-- treating VirusTotal no-detection, a local antivirus exception, or a
-  false-positive submission as vendor clearance;
+- treating standalone scanner no-detection, setting-dependent behavior,
+  VirusTotal no-detection, a local antivirus exception, or a false-positive
+  submission as vendor clearance;
 - changing production code, tests, public APIs, persisted schemas, canonical
   formats, or Frozen specifications.
 
-## 6. Resume Conditions
+## 6. Post-Hold Execution Conditions
 
-Release-path work may resume only after all applicable conditions are recorded:
+Release-path work may proceed only in this order, with each step separately
+authorized and recorded:
 
-1. Avast response is received, dated, and tied to the exact selected artifact
-   path and SHA-256.
-2. Vendor clearance, confirmed detection, inconclusive response, or
-   repository-owner exception decision is recorded without ambiguity.
-3. The repository owner explicitly reopens only the required next gate.
-4. Package creation or update, packaged executable smoke, Live E2E, and
-   publication each receive separate operation-specific authorization before
-   execution.
-5. Local source verification is rerun before release readiness is
-   reconsidered.
-6. Package identity and package verification are recorded for the selected
-   artifact.
-7. Security and supply-chain review is completed for the selected artifact.
-8. Live E2E is either explicitly authorized and executed with readback, or
-   recorded as owner-approved N/A.
-9. Go/no-go is recorded before publication.
+1. Final verification.
+2. Live E2E.
+3. Result review.
+4. Package/dist.
+5. Tag/release.
 
-If Avast confirms the detection, is inconclusive, or does not match the
-selected artifact identity, release remains blocked until a separate
-remediation, rebuild, repackage, abandon-candidate, or owner-exception decision
-is recorded.
+If any step fails, lacks authorization, produces ambiguous evidence, or changes
+artifact identity, the sequence stops until a separate recorded decision
+defines the next action.
 
 ## 7. Approval Recommendation
 
-Approval Recommendation = Hold.
+Approval Recommendation = Proceed to final verification sequence after
+explicit operation-specific authorization.
 
 Basis:
 
-- release gate remains blocked;
-- Avast false-positive handling remains pending;
+- Release Hold is lifted by ADR-0019 VMF-side residual risk acceptance;
+- Avast vendor response remains pending;
 - vendor clearance has not been obtained;
+- Avast safety certification is not claimed;
 - Live E2E has not been authorized or executed for this approval package;
 - no current package creation, package update, package verification, or
   flagged executable smoke was performed;

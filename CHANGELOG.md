@@ -4,6 +4,31 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ---
 
+# 2026-08-09
+
+## Added
+
+- Added
+  `docs/architecture/ADR-0019-vmf-risk-acceptance-and-release-hold-lift.md`
+  to record VMF-side residual risk acceptance for the Publisher Avast
+  false-positive posture, while preserving that Avast vendor clearance is not
+  obtained, Avast safety certification is not claimed, and the 2026-07-25
+  False Positive submission remains unanswered.
+
+## Changed
+
+- Updated Publisher release-status, runbook, approval-package, Avast intake,
+  operator guidance, and test-classification records to lift the Release Hold
+  by VMF risk acceptance and fix the post-hold order:
+  final verification, Live E2E, result review, package/dist, tag/release.
+- Recorded that this documentation-only update did not run final verification,
+  Live E2E, package/dist work, tag creation, release publication, Google Docs
+  or Drive mutation, flagged executable execution, production code changes,
+  test changes, Frozen specification changes, public API changes, staging,
+  commit, or push.
+
+---
+
 # 2026-08-06
 
 ## Added

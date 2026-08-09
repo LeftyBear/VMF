@@ -1,7 +1,7 @@
 # Publisher Avast Response Intake Template
 
-Status  : Template only / no Avast response received
-Scope   : Safe intake record for future Avast false-positive response review
+Status  : Template only / no Avast response received; VMF risk acceptance recorded separately
+Scope   : Safe intake record for future Avast false-positive response review after ADR-0019 risk acceptance
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_PreflightHardening.md, docs/distribution/PublisherReleaseRunbook.md
 
 This template is for recording a future Avast false-positive response without
@@ -13,11 +13,14 @@ artifacts, change production code, change public APIs, or modify Frozen
 specifications.
 
 Until an actual vendor response is received, redacted, reviewed, and recorded
-against the exact selected artifact identity, the formal state remains:
+against the exact selected artifact identity, vendor clearance remains not
+obtained and Avast safety certification is not claimed.
 
-`Phase 4 local-only verification complete / release blocked`.
+ADR-0019 records VMF-side residual risk acceptance and lifts the Release Hold
+without treating the state as vendor clearance.
 
-Avast false-positive handling remains pending.
+The False Positive submission sent to Avast on 2026-07-25 remains unanswered
+as of 2026-08-09.
 
 ## 1. Intake Metadata
 
@@ -33,6 +36,7 @@ Avast false-positive handling remains pending.
 | Selected artifact SHA-256 |  |
 | Related release candidate commit |  |
 | Related release gate record |  |
+| VMF risk acceptance record | `docs/architecture/ADR-0019-vmf-risk-acceptance-and-release-hold-lift.md` |
 
 ## 2. Response Classification
 
@@ -47,6 +51,7 @@ Select exactly one classification after review.
 
 Do not classify a response as false-positive confirmation from silence,
 submission acceptance, automated acknowledgement, exception creation,
+standalone scanner no-detection, setting-dependent scanner behavior,
 VirusTotal no-detection, or scanner behavior outside the selected artifact
 identity.
 
@@ -99,10 +104,12 @@ Select exactly one decision after the evidence checklist is complete.
 | Decision | Selected | Meaning |
 | --- | --- | --- |
 | Resume allowed |  | Vendor clearance is confirmed for the selected artifact identity and the repository owner explicitly reopens the required next gate. This does not authorize package work, executable smoke, Live E2E, release, tag, or publication by itself. |
-| Hold continues |  | Evidence is missing, inconclusive, asks for more information, preserves the detection, or lacks owner gate reopening. |
+| Hold continues |  | Evidence is missing, inconclusive, asks for more information, preserves the detection, or requires a new owner gate decision. |
 | Escalation required |  | The response conflicts with local evidence, requires security review, requires legal or owner risk acceptance, or cannot be safely summarized. |
 
-Default decision before review completion: `Hold continues`.
+Default vendor-clearance decision before review completion: vendor clearance
+not obtained. Current release-hold decision is governed by ADR-0019 VMF risk
+acceptance.
 
 ## 6. Resume Conditions
 
@@ -111,8 +118,9 @@ current release hold.
 
 | Condition | Status | Evidence |
 | --- | --- | --- |
-| Vendor clearance confirmed for the selected artifact identity | PENDING |  |
-| Repository owner explicitly reopens the required next gate | PENDING |  |
+| Vendor clearance confirmed for the selected artifact identity | PENDING | Vendor clearance not obtained unless a future Avast response confirms it. |
+| VMF residual risk accepted without vendor clearance | PASS | ADR-0019 records VMF risk acceptance and Release Hold lift. |
+| Repository owner explicitly reopens the required next gate | PENDING | Follow ADR-0019 order: final verification, Live E2E, result review, package/dist, tag/release. |
 | Flagged executable re-run explicitly authorized, if needed | PENDING |  |
 | Live E2E explicitly authorized, if needed | PENDING |  |
 | Package creation/update explicitly authorized, if needed | PENDING |  |
@@ -135,14 +143,15 @@ Record only sanitized notes needed to understand the intake decision.
 
 | Date | Actor | Decision | Evidence Reference | Remaining Blockers |
 | --- | --- | --- | --- | --- |
-|  |  | Hold continues |  | Avast response not recorded; release gate remains blocked. |
+| 2026-08-09 | Repository owner / VMF | VMF risk accepted; Release Hold lifted; vendor clearance not obtained | ADR-0019 | Avast response not received; final verification, Live E2E, result review, package/dist, and tag/release not executed. |
 
 ## 9. Explicit Non-Actions
 
 This intake template does not:
 
 - receive or assert an Avast response;
-- resolve Avast false-positive handling;
+- claim Avast vendor clearance;
+- claim Avast safety certification;
 - approve release readiness;
 - approve package creation or package update;
 - write to `dist`;

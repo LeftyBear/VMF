@@ -25,7 +25,7 @@ boundary, runbook rule, or future-operation record.
 
 In scope:
 
-- ADR-0001 through ADR-0018, all currently `Accepted` in
+- ADR-0001 through ADR-0019, all currently `Accepted` in
   `docs/architecture/ADR_INDEX.md`;
 - Publisher local source implementation and tests that can be identified from
   the repository;
@@ -80,7 +80,7 @@ Rules:
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ADR process, numbering, status tracking, and accepted-body stability | `docs/architecture/ADR_INDEX.md`; `docs/architecture/adr-template.md`; `AGENTS.md`; `VMF_CODEX_PLAYBOOK.md` | ADR-0001 | Documentation process under `docs/architecture/` | N/A | N/A | ADR index maintenance and current status synchronization | `docs/architecture/ADR_INDEX.md`; ADR-0001; `docs/development/CURRENT_STATUS.md` | Covered for governance; N/A for executable tests |
 | OAuth Desktop authentication for local operator workflows while retaining Service Account support | `docs/distribution/InstallationGuide.md`; `docs/distribution/LiveE2EOperations.md` | ADR-0002 | `src/Publisher/Infrastructure/Google/GooglePublisherOptions.cs`; `GoogleCredentialProviderFactory.cs`; `OAuthDesktopGoogleCredentialProvider.cs`; `ServiceAccountGoogleCredentialProvider.cs` | `tests/unit/Publisher/OAuthDesktopGoogleCredentialProviderTests.cs` | `tests/integration/Publisher/GoogleDocsEndToEndIntegrationTests.cs` exists but is gated | Live E2E blocked unless separately authorized with `VMF_PUBLISHER_GOOGLE_E2E=1` | ADR-0002; `Publisher_TestClassification.md`; `LiveE2EOperations.md` | Partial: local/unit coverage present; Live E2E not executed here and currently blocked |
-| Release gate, vendor clearance, Avast handling, and publication boundary | `docs/development/CURRENT_STATUS.md`; `Publisher_PreflightHardening.md`; `Publisher_ReleaseApprovalPackage.md`; `docs/distribution/PublisherReleaseRunbook.md` | ADR-0003 | Release governance documents and runbook controls | N/A | N/A | Release, tag, publication, package, Live E2E, Google mutation, and flagged executable runs remain blocked | Current status records release blocked, Avast pending, vendor clearance not obtained, Approval Recommendation = Hold | Covered for governance; Blocked for release execution |
+| Release gate, vendor clearance, Avast handling, and publication boundary | `docs/development/CURRENT_STATUS.md`; `Publisher_PreflightHardening.md`; `Publisher_ReleaseApprovalPackage.md`; `docs/distribution/PublisherReleaseRunbook.md` | ADR-0003; ADR-0019 | Release governance documents and runbook controls | N/A | N/A | Release Hold lifted by VMF risk acceptance; final verification, Live E2E, result review, package/dist, and tag/release remain gated | Current status records VMF risk acceptance, vendor clearance not obtained, and no Avast safety certification | Covered for governance; release execution pending |
 | Verified State baseline, differential update safety, revision conflict, readback verification, and state promotion boundary | `docs/development/Publisher_v1.0_Implementation_Voyage_Log.md`; ADR-0004 | ADR-0004 | `src/Publisher/Application/VerifiedPublishLifecycle.cs`; `PublishStateVerifier.cs`; `PhysicalUpdatePlanner.cs`; `GoogleDocsApplyEngine.cs`; `PublishTransactionCoordinator.cs`; `src/Publisher/Domain/PhysicalUpdateModel.cs` | `PhysicalUpdatePlannerTests.cs`; `PhysicalUpdateLifecycleTests.cs`; `PublishStatePromotionTests.cs`; `VerifiedPublishStateStoreTests.cs`; `GoogleDocsApplyEngineTests.cs` | `PhysicalUpdateLifecycleIntegrationTests.cs`; `VerifiedStateLifecycleIntegrationTests.cs`; `PublishTransactionCoordinatorIntegrationTests.cs` | Live Google readback not executed in this task | ADR-0004; local verification evidence summarized by `CURRENT_STATUS.md` | Covered for local/source and non-live integration; Partial for Live E2E readback |
 | Retry policy and failure classification are delivery-state aware and idempotency bounded | `Publisher_Phase4-2-2_ErrorHandlingSpecification.md`; `Publisher_Phase4-2-3_RetryPolicySpecification.md` | ADR-0005 | `src/Publisher/Application/PhysicalUpdateExecutor.cs`; `src/Publisher/Infrastructure/ImageMetadataReader.cs`; Google batch/update exception delivery-state handling | `PhysicalUpdateExecutorTests.cs`; `GoogleDocsClientTests.cs`; `GoogleDocsBatchUpdateClientTests.cs`; `ImageMetadataReaderTests.cs`; `CliApplicationTests.cs` | Non-live integration tests cover pipeline and transaction behavior | No Live E2E, package, or flagged executable execution | Phase 4-2-2 final review reports unit/integration/build local PASS; retry consolidation remains docs-only for future changes | Partial: implemented local behavior exists; retry-policy consolidation is partly specification/future-scope |
 | Structured diagnostic logging, safe observability, lifecycle events, and redaction boundary | `Publisher_Phase4-2-1_DiagnosticLoggingSpecification.md` | ADR-0006 | `src/Publisher.Cli/Program.cs` `StructuredPublisherLogger`; warning logging from Publisher execution paths | `tests/unit/Publisher/CliApplicationTests.cs`; `PublishPlanExecutorTests.cs` where warning behavior applies | N/A | Operational evidence limited to local CLI/test diagnostics; no Live E2E in this task | Phase 4-2-2 final review records safe structured diagnostics and local PASS counts | Covered for local CLI/unit evidence |
@@ -88,16 +88,16 @@ Rules:
 | Avast-pending preflight hard stop and local-only allowed work | `Publisher_PreflightHardening.md`; `Publisher_TestClassification.md`; `PublisherReleaseRunbook.md`; `CURRENT_STATUS.md` | ADR-0008 | Documentation and runbook hard stops | N/A | N/A | Release-path operations remain blocked until separate authorization | Current status and preflight records list allowed and blocked operations | Covered for governance; Blocked for release-path execution |
 | Evidence Bundle and Release Approval Package remain evidence/review boundaries, not authorization | `Publisher_EvidenceBundleSpecification.md`; `Publisher_ReleaseApprovalPackage.md`; `Publisher_AvastResponseIntakeTemplate.md` | ADR-0009 | Documentation-only evidence and approval-package records | N/A | N/A | Evidence bundle assembly, approval, vendor response, and release authorization are separate future gates | Approval Recommendation = Hold; no Avast response received; vendor clearance not obtained | Covered for governance; Blocked for release authorization |
 | vNext backlog and deferred scope boundary | `Publisher_vNext_Backlog.md`; `CURRENT_STATUS.md`; Voyage Log | ADR-0010 | Documentation-only backlog and planning classification | N/A | N/A | vNext implementation and release adoption are not authorized by backlog labels | Current status records backlog as docs-only/local-only and release unchanged | Covered for governance; N/A for executable tests |
-| Release authorization must be a separate explicit release-governance record | `Publisher_ReleaseApprovalPackage.md`; `Publisher_AvastResponseIntakeTemplate.md`; `CURRENT_STATUS.md`; Voyage Log | ADR-0011 | Governance records only; no release authorization implementation required | N/A | N/A | No release authorization record has been created; blocked operations remain blocked | Approval Recommendation = Hold; current status says release blocked and vendor clearance not obtained | Covered for boundary; Blocked for release authorization |
+| Release authorization must be a separate explicit release-governance record | `Publisher_ReleaseApprovalPackage.md`; `Publisher_AvastResponseIntakeTemplate.md`; `CURRENT_STATUS.md`; Voyage Log | ADR-0011; ADR-0019 | Governance records only; no release authorization implementation required | N/A | N/A | ADR-0019 lifts the Release Hold but does not authorize final verification, Live E2E, package/dist, tag, or release by implication | Current status says vendor clearance is not obtained and release execution has not started | Covered for boundary; release authorization pending |
 | Release resumption procedure and final verification order after clearance | `Publisher_ReleaseApprovalPackage.md`; `Publisher_AvastResponseIntakeTemplate.md`; `CURRENT_STATUS.md`; `PublisherReleaseRunbook.md` | ADR-0012 | Runbook and release-approval-package sequencing | N/A | N/A | Not yet available because Avast response and vendor clearance are pending; final release verification not executed | Current status records ADR-0012 as docs-only/local-only and not release authorization | Covered for procedure; Blocked for execution |
 | Release Decision Record after release authorization | `Publisher_ReleaseApprovalPackage.md`; `Publisher_AvastResponseIntakeTemplate.md`; `CURRENT_STATUS.md` | ADR-0013 | Future release decision record requirement; no current record | N/A | N/A | No Release Decision Record has been created because release authorization has not been granted | Current status records no Release Decision Record and Hold remains | Blocked |
 | Release Publication Record and Post-Release Evidence after publication | `Publisher_ReleaseApprovalPackage.md`; `Publisher_AvastResponseIntakeTemplate.md`; `CURRENT_STATUS.md`; `PublisherReleaseRunbook.md` | ADR-0014 | Future publication/post-release record requirement; no current record | N/A | N/A | No publication occurred; no Publication Record or Post-Release Evidence exists | Current status records no publication and Hold remains | Blocked |
 | Release withdrawal, rollback, and incident evidence boundaries | `Publisher_ReleaseApprovalPackage.md`; `Publisher_AvastResponseIntakeTemplate.md`; `CURRENT_STATUS.md` | ADR-0015 | Future withdrawal, rollback, and incident evidence record requirements | N/A | N/A | No withdrawal, rollback, or incident evidence bundle exists; release has not been published | Current status records no Withdrawal Record, Rollback Record, or Incident Evidence Bundle | Blocked / N/A until a release or incident exists |
 | Release versioning, tag, artifact identity, evidence identity, and approval/authorization identity | `Publisher_ReleaseApprovalPackage.md`; `Publisher_AvastResponseIntakeTemplate.md`; `CURRENT_STATUS.md` | ADR-0016 | Future release identity fields in release records; package tooling exists but was not run | N/A | N/A | No tag, package, artifact, evidence bundle, approval record, authorization record, or release identity created or finalized | Current status records no release identity finalization and no `dist` write | Blocked |
-| Release retention, archival, and audit trail | `Publisher_ReleaseApprovalPackage.md`; `Publisher_AvastResponseIntakeTemplate.md`; `CURRENT_STATUS.md` | ADR-0017 | Future archive/audit requirements; current docs preserve boundaries | N/A | N/A | No archive artifact creation; no archive entry may imply release approval or production readiness | Current status records release blocked and no publication/authorization | Covered for boundary; Blocked for release archive execution |
+| Release retention, archival, and audit trail | `Publisher_ReleaseApprovalPackage.md`; `Publisher_AvastResponseIntakeTemplate.md`; `CURRENT_STATUS.md` | ADR-0017 | Future archive/audit requirements; current docs preserve boundaries | N/A | N/A | No archive artifact creation; no archive entry may imply release approval, publication, production readiness, vendor clearance, or Avast safety certification | Current status records ADR-0019 risk acceptance and no publication/authorization | Covered for boundary; release archive execution pending |
 | Emergency release exception boundary | `Publisher_ReleaseApprovalPackage.md`; `Publisher_AvastResponseIntakeTemplate.md`; `CURRENT_STATUS.md` | ADR-0018 | Future emergency exception record requirements | N/A | N/A | No emergency exception approval, risk acceptance, normal release gate reopening, or publication occurred | Current status records no emergency exception approval and Hold remains | Blocked |
 | Test classification and safe validation categories | `Publisher_TestClassification.md`; `Publisher_PreflightHardening.md` | ADR-0008; ADR-0009; ADR-0011 | Documentation-only classification of build, unit, integration, Live E2E, package, and publication checks | N/A | N/A | Live E2E, package, publication, and flagged executable rows are blocked while Avast is pending | Classification record requires `PASS` only for directly verified evidence | Covered for governance |
-| Local source verification evidence from completed Phase 4 scope | `CURRENT_STATUS.md`; `Publisher_Phase4_LocalVerificationEvidence.md`; Phase 4-3 records | ADR-0003; ADR-0008; ADR-0009 | Source implementation exists across Publisher projects | Unit test evidence summarized in Phase records | Non-live integration evidence summarized in Phase records | Local-only evidence only; not release readiness | `CURRENT_STATUS.md` records Phase 4 local-only verification complete / release blocked | Covered for current local-only state; Partial for release readiness |
+| Local source verification evidence from completed Phase 4 scope | `CURRENT_STATUS.md`; `Publisher_Phase4_LocalVerificationEvidence.md`; Phase 4-3 records | ADR-0003; ADR-0008; ADR-0009; ADR-0019 | Source implementation exists across Publisher projects | Unit test evidence summarized in Phase records | Non-live integration evidence summarized in Phase records | Local-only evidence only; not release readiness | `CURRENT_STATUS.md` records Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance | Covered for current local-only state; Partial for release readiness |
 
 ## 5. ADR Coverage
 
@@ -121,6 +121,7 @@ Rules:
 | ADR-0016 | Release Versioning / Tag / Artifact Identity | Accepted | Future release identity records | Blocked |
 | ADR-0017 | Release Retention / Archival / Audit Trail | Accepted | Future retention/archive/audit records | Covered for boundary; blocked for archive execution |
 | ADR-0018 | Emergency Release Exception Boundary | Accepted | Future emergency exception records | Blocked |
+| ADR-0019 | VMF Risk Acceptance And Release Hold Lift | Accepted | Risk acceptance and post-hold release sequence | Covered for governance; execution pending |
 
 ## 6. Coverage Summary
 
@@ -151,8 +152,11 @@ Partial areas:
 
 Blocked or not-yet-executed areas:
 
-- Avast response processing and vendor clearance;
-- package creation or update;
+- Avast vendor response processing and vendor clearance;
+- final verification under ADR-0019;
+- Live E2E under ADR-0019;
+- result review under ADR-0019;
+- package creation or update under ADR-0019;
 - selected release artifact identity finalization;
 - package verification for a current authorized release candidate;
 - packaged executable smoke;
@@ -166,28 +170,29 @@ Blocked or not-yet-executed areas:
 
 The current formal state remains:
 
-`Phase 4 local-only verification complete / release blocked`.
+`Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance`.
 
 Release boundary:
 
 | Item | State |
 | --- | --- |
 | Local verification | Complete within the approved local-only safety boundary |
-| Release readiness | Not established |
-| Release gate | Blocked |
-| Avast false-positive handling | Pending |
+| Release readiness | Pending final verification, Live E2E, result review, package/dist, and tag/release sequence |
+| Release gate | Hold lifted by ADR-0019 VMF risk acceptance; release execution not yet started |
+| Avast false-positive handling | Vendor response pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
-| Approval recommendation | Hold |
-| Live E2E | Not executed by this task; blocked without explicit per-run authorization |
-| Google Docs / Google Drive mutation | Not performed by this task; blocked |
-| Package creation or update | Not performed by this task; blocked |
-| Package/dist update | Not performed by this task; blocked |
-| Flagged executable re-run | Not performed by this task; blocked |
-| Release, tag, publication artifacts | Not created by this task; blocked |
+| Avast safety certification | Not claimed |
+| Approval recommendation | Proceed to final verification sequence after explicit operation-specific authorization |
+| Live E2E | Not executed by this task; requires explicit per-run authorization after final verification |
+| Google Docs / Google Drive mutation | Not performed by this task; gated |
+| Package creation or update | Not performed by this task; gated after result review |
+| Package/dist update | Not performed by this task; gated after result review |
+| Flagged executable re-run | Not performed by this task; gated by exact authorization |
+| Release, tag, publication artifacts | Not created by this task; gated after package/dist |
 | Evidence Bundle / Release Approval Package | Review/evidence boundaries only; not release authorization |
 
-This matrix does not change the release state. It records traceability while
-preserving the existing hard stop.
+This matrix does not execute release work. It records traceability after
+ADR-0019 lifts the Release Hold by VMF risk acceptance.
 
 ## 8. Maintenance Rules
 
@@ -212,8 +217,8 @@ Maintenance requirements:
   corresponding authorized operation actually occurs;
 - keep Evidence Bundle and Release Approval Package records separate from
   release authorization;
-- keep Avast response pending and vendor clearance not obtained until a
-  response is recorded in the approved intake/release record and the gate is
-  reassessed;
+- keep Avast vendor response pending and vendor clearance not obtained until a
+  response is recorded in the approved intake/release record and reassessed;
+- do not treat ADR-0019 risk acceptance as Avast safety certification;
 - run documentation-safe validation, including `git diff --check`, after
   updating this file.
