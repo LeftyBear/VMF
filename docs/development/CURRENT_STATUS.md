@@ -22,6 +22,7 @@ claim Avast vendor clearance or Avast safety certification.
 | Local verification | Complete within the approved local-only safety boundary |
 | Release readiness | Pending package/dist and tag/release sequence after final verification PASS, Live E2E PASS, and result review recorded |
 | Release gate | Hold lifted by VMF-side residual risk acceptance; release execution advanced through result review only |
+| Next release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` recorded as docs-only next identity; package path, size, SHA-256, target commit, tag creation, GitHub Release, publication, and tag/release execution authorization remain pending |
 | Avast false positive handling | Vendor response still pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
@@ -35,7 +36,7 @@ claim Avast vendor clearance or Avast safety certification.
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
 | Result review | Recorded in `Publisher_ReleaseApprovalPackage.md`; package/dist and tag/release remain unexecuted |
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
-| Package creation or update | Not performed; gated after result review |
+| Package creation or update | Not performed; gated after result review; no `0.0.1-dev` package generated |
 | Release, tag, or publication | Not performed; gated after package/dist |
 | Frozen specifications | Unchanged |
 | Public APIs | Unchanged |
@@ -69,7 +70,7 @@ claim Avast vendor clearance or Avast safety certification.
 | ADR-0013 release decision record and post-authorization traceability | Done as documentation-only / local-only post-authorization traceability decision record; release state unchanged; recommendation Hold remains; no Release Decision Record has been created. |
 | ADR-0014 release publication record and post-release evidence boundary | Done as documentation-only / local-only publication-record and post-release-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Publication Record or Post-Release Evidence has been created. |
 | ADR-0015 release withdrawal / rollback record and incident evidence boundary | Done as documentation-only / local-only withdrawal, rollback, and incident-evidence boundary decision record; release state unchanged; recommendation Hold remains; no Withdrawal Record, Rollback Record, or Incident Evidence Bundle has been created. |
-| ADR-0016 release versioning / tag / artifact identity | Done as documentation-only / local-only release-identity boundary decision record; release state unchanged; recommendation Hold remains; no tag, artifact, package, release version, evidence bundle, approval record, authorization record, or release identity has been created or finalized. |
+| ADR-0016 release versioning / tag / artifact identity | Done as documentation-only / local-only release-identity boundary decision record; `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` is recorded as the next identity while target commit, package artifact, evidence bundle, authorization record, tag creation, GitHub Release, and publication remain pending. |
 | ADR-0017 release retention / archival / audit trail | Done as documentation-only / local-only retention, archival, and audit-trail boundary decision record; release state unchanged; recommendation Hold remains; no archive entry may imply release approval, publication, production readiness, vendor clearance, or Avast resolution while the gate remains blocked. |
 | ADR-0018 emergency release exception boundary | Done as documentation-only / local-only emergency-exception-boundary decision record; release state unchanged; recommendation Hold remains; no emergency exception approval has been granted and no blocked operation is authorized. |
 | ADR-0019 VMF risk acceptance and Release Hold lift | Done as documentation-only / local-only risk-acceptance decision record; Avast vendor clearance remains not obtained; Avast safety certification is not claimed; Release Hold lifted; post-hold release execution sequence advanced through result review only. |
@@ -129,6 +130,8 @@ update.
 | --- | --- | --- |
 | Phase 3-9 release approval | Pending | Repository-owner release approval or rejection after package/dist and tag/release gating are satisfied. |
 | Release / tag / publication decision | Pending | Explicit owner authorization after the fixed ADR-0019 post-hold sequence reaches tag/release. |
+| `0.0.1-dev` target commit | Pending | Fix after the docs-only identity record is committed and pushed; pre-change `HEAD` and `origin/main` were `322e59c24985cb78a1f482accca3cb24b82566a7`. |
+| `0.0.1-dev` package path / size / SHA-256 | Pending | Generate and verify only after separate package/dist authorization. |
 | Live E2E decision | Completed for the reviewed run | Final verification passed first; Live E2E rerun passed after OAuth Desktop reauthorization refreshed the local authentication state. |
 | Avast false positive resolution | Risk accepted / vendor response pending | VMF residual risk acceptance recorded by ADR-0019; Avast vendor clearance remains not obtained. |
 | vNext hardening backlog | Pending | Candidate treatment before adoption. |
@@ -656,30 +659,31 @@ records must preserve: release version, git commit, git tag, artifact or
 package identity, evidence bundle identity, and approval or authorization
 record identity.
 
-ADR-0016 does not create a tag, package, artifact, evidence bundle, approval
-record, authorization record, Release Decision Record, Publication Record, or
-release identity. Tag, package, and artifact identity must be derived only
-after final release authorization and final verification in the authorized
-release scope.
+ADR-0016 itself did not create a tag, package, artifact, evidence bundle,
+approval record, authorization record, Release Decision Record, Publication
+Record, or release identity. The next version and intended tag are now recorded
+as `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`; package and artifact identity must
+be derived only after the package/dist gate is separately authorized and
+executed.
 
 ADR-0016 rejects ambiguous or mutable canonical identities such as `latest`,
 local build folders, mutable package names, private local paths, and
 unverifiable artifacts. It fills the previously absent numbering slot and does
 not change, supersede, renumber, weaken, or reinterpret ADR-0017 or ADR-0018.
 
-The recommendation remains `Approval Recommendation = Hold`. Avast
-false-positive handling remains pending, vendor clearance has not been
-obtained, no release authorization has been granted, no Release Decision
-Record has been created, no publication has occurred, and no release identity,
+Avast false-positive handling remains pending and vendor clearance has not
+been obtained. No release authorization has been granted, no Release Decision
+Record has been created, no publication has occurred, and no target commit,
 tag, package, artifact, evidence bundle, approval record, or authorization
-record has been created or finalized.
+record has been finalized for `0.0.1-dev`.
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive
 mutation, package or distribution artifact creation or update, `dist` write,
 flagged executable re-run, production code change, test change, Frozen
 specification change, public API change, vendor clearance, Avast resolution,
 artifact creation, package creation, approval record creation, authorization
-record creation, or release identity finalization was performed by ADR-0016.
+record creation, or package/artifact identity finalization was performed by
+this docs-only identity update.
 
 ## 22. ADR-0017 Release Retention / Archival / Audit Trail
 

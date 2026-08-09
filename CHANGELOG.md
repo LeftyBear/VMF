@@ -8,6 +8,11 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Added
 
+- Added `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` to record
+  `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` as the next Publisher release
+  identity, with package path, size, SHA-256, target commit, tag creation,
+  GitHub Release, publication, and release authorization still pending.
+
 - Added
   `docs/architecture/ADR-0019-vmf-risk-acceptance-and-release-hold-lift.md`
   to record VMF-side residual risk acceptance for the Publisher Avast
@@ -16,6 +21,12 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   False Positive submission remains unanswered.
 
 ## Changed
+
+- Updated Publisher release status, checklist, approval package, runbook,
+  traceability matrix, and Voyage Log records to preserve the completed
+  `0.0.0-dev` release identity as immutable history and to keep the
+  `0.0.1-dev` identity as docs-only pre-package planning, not
+  package/tag/release authorization.
 
 - Updated Publisher release-status, runbook, approval-package, Avast intake,
   operator guidance, and test-classification records to lift the Release Hold

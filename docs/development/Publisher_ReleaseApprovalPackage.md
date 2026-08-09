@@ -23,11 +23,13 @@ modify Frozen specifications, change tests, write to `dist`, or push commits.
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
 | Release readiness | Pending package/dist and tag/release sequence after final verification PASS, Live E2E PASS, and result review recorded |
+| Next release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` recorded for the next release; target commit will be fixed after this docs-only change is committed and pushed |
 | Final verification | PASS before Live E2E: Release build PASS warnings 0 / errors 0; Unit tests 492 passed / 0 failed / 0 skipped; Integration tests 16 passed / 0 failed / 0 skipped; `dotnet format --verify-no-changes` PASS; `git diff --check` PASS |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
 | Result review | Recorded; initial Live E2E failure was attributed to stale, revoked, or inconsistent saved OAuth token state; rerun passed after token deletion and OAuth Desktop reauthorization |
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
 | Package creation or update | Not performed |
+| Package path / size / SHA-256 | Pending for `0.0.1-dev`; package not generated |
 | Flagged executable re-run | Not performed |
 | Release, tag, publication, push | Not performed |
 
@@ -76,7 +78,8 @@ gate.
 | `docs/development/Publisher_TestClassification.md` | Done | Separates documentation, local, non-live, package, Live E2E, and publication checks. |
 | ADR-0019 result review | Recorded in this package | Reviews final verification and Live E2E results; keeps package/dist, tag/release, and publication unexecuted. |
 | `docs/distribution/PublisherReleaseRunbook.md` | Draft | Defines release operation sequencing and authorization gates. |
-| `docs/distribution/ReleaseChecklist.md` | Existing release checklist | Release checklist reference only; this package does not update checklist results. |
+| `docs/distribution/ReleaseChecklist.md` | Existing release checklist plus next identity record | Preserves completed `0.0.0-dev` evidence and records `0.0.1-dev` as the next docs-only identity. |
+| `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Next identity notes | Records `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` as the next docs-only release identity. |
 
 No new `PASS` package, publication, or vendor-clearance evidence is created by
 this approval package. The recorded `PASS` evidence is limited to the supplied
@@ -143,7 +146,38 @@ If any step fails, lacks authorization, produces ambiguous evidence, or changes
 artifact identity, the sequence stops until a separate recorded decision
 defines the next action.
 
-## 7. ADR-0019 Result Review
+## 7. Next Release Identity
+
+Status: RECORDED as docs-only identity selection.
+
+The next Publisher release identity is:
+
+| Field | Value |
+| --- | --- |
+| Version | `0.0.1-dev` |
+| Tag | `vmf-publisher-v0.0.1-dev` |
+| Runtime | `win-x64` |
+| Configuration | `Release` |
+| Package type | Framework-dependent (`selfContained=false`) |
+| Target commit | Pending; to be fixed after this docs-only identity record is committed and pushed |
+| Package path | Pending; package not generated |
+| Package size | Pending; package not generated |
+| Package SHA-256 | Pending; package not generated |
+| Tag state | Not created |
+| GitHub Release state | Not created |
+| Publication state | Not performed |
+
+The prior `0.0.0-dev` identity remains immutable historical release evidence:
+existing tag, GitHub Release, and asset identities must not be retargeted,
+replaced, or reused.
+
+This record satisfies the ADR-0016 requirement to keep version, commit, tag,
+package or artifact, evidence, and authorization identity fields explicit.
+Only the version and intended tag are selected now. The commit, package,
+evidence, and authorization fields remain pending until their separate gates
+are reached and authorized.
+
+## 8. ADR-0019 Result Review
 
 Status: Recorded as docs-only result review evidence.
 
@@ -201,7 +235,7 @@ release publication, artifact publication, flagged executable smoke, staging,
 commit, push, production code changes, test changes, Frozen specification
 changes, public API changes, vendor clearance, or Avast safety certification.
 
-## 8. Approval Recommendation
+## 9. Approval Recommendation
 
 Approval Recommendation = Proceed to final verification sequence after
 explicit operation-specific authorization.

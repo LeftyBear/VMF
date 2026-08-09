@@ -1,6 +1,6 @@
 # Publisher Release Checklist
 
-Status  : Phase 3-10 Release COMPLETE
+Status  : Phase 3-10 Release COMPLETE; next release identity recorded
 Scope   : VMF Publisher package release readiness
 Depends : VMF.Publisher.sln, docs/development/Publisher_Phase3-9_DesignNotes.md, tools/publisher/package-publisher.ps1, tools/publisher/verify-package.ps1
 
@@ -16,6 +16,28 @@ Result codes:
 | BLOCKED | The item could not be completed because a required condition is missing. |
 | PENDING | The item is waiting on an external response or repository-owner decision. |
 | N/A | The item is explicitly not applicable and the reason is recorded. |
+
+## 0. Next Release Identity: 0.0.1-dev
+
+Status: RECORDED as docs-only next release identity.
+
+This section records the next Publisher release identity after the completed
+`0.0.0-dev` release. It does not modify the completed Phase 3-10
+`0.0.0-dev` evidence below.
+
+| Item | Result | Evidence | Reviewer | Date | Remarks |
+| --- | --- | --- | --- | --- | --- |
+| Next release version adopted | PASS | `0.0.1-dev` | Codex | 2026-08-09 | Adopted as the next release identity because `0.0.0-dev` is already used as tag, GitHub Release, and asset identity. |
+| Next git tag adopted | PASS | `vmf-publisher-v0.0.1-dev` | Codex | 2026-08-09 | Tag name is reserved for the next identity; tag has not been created. |
+| Runtime identifier recorded | PASS | `win-x64` | Codex | 2026-08-09 | Target runtime only; no package was generated. |
+| Configuration recorded | PASS | `Release` | Codex | 2026-08-09 | Target configuration only; no build or package command was run. |
+| Package type recorded | PASS | `selfContained=false` | Codex | 2026-08-09 | Framework-dependent target identity only. |
+| Target commit pending | PENDING | Planned after docs-only commit/push | Codex | 2026-08-09 | Current pre-change `HEAD` and `origin/main` were `322e59c24985cb78a1f482accca3cb24b82566a7`; the target commit will be fixed only after this docs-only change is committed and pushed. |
+| Package artifact pending | PENDING | Package not generated | Codex | 2026-08-09 | Planned package path, size, and SHA-256 are not yet fixed. |
+| Tag creation pending | PENDING | Tag not created | Codex | 2026-08-09 | Existing `vmf-publisher-v0.0.0-dev` tag must not be retargeted, deleted, or reused. |
+| GitHub Release pending | PENDING | GitHub Release not created | Codex | 2026-08-09 | Existing `0.0.0-dev` GitHub Release and asset remain immutable past identity. |
+| Publication pending | PENDING | Publication not performed | Codex | 2026-08-09 | Release announcement and publication remain separately gated. |
+| Release authorization pending | PENDING | No tag/release execution approval | Codex | 2026-08-09 | This docs-only identity record is not authorization to package, tag, release, publish, or push. |
 
 ## 1. Release Identity
 

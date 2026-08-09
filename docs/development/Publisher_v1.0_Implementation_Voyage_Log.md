@@ -2514,3 +2514,52 @@ executables, change production code, change tests, modify Frozen
 specifications, change public APIs, obtain vendor clearance, claim Avast
 safety certification, create a Release Decision Record, create a Publication
 Record, stage changes, commit changes, or push commits.
+
+## Publisher 0.0.1-dev Next Release Identity
+
+Status: RECORDED as docs-only / local-only next release identity.
+
+Recorded `0.0.1-dev` as the next VMF Publisher release version and
+`vmf-publisher-v0.0.1-dev` as the corresponding next tag identity.
+
+The target package parameters are:
+
+- runtime: `win-x64`;
+- configuration: `Release`;
+- package type: framework-dependent (`selfContained=false`).
+
+This identity record preserves the existing `0.0.0-dev` tag, GitHub Release,
+and asset as immutable historical release identity. It does not retarget the
+existing tag, replace the existing asset, reuse the existing version, or modify
+the existing GitHub Release.
+
+### Pending Identity Fields
+
+The target commit remains pending and is planned to be fixed after this
+docs-only identity record is committed and pushed. Before this docs-only
+change, both `HEAD` and `origin/main` were
+`322e59c24985cb78a1f482accca3cb24b82566a7`.
+
+The `0.0.1-dev` package has not been generated. Package path, package size,
+and package SHA-256 remain pending. The tag has not been created. The GitHub
+Release has not been created. Publication has not been performed. Release
+authorization for tag/release execution has not been granted.
+
+### ADR-0016 Alignment
+
+The identity chain remains:
+
+`version -> commit -> tag -> package/artifact -> evidence/authorization`.
+
+Only the version and intended tag are selected by this docs-only update. The
+commit, package or artifact, evidence, and authorization records remain
+pending until the corresponding gate is explicitly authorized and executed.
+
+### Explicit non-actions
+
+This documentation update did not generate packages, modify `dist`, create,
+delete, move, or retarget tags, create or update GitHub Releases, replace
+assets, publish artifacts, announce a release, run Live E2E, mutate Google
+Docs or Google Drive, change production code, change tests, modify Frozen
+specifications, change public APIs, stage changes, commit changes, or push
+commits.

@@ -49,7 +49,10 @@ Current operating snapshot:
 | Item | State |
 | --- | --- |
 | Formal state | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance |
-| Release gate | Hold lifted by ADR-0019; release execution not yet started |
+| Release gate | Hold lifted by ADR-0019; release execution advanced through result review only |
+| Next release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` recorded as docs-only identity selection |
+| Next package identity | Pending; package path, size, and SHA-256 not fixed because no package was generated |
+| Next target commit | Pending; to be fixed after the docs-only identity record is committed and pushed |
 | Avast false-positive handling | Vendor response pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
