@@ -5,10 +5,24 @@ Scope   : Docs-only / local-only release approval package organization after ADR
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_TestClassification.md, docs/distribution/PublisherReleaseRunbook.md
 
 This package summarizes the current VMF Publisher approval state for review. It
-is documentation only. It does not approve a release, create or update packages,
-create tags, publish artifacts, execute Live E2E, mutate Google Docs or Google
-Drive, re-run flagged executables, change production code, change public APIs,
-modify Frozen specifications, change tests, write to `dist`, or push commits.
+is documentation/status alignment only. It does not approve a new release,
+create or update packages, create tags, publish artifacts, execute Live E2E,
+mutate Google Docs or Google Drive, re-run flagged executables, change
+production code, change public APIs, modify Frozen specifications, change
+tests, write to `dist`, or perform release execution.
+
+Post-authorization repository status update:
+
+- Publisher `0.0.1-dev` release authorization record commit
+  `57e71e240b9e42dbca03bae6dbf4d8a20216c58a` was pushed to `origin/main`.
+- `docs/development/CURRENT_STATUS.md` commit
+  `a04126ce24c7abd376bec943466c30cd565bb70e` was pushed to `origin/main`.
+
+These repository synchronization facts record documentation/status alignment
+only. They do not perform release execution, claim Avast vendor clearance,
+claim Avast safety certification, create or update package/dist output, run
+`vmf-publisher.exe`, mutate Google Docs or Google Drive, operate on
+OAuth/token-store/credentials, or perform any Avast operation.
 
 ## 1. Current Release State
 
@@ -19,6 +33,8 @@ modify Frozen specifications, change tests, write to `dist`, or push commits.
 | Avast false-positive handling | Vendor response pending; VMF residual risk accepted |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
+| Release authorization record | Created and pushed in commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a`; repository synchronization only, not release execution by this docs update |
+| Current status update | `docs/development/CURRENT_STATUS.md` updated and pushed in commit `a04126ce24c7abd376bec943466c30cd565bb70e`; documentation/status alignment only |
 | False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
 | Avast manual scan / CyberCapture result | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; release ZIP / repo Release exe match; Avast showed "このファイルは安全のようです"; no detection name; `IDP.HELU.PSD11` not reproduced; result `not reproduced`; local manual confirmation only |
@@ -35,7 +51,7 @@ modify Frozen specifications, change tests, write to `dist`, or push commits.
 | GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
 | Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
 | Flagged executable re-run | Not performed |
-| Release, tag, publication, push | Tag push, GitHub prerelease creation, and asset upload are complete; this docs-only update did not perform a new release operation or push |
+| Release, tag, publication by this docs update | Not performed; this documentation/status alignment does not create tags, publish artifacts, update a GitHub Release, or execute a release operation |
 
 Local-only verification remains useful evidence for source quality inside its
 approved boundary. It is not release readiness, package approval, Live E2E
@@ -262,8 +278,9 @@ certification.
 
 ## 9. Approval Recommendation
 
-Approval Recommendation = Record release completion evidence; commit/push of
-this docs-only update remains pending separate authorization.
+Approval Recommendation = Record release authorization and current-status
+synchronization evidence; this docs-only update does not perform release
+execution.
 
 Basis:
 
@@ -280,8 +297,14 @@ Basis:
   fixed `0.0.1-dev` package identity;
 - tag push, remote tag readback, GitHub prerelease creation, asset upload, and
   remote/local digest match are recorded as complete for `0.0.1-dev`;
+- the Publisher `0.0.1-dev` release authorization record was created and
+  pushed in commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a`;
+- `docs/development/CURRENT_STATUS.md` was updated and pushed in commit
+  `a04126ce24c7abd376bec943466c30cd565bb70e`;
 - no package creation, package update, package verification, `dist` write, or
   flagged executable smoke was performed by this docs-only update;
 - this docs-only update did not modify tags, GitHub Release, assets,
   production code, tests, package, or `dist`;
-- staging, commit, and push of this docs-only update were not authorized.
+- this docs-only update did not run build/test, execute `vmf-publisher.exe`,
+  mutate Google Docs or Google Drive, operate on OAuth/token-store/credentials,
+  or perform an Avast operation.
