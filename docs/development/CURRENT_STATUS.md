@@ -35,6 +35,7 @@ set only; it is not release execution.
 | Avast safety certification | Not claimed |
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
 | Avast manual scan / CyberCapture result | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; release ZIP / repo Release exe match; Avast showed "このファイルは安全のようです"; no detection name; `IDP.HELU.PSD11` not reproduced; result `not reproduced`; local manual confirmation only, not vendor clearance |
+| Avast local reproduction check | Authorized local reproduction check on 2026-08-11 observed no Avast detection, deletion, block, or `IDP.HELU.PSD11` reproduction during ZIP extraction, `--help`, packaged `verify`, packaged `dry-run`, package generation, package verification, or Live E2E. Evidence only; not vendor clearance, Avast safety certification, release approval, or replacement of the published package identity. |
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
 | False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
 | VMF residual risk acceptance | Accepted by ADR-0019 |

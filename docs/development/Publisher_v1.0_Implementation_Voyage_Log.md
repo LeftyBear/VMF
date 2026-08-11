@@ -2743,3 +2743,46 @@ release, run Live E2E, mutate Google Docs or Google Drive, mutate OAuth
 credentials or token stores, operate the Avast UI, change Avast settings,
 release quarantine, add exclusions, re-run `vmf-publisher.exe`, obtain vendor
 clearance, or claim Avast safety certification.
+
+## Publisher Avast Local Reproduction Check
+
+Status: RECORDED as authorized local reproduction evidence.
+
+Recorded a 2026-08-11 local Avast reproduction check. The check covered:
+
+- existing `0.0.1-dev` ZIP extraction;
+- extracted `vmf-publisher.exe --help`;
+- packaged `verify` with local Markdown;
+- packaged `dry-run` with local Markdown;
+- package generation for version `0.0.1-dev`;
+- package verification;
+- Google Docs Live E2E integration tests.
+
+Observed result:
+
+- ZIP extraction completed and `vmf-publisher.exe` remained present;
+- `--help` exited 0;
+- packaged `verify` against minimal local Markdown exited 0;
+- packaged `dry-run` against minimal local Markdown exited 0;
+- package generation completed after an initial NuGet connectivity failure was
+  rerun with approved network access;
+- package verification passed;
+- Live E2E passed 4 / failed 0 / skipped 0;
+- no Avast detection, deletion, block, or `IDP.HELU.PSD11` reproduction was
+  observed in the checked operations.
+
+The `samples\publisher-poc.md` `verify` attempt exited 1 with
+`PublishPipelineException`; it was treated as Publisher command failure, not
+Avast detection or block evidence.
+
+The package-generation check produced a local regenerated ZIP
+`dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip` with SHA-256
+`395770913d825b578e468c18c45510da4b7b1be570338640018e58835bd28768`. The
+regenerated ZIP contained `vmf-publisher.exe` SHA-256
+`d6022008e309318dae413b88c150bf317cf5f395d0d92666c3680f760e8a7e3c`.
+
+This reproduction check is local evidence only. It is not an Avast vendor
+response, vendor clearance, Avast safety certification, release approval,
+publication approval, replacement of the published package identity, or
+permission for future package, Live E2E, Google Docs / Drive mutation,
+tag/release/publication, push, or flagged-executable operations.
