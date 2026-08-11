@@ -22,6 +22,14 @@ without treating the state as vendor clearance.
 The False Positive submission sent to Avast on 2026-07-25 remains unanswered
 as of 2026-08-09.
 
+A later local manual Avast scan / CyberCapture observation is recorded as
+evidence only: `vmf-publisher.exe` SHA-256
+`892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f` matched
+the release ZIP / repo Release executable, Avast showed "このファイルは安全のようです",
+no detection name was reported, and `IDP.HELU.PSD11` was not reproduced. This
+is not a vendor response, vendor clearance, Avast safety certification, or
+release authorization.
+
 ## 1. Intake Metadata
 
 | Field | Value |
@@ -52,8 +60,8 @@ Select exactly one classification after review.
 Do not classify a response as false-positive confirmation from silence,
 submission acceptance, automated acknowledgement, exception creation,
 standalone scanner no-detection, setting-dependent scanner behavior,
-VirusTotal no-detection, or scanner behavior outside the selected artifact
-identity.
+VirusTotal no-detection, local manual scan / CyberCapture no-detection, or
+scanner behavior outside the selected artifact identity.
 
 ## 3. Required Evidence Checklist
 
@@ -120,6 +128,7 @@ current release hold.
 | --- | --- | --- |
 | Vendor clearance confirmed for the selected artifact identity | PENDING | Vendor clearance not obtained unless a future Avast response confirms it. |
 | VMF residual risk accepted without vendor clearance | PASS | ADR-0019 records VMF risk acceptance and Release Hold lift. |
+| Local manual Avast scan not reproduced for selected executable | PASS | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; Avast showed "このファイルは安全のようです"; no `IDP.HELU.PSD11` detection. Evidence only; not vendor clearance. |
 | Repository owner explicitly reopens the required next gate | PENDING | Follow ADR-0019 order: final verification, Live E2E, result review, package/dist, tag/release. |
 | Flagged executable re-run explicitly authorized, if needed | PENDING |  |
 | Live E2E explicitly authorized, if needed | PENDING |  |
@@ -144,6 +153,7 @@ Record only sanitized notes needed to understand the intake decision.
 | Date | Actor | Decision | Evidence Reference | Remaining Blockers |
 | --- | --- | --- | --- | --- |
 | 2026-08-09 | Repository owner / VMF | VMF risk accepted; Release Hold lifted; vendor clearance not obtained | ADR-0019 | Avast response not received; final verification, Live E2E, result review, package/dist, and tag/release not executed. |
+| 2026-08-11 | Repository owner / VMF | Manual scan not reproduced; gate may be reconsidered only through separate authorization | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; Avast showed "このファイルは安全のようです"; no `IDP.HELU.PSD11` detection | Avast vendor response not received; vendor clearance not obtained; final verification, release authorization, and any future release-path operations remain separately gated. |
 
 ## 9. Explicit Non-Actions
 

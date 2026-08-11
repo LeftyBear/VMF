@@ -14,13 +14,20 @@ specifications.
 If no vendor response has been received, redacted, reviewed, and recorded for
 the exact selected artifact identity, the default decision remains `Hold`.
 
+The 2026-08-11 manual Avast scan / CyberCapture observation for
+`vmf-publisher.exe` SHA-256
+`892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f` is local
+evidence only. It records that Avast showed "このファイルは安全のようです" and
+`IDP.HELU.PSD11` was not reproduced, but it is not an Avast vendor response or
+vendor clearance.
+
 ## 1. Artifact Identity
 
 | Item | Status | Evidence |
 | --- | --- | --- |
 | Selected artifact version recorded | PENDING |  |
-| Selected artifact path recorded without local secret-bearing path | PENDING |  |
-| Selected artifact SHA-256 recorded | PENDING |  |
+| Selected artifact path recorded without local secret-bearing path | PASS | `vmf-publisher.exe`; matched release ZIP / repo Release exe. |
+| Selected artifact SHA-256 recorded | PASS | `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`. |
 | Target commit recorded | PENDING |  |
 | Package manifest or asset identity recorded when authorized | PENDING |  |
 | Existing package inspection authorized before use | PENDING |  |
@@ -34,11 +41,15 @@ the exact selected artifact identity, the default decision remains `Hold`.
 | Response mapped in `Publisher_AvastResponseIntakeTemplate.md` | PENDING |  |
 | Vendor clearance confirmed for selected artifact identity | PENDING |  |
 | Avast safety certification claimed | NOT CLAIMED |  |
-| Hold decision reviewed | PENDING |  |
+| Manual scan / CyberCapture not reproduced | PASS | Avast showed "このファイルは安全のようです"; detection name none; `IDP.HELU.PSD11` not reproduced; threat result none / allowed equivalent. |
+| Hold decision reviewed | PENDING | Local evidence supports gate reconsideration only; vendor clearance and final authorization remain separate. |
 
 Do not treat submission acknowledgement, silence, scanner no-detection,
 setting-dependent local behavior, local exclusions, or third-party scanner
 results as Avast vendor clearance.
+
+Do not treat local manual scan / CyberCapture no-detection as Avast vendor
+clearance.
 
 ## 3. Release-Safety Gate Review
 
@@ -91,7 +102,7 @@ Select exactly one decision after the checklist is reviewed.
 | Decision | Selected | Meaning |
 | --- | --- | --- |
 | Hold continues |  | Vendor response is missing, inconclusive, unfavorable, or not yet reviewed for the exact artifact identity. |
-| Gate may be reconsidered |  | Vendor response or owner risk decision exists, but the next gate still requires separate authorization. |
+| Gate may be reconsidered | X | Manual scan / CyberCapture local evidence and owner risk decision exist, but the next gate still requires separate authorization. |
 | Escalation required |  | Evidence conflicts, cannot be safely redacted, or requires repository-owner/security review. |
 
 ## 7. Explicit Non-Actions

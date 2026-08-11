@@ -2709,3 +2709,37 @@ Docs or Google Drive, mutate token stores, re-run flagged executables, obtain
 vendor clearance, or claim Avast safety certification. Historical release
 blocked / Avast pending / vendor clearance not obtained boundaries remain
 preserved.
+
+## Publisher Avast Manual Confirmation Evidence
+
+Status: RECORDED as docs-only / evidence-only local manual confirmation.
+
+Recorded the Avast manual scan / CyberCapture result for `vmf-publisher.exe`
+SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`.
+The executable matched the release ZIP / repo Release executable identity.
+
+Observed result:
+
+- Avast displayed "このファイルは安全のようです";
+- detection name: none;
+- `IDP.HELU.PSD11`: not reproduced;
+- processing result: no threat / allowed equivalent;
+- decision label: `not reproduced`.
+
+This evidence supports release-gate reconsideration as local manual
+confirmation only. It is not an Avast vendor response, vendor clearance, Avast
+safety certification, final verification, release authorization, package
+approval, tag approval, publication approval, or permission to execute a
+flagged artifact.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+build, rebuild, regenerate packages, modify `dist`, create ZIPs, create,
+delete, move, retarget, or replace tags, push tags, create, update, delete, or
+replace GitHub Releases, replace assets, publish new artifacts, announce a
+release, run Live E2E, mutate Google Docs or Google Drive, mutate OAuth
+credentials or token stores, operate the Avast UI, change Avast settings,
+release quarantine, add exclusions, re-run `vmf-publisher.exe`, obtain vendor
+clearance, or claim Avast safety certification.

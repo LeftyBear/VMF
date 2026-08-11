@@ -27,6 +27,7 @@ claim Avast vendor clearance or Avast safety certification.
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
+| Avast manual scan / CyberCapture result | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; release ZIP / repo Release exe match; Avast showed "このファイルは安全のようです"; no detection name; `IDP.HELU.PSD11` not reproduced; result `not reproduced`; local manual confirmation only, not vendor clearance |
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
 | False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
 | VMF residual risk acceptance | Accepted by ADR-0019 |
@@ -137,6 +138,7 @@ update.
 | `0.0.1-dev` package path / size / SHA-256 | Fixed | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; package verification PASS. |
 | Live E2E decision | Completed for the reviewed run | Final verification passed first; Live E2E rerun passed after OAuth Desktop reauthorization refreshed the local authentication state. |
 | Avast false positive resolution | Risk accepted / vendor response pending | VMF residual risk acceptance recorded by ADR-0019; Avast vendor clearance remains not obtained. |
+| Avast manual confirmation | Recorded / not reproduced | Manual Avast scan / CyberCapture result for `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f` showed "このファイルは安全のようです" with no `IDP.HELU.PSD11` detection. This supports gate reconsideration as local manual confirmation only; it is not Avast vendor clearance or release authorization. |
 | vNext hardening backlog | Pending | Candidate treatment before adoption. |
 | Input-specific CLI exit code | Candidate | Future public CLI behavior proposal only; not adopted in Phase 4-2-2. |
 | Local Verify report schema evolution | Candidate | Future additions must preserve existing JSON Lines diagnostics and current report field compatibility. |

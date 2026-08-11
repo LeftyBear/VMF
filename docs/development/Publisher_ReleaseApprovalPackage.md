@@ -21,6 +21,7 @@ modify Frozen specifications, change tests, write to `dist`, or push commits.
 | Avast safety certification | Not claimed |
 | False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
+| Avast manual scan / CyberCapture result | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; release ZIP / repo Release exe match; Avast showed "このファイルは安全のようです"; no detection name; `IDP.HELU.PSD11` not reproduced; result `not reproduced`; local manual confirmation only |
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
 | Release readiness | Completed for the `0.0.1-dev` GitHub prerelease; release completion evidence recorded docs-only |
 | Release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled/package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
@@ -79,6 +80,7 @@ gate.
 | `docs/development/Publisher_Phase4-3-5_GoNoGoReview.md` | Done / DEFERRED go/no-go | Records release go/no-go as deferred. |
 | `docs/development/Publisher_PreflightHardening.md` | Done | Defines hard stops while Avast handling remains pending. |
 | `docs/development/Publisher_AvastResponseIntakeTemplate.md` | Template only / no Avast response received | Defines safe Avast response intake; vendor clearance remains not obtained while ADR-0019 records VMF risk acceptance separately. |
+| Avast manual confirmation note | Recorded / local evidence only | Manual Avast scan / CyberCapture result for `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f` showed "このファイルは安全のようです" and no `IDP.HELU.PSD11` detection; current result `not reproduced`. |
 | `docs/development/Publisher_EvidenceBundleSpecification.md` | Done | Defines redacted evidence bundle structure without assembling a concrete bundle. |
 | `docs/development/Publisher_TestClassification.md` | Done | Separates documentation, local, non-live, package, Live E2E, and publication checks. |
 | ADR-0019 result review | Recorded in this package | Reviews final verification and Live E2E results; package generation, package verification, tag/release, GitHub prerelease publication, and asset upload are recorded complete for `0.0.1-dev`. |
@@ -269,6 +271,10 @@ Basis:
 - Avast vendor response remains pending;
 - vendor clearance has not been obtained;
 - Avast safety certification is not claimed;
+- manual Avast scan / CyberCapture local evidence records `IDP.HELU.PSD11` as
+  not reproduced for `vmf-publisher.exe` SHA-256
+  `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`, without
+  converting the state into vendor clearance or release authorization;
 - final verification and Live E2E have passed and result review is recorded;
 - package generation and package verification are recorded as `PASS` for the
   fixed `0.0.1-dev` package identity;
