@@ -212,6 +212,17 @@ credential, and token-store paths are ignored or located outside the repository.
 Never print or copy access tokens, refresh tokens, client secrets, or private
 keys into logs, issues, commits, or chat.
 
+Publisher release-safety templates keep the same boundary for evidence and
+post-release review. OAuth credentials, token stores, private Google URLs, local
+absolute paths, raw exceptions, HTTP bodies, provider payloads, and
+Authorization headers must not be copied into release records, packages, logs,
+or evidence bundles. Live E2E, Google Docs mutation, Google Drive mutation,
+token-store mutation, and flagged executable rerun each require separate
+explicit authorization; unexecuted Live E2E must not be recorded as `PASS`.
+Post-release evidence may support audit, but it does not retroactively satisfy
+release approval, release authorization, vendor clearance, required gates, or
+final verification.
+
 ### Live verification
 
 Publish `samples/publisher-poc.md`, open the returned Document URL, and confirm:

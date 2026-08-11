@@ -2664,3 +2664,48 @@ Google Drive, change production code, change tests, modify Frozen
 specifications, change public APIs, stage changes, commit changes, or push
 commits. It does not create vendor clearance, claim Avast safety
 certification, or authorize future release-path operations.
+
+## Publisher P1 Release-Safety Hardening
+
+Status: RECORDED as docs-only / local-only hardening.
+
+Added P1 release-safety documentation:
+
+- `docs/development/Publisher_PostReleaseEvidenceSummaryTemplate.md`;
+- `docs/development/Publisher_AVTriageReleaseSafetyChecklist.md`;
+- `docs/development/Publisher_LiveE2EAuthorizationCredentialCleanupBoundaryReview.md`.
+
+Updated `README.md` and `docs/releases/README.md` with release-safety pointers.
+
+The P1 documents preserve ADR-0014's Post-Release Evidence boundary and the
+existing Evidence Bundle, redaction, and gate-separation model. Post-release
+evidence remains observation, confirmation, or audit evidence only. It does not
+retroactively satisfy pre-release approval, release authorization, vendor
+clearance, Avast false-positive resolution, required release gates, final
+verification, or Release Decision Record completeness.
+
+Vendor response remains `Hold` when no Avast response has been received,
+redacted, reviewed, and recorded for the exact selected artifact identity.
+Flagged executable rerun requires separate explicit authorization. Live E2E,
+Google Docs mutation, Google Drive mutation, token-store mutation, package
+work, tag/release/publication, and push remain separate explicit gates.
+
+OAuth credentials, service-account credentials, token stores, private Google
+Docs or Drive URLs, local absolute paths, raw exceptions, HTTP bodies, provider
+payloads, stack traces, and Authorization headers must not be included in
+repository records, packages, logs, or evidence bundles. Cleanup failure must
+be recorded as failure, blocker, or incident input rather than success. Live
+E2E must not be recorded as `PASS` unless it was separately authorized,
+executed, directly observed, read back, and reviewed.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+regenerate packages, modify `dist`, create, delete, move, retarget, or replace
+tags, push tags, create, update, delete, or replace GitHub Releases, replace
+assets, publish new artifacts, announce a release, run Live E2E, mutate Google
+Docs or Google Drive, mutate token stores, re-run flagged executables, obtain
+vendor clearance, or claim Avast safety certification. Historical release
+blocked / Avast pending / vendor clearance not obtained boundaries remain
+preserved.

@@ -19,6 +19,13 @@ records when applicable, and release artifact references.
 | Publisher Phase 3-8 | `Publisher_Phase3-8_ReleaseNotes.md` | `VMF.Publisher.sln` |
 | Publisher Phase 3-9 | `Publisher_Phase3-9_ReleaseNotes.md` | `dist/release/Publisher/vmf-publisher-<version>-win-x64.zip` |
 | Publisher Phase 3-10 | `Publisher_Phase3-10_ReleaseNotes.md` | Release approval pending external Avast response |
+| Publisher 0.0.1-dev | `Publisher_0.0.1-dev_ReleaseNotes.md` | GitHub prerelease published; Avast vendor clearance not obtained |
+
+Post-release Publisher evidence is governed by
+`../architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md`
+and the P1 release-safety templates under `../development/`. Post-release
+observations do not retroactively satisfy pre-release approval, release
+authorization, vendor clearance, required gates, or final verification.
 
 ---
 
