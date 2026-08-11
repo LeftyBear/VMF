@@ -14,6 +14,13 @@ ADR-0019 is the latest current-state update. Earlier ADR sections preserve the
 meaning of the Accepted ADRs as originally recorded and are not rewritten to
 claim Avast vendor clearance or Avast safety certification.
 
+Post-authorization repository status update: commit
+`57e71e240b9e42dbca03bae6dbf4d8a20216c58a` was pushed to `origin/main` by a
+normal non-force push. After that push, `HEAD` equaled `origin/main` at
+`57e71e240b9e42dbca03bae6dbf4d8a20216c58a` and the working tree was clean.
+This records repository synchronization for the release-authorization document
+set only; it is not release execution.
+
 ## 1. Current State
 
 | Item | State |
@@ -31,6 +38,8 @@ claim Avast vendor clearance or Avast safety certification.
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
 | False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
 | VMF residual risk acceptance | Accepted by ADR-0019 |
+| Release authorization record | Exists for Publisher `0.0.1-dev`; repository synchronization recorded separately from release execution |
+| Release authorization push | Commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a` pushed to `origin/main` by normal non-force push; post-push `HEAD` equaled `origin/main` and working tree was clean |
 | Approval recommendation | Record release completion evidence; commit/push of this docs-only update remains pending separate authorization |
 | Post-hold execution order | final verification -> Live E2E -> result review -> package/dist -> tag/release |
 | Final verification | PASS before Live E2E: Release build PASS warnings 0 / errors 0; Unit tests 492 passed / 0 failed / 0 skipped; Integration tests 16 passed / 0 failed / 0 skipped; `dotnet format --verify-no-changes` PASS; `git diff --check` PASS |
@@ -42,6 +51,7 @@ claim Avast vendor clearance or Avast safety certification.
 | Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
 | Package creation or update by this docs update | Not performed; no `dist` write by this documentation-only update |
 | Release, tag, or publication | Tag push complete; remote tag readback PASS; GitHub prerelease creation complete; asset upload complete; this docs-only update performed no new release operation |
+| Release execution by this status update | Not performed; release authorization record and repository synchronization are recorded only |
 | Frozen specifications | Unchanged |
 | Public APIs | Unchanged |
 | Production design | Unchanged |
