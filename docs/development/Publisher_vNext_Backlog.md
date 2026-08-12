@@ -51,15 +51,18 @@ Priority does not authorize implementation. Each item still requires a
 separate scoped task, explicit verification plan, and any required approval
 gate.
 
-## First Item After 0.0.1-dev
+## First Docs-Only Completion After 0.0.1-dev
 
-The first vNext backlog item to start after the completed `0.0.1-dev`
+The first completed vNext backlog item after the completed `0.0.1-dev`
 prerelease sequence is `P1-01`, the post-release evidence summary template.
-It is docs-only, Avast-independent, and ready now. It improves future release
+It was completed as a docs-only template addition. It improves future release
 traceability without processing an Avast response, touching release records,
 operating assets, updating packages or `dist/`, running Live E2E, mutating
 Google Docs / Drive, performing OAuth operations, rerunning Avast, or
 re-running the flagged executable.
+
+The next Avast-independent docs-only candidates are `P1-02`, `P1-04`, and
+`P1-06`.
 
 `P0-01` remains the first release-path item, but it is blocked until an Avast
 response is received and explicitly reviewed.
@@ -117,7 +120,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 
 | ID | Item | Priority | Rationale | Prerequisite | Release safety impact | State |
 | --- | --- | --- | --- | --- | --- | --- |
-| P1-01 | Add a compact post-release evidence summary template for future Publisher release candidates. | P1 | This is the first ready docs-only item after `0.0.1-dev` because it improves traceability without depending on Avast. | Current published-prerelease records and final status freeze. | Improves future evidence review while preserving separate release authorization gates. | Ready / Avast-independent. |
+| P1-01 | Add a compact post-release evidence summary template for future Publisher release candidates. | P1 | This is the first completed docs-only item after `0.0.1-dev`; it improves traceability without depending on Avast. | Current published-prerelease records and final status freeze. | Improves future evidence review while preserving separate release authorization gates. | Complete / docs-only template added. |
 | P1-02 | Improve release-readiness checklist cross-links for blocked, deferred, risk-accepted, and local-only evidence. | P1 | Cross-links reduce audit ambiguity between historical hold records and current status. | Current status and existing Phase 4-3 records. | Helps reviewers avoid mistaking historical blocked wording for current prerelease state or vendor clearance. | Ready / Avast-independent. |
 | P1-03 | Re-check supply-chain and package evidence only after the approved release artifact exists. | P1 | Evidence refresh must be tied to a specific approved artifact, not local or stale package output. | Future approved release artifact or explicitly authorized static inspection. | Prevents artifact identity drift and package evidence overclaiming. | Blocked / package scope not authorized. |
 | P1-04 | Review Live E2E setup documentation for clearer authorization, credential, and cleanup boundaries. | P1 | Documentation can clarify the gate without running Live E2E or touching OAuth state. | Existing Live E2E records and runbook text. | Reduces risk of unapproved live mutation or credential handling. | Ready / Avast-independent docs-only review. |
@@ -148,7 +151,11 @@ response:
 
 Avast-independent docs-only / design-ready:
 
-- P1-01, P1-02, P1-04, P1-06, and P2-01 through P2-06.
+- P1-02, P1-04, P1-06, and P2-01 through P2-06.
+
+Completed Avast-independent docs-only:
+
+- P1-01.
 
 ## Vendor-Clearance Boundary
 
@@ -202,5 +209,5 @@ clearance boundary.
    release-path task.
 5. Release artifact audit status after package-generation scope is authorized.
 6. Security and supply-chain review status for the approved release artifact.
-7. Evidence-summary and checklist hardening items.
+7. Next docs-only hardening candidates: P1-02, P1-04, and P1-06.
 8. vNext enhancement candidates.
