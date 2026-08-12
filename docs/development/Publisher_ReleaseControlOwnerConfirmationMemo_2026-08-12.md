@@ -2,7 +2,7 @@
 
 Status  : Owner confirmation pending; documentation-only memo
 Date    : 2026-08-12
-Scope   : Publisher release-control position confirmation after artifact identity reconciliation
+Scope   : Publisher release-control position confirmation after Avast latest-definition rescan evidence reflection
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_AvastResponseIntakeTemplate.md
 
 This memo records the release-control position to confirm with the responsible
@@ -17,29 +17,35 @@ tags, publish artifacts, or push.
 | Item | State |
 | --- | --- |
 | Branch | `main` |
-| `origin/main` | Updated through `36d4587` |
+| Latest commit | `862d58c docs: record Avast latest-definition rescan evidence` |
 | Working tree before this memo | Clean |
-| Release-control state | Risk Accepted Go recorded |
-| Local final verification | Checks passed |
-| Published identity | Recorded published identity is authoritative |
-| Local `dist` ZIP | Non-authoritative regenerated local artifact |
-| Artifact mismatch | Explained by later local regenerated ZIP |
-| Approved rebuild path | Not required unless replacing the published artifact |
+| Release-control state | Release blocked |
+| Avast latest-definition rescan evidence | Reflected in commit `862d58c` |
+| Latest rescan result | Detection not reproduced |
+| Rescan interpretation | Local technical evidence input only |
+| Responsible-owner approval / owner risk acceptance | Not recorded |
 | Release / tag / publication / distribution | Blocked unless separately authorized |
 | Avast response | Pending |
 | Vendor clearance | Not obtained |
+| Avast safety certification | Not claimed |
 
 ## 2. Owner Confirmation Request
 
 Please confirm the current release-control position:
 
-- Proceeding status is Risk Accepted Go.
+- Commit `862d58c` records the Avast latest-definition rescan evidence
+  reflection for the current local review record.
+- The latest rescan result is `Detection not reproduced`.
+- `Detection not reproduced` is local technical evidence only. It is separate
+  from Avast vendor clearance, Avast safety certification, and release
+  authorization.
 - Avast vendor response remains pending.
 - Vendor clearance has not been obtained.
-- Local final verification checks passed.
-- The GitHub Release recorded published identity remains authoritative.
-- The local regenerated `dist` ZIP is non-authoritative and will not replace
-  the published artifact.
+- Avast safety certification is not claimed.
+- Release remains blocked.
+- Release authorization requires a separately recorded responsible-owner
+  approval or owner risk acceptance before any release-path operation can
+  proceed.
 - Release / tag / publication / distribution remain blocked unless separately
   authorized.
 
@@ -50,10 +56,15 @@ position only. It does not authorize a release, tag, publication,
 distribution, package or `dist` update, ZIP rebuild, replacement artifact,
 Live E2E, Google Docs mutation, Google Drive mutation, OAuth/token-store or
 credential operation, Avast operation, flagged executable re-run, production
-code change, test change, Frozen specification change, public API change, or
-push.
+code change, test change, Frozen specification change, public API change,
+stage, commit, or push.
 
 If the owner wants to replace the published artifact, restore the local
 published artifact, rebuild the artifact, proceed to a release-path operation,
 or update external release state, a separate explicit authorization record is
 required before that operation begins.
+
+The prohibited boundary is unchanged by the latest-definition rescan evidence
+reflection: this memo performs no release, tag, publication, distribution,
+package or `dist` update, Live E2E, Google Docs or Google Drive mutation,
+flagged executable re-run, stage, commit, or push.
