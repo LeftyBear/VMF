@@ -161,6 +161,12 @@ future Avast response safely. The template addition itself does not mean a
 response was received, does not create vendor clearance, and does not change
 ADR-0019 into Avast safety certification.
 
+Vendor clearance must be treated as an evidence-and-approval determination for
+the selected artifact identity. It requires latest-definition rescan evidence,
+detection-removal or non-reproduction evidence, and responsible-owner approval.
+Avast silence does not mean approval, safety confirmation, release
+authorization, or vendor clearance.
+
 ### 5.2 Workstream Separation After Hold Lift
 
 Keep each workstream separate after Release Hold lift:
@@ -169,8 +175,8 @@ Keep each workstream separate after Release Hold lift:
 | --- | --- |
 | Allowed local-only work | Documentation updates, read-only investigation, source build, unit tests, non-live integration tests with Live E2E disabled, mock-backed verification, dry-run checks that do not publish or execute the flagged package, and static existing-package inspection when explicitly in scope. |
 | Gated release/live/mutation work | Final verification, Live E2E, result review, package or `dist` writes, tagged release work, publication, Google Docs or Google Drive mutation, token-store mutation, temporary public image hosting, and flagged executable re-run require the fixed ADR-0019 order and separate authorization. |
-| Avast-response intake work | Record only a received vendor response, artifact identity, SHA-256, classification, redaction review, and decision in `Publisher_AvastResponseIntakeTemplate.md`; vendor clearance remains not obtained until a future response explicitly supports it. |
-| Vendor-clearance-dependent work | Do not treat vendor clearance as obtained. The release path relies on ADR-0019 VMF residual risk acceptance unless a future Avast response changes the vendor-clearance record. |
+| Avast-response intake work | Record only a received vendor response, artifact identity, SHA-256, classification, redaction review, and decision in `Publisher_AvastResponseIntakeTemplate.md`; a response can support vendor clearance only when the ADR-0003 evidence and owner-approval criteria are also satisfied. |
+| Vendor-clearance-dependent work | Do not treat vendor clearance as obtained until latest-definition rescan evidence, detection-removal or non-reproduction evidence, and responsible-owner approval are recorded. The release path relies on ADR-0019 VMF residual risk acceptance unless a future record changes the vendor-clearance state. |
 | Final release-resume work | Proceed in fixed order: final verification, Live E2E, result review, package/dist, tag/release. |
 
 ## 6. Local Verification

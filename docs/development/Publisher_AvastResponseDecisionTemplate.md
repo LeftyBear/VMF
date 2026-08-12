@@ -4,10 +4,11 @@ Status  : Template ready / no Avast response recorded / vendor clearance not obt
 Scope   : Docs-only / local-only decision template for future Avast response review
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_ReleaseApprovalPackage.md
 
-This template is used only after an Avast response is received, redacted,
-recorded, and reviewed against the exact selected artifact identity. It decides
-whether the response can be treated as vendor clearance, requires additional
-clarification, is rejected as insufficient, or remains pending.
+This template is used after Avast response evidence or Avast-independent
+clearance evidence is received, redacted, recorded, and reviewed against the
+exact selected artifact identity. It decides whether the record can be treated
+as vendor-clearance evidence, requires additional clarification, is rejected as
+insufficient, or remains pending.
 
 Creating or filling this template does not authorize release, tag creation,
 publication, package or `dist` updates, Live E2E, Google Docs or Google Drive
@@ -20,9 +21,10 @@ safety certification, publication authorization, tag authorization, package
 authorization, Live E2E authorization, Google Docs / Drive mutation
 authorization, or flagged executable re-run authorization.
 
-Default state before an actual reviewed response: Avast pending, vendor
-clearance not obtained, and release block continues for vendor-clearance
-purposes.
+Default state before completed evidence review and responsible-owner approval:
+Avast pending, vendor clearance not obtained, and release block continues for
+vendor-clearance purposes. Avast silence is not approval, safety confirmation,
+release authorization, or vendor clearance.
 
 ## 1. Response Identity
 
@@ -57,6 +59,9 @@ Leave unknown, missing, blocked, or deferred evidence as `PENDING`, `BLOCKED`,
 | Detection name recorded | PENDING | Record the exact detection name, or record that no detection name was supplied. |
 | False-positive treatment explicitly stated | PENDING | The response must explicitly classify the selected detection or selected artifact as a false positive to support vendor clearance. |
 | Allowlist / whitelist / detection removal status recorded | PENDING | Record whether Avast states that allowlisting, whitelisting, detection removal, or equivalent remediation has occurred. |
+| Latest-definition rescan recorded | PENDING | Record the scanner, definition/version date, artifact identity, and result. |
+| Detection removal or non-reproduction evidence recorded | PENDING | Record removal evidence or directly verified non-reproduction evidence for the selected artifact identity. |
+| Responsible-owner approval recorded | PENDING | Required before vendor clearance can be accepted. |
 | Additional submission request recorded | PENDING | Record any request for a new file, ZIP, executable, logs, environment data, or reproduction steps. |
 | Release gate impact recorded | PENDING | Record whether the release block continues, clarification is required, or vendor-clearance evidence may be accepted. |
 | Redaction review complete | PENDING | Confirm the record excludes secrets, private URLs, raw provider payloads, local secret paths, and unsafe logs. |
@@ -68,7 +73,7 @@ Select exactly one decision category.
 
 | Decision Category | Selected | Required Interpretation |
 | --- | --- | --- |
-| Vendor clearance accepted |  | Avast explicitly confirms false-positive treatment, detection removal, allowlist / whitelist, or equivalent vendor action for the selected artifact identity and version. This may satisfy the vendor-clearance evidence requirement only. It does not authorize release, tag, publication, package or `dist` work, Live E2E, Google Docs / Drive mutation, or flagged executable re-run. |
+| Vendor clearance accepted |  | The reviewed record includes latest-definition rescan evidence, detection-removal or non-reproduction evidence, and responsible-owner approval for the selected artifact identity and version. Avast confirmation, when received, may support this record. This may satisfy the vendor-clearance evidence requirement only. It does not authorize release, tag, publication, package or `dist` work, Live E2E, Google Docs / Drive mutation, or flagged executable re-run. |
 | Clarification required |  | Avast response is relevant but incomplete, ambiguous, missing artifact/version match, missing detection-name treatment, or requests more information. Release block continues for vendor-clearance purposes until clarification is received and reviewed. |
 | Rejected / not sufficient |  | Avast preserves the detection, does not classify the selected artifact as a false positive, addresses the wrong artifact/version, only acknowledges receipt, only describes generic scanner behavior, or cannot be safely used after redaction. Release block continues for vendor-clearance purposes. |
 | Still pending |  | No substantive Avast response has been received, the response is only an automated acknowledgement, or the received material has not yet been redacted, recorded, and reviewed. Vendor clearance remains not obtained. |
@@ -78,15 +83,20 @@ Select exactly one decision category.
 `Vendor clearance accepted` requires all of the following:
 
 - exact selected artifact path, version, and SHA-256 are recorded;
-- response scope matches the selected artifact identity or clearly covers that
-  artifact;
-- detection name is recorded, or the response explicitly states that no
+- latest-definition rescan evidence is recorded for that artifact identity;
+- detection removal or directly verified non-reproduction evidence is recorded;
+- if an Avast response is used, response scope matches the selected artifact
+  identity or clearly covers that artifact;
+- detection name is recorded, or the evidence explicitly states that no
   detection remains for the selected artifact;
 - Avast explicitly states false-positive handling, detection removal,
-  allowlist / whitelist, or equivalent vendor action;
+  allowlist / whitelist, or equivalent vendor action when an Avast response is
+  used as clearance evidence;
 - no additional submission request remains open for the same decision;
 - redaction review is complete;
 - release gate impact is recorded as vendor-clearance evidence only;
+- responsible-owner approval of the vendor-clearance determination is
+  recorded;
 - a separate owner release-control decision identifies the next allowed gate,
   if any.
 

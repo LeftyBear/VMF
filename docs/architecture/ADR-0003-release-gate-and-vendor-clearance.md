@@ -51,6 +51,23 @@ prohibited:
 The current state is release blocked. Avast false-positive handling remains
 pending. Vendor clearance has not been obtained.
 
+Vendor clearance is an evidence-and-approval determination, not merely an
+Avast-response waiting state. It may be recorded only when the applicable
+release records contain all of the following for the exact selected artifact
+identity:
+
+- latest-definition rescan evidence;
+- evidence that detection has been removed or that the detection is not
+  reproducible;
+- responsible-owner approval of the vendor-clearance determination.
+
+An explicit Avast response can satisfy part of this evidence set when it
+matches the selected artifact identity, but silence from Avast does not mean
+approval, safety confirmation, release authorization, or vendor clearance.
+Until the evidence and responsible-owner approval are both recorded, release
+records must preserve `release blocked`, `Avast pending`, `vendor clearance not
+obtained`, and `Hold` or the applicable current hold-equivalent state.
+
 This ADR does not grant release authorization, does not obtain vendor
 clearance, does not resolve the Avast false-positive review, and does not
 accept antivirus risk. Those outcomes must be recorded separately through the

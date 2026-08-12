@@ -78,8 +78,9 @@ to the runbook and all required evidence is recorded.
 The minimum resume conditions are:
 
 - Avast false-positive handling is complete for the exact selected artifact;
-- vendor clearance is explicitly obtained, or another repository-owner
-  decision path recorded by ADR-0003 is explicitly completed;
+- vendor clearance is explicitly obtained through the ADR-0003 evidence and
+  responsible-owner approval criteria, or another repository-owner decision
+  path recorded by ADR-0003 is explicitly completed;
 - the runbook resume gate is reread and revalidated before release-path work
   continues;
 - required re-verification completes within the newly authorized scope;
@@ -88,6 +89,12 @@ The minimum resume conditions are:
   release execution.
 
 Authorization for one gate does not authorize any other gate.
+
+No Avast response, including no response at all, is sufficient by itself to
+clear the hard stop. Until latest-definition rescan evidence, detection-removal
+or non-reproduction evidence, and responsible-owner approval are recorded for
+the selected artifact identity, the release boundary must continue to preserve
+the blocked or hold-equivalent vendor-clearance state.
 
 ## Relationship To Other ADRs
 

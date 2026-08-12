@@ -167,8 +167,11 @@ Phase 4 work may begin only when all of the following remain true:
 
 The Avast pending risk can be closed only by recording one of these outcomes:
 
-- Avast confirms the package or executable is not malicious and the repository
-  owner approves release continuation.
+- Vendor-clearance evidence is accepted for the selected artifact identity:
+  latest-definition rescan evidence is recorded, detection removal or
+  non-reproduction is evidenced, and the responsible owner approves the
+  vendor-clearance determination. An Avast response can support this record,
+  but Avast silence cannot.
 - Avast continues to classify the executable as unsafe and the repository owner
   rejects release continuation or requires remediation.
 - The repository owner explicitly accepts the AV exception posture without

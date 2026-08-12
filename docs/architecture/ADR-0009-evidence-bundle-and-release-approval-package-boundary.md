@@ -69,6 +69,14 @@ If the Avast response has not been received and recorded in
 `docs/development/Publisher_AvastResponseIntakeTemplate.md`, the default
 decision remains `Hold continues`.
 
+Vendor-clearance evidence must not be inferred from a single evidence type.
+For the selected artifact identity, the approval package must preserve the
+vendor-clearance hold until it records latest-definition rescan evidence,
+detection-removal or non-reproduction evidence, and responsible-owner approval.
+An Avast response may be part of that record when received and reviewed, but
+Avast silence is not approval, safety confirmation, release authorization, or
+vendor clearance.
+
 ## Relationship To Other ADRs
 
 ADR-0003 records the release gate and vendor-clearance governance basis:
@@ -121,6 +129,11 @@ If no Avast response is recorded, release records must preserve `Hold
 continues`. They must not infer vendor clearance from silence, local-only
 verification, static review, evidence organization, or approval-package
 preparation.
+
+If no Avast response is recorded but rescan and non-reproduction evidence
+exists, release records still must preserve `Hold continues` for
+vendor-clearance purposes until the responsible owner explicitly approves the
+vendor-clearance determination or records a separate ADR-0003 risk decision.
 
 ## Status History
 
