@@ -136,17 +136,17 @@ details.
 
 | Field | Value |
 | --- | --- |
-| Rescan evidence record date |  |
-| Scan date/time |  |
-| Scan timezone / UTC timestamp |  |
-| Scanner vendor |  |
-| Scanner product |  |
-| Scanner product version |  |
-| Definition / signature version |  |
-| Scan mode |  |
-| Scan environment summary |  |
-| Operator |  |
-| Operation authorization reference |  |
+| Rescan evidence record date | 2026-08-12 |
+| Scan date/time | 2026-08-12T17:38:40+09:00 |
+| Scan timezone / UTC timestamp | Asia/Tokyo / 2026-08-12T08:38:40Z |
+| Scanner vendor | Avast |
+| Scanner product | Avast Antivirus |
+| Scanner product version | 26.7.11086.1051 (`AvastUI.exe`) / 26.7.11086.0 (`ashQuick.exe`) |
+| Definition / signature version | VPS `26081104`; VPSVersion `18`; VPSType `production`; stream definition directories observed through `26081202_stream` |
+| Scan mode | Local static quick scan using `ashQuick.exe` against the selected ZIP file |
+| Scan environment summary | Local Windows environment; Avast services running; definition state read from Avast local definition files after update attempts; no package, `dist`, release, tag, publication, Live E2E, Google Docs, or Google Drive mutation performed. |
+| Operator | Codex / VMF |
+| Operation authorization reference | User request dated 2026-08-12 for docs-only / local-only Avast latest-definition rescan evidence capture; release / tag / publication / distribution, package / `dist` updates, Live E2E, and Google Docs / Drive mutation prohibited. |
 
 ### 4.2 Scanned Artifact Identity
 
@@ -160,16 +160,16 @@ rechecked for this evidence entry.
 
 | Field | Value |
 | --- | --- |
-| Release / package version |  |
-| Scanned artifact name |  |
-| Scanned artifact path or source |  |
-| Artifact role |  |
-| Artifact size |  |
+| Release / package version | 0.0.1-dev |
+| Scanned artifact name | `vmf-publisher-0.0.1-dev-win-x64.zip` |
+| Scanned artifact path or source | `dist/release/Publisher/vmf-publisher-0.0.1-dev-win-x64.zip` |
+| Artifact role | Existing local `dist` ZIP selected for static Avast rescan |
+| Artifact size | 983422 bytes |
 | File hash algorithm | SHA-256 |
-| File hash |  |
-| Package / release identity reference |  |
-| Target commit or tag, if applicable |  |
-| Previous detection name |  |
+| File hash | `0174810D21C6072B8206ACF2FED90B72C2E6BE499C65B231D7D72D71FD69CB76` |
+| Package / release identity reference | Local existing `dist` ZIP only. This is not the published GitHub Release asset identity, previously recorded as 983404 bytes / SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`. |
+| Target commit or tag, if applicable | `d3a71a0` |
+| Previous detection name | `IDP.HELU.PSD11` |
 
 Record only safe paths or source labels. Do not record local absolute paths
 that expose usernames, token stores, credential locations, or private
@@ -182,7 +182,7 @@ Select exactly one current result and leave the others blank.
 | Result | Selected | Required Evidence Reference | Required Interpretation |
 | --- | --- | --- | --- |
 | Detection removed |  |  | Latest-definition scan did not report the previous detection for the exact scanned artifact identity. This supports review only; responsible-owner approval is still required before any vendor-clearance determination changes. |
-| Detection not reproduced |  |  | Latest-definition scan or authorized reproduction evidence did not reproduce the previous detection for the exact scanned artifact identity. This supports review only; it is not Avast vendor clearance by itself. |
+| Detection not reproduced | YES | `docs/evidence/publisher/0.0.1-dev/20260812-false-positive-appeal/publisher-0.0.1-dev-local-dist-zip-avast-latest-definition-rescan-20260812.md` | Latest-definition scan or authorized reproduction evidence did not reproduce the previous detection for the exact scanned artifact identity. This supports review only; it is not Avast vendor clearance by itself. |
 | Still detected |  |  | Latest-definition scan still reports a detection for the exact scanned artifact identity. Hold continues unless a separate responsible-owner risk decision or remediation path is recorded. |
 | Inconclusive / mismatch |  |  | Artifact identity, scanner identity, definition version, result text, or evidence reference is missing, ambiguous, or mismatched. Hold continues. |
 | Not executed |  |  | Rescan was not authorized or not performed. Hold continues. |
@@ -190,19 +190,34 @@ Select exactly one current result and leave the others blank.
 Latest scan result summary:
 
 ```text
-
+Avast update attempts were performed before the scan. `ashUpd.exe vps` timed
+out once after 120 seconds, and a second attempt ended with "The operation was
+canceled by the user"; definition state was then read locally as VPS
+`26081104`, VPSVersion `18`, VPSType `production`, with stream definition
+directories observed through `26081202_stream`. The selected artifact was the
+existing local `dist` ZIP
+`dist/release/Publisher/vmf-publisher-0.0.1-dev-win-x64.zip`, size 983422
+bytes, SHA-256
+`0174810D21C6072B8206ACF2FED90B72C2E6BE499C65B231D7D72D71FD69CB76`.
+`ashQuick.exe` returned exit code 0 with empty standard output and empty
+standard error. No Avast deletion, quarantine event, block message, or
+`IDP.HELU.PSD11` detection was observed during the command run. This is local
+technical evidence only and does not establish Avast vendor clearance, Avast
+safety certification, responsible-owner approval, release authorization,
+package approval, tag authorization, publication authorization, or distribution
+authorization.
 ```
 
 ### 4.4 Evidence References
 
 | Evidence Type | Reference | Redaction Reviewed | Notes |
 | --- | --- | --- | --- |
-| Screenshot |  | PENDING |  |
-| Scanner log |  | PENDING |  |
+| Screenshot | Not captured | N/A | Scan command returned exit code 0 with no visible screenshot evidence captured. |
+| Scanner log | `docs/evidence/publisher/0.0.1-dev/20260812-false-positive-appeal/publisher-0.0.1-dev-local-dist-zip-avast-latest-definition-rescan-20260812.md` | YES | Sanitized command/result record; no raw Avast private logs stored. |
 | Vendor portal result |  | PENDING |  |
 | Quarantine / history readback |  | PENDING |  |
-| Hash computation record |  | PENDING |  |
-| Evidence Bundle entry |  | PENDING |  |
+| Hash computation record | `docs/evidence/publisher/0.0.1-dev/20260812-false-positive-appeal/publisher-0.0.1-dev-local-dist-zip-sha256-20260812.md` | YES | Records SHA-256 for the exact scanned local ZIP, not the executable inside the ZIP. |
+| Evidence Bundle entry | `docs/evidence/publisher/0.0.1-dev/20260812-false-positive-appeal/publisher-0.0.1-dev-local-dist-zip-avast-latest-definition-rescan-20260812.md` | YES | Local latest-definition static rescan evidence record. |
 
 The minimum evidence reference for a completed latest-definition rescan entry is
 one redacted scan-result reference plus one hash computation record. Use
@@ -220,7 +235,14 @@ payloads, or screenshots/logs that expose unrelated private content.
 Record only sanitized notes needed to understand the rescan evidence.
 
 ```text
-
+The scanned artifact was the existing local `dist` ZIP, not the published
+GitHub Release asset and not `vmf-publisher.exe` inside the ZIP. The recorded
+SHA-256 is therefore package-file hash evidence for the exact scanned ZIP only.
+The updater did not produce a clean successful completion record; the recorded
+definition/signature state is the locally observed Avast definition state after
+the update attempts. Detection was not reproduced by the static quick scan, but
+vendor clearance remains not obtained and Avast safety certification is not
+claimed.
 ```
 
 ### 4.6 Responsible-Owner Review
@@ -233,8 +255,8 @@ Record only sanitized notes needed to understand the rescan evidence.
 | Scanner and definition version accepted for review | PENDING |
 | Evidence references accepted for review | PENDING |
 | Determination | Hold continues |
-| Determination basis |  |
-| Follow-up required |  |
+| Determination basis | Local latest-definition static rescan evidence was captured for the exact local ZIP artifact identity, but responsible-owner review remains separate and Avast vendor clearance is not obtained. |
+| Follow-up required | Responsible-owner review is required before accepting or rejecting this local evidence for any gate decision; vendor response or explicit owner decision remains separate. |
 
 Allowed determinations:
 

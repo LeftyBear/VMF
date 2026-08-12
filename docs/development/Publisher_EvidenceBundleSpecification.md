@@ -320,6 +320,17 @@ for the exact artifact identity during the evidence review. If no rescan was
 authorized or performed, record `NOT EXECUTED` or `BLOCKED` and preserve `Hold
 continues`.
 
+Current local rescan evidence reference:
+
+- `docs/evidence/publisher/0.0.1-dev/20260812-false-positive-appeal/publisher-0.0.1-dev-local-dist-zip-avast-latest-definition-rescan-20260812.md`;
+- `docs/evidence/publisher/0.0.1-dev/20260812-false-positive-appeal/publisher-0.0.1-dev-local-dist-zip-sha256-20260812.md`.
+
+These references identify the existing local `dist` ZIP static scan and hash
+record only. They do not identify the published GitHub Release asset or the
+executable inside the ZIP, and they do not establish release authorization,
+package approval, publication approval, Avast vendor clearance, or Avast safety
+certification.
+
 ### 3.10 Hold And Resume Conditions
 
 The bundle must preserve the current release hold and resume conditions.
