@@ -1,6 +1,6 @@
 # Publisher Release Approval Package
 
-Status  : Risk Accepted Go; responsible-owner release-gate approval recorded; Avast response pending
+Status  : NO-GO; next operation authorization pending; Avast response pending
 Scope   : Docs-only / local-only release approval package organization after explicit owner risk acceptance
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_TestClassification.md, docs/distribution/PublisherReleaseRunbook.md
 
@@ -28,8 +28,8 @@ OAuth/token-store/credentials, or perform any Avast operation.
 
 | Item | State |
 | --- | --- |
-| Formal release state | NO-GO / downstream identity synchronized; release execution gate re-evaluation pending |
-| Approval recommendation | NO-GO until the release execution gate is re-evaluated after downstream identity synchronization; subsequent release, tag, publication, distribution, package/dist, Live E2E, Google Docs / Drive, and flagged executable operations remain separately gated |
+| Formal release state | NO-GO / next operation authorization pending |
+| Approval recommendation | NO-GO until a separate next-operation authorization is recorded; release execution gate re-evaluation passed identity, approval, final verification, and published artifact checks, but package/dist, tag, publication, distribution, Live E2E, Google Docs / Drive, and flagged executable operations remain separately gated |
 | Avast false-positive handling | Vendor response pending; latest authorized latest-definition rescan did not reproduce the detection; responsible-owner approval recorded for the current release-control assessment |
 | Vendor clearance | Accepted for release-gate purposes under documented evidence-based criteria; Avast direct response remains pending |
 | Avast safety certification | Not claimed |
@@ -160,6 +160,7 @@ The build passed after serial rerun with warnings 0 / errors 0.
 | `docs/distribution/PublisherReleaseRunbook.md` | Draft | Defines release operation sequencing and authorization gates. |
 | `docs/distribution/ReleaseChecklist.md` | Existing release checklist plus release completion record | Preserves completed `0.0.0-dev` evidence and records `0.0.1-dev` annotated tag object, peeled/package target commit, evidence docs commit, GitHub prerelease URL, asset identity, remote/local digest match, package generation PASS, and package verification PASS. |
 | `docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md` | Canonical identity reconciliation | Records `0.0.1-dev` / `publisher-v0.0.1-dev`, target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`, GitHub Release URL, asset name, 983422 bytes, SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`, and NO-GO until downstream synchronization and release execution gate re-evaluation. |
+| `docs/development/Publisher_ReleaseExecutionGateReevaluationRecord_2026-08-12.md` | Release execution gate re-evaluation | Records canonical identity consistency `PASS`, responsible-owner approval / release-gate `PASS`, final verification and published artifact verification `PASS`, next-operation authorization `BLOCKED`, and final decision `NO-GO / next operation authorization pending`. |
 | `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Release completion notes synchronized | Records canonical `0.0.1-dev` / `publisher-v0.0.1-dev` / 983422 byte / `0174810d...` identity and preserves older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` facts only as historical / superseded / non-canonical identity evidence. |
 
 No new publication or vendor-clearance evidence is created by this approval
