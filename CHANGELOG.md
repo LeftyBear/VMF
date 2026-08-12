@@ -9,6 +9,19 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Changed
 
 - Added
+  `docs/development/Publisher_NextOperationAuthorizationScopeRecord_2026-08-12.md`
+  as the docs-only next-operation authorization scope selection after release
+  execution gate re-evaluation. The selected target is final verification /
+  release execution completion decision for the existing canonical prerelease
+  only. New package or `dist` creation, tag operation, GitHub Release update,
+  asset replacement, publication rerun, Live E2E, Google Docs / Drive
+  mutation, OAuth/token-store operation, Avast operation, and flagged
+  executable re-run remain excluded. Updated current status, the release
+  approval package, and the Voyage Log to preserve earlier Risk Accepted Go
+  records as historical decisions while keeping the current decision
+  `NO-GO / operation-specific authorization pending`.
+
+- Added
   `docs/development/Publisher_ReleaseExecutionGateReevaluationRecord_2026-08-12.md`
   as the docs-only release execution gate re-evaluation after canonical
   identity synchronization. The record confirms canonical identity consistency,

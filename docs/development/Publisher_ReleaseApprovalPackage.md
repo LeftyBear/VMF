@@ -30,6 +30,7 @@ OAuth/token-store/credentials, or perform any Avast operation.
 | --- | --- |
 | Formal release state | NO-GO / next operation authorization pending |
 | Approval recommendation | NO-GO until a separate next-operation authorization is recorded; release execution gate re-evaluation passed identity, approval, final verification, and published artifact checks, but package/dist, tag, publication, distribution, Live E2E, Google Docs / Drive, and flagged executable operations remain separately gated |
+| Next operation authorization target | Selected as final verification / release execution completion decision for the existing canonical prerelease only; this selection grants no authorization and excludes new package/dist work plus tag/publication rerun. |
 | Avast false-positive handling | Vendor response pending; latest authorized latest-definition rescan did not reproduce the detection; responsible-owner approval recorded for the current release-control assessment |
 | Vendor clearance | Accepted for release-gate purposes under documented evidence-based criteria; Avast direct response remains pending |
 | Avast safety certification | Not claimed |
@@ -42,7 +43,7 @@ OAuth/token-store/credentials, or perform any Avast operation.
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
 | Release readiness | Completed for the `0.0.1-dev` GitHub prerelease; release completion evidence recorded docs-only |
 | Release identity | Canonical current identity: `0.0.1-dev` / `publisher-v0.0.1-dev`; annotated tag object `04a101729dbab431f9e67e1b7e43e6b9a94dd6e0`; target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`; see `docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md`. Older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` records are historical / superseded / non-canonical. |
-| Final verification | Local checks passed on 2026-08-12; release execution gate remains NO-GO until downstream identity synchronization is reviewed against the canonical published artifact identity |
+| Final verification | Local checks passed on 2026-08-12; release execution gate re-evaluation is recorded, and the next selected authorization target is final verification / release execution completion decision for the existing canonical prerelease only |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
 | Result review | Recorded; initial Live E2E failure was attributed to stale, revoked, or inconsistent saved OAuth token state; rerun passed after token deletion and OAuth Desktop reauthorization |
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
@@ -90,7 +91,13 @@ gate.
 
 ## 2.1 Risk Accepted Go Basis
 
-Approval Recommendation = Risk Accepted Go.
+Historical decision: Approval Recommendation = Risk Accepted Go.
+
+This section preserves the earlier owner-risk-acceptance decision as
+accepted-at-the-time evidence for the previous release-path execution
+sequence. It does not overwrite the current formal state in Section 1, which
+remains `NO-GO / next operation authorization pending` until a separate
+operation-specific authorization is recorded.
 
 Basis:
 
@@ -161,6 +168,7 @@ The build passed after serial rerun with warnings 0 / errors 0.
 | `docs/distribution/ReleaseChecklist.md` | Existing release checklist plus release completion record | Preserves completed `0.0.0-dev` evidence and records `0.0.1-dev` annotated tag object, peeled/package target commit, evidence docs commit, GitHub prerelease URL, asset identity, remote/local digest match, package generation PASS, and package verification PASS. |
 | `docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md` | Canonical identity reconciliation | Records `0.0.1-dev` / `publisher-v0.0.1-dev`, target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`, GitHub Release URL, asset name, 983422 bytes, SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`, and NO-GO until downstream synchronization and release execution gate re-evaluation. |
 | `docs/development/Publisher_ReleaseExecutionGateReevaluationRecord_2026-08-12.md` | Release execution gate re-evaluation | Records canonical identity consistency `PASS`, responsible-owner approval / release-gate `PASS`, final verification and published artifact verification `PASS`, next-operation authorization `BLOCKED`, and final decision `NO-GO / next operation authorization pending`. |
+| `docs/development/Publisher_NextOperationAuthorizationScopeRecord_2026-08-12.md` | Next operation authorization scope selection | Selects final verification / release execution completion decision for the existing canonical prerelease as the only next authorization target; grants no authorization and keeps `NO-GO / operation-specific authorization pending`. |
 | `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Release completion notes synchronized | Records canonical `0.0.1-dev` / `publisher-v0.0.1-dev` / 983422 byte / `0174810d...` identity and preserves older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` facts only as historical / superseded / non-canonical identity evidence. |
 
 No new publication or vendor-clearance evidence is created by this approval
@@ -199,7 +207,10 @@ existing-package inspection when explicitly in scope.
 The following future operations remain gated and must follow ADR-0019 order or
 a later operation-specific authorization:
 
-- final verification for a new decision;
+- final verification / release execution completion decision for the existing
+  canonical prerelease, which is the selected next authorization target but is
+  not yet authorized;
+- final verification for any other new decision;
 - Live E2E for a new decision;
 - result review for a new decision;
 - package creation, replacement, update, or any new `dist` write;
@@ -218,6 +229,10 @@ a later operation-specific authorization:
   formats, or Frozen specifications.
 
 ## 6. Risk Accepted Go Execution Conditions
+
+This section preserves historical execution-order rules for the earlier Risk
+Accepted Go path. It does not grant current authorization and does not replace
+the Section 1 `NO-GO / next operation authorization pending` state.
 
 Release-path work under Risk Accepted Go may proceed only in this order, with
 each step separately authorized and recorded:
@@ -340,8 +355,17 @@ certification.
 
 ## 9. Approval Recommendation
 
-Approval Recommendation = Risk Accepted Go; this docs-only update does not
-perform release execution.
+Historical decision: Approval Recommendation = Risk Accepted Go.
+
+Current recommendation: `NO-GO / next operation authorization pending`.
+
+The Risk Accepted Go recommendation is retained as historical evidence for the
+previous release-path sequence. It does not overwrite the current formal
+release state, does not authorize a new package or `dist` operation, does not
+authorize tag or publication rerun, and does not authorize the selected next
+operation until a separate operation-specific authorization record is created.
+
+This docs-only update does not perform release execution.
 
 Basis:
 

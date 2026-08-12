@@ -2720,6 +2720,39 @@ operate on Avast, run or re-run flagged executables, claim vendor clearance,
 claim Avast safety certification, stage changes, commit changes, or push
 commits.
 
+## Publisher 0.0.1-dev Next Operation Authorization Scope Selection
+
+Status: NO-GO / operation-specific authorization pending.
+
+Added
+`docs/development/Publisher_NextOperationAuthorizationScopeRecord_2026-08-12.md`
+as a docs-only scope selection record for the next operation authorization
+target.
+
+The selected next operation is final verification / release execution
+completion decision for the existing canonical prerelease only.
+
+This is the minimum next operation target because the existing canonical
+prerelease is already published as `publisher-v0.0.1-dev`, and the canonical
+asset identity remains `vmf-publisher-0.0.1-dev-win-x64.zip`, 983422 bytes,
+SHA-256
+`0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`.
+
+Earlier Risk Accepted Go records remain historical decisions for the previous
+release-path execution sequence. They do not overwrite the current formal
+state and do not authorize the selected next operation.
+
+Current decision remains `NO-GO / operation-specific authorization pending`
+until a separate authorization record explicitly grants this selected
+operation.
+
+This documentation update did not create, rebuild, replace, verify, or publish
+packages, modify `dist`, create, move, retarget, delete, or push tags, create
+or update GitHub Release records or assets, publish artifacts, run Live E2E,
+mutate Google Docs or Google Drive, operate on OAuth or token stores, operate
+on Avast, run or re-run flagged executables, claim vendor clearance, claim
+Avast safety certification, stage changes, commit changes, or push commits.
+
 ## Publisher vNext Backlog Reprioritization
 
 Status: RECORDED as docs-only backlog reprioritization.
