@@ -8,6 +8,20 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Added
+  `docs/development/Publisher_ResponsibleOwnerApprovalReleaseGateReevaluationRecord_2026-08-12.md`
+  as the docs-only responsible-owner approval and release-gate re-evaluation
+  record for the current Publisher release-control assessment. The record
+  marks responsible-owner approval `Approved` and release-gate evaluation
+  `PASS` under documented evidence-based vendor-clearance criteria after the
+  latest-definition Avast rescan evidence confirmed detection
+  non-reproduction. Updated current status, the release approval package, and
+  the prior rescan gate summary with minimal references. This docs-only update
+  does not execute release, tag, publication, distribution, package or `dist`
+  modification, Live E2E, Google Docs or Drive mutation, flagged executable
+  re-run, production code changes, test changes, Frozen specification changes,
+  public API changes, staging, commit, or push.
+
 - Updated `docs/distribution/LiveE2EOperations.md` for the P1-04 docs-only
   Live E2E setup review. The update clarifies per-run authorization,
   OAuth/token-store credential boundaries, cleanup scope, and cross-references

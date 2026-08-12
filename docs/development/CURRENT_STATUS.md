@@ -1,6 +1,6 @@
 # VMF Publisher Current Status
 
-Status  : Risk Accepted Go / Avast response pending / vendor clearance not obtained
+Status  : Risk Accepted Go / responsible-owner release-gate approval recorded / Avast response pending
 Scope   : Current Publisher release-gate and local-verification state
 Depends : docs/development/Publisher_AvastResponseDecisionTemplate.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_TestClassification.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
 
@@ -25,13 +25,13 @@ set only; it is not release execution.
 
 | Item | State |
 | --- | --- |
-| Overall status | Risk Accepted Go / Avast response pending / vendor clearance not obtained |
+| Overall status | Risk Accepted Go / responsible-owner release-gate approval recorded / Avast response pending |
 | Local verification | Complete within the approved local-only safety boundary |
 | Release readiness | Completed for the `0.0.1-dev` GitHub prerelease; release completion evidence recorded docs-only |
 | Release gate | Hold lifted by VMF-side residual risk acceptance; release execution advanced through GitHub prerelease publication |
 | Release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled/package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
-| Avast false positive handling | Vendor response still pending; latest authorized reproducibility verification did not reproduce the detection; responsible owner Go recorded as VMF-side risk acceptance |
-| Vendor clearance | Not obtained |
+| Avast false positive handling | Vendor response still pending; latest authorized latest-definition rescan did not reproduce the detection; responsible-owner approval recorded for the current release-control assessment |
+| Vendor clearance | Accepted for release-gate purposes under documented evidence-based criteria; Avast direct response remains pending |
 | Avast safety certification | Not claimed |
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
 | Avast manual scan / CyberCapture result | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; release ZIP / repo Release exe match; Avast showed "このファイルは安全のようです"; no detection name; `IDP.HELU.PSD11` not reproduced; result `not reproduced`; local manual confirmation only, not vendor clearance |
@@ -43,7 +43,7 @@ set only; it is not release execution.
 | Formal residual-risk release approval memo | `docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md` records Approved VMF-side residual risk acceptance plus release authorization for the fixed `0.0.1-dev` release identity while preserving vendor clearance not obtained and Avast safety certification not claimed. |
 | Final scope confirmation | `docs/development/Publisher_0.0.1-dev_FinalScopeConfirmation_2026-08-12.md` records the docs-only Step 1 confirmation for version `0.0.1-dev`, requested commit `6b418d6094a6cdff81ec2fe52db17c28c1af2dd6`, artifact `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`, and operation exclusions; it performs no release-path operation and does not claim Avast vendor clearance or Avast safety certification. |
 | Release authorization push | Commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a` pushed to `origin/main` by normal non-force push; post-push `HEAD` equaled `origin/main` and working tree was clean |
-| Approval recommendation | Risk Accepted Go recorded; local final verification checks passed; published artifact final verification not complete; Avast response pending; vendor clearance not obtained |
+| Approval recommendation | Release gate PASS under evidence-based vendor-clearance criteria; subsequent release, tag, publication, distribution, package/dist, Live E2E, Google Docs / Drive, and flagged executable operations remain separately gated |
 | Post-hold execution order | final verification -> Live E2E -> result review -> package/dist -> tag/release |
 | Final verification | Local checks passed on 2026-08-12: Release build PASS warnings 0 / errors 0 after transient local execution issue was resolved by serial rerun; Unit tests 492 passed / 0 failed / 0 skipped; non-live Integration tests 16 passed / 0 failed / 0 skipped; project-output dry-run PASS; `dotnet format --verify-no-changes` PASS; docs consistency / prohibited wording search PASS |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
@@ -72,6 +72,7 @@ set only; it is not release execution.
 | Publisher Evidence Bundle Specification | Done as documentation-only evidence bundle design; release state unchanged. |
 | Publisher Preflight Hardening | Done as documentation-only hard-stop consolidation; release state unchanged. |
 | Publisher Release Approval Package | Updated with ADR-0019 result review evidence and later `0.0.1-dev` release completion evidence; final verification PASS, Live E2E PASS, package/dist, tag/release, and publication are recorded complete for `0.0.1-dev`; this docs-only update performs no new release operation. |
+| Publisher Responsible-Owner Approval and Release Gate Re-evaluation Record | Done as documentation-only / local-only release-gate decision record; records responsible-owner approval Approved and release-gate evaluation PASS under evidence-based vendor-clearance criteria after latest-definition Avast rescan evidence confirmed detection non-reproduction. It does not execute release, tag, publication, distribution, package/dist modification, Live E2E, Google Docs / Drive mutation, or flagged executable re-run. |
 | Publisher Residual Risk Release Authorization Approval Memo | Done as documentation-only / local-only formal approval record; records approved VMF-side residual risk acceptance plus release authorization for `0.0.1-dev` without claiming Avast vendor clearance or Avast safety certification and without performing new release-path operations. |
 | Publisher vNext Backlog | Done as documentation-only / local-only backlog record; reprioritized to put next release-path gate basis, Avast outcome intake, go/no-go reconciliation, Live E2E / Google Docs authorization, and artifact audit ahead of evidence hardening and vNext enhancements while preserving published `0.0.1-dev` state and separate authorization gates. Post-release follow-up register now records Avast response decision paths, vendor-clearance status/evidence updates if obtained, adverse-response handling, separate Live E2E / Google Docs / Drive gates, and `0.0.1-dev` vNext candidates without performing release, asset, package, tag, Live E2E, Google, OAuth, Avast, or flagged-executable operations. The completed Avast-independent docs-only items are `P1-01`, `P1-02`, and `P1-04`; the first release-path item remains `P0-01`, blocked until an Avast response is received and reviewed. |
 | Publisher Live E2E Operations | Updated as documentation-only / local-only setup guidance for P1-04. It clarifies per-run authorization, OAuth/token-store credential boundaries, cleanup scope, and cross-references to current status, preflight hard stops, test classification, and the release runbook. This update did not execute Live E2E, set `VMF_PUBLISHER_GOOGLE_E2E=1`, mutate Google Docs or Google Drive, operate on OAuth/token stores/credentials, create cleanup actions, touch package or `dist` output, re-run flagged executables, publish releases, claim vendor clearance, or claim Avast safety certification. |
@@ -329,8 +330,11 @@ classification after a response is recorded: `vendor clearance accepted`,
 The decision template requires artifact/version match, detection name,
 explicit false-positive treatment, allowlist / whitelist / detection-removal
 status, additional-submission status, and release-gate impact before vendor
-clearance may be accepted. No response has been recorded by this docs-only
-update, so Avast pending and vendor clearance not obtained remain unchanged.
+clearance may be accepted. No Avast direct response has been recorded by this
+docs-only update. The later responsible-owner approval and release-gate
+re-evaluation record accepts vendor-clearance evidence for release-gate
+purposes under the documented evidence-based criteria while preserving that
+any subsequent release-path operation remains separately gated.
 
 ## 13. Publisher Test Traceability Matrix
 
@@ -848,10 +852,10 @@ performed by this release completion documentation update.
 ## 25. Publisher Release-Control Owner Confirmation Memo
 
 `docs/development/Publisher_ReleaseControlOwnerConfirmationMemo_2026-08-12.md`
-records the current Publisher release-control position for responsible-owner
-confirmation after the Avast latest-definition rescan evidence reflection. No
-responsible-owner approval or owner risk acceptance for that reflected rescan
-evidence has been recorded.
+records the earlier Publisher release-control position for responsible-owner
+confirmation after the Avast latest-definition rescan evidence reflection. At
+the time that memo was created, no responsible-owner approval or owner risk
+acceptance for that reflected rescan evidence had been recorded.
 
 This memo is not release authorization, tag authorization, publication
 authorization, package or `dist` authorization, Live E2E authorization, Google
@@ -859,12 +863,11 @@ Docs or Google Drive mutation authorization, flagged executable re-run
 authorization, vendor clearance, owner risk acceptance, or Avast safety
 certification.
 
-The release-control state remains unchanged: the latest rescan result is
-`Detection not reproduced`, Avast response remains pending, vendor clearance
-has not been obtained, responsible-owner approval / owner risk acceptance is
-not recorded for the reflected rescan evidence, and any future release-path
-operation requires a separate explicit authorization record after applicable
-gate requirements are satisfied.
+That pending-confirmation state is superseded by
+`docs/development/Publisher_ResponsibleOwnerApprovalReleaseGateReevaluationRecord_2026-08-12.md`.
+The latest rescan result is `Detection not reproduced`, Avast direct response
+remains pending, and responsible-owner approval is now recorded for the current
+release-control assessment.
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive
 mutation, package or distribution artifact creation or update, `dist` write,
@@ -873,3 +876,28 @@ specification change, public API change, vendor clearance, Avast resolution,
 approval expansion, release authorization, tag/release execution
 authorization, GitHub Release creation, or publication was performed by this
 docs-only release-control owner-confirmation memo reference update.
+
+## 26. Publisher Responsible-Owner Approval and Release Gate Re-evaluation Record
+
+`docs/development/Publisher_ResponsibleOwnerApprovalReleaseGateReevaluationRecord_2026-08-12.md`
+records responsible-owner approval `Approved` for the current VMF Publisher
+release-control assessment.
+
+The release gate is re-evaluated as `PASS`, provided the referenced
+latest-definition Avast rescan evidence confirms detection removal /
+non-reproduction and all other required release-gate conditions remain
+satisfied. The previous Avast pending / vendor clearance not obtained hold may
+therefore be closed under the documented evidence-based vendor-clearance
+criteria.
+
+This record supports release-gate clearance only. Any subsequent release, tag,
+publication, distribution, package or `dist` operation, Live E2E, Google Docs
+or Google Drive mutation, or flagged executable re-run must still follow the
+normal release procedure and required final verification.
+
+No release, tag, publication, distribution, package or distribution artifact
+creation or update, `dist` write, Live E2E, Google Docs mutation, Google Drive
+mutation, flagged executable re-run, production code change, test change,
+Frozen specification change, public API change, staging, commit, or push was
+performed by this docs-only responsible-owner approval and release-gate
+re-evaluation record update.

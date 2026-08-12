@@ -1,6 +1,6 @@
 # Publisher Release Approval Package
 
-Status  : Risk Accepted Go; Avast response pending; vendor clearance not obtained
+Status  : Risk Accepted Go; responsible-owner release-gate approval recorded; Avast response pending
 Scope   : Docs-only / local-only release approval package organization after explicit owner risk acceptance
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_TestClassification.md, docs/distribution/PublisherReleaseRunbook.md
 
@@ -28,10 +28,10 @@ OAuth/token-store/credentials, or perform any Avast operation.
 
 | Item | State |
 | --- | --- |
-| Formal release state | Risk Accepted Go / Avast response pending / vendor clearance not obtained |
-| Approval recommendation | Risk Accepted Go recorded; local final verification checks passed; published artifact final verification not complete; Avast response pending; vendor clearance not obtained |
-| Avast false-positive handling | Vendor response pending; latest authorized reproduction verification did not reproduce the detection; responsible owner Go recorded as VMF-side risk acceptance |
-| Vendor clearance | Not obtained |
+| Formal release state | Risk Accepted Go / responsible-owner release-gate approval recorded / Avast response pending |
+| Approval recommendation | Release gate PASS under evidence-based vendor-clearance criteria; subsequent release, tag, publication, distribution, package/dist, Live E2E, Google Docs / Drive, and flagged executable operations remain separately gated |
+| Avast false-positive handling | Vendor response pending; latest authorized latest-definition rescan did not reproduce the detection; responsible-owner approval recorded for the current release-control assessment |
+| Vendor clearance | Accepted for release-gate purposes under documented evidence-based criteria; Avast direct response remains pending |
 | Avast safety certification | Not claimed |
 | Release authorization record | Created and pushed in commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a`; repository synchronization only, not release execution by this docs update |
 | Formal residual-risk release approval memo | `docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md` records Approved VMF-side residual risk acceptance plus release authorization for the fixed `0.0.1-dev` release identity; vendor clearance remains not obtained and Avast safety certification is not claimed |
@@ -145,6 +145,7 @@ The build passed after serial rerun with warnings 0 / errors 0.
 | --- | --- | --- |
 | `docs/development/CURRENT_STATUS.md` | Current status record | Source of the formal current state, published `0.0.1-dev` evidence, unresolved Avast vendor-clearance boundary, and future gated operations. |
 | `docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md` | Approved formal record | Records VMF-side residual risk acceptance plus release authorization for `0.0.1-dev` while preserving Avast vendor clearance not obtained and Avast safety certification not claimed. |
+| `docs/development/Publisher_ResponsibleOwnerApprovalReleaseGateReevaluationRecord_2026-08-12.md` | Approved release-gate record | Records responsible-owner approval and release-gate PASS under evidence-based vendor-clearance criteria after latest-definition Avast rescan evidence confirmed detection non-reproduction. |
 | `docs/development/Publisher_Phase4-3-1_ReleaseReadinessChecklist.md` | Done / DEFERRED release readiness | Confirms local-only evidence does not establish release readiness. |
 | `docs/development/Publisher_Phase4-3-2_ReleaseCandidateVerification.md` | Done / DEFERRED candidate verification | Records that no current candidate artifact verification was executed. |
 | `docs/development/Publisher_Phase4-3-3_ReleaseArtifactAudit.md` | Done / DEFERRED artifact audit | Records missing current artifact audit evidence. |

@@ -3058,3 +3058,32 @@ credentials or token stores, perform cleanup actions, operate the Avast UI,
 change Avast settings, release quarantine, add exclusions, rerun or re-run
 `vmf-publisher.exe`, process an Avast response, obtain vendor clearance, or
 claim Avast safety certification.
+
+## Publisher Responsible-Owner Approval and Release Gate Re-evaluation Record
+
+Status: RECORDED as docs-only / local-only responsible-owner release-gate
+decision record.
+
+Added
+`docs/development/Publisher_ResponsibleOwnerApprovalReleaseGateReevaluationRecord_2026-08-12.md`
+to record responsible-owner approval `Approved` and release-gate evaluation
+`PASS` for the current Publisher release-control assessment. The decision is
+based on the documented latest-definition Avast rescan evidence, detection
+non-reproduction, responsible-owner approval, and existing verification and
+release-control evidence. It is not based solely on receipt or absence of an
+Avast response.
+
+Updated `docs/development/CURRENT_STATUS.md`,
+`docs/development/Publisher_ReleaseApprovalPackage.md`, and
+`docs/development/Publisher_AvastLatestDefinitionRescanReleaseGateSummary_2026-08-12.md`
+with minimal follow-on references.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+execute release, tag, publication, or distribution, modify package or `dist`
+output, run Live E2E, mutate Google Docs or Google Drive, mutate OAuth
+credentials or token stores, operate the Avast UI, change Avast settings,
+release quarantine, add exclusions, rerun or re-run `vmf-publisher.exe`,
+stage, commit, or push.
