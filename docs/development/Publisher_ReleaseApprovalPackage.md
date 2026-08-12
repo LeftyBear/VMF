@@ -48,6 +48,7 @@ OAuth/token-store/credentials, or perform any Avast operation.
 | Package creation or update by this docs update | Not performed; no `dist` write by this documentation-only update |
 | Package path / size / SHA-256 | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
 | Local `dist` ZIP observation | 2026-08-12 static inspection observed local ZIP size 983422 bytes and SHA-256 `395770913D825B578E468C18C45510DA4B7B1BE570338640018E58835BD28768`; this does not match the recorded published identity |
+| Artifact identity reconciliation | GitHub Release asset metadata confirmed the recorded published identity: 983404 bytes and SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; the local `dist` ZIP matches the 2026-08-11 regenerated local ZIP evidence and is not the published artifact |
 | Package generation / verification | PASS / PASS; manifest files 14; secret/static package inspection PASS |
 | GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
 | Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
@@ -124,11 +125,14 @@ post-release observations, and the continuing Avast pending / vendor clearance
 not obtained state without retroactively converting local no-detection evidence
 into vendor clearance.
 
-Final verification local checks passed on 2026-08-12. However, the local
-`dist` ZIP identity does not match the recorded published identity. This run
-does not complete published artifact final verification. Release, tag,
-publication, and distribution remain blocked until artifact identity is
-reconciled or explicitly superseded by an approved artifact rebuild path.
+Final verification local checks passed on 2026-08-12. The local `dist` ZIP
+identity does not match the recorded published identity because it is a later
+regenerated local ZIP. GitHub Release asset metadata confirms the recorded
+published identity as 983404 bytes with SHA-256
+`73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`. The
+local regenerated ZIP must not be used as release evidence or replacement
+artifact unless a separate approved cleanup, restore, or rebuild path is
+recorded.
 
 The initial build failure during this run was a transient local execution
 issue caused by a Release-output DLL lock while build and tests overlapped.

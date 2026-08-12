@@ -48,7 +48,7 @@ set only; it is not release execution.
 | Result review | Recorded in `Publisher_ReleaseApprovalPackage.md`; package generation and verification are recorded; tag/release/publication completion evidence is recorded |
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
 | Package identity | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; package verification PASS |
-| Published artifact final verification | Not complete; local `dist` ZIP identity observed during 2026-08-12 static inspection did not match the recorded published identity, so release artifact identity remains unresolved |
+| Published artifact identity reconciliation | Confirmed on 2026-08-12: GitHub Release asset metadata matches the recorded published identity, 983404 bytes / SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; local `dist` ZIP is a later regenerated local artifact and must not be treated as the published artifact |
 | GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
 | Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
 | Package creation or update by this docs update | Not performed; no `dist` write by this documentation-only update |
