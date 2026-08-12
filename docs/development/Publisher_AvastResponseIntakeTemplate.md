@@ -2,7 +2,7 @@
 
 Status  : No Avast response received; local reproduction not reproduced; owner Risk Accepted Go recorded
 Scope   : Safe intake record for Avast-pending false-positive handling and VMF-side risk acceptance
-Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_PreflightHardening.md, docs/distribution/PublisherReleaseRunbook.md
+Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_0.0.1-dev_ReleaseExecutionGateChecklist_2026-08-11.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
 
 This template is for recording a future Avast false-positive response without
 exposing sensitive data or reopening the release gate by implication. Creating
@@ -15,6 +15,14 @@ specifications.
 Until an actual vendor response is received, redacted, reviewed, and recorded
 against the exact selected artifact identity, vendor clearance remains not
 obtained and Avast safety certification is not claimed.
+
+Use this template together with `Publisher_ReleaseApprovalPackage.md`,
+`Publisher_EvidenceBundleSpecification.md`, `docs/distribution/ReleaseChecklist.md`,
+and, for any future `0.0.1-dev` release-path operation,
+`Publisher_0.0.1-dev_ReleaseExecutionGateChecklist_2026-08-11.md`. These
+cross-links are for audit traceability only; they do not create a vendor
+response, vendor clearance, Avast safety certification, or operation-specific
+approval.
 
 ADR-0019 records VMF-side residual risk acceptance and lifts the Release Hold
 without treating the state as vendor clearance.

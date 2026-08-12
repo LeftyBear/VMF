@@ -2,7 +2,7 @@
 
 Status  : Done
 Scope   : Documentation-only evidence bundle design for Publisher release, security review, false-positive appeal, and internal audit
-Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4-2-1_DiagnosticLoggingSpecification.md, docs/development/Publisher_Phase4-2-2_ErrorHandlingSpecification.md, docs/development/Publisher_Phase4-2-3_RetryPolicySpecification.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
+Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4-2-1_DiagnosticLoggingSpecification.md, docs/development/Publisher_Phase4-2-2_ErrorHandlingSpecification.md, docs/development/Publisher_Phase4-2-3_RetryPolicySpecification.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_0.0.1-dev_ReleaseExecutionGateChecklist_2026-08-11.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
 
 This document defines the intended structure of a VMF Publisher evidence
 bundle. It is documentation only. It does not create or update packages,
@@ -255,6 +255,9 @@ Required references:
 - `docs/development/Publisher_AvastResponseIntakeTemplate.md`;
 - `docs/development/Publisher_ReleaseApprovalPackage.md`;
 - `docs/development/Publisher_TestClassification.md`;
+- `docs/development/Publisher_0.0.1-dev_ReleaseExecutionGateChecklist_2026-08-11.md`,
+  when reviewing future `0.0.1-dev` release-path operations after
+  prerelease publication;
 - relevant Phase 4-3 review records;
 - release notes for the target release, when applicable.
 
