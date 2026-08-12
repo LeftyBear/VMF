@@ -271,6 +271,7 @@ completed `Latest-Definition Rescan Evidence Template` entry from
 
 Required fields:
 
+- evidence file name or bundle-relative storage location;
 - scan date/time, including timezone or UTC timestamp;
 - scanner vendor;
 - scanner product;
@@ -288,18 +289,31 @@ Required fields:
 - operator notes;
 - responsible-owner review and determination.
 
+Recommended local evidence file names should be stable and audit-readable:
+include the release or package version, artifact name or role, scan date, and
+evidence type, for example
+`publisher-0.0.1-dev-vmf-publisher-exe-avast-latest-definition-rescan-YYYYMMDD.<ext>`.
+Store or reference those files only under the local evidence bundle location
+defined in this document, and record bundle-relative paths or stable document
+names instead of local absolute paths.
+
 Allowed interpretations:
 
 - `Detection removed` and `Detection not reproduced` are evidence inputs only.
   They do not create release authorization, package approval, publication
   approval, Avast safety certification, or vendor clearance by themselves.
 - `Still detected`, `Inconclusive / mismatch`, missing definition version,
-  missing artifact identity, missing evidence reference, or missing
-  responsible-owner review preserves `Hold continues` for
+  missing artifact identity or SHA-256, missing evidence storage reference,
+  missing evidence reference, or missing responsible-owner review preserves `Hold
+  continues` for
   vendor-clearance-dependent work.
 - A vendor-clearance determination may change only when the exact selected
   artifact identity, latest-definition scan evidence, detection removal or
   non-reproduction evidence, and responsible-owner approval are all recorded.
+- Owner risk acceptance and responsible-owner approval must be recorded as
+  separate concepts. Owner risk acceptance can authorize a VMF-side exception
+  path; it does not convert local scanner evidence into Avast vendor clearance
+  or Avast safety certification.
 
 Do not call rescan evidence `PASS` unless the evidence was directly verified
 for the exact artifact identity during the evidence review. If no rescan was

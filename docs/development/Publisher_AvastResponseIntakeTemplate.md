@@ -124,6 +124,16 @@ may be recorded only when it is within the separately approved operation.
 
 ### 4.1 Rescan Metadata
 
+Before filling the tables below, create or identify a redacted local evidence
+entry under the evidence bundle location defined by
+`Publisher_EvidenceBundleSpecification.md`. Use a stable file name that includes
+the release or package version, artifact name or role, scan date, and evidence
+type, for example
+`publisher-0.0.1-dev-vmf-publisher-exe-avast-latest-definition-rescan-YYYYMMDD.<ext>`.
+Record the evidence file name or bundle-relative path in section 4.4; do not
+record local absolute paths, private URLs, token-store locations, or account
+details.
+
 | Field | Value |
 | --- | --- |
 | Rescan evidence record date |  |
@@ -139,6 +149,14 @@ may be recorded only when it is within the separately approved operation.
 | Operation authorization reference |  |
 
 ### 4.2 Scanned Artifact Identity
+
+Hash the exact scanned file after selecting the artifact and before recording
+the result. Record `SHA-256` as the file hash algorithm and record the computed
+hash as the `File hash`. If the scanned file is a package, record the package
+hash; if the scanned file is the executable inside a package, record the
+executable hash and link the package or release identity separately. Do not
+reuse a historical hash unless the artifact identity and source have been
+rechecked for this evidence entry.
 
 | Field | Value |
 | --- | --- |
@@ -186,6 +204,13 @@ Latest scan result summary:
 | Hash computation record |  | PENDING |  |
 | Evidence Bundle entry |  | PENDING |  |
 
+The minimum evidence reference for a completed latest-definition rescan entry is
+one redacted scan-result reference plus one hash computation record. Use
+bundle-relative paths or stable document names. If the scan result is captured
+only in a screenshot, record the screenshot file name, the visible scan result
+text, the scanner product/version, and the definition/signature version in the
+metadata above.
+
 Evidence references must be redacted before external sharing. Do not include
 tokens, private URLs, local secret-bearing paths, account details, raw provider
 payloads, or screenshots/logs that expose unrelated private content.
@@ -220,12 +245,18 @@ Allowed determinations:
 - `Escalation required`;
 - `No decision`.
 
-The default determination is `Hold continues`. Until latest-definition rescan
-evidence, detection removal or non-reproduction evidence, and responsible-owner
-approval are all recorded for the exact selected artifact identity, Hold
-continues for vendor-clearance-dependent work. This section does not authorize
-release, tag creation, publication, package or `dist` work, Live E2E, Google
-Docs or Google Drive mutation, or flagged executable re-run.
+The default determination is `Hold continues`. Latest-definition rescan evidence
+is a technical evidence input; responsible-owner approval is the separate review
+decision that may accept or reject that input for the selected artifact
+identity. A vendor-clearance determination may change only after the exact
+artifact identity, SHA-256, scanner product/version, definition/signature
+version, scan result, evidence references, and responsible-owner approval are
+all recorded. Owner risk acceptance may authorize a VMF-side exception path, but
+it does not become Avast vendor clearance or Avast safety certification.
+
+This section does not authorize release, tag creation, publication, package or
+`dist` work, Live E2E, Google Docs or Google Drive mutation, or flagged
+executable re-run.
 
 ## 5. Redaction Rules
 
