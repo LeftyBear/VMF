@@ -61,8 +61,8 @@ operating assets, updating packages or `dist/`, running Live E2E, mutating
 Google Docs / Drive, performing OAuth operations, rerunning Avast, or
 re-running the flagged executable.
 
-The next Avast-independent docs-only candidates are `P1-02`, `P1-04`, and
-`P1-06`.
+The next Avast-independent docs-only candidates are `P1-06` and selected P2
+design items.
 
 `P0-01` remains the first release-path item, but it is blocked until an Avast
 response is received and explicitly reviewed.
@@ -123,7 +123,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P1-01 | Add a compact post-release evidence summary template for future Publisher release candidates. | P1 | This is the first completed docs-only item after `0.0.1-dev`; it improves traceability without depending on Avast. | Current published-prerelease records and final status freeze. | Improves future evidence review while preserving separate release authorization gates. | Complete / docs-only template added. |
 | P1-02 | Improve release-readiness checklist cross-links for blocked, deferred, risk-accepted, and local-only evidence. | P1 | Cross-links reduce audit ambiguity between historical hold records and current status. | Current status and existing Phase 4-3 records. | Helps reviewers avoid mistaking historical blocked wording for current prerelease state or vendor clearance. | Complete / docs-only cross-links added. |
 | P1-03 | Re-check supply-chain and package evidence only after the approved release artifact exists. | P1 | Evidence refresh must be tied to a specific approved artifact, not local or stale package output. | Future approved release artifact or explicitly authorized static inspection. | Prevents artifact identity drift and package evidence overclaiming. | Blocked / package scope not authorized. |
-| P1-04 | Review Live E2E setup documentation for clearer authorization, credential, and cleanup boundaries. | P1 | Documentation can clarify the gate without running Live E2E or touching OAuth state. | Existing Live E2E records and runbook text. | Reduces risk of unapproved live mutation or credential handling. | Ready / Avast-independent docs-only review. |
+| P1-04 | Review Live E2E setup documentation for clearer authorization, credential, and cleanup boundaries. | P1 | Documentation clarifies the gate without running Live E2E or touching OAuth state. | Existing Live E2E records and runbook text. | Reduces risk of unapproved live mutation or credential handling. | Complete / docs-only boundary and cross-link update. |
 | P1-05 | Review package verification scripts for clearer output that distinguishes local verification from release clearance. | P1 | Script messaging can make evidence labels harder to misread, but implementation requires a future code task. | Separate implementation authorization and tests. | Would reduce release-clearance overclaim risk when adopted. | Blocked / implementation scope not authorized. |
 | P1-06 | Convert durable AV triage lessons into a repeatable release-safety checklist. | P1 | Checklist hardening can proceed without a vendor response if it preserves pending/clearance boundaries. | Existing AV triage notes and redaction rules. | Improves future AV triage consistency without claiming Avast clearance. | Ready / Avast-independent docs-only review. |
 
@@ -151,11 +151,13 @@ response:
 
 Avast-independent docs-only / design-ready:
 
-- P1-02, P1-04, P1-06, and P2-01 through P2-06.
+- P1-06 and P2-01 through P2-06.
 
 Completed Avast-independent docs-only:
 
 - P1-01.
+- P1-02.
+- P1-04.
 
 ## Vendor-Clearance Boundary
 
@@ -209,5 +211,5 @@ clearance boundary.
    release-path task.
 5. Release artifact audit status after package-generation scope is authorized.
 6. Security and supply-chain review status for the approved release artifact.
-7. Next docs-only hardening candidates: P1-02, P1-04, and P1-06.
+7. Next docs-only hardening candidate: P1-06.
 8. vNext enhancement candidates.

@@ -3030,3 +3030,31 @@ or Google Drive, mutate OAuth credentials or token stores, operate the Avast
 UI, change Avast settings, release quarantine, add exclusions, rerun or
 re-run `vmf-publisher.exe`, process an Avast response, obtain vendor
 clearance, or claim Avast safety certification.
+
+## P1-04 Live E2E Setup Documentation Review
+
+Status: RECORDED as docs-only / local-only Live E2E setup boundary hardening.
+
+Updated `docs/distribution/LiveE2EOperations.md` to clarify that Live E2E
+setup review can be documentation-only, but a live run,
+`VMF_PUBLISHER_GOOGLE_E2E=1`, OAuth Desktop reauthorization, token-store
+mutation, Google Docs / Drive mutation, and cleanup actions each require
+explicit operation-specific authorization. Added cross-references to current
+status, preflight hard stops, test classification, and the release runbook.
+
+Updated `docs/development/Publisher_vNext_Backlog.md` and
+`docs/development/CURRENT_STATUS.md` to mark `P1-04` complete as a docs-only
+boundary and cross-link update.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+update a release or prerelease record, replace/delete/upload assets, build,
+rebuild, regenerate packages, modify `dist`, create ZIPs, create, delete,
+move, retarget, or replace tags, push tags, run Live E2E, set
+`VMF_PUBLISHER_GOOGLE_E2E=1`, mutate Google Docs or Google Drive, mutate OAuth
+credentials or token stores, perform cleanup actions, operate the Avast UI,
+change Avast settings, release quarantine, add exclusions, rerun or re-run
+`vmf-publisher.exe`, process an Avast response, obtain vendor clearance, or
+claim Avast safety certification.

@@ -2,12 +2,19 @@
 
 Status  : Phase 3-9D Operations Guide
 Scope   : Authorized Google Docs end-to-end verification
-Depends : tests/integration/Publisher/GoogleDocsEndToEndIntegrationTests.cs, docs/distribution/ReleaseChecklist.md
+Depends : tests/integration/Publisher/GoogleDocsEndToEndIntegrationTests.cs, docs/distribution/ReleaseChecklist.md, docs/distribution/PublisherReleaseRunbook.md, docs/development/CURRENT_STATUS.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_TestClassification.md
 
 This guide defines the controlled procedure for live Google Docs end-to-end
 verification. Live E2E is never implicit. It requires explicit approval for the
 specific run because it uses credentials and mutates Google Docs or Google
 Drive resources.
+
+This guide can be reviewed or cross-linked as documentation-only work. A
+documentation-only review of Live E2E setup does not authorize a live run, set
+`VMF_PUBLISHER_GOOGLE_E2E=1`, open OAuth consent, mutate token stores, create
+or clean up Google Docs / Drive resources, run package or `dist` operations,
+execute flagged artifacts, publish releases, claim Avast vendor clearance, or
+claim Avast safety certification.
 
 ## 1. Authorization Gate
 
@@ -18,10 +25,20 @@ Before running Live E2E, record approval for:
 - whether a template document may be copied or reset;
 - whether temporary public image hosting is allowed;
 - the cleanup expectation for temporary documents and files;
-- the exact verification command.
+- the exact verification command;
+- whether OAuth Desktop reauthorization, token-store deletion, token-store
+  creation, or token-store reuse is authorized for this run.
 
 If approval is missing, do not run Live E2E. Use local build, unit tests,
 integration tests, package verification, and dry-run checks instead.
+
+Approval for Live E2E is operation-specific. It does not authorize package or
+`dist` updates, tagged release work, publication, flagged executable smoke
+testing, Avast operations, vendor-clearance wording, or Avast safety
+certification wording. Read `docs/development/CURRENT_STATUS.md`,
+`docs/development/Publisher_PreflightHardening.md`, and
+`docs/development/Publisher_TestClassification.md` before treating a Live E2E
+gate as available.
 
 ## 2. Required Environment Variables
 
@@ -49,6 +66,14 @@ $env:VMF_PUBLISHER_GOOGLE_E2E_TEMPLATE_DOCUMENT_ID = "<approved-template-documen
 Do not print credential file content, token-store content, OAuth tokens,
 private keys, or secret-bearing configuration values in release records.
 
+Credentials and token stores must stay outside the repository and outside
+release packages. Do not commit, stage, copy into `dist`, attach to evidence
+bundles, or paste credential files, token-store files, OAuth codes, refresh
+tokens, client secrets, service-account private keys, Authorization headers, or
+provider payloads. If reauthorization or token-store cleanup is needed, it
+must be authorized and recorded as a credentialed Google operation, not as a
+documentation task.
+
 ## 3. Execution
 
 Run Live E2E serially:
@@ -75,6 +100,13 @@ configuration only from these Secrets:
 
 Normal CI and Release workflows must not set `VMF_PUBLISHER_GOOGLE_E2E=1`.
 They run the mock integration subset and package verification only.
+
+For a release-path task, Live E2E follows the order recorded in
+`docs/distribution/PublisherReleaseRunbook.md`: final verification first, then
+Live E2E, then result review, then package or `dist` work, then tag/release
+work. A prior authorized Live E2E result may be cited only as recorded
+evidence for its exact scope; it must not be reused as approval for a new
+credentialed run or Google mutation.
 
 ## 4. Expected Evidence
 
@@ -114,6 +146,12 @@ If cleanup fails, record:
 
 A cleanup failure does not become a successful Live E2E result. It remains an
 open release issue until resolved or explicitly deferred.
+
+Cleanup evidence is scoped to the temporary resources from the approved run.
+It must not delete, archive, move, or alter unrelated user Google Docs / Drive
+resources. Cleanup authorization does not authorize publication cleanup,
+release asset replacement, package regeneration, token-store mutation, or
+credential rotation unless those actions are separately named and approved.
 
 ## 6. Failure Handling
 

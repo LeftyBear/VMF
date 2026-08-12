@@ -8,6 +8,17 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated `docs/distribution/LiveE2EOperations.md` for the P1-04 docs-only
+  Live E2E setup review. The update clarifies per-run authorization,
+  OAuth/token-store credential boundaries, cleanup scope, and cross-references
+  to current status, preflight hard stops, test classification, and the
+  release runbook. Updated current status and the vNext backlog with minimal
+  references only. This docs-only update does not run Live E2E, set
+  `VMF_PUBLISHER_GOOGLE_E2E=1`, mutate Google Docs or Drive, operate on OAuth
+  or token stores, create cleanup actions, update package or `dist` outputs,
+  operate tags, publish releases, rerun Avast, re-run flagged executables,
+  claim vendor clearance, or claim Avast safety certification.
+
 - Updated `docs/development/Publisher_vNext_Backlog.md` with a docs-only
   post-release follow-up register for the completed Publisher `0.0.1-dev`
   prerelease sequence. The register separates Avast response intake and
