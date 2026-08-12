@@ -158,6 +158,7 @@ current release hold.
 | Publication explicitly authorized, if needed | PENDING |  |
 | Final verification before completion | PENDING | Mandatory for the Risk Accepted Go path. |
 | Post-release evidence capture | PENDING | Mandatory after any Risk Accepted Go release-path execution; must record artifact identity, publication evidence, final verification evidence, post-release observations, and continuing Avast pending / vendor clearance not obtained state. |
+| Published artifact identity reconciled | PENDING | 2026-08-12 static inspection found the local `dist` ZIP identity did not match the recorded published identity. Release, tag, publication, and distribution remain blocked until reconciled or explicitly superseded by an approved artifact rebuild path. |
 
 Authorization for one condition does not authorize any other condition.
 
@@ -177,6 +178,7 @@ Record only sanitized notes needed to understand the intake decision.
 | 2026-08-11 | Repository owner / VMF | Manual scan not reproduced; gate may be reconsidered only through separate authorization | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; Avast showed "このファイルは安全のようです"; no `IDP.HELU.PSD11` detection | Avast vendor response not received; vendor clearance not obtained; final verification, release authorization, and any future release-path operations remain separately gated. |
 | 2026-08-11 | Repository owner / VMF | Authorized local reproduction check not reproduced | ZIP extraction PASS; `--help` exit 0; packaged `verify` exit 0 with minimal Markdown; packaged `dry-run` exit 0; package generation PASS; package verification PASS; Live E2E 4 passed / 0 failed / 0 skipped; no Avast detection, deletion, block, or `IDP.HELU.PSD11` reproduction observed | Avast vendor response not received; vendor clearance not obtained; Avast safety certification not claimed; local regenerated package identity does not replace the published package identity. |
 | 2026-08-12 | Responsible owner / VMF | Risk Accepted Go: proceed through explicit owner risk acceptance while Avast response remains pending | Avast response still not received; latest authorized reproducibility verification did not reproduce detection; owner Go recorded | Vendor clearance not obtained; Avast safety certification not claimed; final verification before completion and post-release evidence capture are mandatory. |
+| 2026-08-12 | Codex / VMF | Local final verification checks passed; published artifact final verification not complete | Build PASS after transient local execution issue was resolved by serial rerun; unit tests 492 passed; non-live integration tests 16 passed; project-output dry-run PASS; format verification PASS; docs consistency / prohibited wording search PASS; local `dist` ZIP identity did not match recorded published identity | Release artifact identity unresolved; release, tag, publication, and distribution remain blocked until artifact identity is reconciled or explicitly superseded by an approved artifact rebuild path. |
 
 ## 9. Explicit Non-Actions
 

@@ -41,13 +41,14 @@ set only; it is not release execution.
 | VMF residual risk acceptance | Accepted by ADR-0019 |
 | Release authorization record | Exists for Publisher `0.0.1-dev`; repository synchronization recorded separately from release execution |
 | Release authorization push | Commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a` pushed to `origin/main` by normal non-force push; post-push `HEAD` equaled `origin/main` and working tree was clean |
-| Approval recommendation | Risk Accepted Go; final verification before completion and post-release evidence capture are mandatory |
+| Approval recommendation | Risk Accepted Go recorded; local final verification checks passed; published artifact final verification not complete; Avast response pending; vendor clearance not obtained |
 | Post-hold execution order | final verification -> Live E2E -> result review -> package/dist -> tag/release |
-| Final verification | PASS before Live E2E: Release build PASS warnings 0 / errors 0; Unit tests 492 passed / 0 failed / 0 skipped; Integration tests 16 passed / 0 failed / 0 skipped; `dotnet format --verify-no-changes` PASS; `git diff --check` PASS |
+| Final verification | Local checks passed on 2026-08-12: Release build PASS warnings 0 / errors 0 after transient local execution issue was resolved by serial rerun; Unit tests 492 passed / 0 failed / 0 skipped; non-live Integration tests 16 passed / 0 failed / 0 skipped; project-output dry-run PASS; `dotnet format --verify-no-changes` PASS; docs consistency / prohibited wording search PASS |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
 | Result review | Recorded in `Publisher_ReleaseApprovalPackage.md`; package generation and verification are recorded; tag/release/publication completion evidence is recorded |
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
 | Package identity | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; package verification PASS |
+| Published artifact final verification | Not complete; local `dist` ZIP identity observed during 2026-08-12 static inspection did not match the recorded published identity, so release artifact identity remains unresolved |
 | GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
 | Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
 | Package creation or update by this docs update | Not performed; no `dist` write by this documentation-only update |

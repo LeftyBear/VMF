@@ -29,7 +29,7 @@ OAuth/token-store/credentials, or perform any Avast operation.
 | Item | State |
 | --- | --- |
 | Formal release state | Risk Accepted Go / Avast response pending / vendor clearance not obtained |
-| Approval recommendation | Risk Accepted Go for the explicitly authorized Publisher path; final verification and post-release evidence capture are mandatory before treating the path as complete |
+| Approval recommendation | Risk Accepted Go recorded; local final verification checks passed; published artifact final verification not complete; Avast response pending; vendor clearance not obtained |
 | Avast false-positive handling | Vendor response pending; latest authorized reproduction verification did not reproduce the detection; responsible owner Go recorded as VMF-side risk acceptance |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
@@ -41,12 +41,13 @@ OAuth/token-store/credentials, or perform any Avast operation.
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
 | Release readiness | Completed for the `0.0.1-dev` GitHub prerelease; release completion evidence recorded docs-only |
 | Release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled/package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
-| Final verification | Required for this Risk Accepted Go path before completion; previously recorded PASS evidence remains historical for the fixed `0.0.1-dev` identity |
+| Final verification | Local checks passed on 2026-08-12; published artifact final verification is not complete because local `dist` ZIP identity does not match the recorded published identity |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
 | Result review | Recorded; initial Live E2E failure was attributed to stale, revoked, or inconsistent saved OAuth token state; rerun passed after token deletion and OAuth Desktop reauthorization |
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
 | Package creation or update by this docs update | Not performed; no `dist` write by this documentation-only update |
 | Package path / size / SHA-256 | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
+| Local `dist` ZIP observation | 2026-08-12 static inspection observed local ZIP size 983422 bytes and SHA-256 `395770913D825B578E468C18C45510DA4B7B1BE570338640018E58835BD28768`; this does not match the recorded published identity |
 | Package generation / verification | PASS / PASS; manifest files 14; secret/static package inspection PASS |
 | GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
 | Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
@@ -122,6 +123,16 @@ exact artifact identity, publication identity, final verification evidence,
 post-release observations, and the continuing Avast pending / vendor clearance
 not obtained state without retroactively converting local no-detection evidence
 into vendor clearance.
+
+Final verification local checks passed on 2026-08-12. However, the local
+`dist` ZIP identity does not match the recorded published identity. This run
+does not complete published artifact final verification. Release, tag,
+publication, and distribution remain blocked until artifact identity is
+reconciled or explicitly superseded by an approved artifact rebuild path.
+
+The initial build failure during this run was a transient local execution
+issue caused by a Release-output DLL lock while build and tests overlapped.
+The build passed after serial rerun with warnings 0 / errors 0.
 
 ## 3. Evidence Index
 
