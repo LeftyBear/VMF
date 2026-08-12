@@ -9,6 +9,19 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Changed
 
 - Added
+  `docs/development/Publisher_0.0.1-dev_FinalScopeConfirmation_2026-08-12.md`
+  as the docs-only Step 1 final scope confirmation for Publisher
+  `0.0.1-dev`, requested commit
+  `6b418d6094a6cdff81ec2fe52db17c28c1af2dd6`, artifact
+  `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`, and
+  operation exclusions. Updated current status and the Voyage Log with
+  minimal references. This docs-only update does not perform package or
+  `dist` work, tag creation, GitHub release/prerelease update, asset
+  operation, publication, Live E2E, Google Docs or Drive mutation, OAuth
+  operation, Avast rerun, flagged executable re-run, vendor clearance, or
+  Avast safety certification.
+
+- Added
   `docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md`
   as the formal docs-only approval record for Publisher `0.0.1-dev` VMF-side
   residual risk acceptance plus release authorization while preserving that

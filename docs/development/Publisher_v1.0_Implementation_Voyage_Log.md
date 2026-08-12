@@ -2881,3 +2881,31 @@ release, run Live E2E, mutate Google Docs or Google Drive, mutate OAuth
 credentials or token stores, operate the Avast UI, change Avast settings,
 release quarantine, add exclusions, re-run `vmf-publisher.exe`, obtain vendor
 clearance, or claim Avast safety certification.
+
+## Publisher 0.0.1-dev Final Scope Confirmation
+
+Status: RECORDED as docs-only final scope confirmation.
+
+Added
+`docs/development/Publisher_0.0.1-dev_FinalScopeConfirmation_2026-08-12.md`
+to confirm the Step 1 release-target scope: Publisher `0.0.1-dev`, requested
+commit `6b418d6094a6cdff81ec2fe52db17c28c1af2dd6`, artifact
+`dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`, and
+documentation-only operations.
+
+The record preserves that residual risk acceptance and release authorization
+are recorded, Avast vendor clearance is not obtained, and Avast safety
+certification is not claimed.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+build, rebuild, regenerate packages, modify `dist`, create ZIPs, create,
+delete, move, retarget, or replace tags, push tags, create, update, delete, or
+replace GitHub Releases or prereleases, upload, replace, or delete release
+assets, publish new artifacts, announce a release, run Live E2E, mutate Google
+Docs or Google Drive, mutate OAuth credentials or token stores, operate the
+Avast UI, change Avast settings, release quarantine, add exclusions, rerun or
+re-run `vmf-publisher.exe`, process an Avast response, obtain vendor
+clearance, or claim Avast safety certification.
