@@ -2,7 +2,7 @@
 
 Status  : Risk Accepted Go / Avast response pending / vendor clearance not obtained
 Scope   : Current Publisher release-gate and local-verification state
-Depends : docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_TestClassification.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
+Depends : docs/development/Publisher_AvastResponseDecisionTemplate.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_TestClassification.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
 
 This document fixes the current VMF Publisher state after Phase 4 local-only
 verification. It is a status record only. It does not approve a release, create
@@ -69,6 +69,7 @@ set only; it is not release execution.
 | Publisher Preflight Hardening | Done as documentation-only hard-stop consolidation; release state unchanged. |
 | Publisher Release Approval Package | Updated with ADR-0019 result review evidence and later `0.0.1-dev` release completion evidence; final verification PASS, Live E2E PASS, package/dist, tag/release, and publication are recorded complete for `0.0.1-dev`; this docs-only update performs no new release operation. |
 | Publisher vNext Backlog | Done as documentation-only / local-only backlog record; reprioritized to put next release-path gate basis, Avast outcome intake, go/no-go reconciliation, Live E2E / Google Docs authorization, and artifact audit ahead of evidence hardening and vNext enhancements while preserving published `0.0.1-dev` state and separate authorization gates. |
+| Publisher Avast Response Decision Template | Done as documentation-only / local-only decision template; no Avast response received; vendor clearance remains not obtained; release block continues for vendor-clearance purposes unless a future reviewed response satisfies the template. |
 | Publisher Avast Response Intake Template | Done as documentation-only / local-only template; no Avast response received; vendor clearance remains not obtained. |
 | Publisher Test Traceability Matrix | Done as documentation-only / local-only traceability index; updated through ADR-0019. |
 | ADR operating basis | Done as documentation-only / local-only architecture decision record process; release state unchanged. |
@@ -314,6 +315,15 @@ The template does not approve a release, create or update packages, modify
 `dist/`, create tags, publish artifacts, execute Live E2E, mutate Google Docs
 or Google Drive, re-run flagged executables, change Frozen specifications,
 change public APIs, change production code, or change production design.
+
+`Publisher_AvastResponseDecisionTemplate.md` defines the follow-on
+classification after a response is recorded: `vendor clearance accepted`,
+`clarification required`, `rejected / not sufficient`, or `still pending`.
+The decision template requires artifact/version match, detection name,
+explicit false-positive treatment, allowlist / whitelist / detection-removal
+status, additional-submission status, and release-gate impact before vendor
+clearance may be accepted. No response has been recorded by this docs-only
+update, so Avast pending and vendor clearance not obtained remain unchanged.
 
 ## 13. Publisher Test Traceability Matrix
 

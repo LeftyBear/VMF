@@ -2817,3 +2817,37 @@ release, run Live E2E, mutate Google Docs or Google Drive, mutate OAuth
 credentials or token stores, operate the Avast UI, change Avast settings,
 release quarantine, add exclusions, re-run `vmf-publisher.exe`, obtain vendor
 clearance, claim Avast safety certification, or create release authorization.
+
+## Publisher Avast Response Decision Template
+
+Status: RECORDED as docs-only / local-only decision template.
+
+Added
+`docs/development/Publisher_AvastResponseDecisionTemplate.md` as the follow-on
+classification template for a future Avast response after intake recording.
+The template distinguishes `vendor clearance accepted`, `clarification
+required`, `rejected / not sufficient`, and `still pending`.
+
+Required decision inputs include exact artifact path, version, SHA-256,
+detection name, explicit false-positive treatment, allowlist / whitelist /
+detection-removal status, additional-submission status, redaction review, and
+release-gate impact. Vendor clearance can be accepted only for the selected
+artifact identity and only as vendor-clearance evidence; release, tag,
+publication, package or `dist` work, Live E2E, Google Docs / Drive mutation,
+and flagged executable re-run remain separately authorized operations.
+
+Avast response remains pending, vendor clearance has not been obtained, and
+the release block continues for vendor-clearance purposes unless a future
+reviewed response satisfies the template.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+build, rebuild, regenerate packages, modify `dist`, create ZIPs, create,
+delete, move, retarget, or replace tags, push tags, create, update, delete, or
+replace GitHub Releases, replace assets, publish new artifacts, announce a
+release, run Live E2E, mutate Google Docs or Google Drive, mutate OAuth
+credentials or token stores, operate the Avast UI, change Avast settings,
+release quarantine, add exclusions, re-run `vmf-publisher.exe`, obtain vendor
+clearance, claim Avast safety certification, or create release authorization.

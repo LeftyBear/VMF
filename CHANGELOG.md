@@ -8,6 +8,17 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Added
+  `docs/development/Publisher_AvastResponseDecisionTemplate.md` to classify a
+  future Avast response as `vendor clearance accepted`, `clarification
+  required`, `rejected / not sufficient`, or `still pending` after checking
+  artifact/version match, detection name, false-positive treatment,
+  allowlist / whitelist / detection-removal status, additional-submission
+  status, and release-gate impact. This docs-only / local-only update does
+  not record an Avast response, obtain vendor clearance, authorize release,
+  tag creation, publication, package or `dist` work, Live E2E, Google Docs or
+  Drive mutation, flagged executable re-run, or Avast safety certification.
+
 - Referenced
   `docs/development/Publisher_ReleaseControlApprovalReceipt_2026-08-12.md`
   from current Publisher status and the Voyage Log as docs-only /
