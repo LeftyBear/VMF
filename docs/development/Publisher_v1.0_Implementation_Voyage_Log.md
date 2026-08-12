@@ -2992,3 +2992,32 @@ or Google Drive, mutate OAuth credentials or token stores, operate the Avast
 UI, change Avast settings, release quarantine, add exclusions, rerun or
 re-run `vmf-publisher.exe`, process an Avast response, obtain vendor
 clearance, or claim Avast safety certification.
+
+## Publisher Post-Release Follow-Up Backlog
+
+Status: RECORDED as docs-only / local-only post-release follow-up backlog.
+
+Updated `docs/development/Publisher_vNext_Backlog.md` with a post-release
+follow-up register after the completed Publisher `0.0.1-dev` prerelease
+sequence, one attached asset, and final status freeze.
+
+The register covers:
+
+- Avast response intake and decision-template routing;
+- status, release-notes, and evidence updates if vendor clearance is obtained
+  for the exact selected artifact identity;
+- adverse, ambiguous, mismatched, or still-pending Avast response handling;
+- separate authorization gates for Live E2E and Google Docs / Drive mutation;
+- `0.0.1-dev` follow-up vNext candidates.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+update a release or prerelease record, replace/delete/upload assets, build,
+rebuild, regenerate packages, modify `dist`, create ZIPs, create, delete,
+move, retarget, or replace tags, push tags, run Live E2E, mutate Google Docs
+or Google Drive, mutate OAuth credentials or token stores, operate the Avast
+UI, change Avast settings, release quarantine, add exclusions, rerun or
+re-run `vmf-publisher.exe`, process an Avast response, obtain vendor
+clearance, or claim Avast safety certification.

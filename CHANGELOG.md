@@ -8,6 +8,18 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Updated `docs/development/Publisher_vNext_Backlog.md` with a docs-only
+  post-release follow-up register for the completed Publisher `0.0.1-dev`
+  prerelease sequence. The register separates Avast response intake and
+  decision review, vendor-clearance status/evidence updates if obtained,
+  adverse-response handling, Live E2E / Google Docs / Drive gates, and
+  `0.0.1-dev` vNext candidates. Updated current status and the Voyage Log
+  with minimal references only. This docs-only update does not update
+  release/prerelease records, replace/delete/upload assets, update package or
+  `dist` outputs, operate on tags, run Live E2E, mutate Google Docs or Drive,
+  perform OAuth operations, rerun Avast, re-run flagged executables, claim
+  vendor clearance, or claim Avast safety certification.
+
 - Added
   `docs/releases/Publisher_0.0.1-dev_FinalStatusFreeze_2026-08-12.md`
   as the docs-only final status freeze for the published Publisher
