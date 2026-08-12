@@ -2,7 +2,7 @@
 
 Status  : Checklist only / docs-only / local-only
 Scope   : Antivirus triage and release-safety boundary before future Publisher release-path work
-Depends : docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md, docs/architecture/ADR-0008-preflight-hard-stop-and-release-boundary.md, docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md, docs/architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md, docs/development/Publisher_AvastResponseIntakeTemplate.md
+Depends : docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md, docs/architecture/ADR-0008-preflight-hard-stop-and-release-boundary.md, docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md, docs/architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md, docs/architecture/ADR-0019-vmf-risk-acceptance-and-release-hold-lift.md, docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_vNext_Backlog.md
 
 This checklist is for safe AV triage review. It does not approve release,
 resolve Avast false-positive handling, obtain vendor clearance, authorize
@@ -12,7 +12,11 @@ production code, change tests, change public APIs, or modify Frozen
 specifications.
 
 If no vendor response has been received, redacted, reviewed, and recorded for
-the exact selected artifact identity, the default decision remains `Hold`.
+the exact selected artifact identity, the vendor-clearance decision remains
+`Hold continues` / `vendor clearance not obtained`. ADR-0019 may record
+VMF-side residual risk acceptance for a specific release identity, but that
+does not convert Avast response pending into vendor clearance and does not
+claim Avast safety certification.
 
 The 2026-08-11 manual Avast scan / CyberCapture observation for
 `vmf-publisher.exe` SHA-256
@@ -20,6 +24,10 @@ The 2026-08-11 manual Avast scan / CyberCapture observation for
 evidence only. It records that Avast showed "このファイルは安全のようです" and
 `IDP.HELU.PSD11` was not reproduced, but it is not an Avast vendor response or
 vendor clearance.
+
+Use this checklist as the P1-06 AV triage release-safety hardening record in
+the vNext backlog. It is a reference checklist only; backlog priority labels do
+not authorize release-path work.
 
 ## 1. Artifact Identity
 
@@ -41,6 +49,8 @@ vendor clearance.
 | Response mapped in `Publisher_AvastResponseIntakeTemplate.md` | PENDING |  |
 | Vendor clearance confirmed for selected artifact identity | PENDING |  |
 | Avast safety certification claimed | NOT CLAIMED |  |
+| Avast response pending boundary preserved | PASS | `CURRENT_STATUS.md` and `Publisher_ReleaseApprovalPackage.md` record Avast response pending, vendor clearance not obtained, and Avast safety certification not claimed. |
+| VMF-side residual risk acceptance kept separate | PASS | ADR-0019 records VMF risk acceptance; it is not a vendor response or Avast clearance. |
 | Manual scan / CyberCapture not reproduced | PASS | Avast showed "このファイルは安全のようです"; detection name none; `IDP.HELU.PSD11` not reproduced; threat result none / allowed equivalent. |
 | Hold decision reviewed | PENDING | Local evidence supports gate reconsideration only; vendor clearance and final authorization remain separate. |
 
@@ -66,6 +76,11 @@ clearance.
 
 Authorization for one gate does not authorize any other gate.
 
+Release-safety review must cross-check `CURRENT_STATUS.md` and
+`Publisher_ReleaseApprovalPackage.md` before interpreting older release-hold
+or approval wording. Evidence, approval, release execution, publication,
+vendor-clearance, and backlog records remain separate evidence classes.
+
 ## 4. Post-Release Evidence Boundary
 
 Post-release evidence may support audit, follow-up review, external scanner
@@ -81,6 +96,11 @@ observation, or publication confirmation. It must not retroactively satisfy:
 
 Gate-missing or authorization-missing release work remains a governance
 exception or incident candidate even if later observations are favorable.
+
+Evidence references should remain traceable to
+`Publisher_EvidenceBundleSpecification.md`,
+`Publisher_PostReleaseEvidenceSummaryTemplate.md`, and the relevant release
+record without copying sensitive raw evidence into this checklist.
 
 ## 5. Redaction And Secret Review
 
