@@ -2946,3 +2946,49 @@ Docs or Google Drive, mutate OAuth credentials or token stores, operate the
 Avast UI, change Avast settings, release quarantine, add exclusions, rerun or
 re-run `vmf-publisher.exe`, process an Avast response, obtain vendor
 clearance, or claim Avast safety certification.
+
+## Publisher 0.0.1-dev Final Status Freeze
+
+Status: RECORDED as docs-only final status freeze.
+
+Added
+`docs/releases/Publisher_0.0.1-dev_FinalStatusFreeze_2026-08-12.md`
+to freeze the final post-release status for the published Publisher
+`0.0.1-dev` GitHub prerelease.
+
+Frozen identity:
+
+- prerelease URL:
+  https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev;
+- tag: `publisher-v0.0.1-dev`;
+- target commit: `382bd715d8307930d0aeb8bd48116dac3f57af5c`;
+- prerelease: `true`;
+- draft: `false`;
+- asset: `vmf-publisher-0.0.1-dev-win-x64.zip`;
+- size: 983422 bytes;
+- digest:
+  `sha256:0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`;
+- assets count: 1;
+- latest evidence commit:
+  `3fa3c12` (`docs: record Publisher prerelease asset attach`).
+
+The freeze records that the prerelease proceeds under VMF-side residual risk
+acceptance plus release authorization. Avast vendor clearance remains not
+obtained. Avast safety certification is not claimed.
+
+Remaining tasks are limited to separately authorized follow-up gates: Avast
+response receipt and judgment, vendor-clearance follow-up if obtained for the
+exact selected artifact identity, Live E2E authorization, and Google Docs /
+Drive mutation authorization.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+update a release or prerelease record, replace/delete/upload assets, build,
+rebuild, regenerate packages, modify `dist`, create ZIPs, create, delete,
+move, retarget, or replace tags, push tags, run Live E2E, mutate Google Docs
+or Google Drive, mutate OAuth credentials or token stores, operate the Avast
+UI, change Avast settings, release quarantine, add exclusions, rerun or
+re-run `vmf-publisher.exe`, process an Avast response, obtain vendor
+clearance, or claim Avast safety certification.

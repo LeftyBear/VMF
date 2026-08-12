@@ -9,6 +9,24 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Changed
 
 - Added
+  `docs/releases/Publisher_0.0.1-dev_FinalStatusFreeze_2026-08-12.md`
+  as the docs-only final status freeze for the published Publisher
+  `0.0.1-dev` GitHub prerelease at
+  https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev, tag
+  `publisher-v0.0.1-dev`, target commit
+  `382bd715d8307930d0aeb8bd48116dac3f57af5c`, single asset
+  `vmf-publisher-0.0.1-dev-win-x64.zip`, size 983422 bytes, and digest
+  `sha256:0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`.
+  The freeze records that Avast vendor clearance remains not obtained, Avast
+  safety certification is not claimed, and future Avast-response intake,
+  vendor-clearance follow-up, Live E2E, and Google Docs / Drive mutation
+  remain separate explicit gates. This docs-only update does not update
+  release/prerelease records, replace/delete/upload assets, update package or
+  `dist` outputs, operate on tags, run Live E2E, mutate Google Docs or Drive,
+  perform OAuth operations, rerun Avast, re-run flagged executables, claim
+  vendor clearance, or claim Avast safety certification.
+
+- Added
   `docs/development/Publisher_0.0.1-dev_FinalScopeConfirmation_2026-08-12.md`
   as the docs-only Step 1 final scope confirmation for Publisher
   `0.0.1-dev`, requested commit
