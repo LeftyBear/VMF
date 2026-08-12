@@ -845,21 +845,26 @@ publication, flagged executable smoke, production code change, test change,
 Frozen specification change, public API change, staging, commit, or push was
 performed by this release completion documentation update.
 
-## 25. Publisher Release-Control Approval Receipt
+## 25. Publisher Release-Control Owner Confirmation Memo
 
-`docs/development/Publisher_ReleaseControlApprovalReceipt_2026-08-12.md`
-records receipt of the responsible owner confirmation as `Approved` for the
-current Publisher release-control position only.
+`docs/development/Publisher_ReleaseControlOwnerConfirmationMemo_2026-08-12.md`
+records the current Publisher release-control position for responsible-owner
+confirmation after the Avast latest-definition rescan evidence reflection. No
+responsible-owner approval or owner risk acceptance for that reflected rescan
+evidence has been recorded.
 
-This receipt is not release authorization, tag authorization, publication
+This memo is not release authorization, tag authorization, publication
 authorization, package or `dist` authorization, Live E2E authorization, Google
 Docs or Google Drive mutation authorization, flagged executable re-run
-authorization, vendor clearance, or Avast safety certification.
+authorization, vendor clearance, owner risk acceptance, or Avast safety
+certification.
 
-The release-control state remains unchanged: Avast response remains pending,
-vendor clearance has not been obtained, and any future release-path operation
-requires a separate explicit authorization record after applicable gate
-requirements are satisfied.
+The release-control state remains unchanged: the latest rescan result is
+`Detection not reproduced`, Avast response remains pending, vendor clearance
+has not been obtained, responsible-owner approval / owner risk acceptance is
+not recorded for the reflected rescan evidence, and any future release-path
+operation requires a separate explicit authorization record after applicable
+gate requirements are satisfied.
 
 No release, tag, publication, Live E2E, Google Docs mutation, Google Drive
 mutation, package or distribution artifact creation or update, `dist` write,
@@ -867,4 +872,4 @@ flagged executable re-run, production code change, test change, Frozen
 specification change, public API change, vendor clearance, Avast resolution,
 approval expansion, release authorization, tag/release execution
 authorization, GitHub Release creation, or publication was performed by this
-docs-only release-control receipt reference update.
+docs-only release-control owner-confirmation memo reference update.

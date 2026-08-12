@@ -327,7 +327,7 @@ current release hold.
 | VMF residual risk accepted without vendor clearance | PASS | ADR-0019 records VMF risk acceptance and Release Hold lift. |
 | Local manual Avast scan not reproduced for selected executable | PASS | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; Avast showed "このファイルは安全のようです"; no `IDP.HELU.PSD11` detection. Evidence only; not vendor clearance. |
 | Local authorized reproduction check not reproduced | PASS | 2026-08-11 check observed no Avast detection, deletion, block, or `IDP.HELU.PSD11` reproduction during ZIP extraction, `--help`, packaged `verify`, packaged `dry-run`, package generation, package verification, or Live E2E. Evidence only; not vendor clearance. |
-| Repository owner explicitly reopens the required next gate | PASS | 2026-08-12 responsible owner Go recorded as Risk Accepted Go while Avast response remains pending and vendor clearance is not obtained. |
+| Repository owner explicitly reopens the required next gate for the latest-definition local ZIP rescan evidence | PENDING | No responsible-owner approval or owner risk acceptance is recorded for the reflected `Detection not reproduced` rescan evidence. |
 | Flagged executable re-run explicitly authorized, if needed | PENDING |  |
 | Live E2E explicitly authorized, if needed | PENDING |  |
 | Package creation/update explicitly authorized, if needed | PENDING |  |
