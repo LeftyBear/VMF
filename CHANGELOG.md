@@ -9,6 +9,17 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Changed
 
 - Added
+  `docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md`
+  as the formal docs-only approval record for Publisher `0.0.1-dev` VMF-side
+  residual risk acceptance plus release authorization while preserving that
+  Avast vendor clearance is not obtained and Avast safety certification is not
+  claimed. Updated the release gate checklist, current status, approval
+  package, and Voyage Log with minimal references only. This docs-only update
+  does not perform release, tag, package, `dist`, asset, publication, Live
+  E2E, Google Docs or Drive mutation, flagged executable re-run, or Avast
+  operation.
+
+- Added
   `docs/development/Publisher_AvastResponseDecisionTemplate.md` to classify a
   future Avast response as `vendor clearance accepted`, `clarification
   required`, `rejected / not sufficient`, or `still pending` after checking

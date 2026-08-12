@@ -34,6 +34,7 @@ OAuth/token-store/credentials, or perform any Avast operation.
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
 | Release authorization record | Created and pushed in commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a`; repository synchronization only, not release execution by this docs update |
+| Formal residual-risk release approval memo | `docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md` records Approved VMF-side residual risk acceptance plus release authorization for the fixed `0.0.1-dev` release identity; vendor clearance remains not obtained and Avast safety certification is not claimed |
 | Current status update | `docs/development/CURRENT_STATUS.md` updated and pushed in commit `a04126ce24c7abd376bec943466c30cd565bb70e`; documentation/status alignment only |
 | False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-12 |
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
@@ -143,6 +144,7 @@ The build passed after serial rerun with warnings 0 / errors 0.
 | Evidence | Status | Use |
 | --- | --- | --- |
 | `docs/development/CURRENT_STATUS.md` | Current status record | Source of the formal current state, published `0.0.1-dev` evidence, unresolved Avast vendor-clearance boundary, and future gated operations. |
+| `docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md` | Approved formal record | Records VMF-side residual risk acceptance plus release authorization for `0.0.1-dev` while preserving Avast vendor clearance not obtained and Avast safety certification not claimed. |
 | `docs/development/Publisher_Phase4-3-1_ReleaseReadinessChecklist.md` | Done / DEFERRED release readiness | Confirms local-only evidence does not establish release readiness. |
 | `docs/development/Publisher_Phase4-3-2_ReleaseCandidateVerification.md` | Done / DEFERRED candidate verification | Records that no current candidate artifact verification was executed. |
 | `docs/development/Publisher_Phase4-3-3_ReleaseArtifactAudit.md` | Done / DEFERRED artifact audit | Records missing current artifact audit evidence. |

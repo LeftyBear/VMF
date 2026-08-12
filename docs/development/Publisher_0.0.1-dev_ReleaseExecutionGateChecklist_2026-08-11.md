@@ -3,7 +3,7 @@
 Status  : Current-state updated / docs-only release execution gate checklist
 Date    : 2026-08-12
 Scope   : Gate checklist for any future Publisher `0.0.1-dev` release-path operation after GitHub prerelease publication
-Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_0.0.1-dev_ReleaseAuthorizationRecord_2026-08-11.md, docs/development/Publisher_0.0.1-dev_PostPushVerificationRecord_2026-08-11.md, docs/distribution/ReleaseChecklist.md, docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md
+Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md, docs/development/Publisher_0.0.1-dev_ReleaseAuthorizationRecord_2026-08-11.md, docs/development/Publisher_0.0.1-dev_PostPushVerificationRecord_2026-08-11.md, docs/distribution/ReleaseChecklist.md, docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md
 
 This checklist records the gate that must be reviewed before any future
 Publisher `0.0.1-dev` release-path operation after the recorded GitHub
@@ -31,6 +31,7 @@ perform a future release execution step.
 | Record | Status | Boundary |
 | --- | --- | --- |
 | Release authorization record | Completed: `docs/development/Publisher_0.0.1-dev_ReleaseAuthorizationRecord_2026-08-11.md` | Authorizes only the record itself; no package, tag, publication, Live E2E, Google, OAuth/token-store/credentials, Avast, executable, or push operation. |
+| Formal residual-risk release approval memo | Completed: `docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md` | Records Approved VMF-side residual risk acceptance plus release authorization for fixed `0.0.1-dev`; it is not standing authorization for future package, tag, publication, Live E2E, Google, Avast, executable, or Git operations. |
 | Current status update | Completed: `docs/development/CURRENT_STATUS.md` | Records current state, the published `0.0.1-dev` GitHub prerelease evidence, and unresolved Avast/vendor-clearance boundary; it is not new release approval or new operation authorization. |
 | Release Approval Package update | Completed: `docs/development/Publisher_ReleaseApprovalPackage.md` | Records approval-package evidence, Risk Accepted Go basis, final verification, Live E2E, package identity, and release completion boundaries; it is not executable approval for a future operation. |
 | Post-push verification record | Completed: `docs/development/Publisher_0.0.1-dev_PostPushVerificationRecord_2026-08-11.md` | Records repository synchronization for documentation commits only; it is not release execution or future release authorization. |

@@ -40,6 +40,7 @@ set only; it is not release execution.
 | False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-12 |
 | VMF residual risk acceptance | Accepted by ADR-0019 |
 | Release authorization record | Exists for Publisher `0.0.1-dev`; repository synchronization recorded separately from release execution |
+| Formal residual-risk release approval memo | `docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md` records Approved VMF-side residual risk acceptance plus release authorization for the fixed `0.0.1-dev` release identity while preserving vendor clearance not obtained and Avast safety certification not claimed. |
 | Release authorization push | Commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a` pushed to `origin/main` by normal non-force push; post-push `HEAD` equaled `origin/main` and working tree was clean |
 | Approval recommendation | Risk Accepted Go recorded; local final verification checks passed; published artifact final verification not complete; Avast response pending; vendor clearance not obtained |
 | Post-hold execution order | final verification -> Live E2E -> result review -> package/dist -> tag/release |
@@ -68,6 +69,7 @@ set only; it is not release execution.
 | Publisher Evidence Bundle Specification | Done as documentation-only evidence bundle design; release state unchanged. |
 | Publisher Preflight Hardening | Done as documentation-only hard-stop consolidation; release state unchanged. |
 | Publisher Release Approval Package | Updated with ADR-0019 result review evidence and later `0.0.1-dev` release completion evidence; final verification PASS, Live E2E PASS, package/dist, tag/release, and publication are recorded complete for `0.0.1-dev`; this docs-only update performs no new release operation. |
+| Publisher Residual Risk Release Authorization Approval Memo | Done as documentation-only / local-only formal approval record; records approved VMF-side residual risk acceptance plus release authorization for `0.0.1-dev` without claiming Avast vendor clearance or Avast safety certification and without performing new release-path operations. |
 | Publisher vNext Backlog | Done as documentation-only / local-only backlog record; reprioritized to put next release-path gate basis, Avast outcome intake, go/no-go reconciliation, Live E2E / Google Docs authorization, and artifact audit ahead of evidence hardening and vNext enhancements while preserving published `0.0.1-dev` state and separate authorization gates. |
 | Publisher Avast Response Decision Template | Done as documentation-only / local-only decision template; no Avast response received; vendor clearance remains not obtained; release block continues for vendor-clearance purposes unless a future reviewed response satisfies the template. |
 | Publisher Avast Response Intake Template | Done as documentation-only / local-only template; no Avast response received; vendor clearance remains not obtained. |

@@ -2851,3 +2851,33 @@ release, run Live E2E, mutate Google Docs or Google Drive, mutate OAuth
 credentials or token stores, operate the Avast UI, change Avast settings,
 release quarantine, add exclusions, re-run `vmf-publisher.exe`, obtain vendor
 clearance, claim Avast safety certification, or create release authorization.
+
+## Publisher Residual Risk Release Authorization Approval Memo
+
+Status: RECORDED as docs-only / local-only formal approval record.
+
+Added
+`docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md`
+to record the formal approval position for Publisher `0.0.1-dev`: VMF-side
+residual risk acceptance plus release authorization with Avast vendor
+clearance not obtained and Avast safety certification not claimed.
+
+The memo records Approved for the fixed Publisher `0.0.1-dev` release identity
+and ties the approval basis to ADR-0019, the Release Approval Package, and the
+existing `0.0.1-dev` release authorization record. It does not convert local
+Avast no-detection or manual confirmation evidence into vendor clearance.
+
+Updated the release gate checklist, current status, approval package, and this
+Voyage Log with minimal references to the formal approval memo.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+build, rebuild, regenerate packages, modify `dist`, create ZIPs, create,
+delete, move, retarget, or replace tags, push tags, create, update, delete, or
+replace GitHub Releases, replace assets, publish new artifacts, announce a
+release, run Live E2E, mutate Google Docs or Google Drive, mutate OAuth
+credentials or token stores, operate the Avast UI, change Avast settings,
+release quarantine, add exclusions, re-run `vmf-publisher.exe`, obtain vendor
+clearance, or claim Avast safety certification.
