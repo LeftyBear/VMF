@@ -25,11 +25,11 @@ set only; it is not release execution.
 
 | Item | State |
 | --- | --- |
-| Overall status | Risk Accepted Go / responsible-owner release-gate approval recorded / Avast response pending |
+| Overall status | NO-GO / downstream identity synchronized; release execution gate re-evaluation pending |
 | Local verification | Complete within the approved local-only safety boundary |
 | Release readiness | Completed for the `0.0.1-dev` GitHub prerelease; release completion evidence recorded docs-only |
 | Release gate | Hold lifted by VMF-side residual risk acceptance; release execution advanced through GitHub prerelease publication |
-| Release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled/package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
+| Release identity | Canonical current identity: `0.0.1-dev` / `publisher-v0.0.1-dev`; annotated tag object `04a101729dbab431f9e67e1b7e43e6b9a94dd6e0`; peeled / target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`; see `docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md`. Older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` records are historical / superseded / non-canonical. |
 | Avast false positive handling | Vendor response still pending; latest authorized latest-definition rescan did not reproduce the detection; responsible-owner approval recorded for the current release-control assessment |
 | Vendor clearance | Accepted for release-gate purposes under documented evidence-based criteria; Avast direct response remains pending |
 | Avast safety certification | Not claimed |
@@ -43,18 +43,18 @@ set only; it is not release execution.
 | Formal residual-risk release approval memo | `docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md` records Approved VMF-side residual risk acceptance plus release authorization for the fixed `0.0.1-dev` release identity while preserving vendor clearance not obtained and Avast safety certification not claimed. |
 | Final scope confirmation | `docs/development/Publisher_0.0.1-dev_FinalScopeConfirmation_2026-08-12.md` records the docs-only Step 1 confirmation for version `0.0.1-dev`, requested commit `6b418d6094a6cdff81ec2fe52db17c28c1af2dd6`, artifact `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`, and operation exclusions; it performs no release-path operation and does not claim Avast vendor clearance or Avast safety certification. |
 | Release authorization push | Commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a` pushed to `origin/main` by normal non-force push; post-push `HEAD` equaled `origin/main` and working tree was clean |
-| Approval recommendation | Release gate PASS under evidence-based vendor-clearance criteria; subsequent release, tag, publication, distribution, package/dist, Live E2E, Google Docs / Drive, and flagged executable operations remain separately gated |
+| Approval recommendation | NO-GO until the release execution gate is re-evaluated after downstream identity synchronization; subsequent release, tag, publication, distribution, package/dist, Live E2E, Google Docs / Drive, and flagged executable operations remain separately gated |
 | Post-hold execution order | final verification -> Live E2E -> result review -> package/dist -> tag/release |
 | Final verification | Local checks passed on 2026-08-12: Release build PASS warnings 0 / errors 0 after transient local execution issue was resolved by serial rerun; Unit tests 492 passed / 0 failed / 0 skipped; non-live Integration tests 16 passed / 0 failed / 0 skipped; project-output dry-run PASS; `dotnet format --verify-no-changes` PASS; docs consistency / prohibited wording search PASS |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
 | Result review | Recorded in `Publisher_ReleaseApprovalPackage.md`; package generation and verification are recorded; tag/release/publication completion evidence is recorded |
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
-| Package identity | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; package verification PASS |
-| Published artifact identity reconciliation | Confirmed on 2026-08-12: GitHub Release asset metadata matches the recorded published identity, 983404 bytes / SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; local `dist` ZIP is a later regenerated local artifact and must not be treated as the published artifact |
-| Local package evidence | Recorded on 2026-08-12 for `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`: 983422 bytes; SHA-256 `0174810D21C6072B8206ACF2FED90B72C2E6BE499C65B231D7D72D71FD69CB76`; manifest `VMF Publisher` / `0.0.1-dev` / `win-x64` / `Release` / `selfContained=false` / 14 files; Static package verification PASS; Build/package PASS. This is package evidence only and does not replace the recorded published artifact identity. |
+| Package identity | Canonical current published artifact: `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983422 bytes; SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`; target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`; asset name `vmf-publisher-0.0.1-dev-win-x64.zip`. |
+| Published artifact identity reconciliation | Confirmed on 2026-08-12 by `Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md`: GitHub Release asset metadata and local `dist` ZIP match the canonical current identity, 983422 bytes / SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`. Older 983404 byte / `73582c...` records are historical / superseded / non-canonical. |
+| Local package evidence | Local `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip` currently matches the canonical published artifact: 983422 bytes; SHA-256 `0174810D21C6072B8206ACF2FED90B72C2E6BE499C65B231D7D72D71FD69CB76`; manifest `VMF Publisher` / `0.0.1-dev` / `win-x64` / `Release` / `selfContained=false` / 14 files. It must not be regenerated, replaced, deleted, or re-uploaded without separate package / `dist` and asset-operation authorization. |
 | Final status freeze | `docs/releases/Publisher_0.0.1-dev_FinalStatusFreeze_2026-08-12.md` records the published prerelease final status for URL `https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev`, tag `publisher-v0.0.1-dev`, target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`, one asset `vmf-publisher-0.0.1-dev-win-x64.zip`, size 983422 bytes, digest `sha256:0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`, latest evidence commit `3fa3c12`, Avast vendor clearance not obtained, and Avast safety certification not claimed. |
-| GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
-| Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
+| GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
+| Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983422 bytes; remote asset digest matches canonical SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76` |
 | Package creation or update by this docs update | Not performed; no `dist` write by this documentation-only update |
 | Release, tag, or publication | Tag push complete; remote tag readback PASS; GitHub prerelease creation complete; asset upload complete; this docs-only update performed no new release operation |
 | Release execution by this status update | Not performed; release authorization record and repository synchronization are recorded only |
@@ -71,7 +71,7 @@ set only; it is not release execution.
 | Publisher operator guidance for Avast hold | Done as documentation-only operator guidance; release state unchanged. |
 | Publisher Evidence Bundle Specification | Done as documentation-only evidence bundle design; release state unchanged. |
 | Publisher Preflight Hardening | Done as documentation-only hard-stop consolidation; release state unchanged. |
-| Publisher Release Approval Package | Updated with ADR-0019 result review evidence and later `0.0.1-dev` release completion evidence; final verification PASS, Live E2E PASS, package/dist, tag/release, and publication are recorded complete for `0.0.1-dev`; this docs-only update performs no new release operation. |
+| Publisher Release Approval Package | Updated with ADR-0019 result review evidence and later `0.0.1-dev` release completion evidence; downstream identity synchronization now records `publisher-v0.0.1-dev` / 983422 bytes / `0174810d...` as canonical and keeps older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` records historical / superseded / non-canonical; this docs-only update performs no new release operation. |
 | Publisher Responsible-Owner Approval and Release Gate Re-evaluation Record | Done as documentation-only / local-only release-gate decision record; records responsible-owner approval Approved and release-gate evaluation PASS under evidence-based vendor-clearance criteria after latest-definition Avast rescan evidence confirmed detection non-reproduction. It does not execute release, tag, publication, distribution, package/dist modification, Live E2E, Google Docs / Drive mutation, or flagged executable re-run. |
 | Publisher Residual Risk Release Authorization Approval Memo | Done as documentation-only / local-only formal approval record; records approved VMF-side residual risk acceptance plus release authorization for `0.0.1-dev` without claiming Avast vendor clearance or Avast safety certification and without performing new release-path operations. |
 | Publisher vNext Backlog | Done as documentation-only / local-only backlog record; reprioritized to put next release-path gate basis, Avast outcome intake, go/no-go reconciliation, Live E2E / Google Docs authorization, and artifact audit ahead of evidence hardening and vNext enhancements while preserving published `0.0.1-dev` state and separate authorization gates. Post-release follow-up register now records Avast response decision paths, vendor-clearance status/evidence updates if obtained, adverse-response handling, separate Live E2E / Google Docs / Drive gates, and `0.0.1-dev` vNext candidates without performing release, asset, package, tag, Live E2E, Google, OAuth, Avast, or flagged-executable operations. The completed Avast-independent docs-only items are `P1-01`, `P1-02`, and `P1-04`; the first release-path item remains `P0-01`, blocked until an Avast response is received and reviewed. |
@@ -94,7 +94,7 @@ set only; it is not release execution.
 | ADR-0013 release decision record and post-authorization traceability | Done as documentation-only / local-only post-authorization traceability decision record; preserves accepted-at-the-time decision-record boundary; current `0.0.1-dev` state is updated by ADR-0019 and the release-completion records. |
 | ADR-0014 release publication record and post-release evidence boundary | Done as documentation-only / local-only publication-record and post-release-evidence boundary decision record; preserves accepted-at-the-time publication-record boundary; current `0.0.1-dev` state is updated by ADR-0019 and the release-completion records. |
 | ADR-0015 release withdrawal / rollback record and incident evidence boundary | Done as documentation-only / local-only withdrawal, rollback, and incident-evidence boundary decision record; preserves accepted-at-the-time withdrawal, rollback, and incident-evidence boundary; current `0.0.1-dev` state is updated by ADR-0019 and the release-completion records. |
-| ADR-0016 release versioning / tag / artifact identity | Done as documentation-only / local-only release-identity boundary decision record; `0.0.1-dev` / `vmf-publisher-v0.0.1-dev` is recorded with annotated tag object, peeled/package target commit, evidence docs commit, verified package identity, GitHub prerelease URL, uploaded asset, and matching remote/local digest. |
+| ADR-0016 release versioning / tag / artifact identity | Done as documentation-only / local-only release-identity boundary decision record; current canonical `0.0.1-dev` identity is `publisher-v0.0.1-dev`, target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`, asset `vmf-publisher-0.0.1-dev-win-x64.zip`, 983422 bytes, SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`. Older `vmf-publisher-v0.0.1-dev` records are historical / superseded / non-canonical. |
 | ADR-0017 release retention / archival / audit trail | Done as documentation-only / local-only retention, archival, and audit-trail boundary decision record; preserves accepted-at-the-time archival boundary; no archive entry may imply vendor clearance or Avast resolution. Current `0.0.1-dev` state is updated by ADR-0019 and the release-completion records. |
 | ADR-0018 emergency release exception boundary | Done as documentation-only / local-only emergency-exception-boundary decision record; preserves accepted-at-the-time emergency-exception boundary; no emergency exception approval is claimed. Current `0.0.1-dev` state is updated by ADR-0019 and the release-completion records. |
 | ADR-0019 VMF risk acceptance and Release Hold lift | Done as documentation-only / local-only risk-acceptance decision record; Avast vendor clearance remains not obtained; Avast safety certification is not claimed; Release Hold lifted; post-hold release execution sequence advanced through GitHub prerelease publication. |
@@ -153,9 +153,9 @@ update.
 | Item | Status | Required Decision |
 | --- | --- | --- |
 | Phase 3-9 release approval | Historical / superseded for `0.0.1-dev` | Earlier pending approval record is preserved as historical evidence; current `0.0.1-dev` release completion is recorded separately after ADR-0019 VMF risk acceptance. |
-| Release / tag / publication decision | Complete for `0.0.1-dev` | Tag push, remote tag readback, GitHub prerelease creation, and asset upload are recorded complete; this docs-only update does not authorize new release operations. |
-| `0.0.1-dev` package target / evidence docs commits | Fixed | Package target / peeled commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197`. |
-| `0.0.1-dev` package path / size / SHA-256 | Fixed | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; package verification PASS. |
+| Release / tag / publication decision | NO-GO pending gate re-evaluation | Canonical published prerelease identity is now synchronized as `publisher-v0.0.1-dev`; no further release-path operation may proceed until the release execution gate is re-evaluated. |
+| `0.0.1-dev` package target / evidence docs commits | Reconciled | Canonical target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`; older package target / peeled commit `f08eef306ba82e3ea7f031ef652666178f2f0acf` and evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` are historical / superseded / non-canonical for current execution gating. |
+| `0.0.1-dev` package path / size / SHA-256 | Reconciled | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983422 bytes; SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`; older 983404 byte / `73582c...` identity is historical / superseded / non-canonical. |
 | Live E2E decision | Completed for the reviewed run | Final verification passed first; Live E2E rerun passed after OAuth Desktop reauthorization refreshed the local authentication state. |
 | Avast false positive resolution | Risk accepted / vendor response pending | VMF residual risk acceptance recorded by ADR-0019; Avast vendor clearance remains not obtained. |
 | Publisher `0.0.1-dev` final status freeze | Recorded | Final freeze added in `docs/releases/Publisher_0.0.1-dev_FinalStatusFreeze_2026-08-12.md`; future Avast response judgment, vendor-clearance follow-up, Live E2E, and Google Docs / Drive mutation remain separate explicit gates. |
@@ -721,18 +721,18 @@ record identity.
 
 ADR-0016 itself did not create a tag, package, artifact, evidence bundle,
 approval record, authorization record, Release Decision Record, Publication
-Record, or release identity. The `0.0.1-dev` release identity is now recorded
-as `vmf-publisher-v0.0.1-dev`, annotated tag object
-`a962e19ba2b0a494d1158011ae823d579e41711f`, peeled/package target commit
-`f08eef306ba82e3ea7f031ef652666178f2f0acf`, evidence docs commit
-`39df8bedd848da42a4de3cb9461ce4cc86b51197`, package
+Record, or release identity. Current downstream reconciliation records the
+canonical `0.0.1-dev` identity as `publisher-v0.0.1-dev`, annotated tag
+object `04a101729dbab431f9e67e1b7e43e6b9a94dd6e0`, target commit
+`382bd715d8307930d0aeb8bd48116dac3f57af5c`, package
 `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`, asset
-`vmf-publisher-0.0.1-dev-win-x64.zip`, 983404 bytes, SHA-256
-`73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`,
-package generation `PASS`, package verification `PASS`, manifest files 14,
-secret/static package inspection `PASS`, GitHub prerelease URL
-https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev, and
-remote/local digest match.
+`vmf-publisher-0.0.1-dev-win-x64.zip`, 983422 bytes, SHA-256
+`0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`, GitHub
+prerelease URL
+https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev, and one
+uploaded asset. The older `vmf-publisher-v0.0.1-dev` / 983404 byte /
+`73582c...` records are retained only as historical / superseded /
+non-canonical identity records.
 
 ADR-0016 rejects ambiguous or mutable canonical identities such as `latest`,
 local build folders, mutable package names, private local paths, and

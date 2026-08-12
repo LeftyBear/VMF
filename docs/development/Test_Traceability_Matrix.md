@@ -175,12 +175,12 @@ Release boundary:
 | Avast false-positive handling | Vendor response pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
-| Approval recommendation | Record release completion evidence; commit/push of this docs-only update remains pending separate authorization |
+| Approval recommendation | NO-GO until downstream identity synchronization is complete and the release execution gate is re-evaluated |
 | Live E2E | Recorded from prior authorized run as PASS 4/4; not executed by this docs-only task |
 | Google Docs / Google Drive mutation | Not performed by this task; gated |
-| Package identity | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; package verification PASS |
-| Release identity | `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled/package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
-| GitHub Release / asset | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; asset `vmf-publisher-0.0.1-dev-win-x64.zip`; remote asset digest matched local verified package SHA-256 |
+| Package identity | Canonical current published artifact: `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983422 bytes; SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`; target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`; older 983404 byte / `73582c...` identity is historical / superseded / non-canonical |
+| Release identity | Canonical current identity: `publisher-v0.0.1-dev`; annotated tag object `04a101729dbab431f9e67e1b7e43e6b9a94dd6e0`; target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`; older `vmf-publisher-v0.0.1-dev` identity is historical / superseded / non-canonical |
+| GitHub Release / asset | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev; asset `vmf-publisher-0.0.1-dev-win-x64.zip`; remote asset digest matched canonical SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76` |
 | Package creation or update by this docs update | Not performed by this task; no `dist` write |
 | Package/dist update by this docs update | Not performed by this task; no package regeneration |
 | Flagged executable re-run | Not performed by this task; gated by exact authorization |

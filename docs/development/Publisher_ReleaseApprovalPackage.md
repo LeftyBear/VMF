@@ -28,8 +28,8 @@ OAuth/token-store/credentials, or perform any Avast operation.
 
 | Item | State |
 | --- | --- |
-| Formal release state | Risk Accepted Go / responsible-owner release-gate approval recorded / Avast response pending |
-| Approval recommendation | Release gate PASS under evidence-based vendor-clearance criteria; subsequent release, tag, publication, distribution, package/dist, Live E2E, Google Docs / Drive, and flagged executable operations remain separately gated |
+| Formal release state | NO-GO / downstream identity synchronized; release execution gate re-evaluation pending |
+| Approval recommendation | NO-GO until the release execution gate is re-evaluated after downstream identity synchronization; subsequent release, tag, publication, distribution, package/dist, Live E2E, Google Docs / Drive, and flagged executable operations remain separately gated |
 | Avast false-positive handling | Vendor response pending; latest authorized latest-definition rescan did not reproduce the detection; responsible-owner approval recorded for the current release-control assessment |
 | Vendor clearance | Accepted for release-gate purposes under documented evidence-based criteria; Avast direct response remains pending |
 | Avast safety certification | Not claimed |
@@ -41,18 +41,18 @@ OAuth/token-store/credentials, or perform any Avast operation.
 | Avast manual scan / CyberCapture result | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; release ZIP / repo Release exe match; Avast showed "このファイルは安全のようです"; no detection name; `IDP.HELU.PSD11` not reproduced; result `not reproduced`; local manual confirmation only |
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
 | Release readiness | Completed for the `0.0.1-dev` GitHub prerelease; release completion evidence recorded docs-only |
-| Release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled/package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
-| Final verification | Local checks passed on 2026-08-12; published artifact final verification is not complete because local `dist` ZIP identity does not match the recorded published identity |
+| Release identity | Canonical current identity: `0.0.1-dev` / `publisher-v0.0.1-dev`; annotated tag object `04a101729dbab431f9e67e1b7e43e6b9a94dd6e0`; target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`; see `docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md`. Older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` records are historical / superseded / non-canonical. |
+| Final verification | Local checks passed on 2026-08-12; release execution gate remains NO-GO until downstream identity synchronization is reviewed against the canonical published artifact identity |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
 | Result review | Recorded; initial Live E2E failure was attributed to stale, revoked, or inconsistent saved OAuth token state; rerun passed after token deletion and OAuth Desktop reauthorization |
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
 | Package creation or update by this docs update | Not performed; no `dist` write by this documentation-only update |
-| Package path / size / SHA-256 | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
-| Local `dist` ZIP package evidence | 2026-08-12 package evidence recorded for `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`: 983422 bytes; SHA-256 `0174810D21C6072B8206ACF2FED90B72C2E6BE499C65B231D7D72D71FD69CB76`; manifest `VMF Publisher` / `0.0.1-dev` / `win-x64` / `Release` / `selfContained=false` / 14 files; Static package verification PASS; Build/package PASS |
-| Artifact identity reconciliation | GitHub Release asset metadata confirmed the recorded published identity: 983404 bytes and SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; the local `dist` ZIP package evidence above is not the recorded published artifact and must not be treated as a replacement release asset |
+| Package path / size / SHA-256 | Canonical current published artifact: `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983422 bytes; SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76` |
+| Local `dist` ZIP package evidence | Local `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip` currently matches the canonical published artifact: 983422 bytes; SHA-256 `0174810D21C6072B8206ACF2FED90B72C2E6BE499C65B231D7D72D71FD69CB76`; manifest `VMF Publisher` / `0.0.1-dev` / `win-x64` / `Release` / `selfContained=false` / 14 files |
+| Artifact identity reconciliation | `Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md` confirmed the canonical published identity as `publisher-v0.0.1-dev`, target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`, 983422 bytes, and SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`; older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` records are historical / superseded / non-canonical |
 | Package generation / verification | PASS / PASS for recorded package evidence; manifest files 14; secret/static package inspection PASS |
-| GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
-| Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
+| GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
+| Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983422 bytes; remote asset digest matches canonical SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76` |
 | Flagged executable re-run | Not performed |
 | Release, tag, publication by this docs update | Not performed; this documentation/status alignment does not create tags, publish artifacts, update a GitHub Release, or execute a release operation |
 | Post-release evidence capture | Mandatory after any Risk Accepted Go release-path execution; must preserve artifact identity, final verification evidence, publication evidence, post-release observations, and unresolved Avast/vendor-clearance state |
@@ -126,14 +126,14 @@ post-release observations, and the continuing Avast pending / vendor clearance
 not obtained state without retroactively converting local no-detection evidence
 into vendor clearance.
 
-Final verification local checks passed on 2026-08-12. The local `dist` ZIP
-identity does not match the recorded published identity because it is a later
-regenerated local ZIP. GitHub Release asset metadata confirms the recorded
-published identity as 983404 bytes with SHA-256
-`73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`. The
-local regenerated ZIP must not be used as release evidence or replacement
-artifact unless a separate approved cleanup, restore, or rebuild path is
-recorded.
+Final verification local checks passed on 2026-08-12. The later release
+identity reconciliation confirmed that the local `dist` ZIP and GitHub
+Release asset match the canonical current published identity: 983422 bytes
+with SHA-256
+`0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`. The
+older 983404 byte / `73582c...` identity must not be used as current release
+evidence or replacement artifact unless a separate approved correction record
+supersedes the reconciliation.
 
 The initial build failure during this run was a transient local execution
 issue caused by a Release-output DLL lock while build and tests overlapped.
@@ -159,7 +159,8 @@ The build passed after serial rerun with warnings 0 / errors 0.
 | ADR-0019 result review | Recorded in this package | Reviews final verification and Live E2E results; package generation, package verification, tag/release, GitHub prerelease publication, and asset upload are recorded complete for `0.0.1-dev`. |
 | `docs/distribution/PublisherReleaseRunbook.md` | Draft | Defines release operation sequencing and authorization gates. |
 | `docs/distribution/ReleaseChecklist.md` | Existing release checklist plus release completion record | Preserves completed `0.0.0-dev` evidence and records `0.0.1-dev` annotated tag object, peeled/package target commit, evidence docs commit, GitHub prerelease URL, asset identity, remote/local digest match, package generation PASS, and package verification PASS. |
-| `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Release completion notes | Records `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`, tag object, peeled/package target commit, evidence docs commit, GitHub Release URL, asset name, size, SHA-256, package verification, remote digest match, and publication result. |
+| `docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md` | Canonical identity reconciliation | Records `0.0.1-dev` / `publisher-v0.0.1-dev`, target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`, GitHub Release URL, asset name, 983422 bytes, SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`, and NO-GO until downstream synchronization and release execution gate re-evaluation. |
+| `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Release completion notes synchronized | Records canonical `0.0.1-dev` / `publisher-v0.0.1-dev` / 983422 byte / `0174810d...` identity and preserves older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` facts only as historical / superseded / non-canonical identity evidence. |
 
 No new publication or vendor-clearance evidence is created by this approval
 package. The recorded `PASS` package evidence is limited to the supplied
@@ -241,23 +242,23 @@ The next Publisher release identity is:
 | Field | Value |
 | --- | --- |
 | Version | `0.0.1-dev` |
-| Tag | `vmf-publisher-v0.0.1-dev` |
-| Annotated tag object | `a962e19ba2b0a494d1158011ae823d579e41711f` |
-| Peeled/package target commit | `f08eef306ba82e3ea7f031ef652666178f2f0acf` |
-| Evidence docs commit | `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
+| Tag | `publisher-v0.0.1-dev` |
+| Annotated tag object | `04a101729dbab431f9e67e1b7e43e6b9a94dd6e0` |
+| Peeled/package target commit | `382bd715d8307930d0aeb8bd48116dac3f57af5c` |
+| Evidence docs commit | Historical `39df8bedd848da42a4de3cb9461ce4cc86b51197`; current reconciliation record commit `3759e2c4fc0d6438729ab8dffc62bc8d62abf753` |
 | Runtime | `win-x64` |
 | Configuration | `Release` |
 | Package type | Framework-dependent (`selfContained=false`) |
 | Package path | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip` |
 | Asset name | `vmf-publisher-0.0.1-dev-win-x64.zip` |
-| Package size | 983404 bytes |
-| Package SHA-256 | `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
+| Package size | 983422 bytes |
+| Package SHA-256 | `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76` |
 | Package generation | PASS |
 | Package verification | PASS |
 | Manifest files | 14 |
 | Secret/static package inspection | PASS |
 | Tag state | Pushed; remote tag readback PASS |
-| GitHub Release state | Published prerelease `true`; release name `VMF Publisher 0.0.1-dev`; https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev |
+| GitHub Release state | Published prerelease `true`; release name `VMF Publisher 0.0.1-dev`; https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev |
 | Asset upload | Complete; remote asset digest matched local verified package SHA-256 |
 | Publication state | GitHub prerelease publication complete |
 

@@ -8,6 +8,23 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Synchronized downstream Publisher `0.0.1-dev` release identity records after
+  `docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md`.
+  Current status, the release approval package, release runbook, release
+  checklist, and Voyage Log now treat the canonical published prerelease
+  identity as `publisher-v0.0.1-dev`, target commit
+  `382bd715d8307930d0aeb8bd48116dac3f57af5c`, asset
+  `vmf-publisher-0.0.1-dev-win-x64.zip`, size 983422 bytes, and SHA-256
+  `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`.
+  Older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` records are
+  retained as historical / superseded / non-canonical. Release execution
+  remains `NO-GO` until the release execution gate is re-evaluated. This
+  docs-only update does not update package or `dist` outputs, operate on tags,
+  update GitHub Release records or assets, publish artifacts, run Live E2E,
+  mutate Google Docs or Drive, operate on OAuth/token stores, rerun Avast,
+  re-run flagged executables, claim vendor clearance, or claim Avast safety
+  certification.
+
 - Added
   `docs/development/Publisher_ResponsibleOwnerApprovalReleaseGateReevaluationRecord_2026-08-12.md`
   as the docs-only responsible-owner approval and release-gate re-evaluation
@@ -160,6 +177,10 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   `vmf-publisher-0.0.1-dev-win-x64.zip`, size 983404 bytes, and matching
   remote asset digest / local package SHA-256
   `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`.
+  These values are now retained as historical / superseded / non-canonical for
+  current execution gating; the canonical published prerelease identity is
+  recorded by the 2026-08-12 release identity reconciliation and downstream
+  synchronization records.
 
 - Updated Publisher release status, checklist, approval package, runbook,
   traceability matrix, and Voyage Log records to preserve the completed

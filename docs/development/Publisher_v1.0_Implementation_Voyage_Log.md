@@ -2517,8 +2517,16 @@ Record, stage changes, commit changes, or push commits.
 
 ## Publisher 0.0.1-dev Release Identity
 
-Status: COMPLETE as published GitHub prerelease; completion evidence recorded
-docs-only.
+Status: Historical / superseded / non-canonical for current execution gating.
+
+Current canonical identity is recorded by
+`docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md`:
+`publisher-v0.0.1-dev`, target commit
+`382bd715d8307930d0aeb8bd48116dac3f57af5c`, asset
+`vmf-publisher-0.0.1-dev-win-x64.zip`, 983422 bytes, SHA-256
+`0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`.
+The older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` identity
+below is retained as historical release-identity evidence only.
 
 Recorded `0.0.1-dev` as the VMF Publisher release version and
 `vmf-publisher-v0.0.1-dev` as the corresponding tag identity.
@@ -2576,7 +2584,15 @@ commit changes, or push commits.
 
 ## Publisher 0.0.1-dev Final Package Identity
 
-Status: RECORDED as docs-only final package identity.
+Status: Historical / superseded / non-canonical for current execution gating.
+
+Current canonical package identity is recorded by
+`docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md`:
+`dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`, 983422 bytes,
+SHA-256
+`0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`, attached
+to GitHub prerelease `publisher-v0.0.1-dev`. The older 983404 byte /
+`73582c...` package identity below is retained as historical evidence only.
 
 Recorded the final VMF Publisher `0.0.1-dev` package identity after package
 generation and package verification were completed.
@@ -2638,6 +2654,36 @@ code, change tests, modify Frozen specifications, change public APIs, stage
 changes, commit changes, or push commits. It is not new tag/release execution
 authorization. Avast vendor clearance remains not obtained; ADR-0019 VMF-side
 risk acceptance remains the release basis.
+
+## Publisher 0.0.1-dev Downstream Identity Synchronization
+
+Status: NO-GO maintained; downstream identity records synchronized.
+
+Synchronized current status, release approval package, release runbook,
+release checklist, CHANGELOG, and this Voyage Log after
+`docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md`.
+
+The canonical current published prerelease identity is:
+
+- tag: `publisher-v0.0.1-dev`;
+- target commit: `382bd715d8307930d0aeb8bd48116dac3f57af5c`;
+- GitHub Release URL:
+  https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev;
+- asset: `vmf-publisher-0.0.1-dev-win-x64.zip`;
+- size: 983422 bytes;
+- SHA-256:
+  `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`.
+
+The older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` identity is
+retained as historical / superseded / non-canonical. Release execution remains
+`NO-GO` until the release execution gate is re-evaluated.
+
+This documentation synchronization did not update package or `dist` outputs,
+operate on tags, update GitHub Release records or assets, publish artifacts,
+run Live E2E, mutate Google Docs or Google Drive, operate on OAuth or token
+stores, operate on Avast, run or re-run flagged executables, claim vendor
+clearance, claim Avast safety certification, stage changes, commit changes, or
+push commits.
 
 ## Publisher vNext Backlog Reprioritization
 

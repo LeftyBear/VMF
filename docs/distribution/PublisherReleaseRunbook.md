@@ -48,20 +48,20 @@ Current operating snapshot:
 
 | Item | State |
 | --- | --- |
-| Formal state | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance |
-| Release gate | Hold lifted by ADR-0019; release execution advanced through GitHub prerelease publication |
-| Release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled/package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
-| Package identity | Fixed: `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
-| Package target commit | Fixed: `f08eef306ba82e3ea7f031ef652666178f2f0acf` |
+| Formal state | NO-GO / downstream identity synchronized; release execution gate re-evaluation pending |
+| Release gate | Hold lifted by ADR-0019; release execution advanced through GitHub prerelease publication, but further release execution is blocked until canonical identity synchronization is reviewed |
+| Release identity | Canonical current identity: `0.0.1-dev` / `publisher-v0.0.1-dev`; annotated tag object `04a101729dbab431f9e67e1b7e43e6b9a94dd6e0`; target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`; older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` records are historical / superseded / non-canonical |
+| Package identity | Canonical current published artifact: `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983422 bytes; SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76` |
+| Package target commit | Canonical target commit: `382bd715d8307930d0aeb8bd48116dac3f57af5c` |
 | Avast false-positive handling | Vendor response pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
-| Approval recommendation | Record release completion evidence; commit/push of this docs-only update remains pending separate authorization |
+| Approval recommendation | NO-GO until the release execution gate is re-evaluated after downstream identity synchronization |
 | Final verification / Live E2E / result review | PASS / Live E2E 4 of 4 PASS / result review complete |
 | Package generation / verification | PASS / PASS; manifest files 14; secret/static package inspection PASS |
 | Tag state | Pushed; remote tag readback PASS |
-| GitHub Release / publication | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
-| Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
+| GitHub Release / publication | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
+| Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983422 bytes; remote asset digest matches canonical SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76` |
 
 Local-only verification does not establish:
 

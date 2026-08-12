@@ -19,8 +19,8 @@ Result codes:
 
 ## 0. Release Identity: 0.0.1-dev
 
-Status: COMPLETE as published GitHub prerelease; completion evidence recorded
-docs-only.
+Status: NO-GO / downstream identity synchronized; release execution gate
+re-evaluation pending.
 
 This section records the next Publisher release identity after the completed
 `0.0.0-dev` release. It does not modify the completed Phase 3-10
@@ -29,18 +29,18 @@ This section records the next Publisher release identity after the completed
 | Item | Result | Evidence | Reviewer | Date | Remarks |
 | --- | --- | --- | --- | --- | --- |
 | Next release version adopted | PASS | `0.0.1-dev` | Codex | 2026-08-09 | Adopted as the next release identity because `0.0.0-dev` is already used as tag, GitHub Release, and asset identity. |
-| Git tag published | PASS | `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled commit `f08eef306ba82e3ea7f031ef652666178f2f0acf` | Codex | 2026-08-09 | Tag push complete; remote tag readback PASS. |
+| Git tag published | PASS | Canonical current tag `publisher-v0.0.1-dev`; annotated tag object `04a101729dbab431f9e67e1b7e43e6b9a94dd6e0`; target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c` | Codex | 2026-08-12 | `Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md` supersedes older `vmf-publisher-v0.0.1-dev` tag identity for current execution gating. |
 | Runtime identifier recorded | PASS | `win-x64` | Codex | 2026-08-09 | Recorded from the fixed package identity. |
 | Configuration recorded | PASS | `Release` | Codex | 2026-08-09 | Recorded from the fixed package identity. |
 | Package type recorded | PASS | `selfContained=false` | Codex | 2026-08-09 | Framework-dependent package identity. |
-| Package target commit fixed | PASS | `f08eef306ba82e3ea7f031ef652666178f2f0acf` | Codex | 2026-08-09 | Peeled commit used for package/release target. |
-| Evidence docs commit recorded | PASS | `39df8bedd848da42a4de3cb9461ce4cc86b51197` | Codex | 2026-08-09 | Kept distinct from the package target commit. |
-| Package artifact recorded | PASS | Asset `vmf-publisher-0.0.1-dev-win-x64.zip`; `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` | Codex | 2026-08-09 | Package identity fixed after package generation and verification. |
+| Package target commit fixed | PASS | Canonical target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c` | Codex | 2026-08-12 | Older package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf` is historical / superseded / non-canonical for current execution gating. |
+| Evidence docs commit recorded | PASS | Historical evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197`; reconciliation commit `3759e2c4fc0d6438729ab8dffc62bc8d62abf753` | Codex | 2026-08-12 | Kept distinct from the package target commit. |
+| Package artifact recorded | PASS | Asset `vmf-publisher-0.0.1-dev-win-x64.zip`; `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983422 bytes; SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76` | Codex | 2026-08-12 | Canonical current published artifact identity; older 983404 byte / `73582c...` identity is historical / superseded / non-canonical. |
 | Package generation recorded | PASS | `0.0.1-dev`; `win-x64`; `Release`; `selfContained=false`; manifest files 14 | Codex | 2026-08-09 | This checklist records supplied package-generation evidence; this docs update did not regenerate or modify the package. |
 | Package verification recorded | PASS | Package verification PASS; secret/static package inspection PASS | Codex | 2026-08-09 | Verification applies to the fixed package path, size, and SHA-256 above. |
 | Identity chain reviewed | PASS | Final verification PASS; Live E2E 4/4 PASS; result review complete; package generation PASS; package verification PASS; tag push complete; remote tag readback PASS; GitHub prerelease creation complete; asset upload complete | Codex | 2026-08-09 | ADR-0016 identity chain is version -> package target commit -> annotated tag / peeled commit -> verified package -> GitHub prerelease asset -> evidence docs commit. |
-| GitHub Release published | PASS | https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev`; prerelease `true` | Codex | 2026-08-09 | GitHub prerelease creation complete. |
-| Asset upload verified | PASS | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` | Codex | 2026-08-09 | Asset upload complete; remote asset digest / local verified package SHA-256 match. |
+| GitHub Release published | PASS | https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev`; prerelease `true` | Codex | 2026-08-12 | Canonical current published prerelease identity. |
+| Asset upload verified | PASS | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983422 bytes; remote asset digest matched canonical SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76` | Codex | 2026-08-12 | Asset upload complete; remote asset digest / canonical published artifact SHA-256 match. |
 | Prior release identity unchanged | PASS | Existing `0.0.0-dev` tag, GitHub Release, and asset identity unchanged | Codex | 2026-08-09 | Historical identity was not retargeted, deleted, replaced, or reused. |
 | Avast clearance boundary preserved | PASS | Vendor clearance not obtained; ADR-0019 VMF-side residual risk acceptance basis retained | Codex | 2026-08-09 | Publication record does not claim Avast vendor clearance or Avast safety certification. |
 | Avast manual scan / CyberCapture recorded | PASS | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; release ZIP / repo Release exe match; Avast showed "このファイルは安全のようです"; no detection name; `IDP.HELU.PSD11` not reproduced | Codex | 2026-08-11 | Evidence-only local manual confirmation. It does not claim Avast vendor clearance, Avast safety certification, final release authorization, new package work, tag/release, or publication. |
