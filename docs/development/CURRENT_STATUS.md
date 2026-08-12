@@ -1,6 +1,6 @@
 # VMF Publisher Current Status
 
-Status  : Phase 4 local-only verification complete / 0.0.1-dev GitHub prerelease published
+Status  : Risk Accepted Go / Avast response pending / vendor clearance not obtained
 Scope   : Current Publisher release-gate and local-verification state
 Depends : docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_TestClassification.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
 
@@ -25,23 +25,23 @@ set only; it is not release execution.
 
 | Item | State |
 | --- | --- |
-| Overall status | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance / `0.0.1-dev` GitHub prerelease published |
+| Overall status | Risk Accepted Go / Avast response pending / vendor clearance not obtained |
 | Local verification | Complete within the approved local-only safety boundary |
 | Release readiness | Completed for the `0.0.1-dev` GitHub prerelease; release completion evidence recorded docs-only |
 | Release gate | Hold lifted by VMF-side residual risk acceptance; release execution advanced through GitHub prerelease publication |
 | Release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled/package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
-| Avast false positive handling | Vendor response still pending; VMF risk acceptance recorded |
+| Avast false positive handling | Vendor response still pending; latest authorized reproducibility verification did not reproduce the detection; responsible owner Go recorded as VMF-side risk acceptance |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
 | Avast manual scan / CyberCapture result | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; release ZIP / repo Release exe match; Avast showed "このファイルは安全のようです"; no detection name; `IDP.HELU.PSD11` not reproduced; result `not reproduced`; local manual confirmation only, not vendor clearance |
 | Avast local reproduction check | Authorized local reproduction check on 2026-08-11 observed no Avast detection, deletion, block, or `IDP.HELU.PSD11` reproduction during ZIP extraction, `--help`, packaged `verify`, packaged `dry-run`, package generation, package verification, or Live E2E. Evidence only; not vendor clearance, Avast safety certification, release approval, or replacement of the published package identity. |
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
-| False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
+| False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-12 |
 | VMF residual risk acceptance | Accepted by ADR-0019 |
 | Release authorization record | Exists for Publisher `0.0.1-dev`; repository synchronization recorded separately from release execution |
 | Release authorization push | Commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a` pushed to `origin/main` by normal non-force push; post-push `HEAD` equaled `origin/main` and working tree was clean |
-| Approval recommendation | Record release completion evidence; commit/push of this docs-only update remains pending separate authorization |
+| Approval recommendation | Risk Accepted Go; final verification before completion and post-release evidence capture are mandatory |
 | Post-hold execution order | final verification -> Live E2E -> result review -> package/dist -> tag/release |
 | Final verification | PASS before Live E2E: Release build PASS warnings 0 / errors 0; Unit tests 492 passed / 0 failed / 0 skipped; Integration tests 16 passed / 0 failed / 0 skipped; `dotnet format --verify-no-changes` PASS; `git diff --check` PASS |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |

@@ -1,7 +1,7 @@
 # Publisher Release Approval Package
 
-Status  : Hold lifted by VMF risk acceptance; 0.0.1-dev GitHub prerelease published
-Scope   : Docs-only / local-only release approval package organization after ADR-0019 risk acceptance
+Status  : Risk Accepted Go; Avast response pending; vendor clearance not obtained
+Scope   : Docs-only / local-only release approval package organization after explicit owner risk acceptance
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_TestClassification.md, docs/distribution/PublisherReleaseRunbook.md
 
 This package summarizes the current VMF Publisher approval state for review. It
@@ -28,20 +28,20 @@ OAuth/token-store/credentials, or perform any Avast operation.
 
 | Item | State |
 | --- | --- |
-| Formal release state | Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance / `0.0.1-dev` GitHub prerelease published |
-| Approval recommendation | Record release completion evidence; commit/push of this docs-only update remains pending separate authorization |
-| Avast false-positive handling | Vendor response pending; VMF residual risk accepted |
+| Formal release state | Risk Accepted Go / Avast response pending / vendor clearance not obtained |
+| Approval recommendation | Risk Accepted Go for the explicitly authorized Publisher path; final verification and post-release evidence capture are mandatory before treating the path as complete |
+| Avast false-positive handling | Vendor response pending; latest authorized reproduction verification did not reproduce the detection; responsible owner Go recorded as VMF-side risk acceptance |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
 | Release authorization record | Created and pushed in commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a`; repository synchronization only, not release execution by this docs update |
 | Current status update | `docs/development/CURRENT_STATUS.md` updated and pushed in commit `a04126ce24c7abd376bec943466c30cd565bb70e`; documentation/status alignment only |
-| False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-09 |
+| False Positive submission | Submitted 2026-07-25; unanswered as of 2026-08-12 |
 | Avast standalone executable scan | No detection observed for `vmf-publisher.exe`; decision input only |
 | Avast manual scan / CyberCapture result | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; release ZIP / repo Release exe match; Avast showed "このファイルは安全のようです"; no detection name; `IDP.HELU.PSD11` not reproduced; result `not reproduced`; local manual confirmation only |
 | Avast setting-dependent observation | Message stopped after changing automatic suspicious-file submission to user-choice handling; decision input only |
 | Release readiness | Completed for the `0.0.1-dev` GitHub prerelease; release completion evidence recorded docs-only |
 | Release identity | `0.0.1-dev` / `vmf-publisher-v0.0.1-dev`; annotated tag object `a962e19ba2b0a494d1158011ae823d579e41711f`; peeled/package target commit `f08eef306ba82e3ea7f031ef652666178f2f0acf`; evidence docs commit `39df8bedd848da42a4de3cb9461ce4cc86b51197` |
-| Final verification | PASS before Live E2E: Release build PASS warnings 0 / errors 0; Unit tests 492 passed / 0 failed / 0 skipped; Integration tests 16 passed / 0 failed / 0 skipped; `dotnet format --verify-no-changes` PASS; `git diff --check` PASS |
+| Final verification | Required for this Risk Accepted Go path before completion; previously recorded PASS evidence remains historical for the fixed `0.0.1-dev` identity |
 | Live E2E | PASS after OAuth Desktop reauthorization refreshed the local authentication state; total 4 / passed 4 / failed 0 / skipped 0 |
 | Result review | Recorded; initial Live E2E failure was attributed to stale, revoked, or inconsistent saved OAuth token state; rerun passed after token deletion and OAuth Desktop reauthorization |
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
@@ -52,6 +52,7 @@ OAuth/token-store/credentials, or perform any Avast operation.
 | Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
 | Flagged executable re-run | Not performed |
 | Release, tag, publication by this docs update | Not performed; this documentation/status alignment does not create tags, publish artifacts, update a GitHub Release, or execute a release operation |
+| Post-release evidence capture | Mandatory after any Risk Accepted Go release-path execution; must preserve artifact identity, final verification evidence, publication evidence, post-release observations, and unresolved Avast/vendor-clearance state |
 
 Local-only verification remains useful evidence for source quality inside its
 approved boundary. It is not release readiness, package approval, Live E2E
@@ -83,6 +84,44 @@ or a new decision:
 
 Authorization for one gate must not be treated as authorization for any other
 gate.
+
+## 2.1 Risk Accepted Go Basis
+
+Approval Recommendation = Risk Accepted Go.
+
+Basis:
+
+- Avast has not responded to the false-positive submission;
+- latest authorized reproducibility verification did not reproduce the Avast
+  detection;
+- the responsible owner gave an explicit Go decision;
+- vendor clearance remains not obtained;
+- Avast safety certification is not claimed;
+- the decision advances only through explicit VMF-side risk acceptance.
+
+Relationship to ADR-0003 and ADR-0008:
+
+- ADR-0003 normal release-gate prerequisites are not fully satisfied because
+  vendor clearance has not been obtained and Avast has not provided a response;
+- ADR-0003 permits a formally accepted repository-owner risk decision as the
+  alternative false-positive disposition path;
+- ADR-0008 preflight hard-stop controls remain the default boundary while
+  Avast handling is pending;
+- this Risk Accepted Go record is a limited owner-risk-acceptance exception to
+  proceed through the authorized release path; Avast pending remains in
+  effect, vendor clearance remains not obtained, and Avast safety
+  certification is not claimed.
+
+Final verification remains mandatory before release-path completion. If final
+verification fails, is incomplete, changes artifact identity, or produces
+ambiguous evidence, the path returns to Hold until a new owner decision is
+recorded.
+
+Post-release evidence capture is mandatory after execution. It must record the
+exact artifact identity, publication identity, final verification evidence,
+post-release observations, and the continuing Avast pending / vendor clearance
+not obtained state without retroactively converting local no-detection evidence
+into vendor clearance.
 
 ## 3. Evidence Index
 
@@ -156,16 +195,17 @@ a later operation-specific authorization:
 - changing production code, tests, public APIs, persisted schemas, canonical
   formats, or Frozen specifications.
 
-## 6. Post-Hold Execution Conditions
+## 6. Risk Accepted Go Execution Conditions
 
-Release-path work may proceed only in this order, with each step separately
-authorized and recorded:
+Release-path work under Risk Accepted Go may proceed only in this order, with
+each step separately authorized and recorded:
 
 1. Final verification.
 2. Live E2E.
 3. Result review.
 4. Package/dist.
 5. Tag/release.
+6. Post-release evidence capture.
 
 If any step fails, lacks authorization, produces ambiguous evidence, or changes
 artifact identity, the sequence stops until a separate recorded decision
@@ -278,16 +318,21 @@ certification.
 
 ## 9. Approval Recommendation
 
-Approval Recommendation = Record release authorization and current-status
-synchronization evidence; this docs-only update does not perform release
-execution.
+Approval Recommendation = Risk Accepted Go; this docs-only update does not
+perform release execution.
 
 Basis:
 
-- Release Hold is lifted by ADR-0019 VMF-side residual risk acceptance;
-- Avast vendor response remains pending;
+- Avast vendor response remains pending and unanswered;
+- latest authorized reproducibility verification did not reproduce the Avast
+  detection;
+- the responsible owner gave an explicit Go decision;
 - vendor clearance has not been obtained;
 - Avast safety certification is not claimed;
+- ADR-0003 / ADR-0008 normal gate controls remain in force except for the
+  limited owner-risk-acceptance path recorded here;
+- final verification is mandatory before completion;
+- post-release evidence capture is mandatory after any release-path execution;
 - manual Avast scan / CyberCapture local evidence records `IDP.HELU.PSD11` as
   not reproduced for `vmf-publisher.exe` SHA-256
   `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`, without

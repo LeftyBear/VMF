@@ -1,7 +1,7 @@
 # Publisher Avast Response Intake Template
 
-Status  : Template only / no Avast response received; VMF risk acceptance recorded separately
-Scope   : Safe intake record for future Avast false-positive response review after ADR-0019 risk acceptance
+Status  : No Avast response received; local reproduction not reproduced; owner Risk Accepted Go recorded
+Scope   : Safe intake record for Avast-pending false-positive handling and VMF-side risk acceptance
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_PreflightHardening.md, docs/distribution/PublisherReleaseRunbook.md
 
 This template is for recording a future Avast false-positive response without
@@ -20,7 +20,7 @@ ADR-0019 records VMF-side residual risk acceptance and lifts the Release Hold
 without treating the state as vendor clearance.
 
 The False Positive submission sent to Avast on 2026-07-25 remains unanswered
-as of 2026-08-09.
+as of 2026-08-12.
 
 A later local manual Avast scan / CyberCapture observation is recorded as
 evidence only: `vmf-publisher.exe` SHA-256
@@ -41,6 +41,12 @@ contained `vmf-publisher.exe` SHA-256
 local reproduction evidence only. It is not a vendor response, vendor
 clearance, Avast safety certification, release approval, publication approval,
 or replacement of the published package identity.
+
+On 2026-08-12, the responsible owner recorded a Go decision with explicit
+VMF-side risk acceptance because Avast had not responded and the latest
+authorized reproducibility verification did not reproduce the detection. This
+is a Risk Accepted Go decision only. Avast pending remains in effect, vendor
+clearance remains not obtained, and Avast safety certification is not claimed.
 
 ## 1. Intake Metadata
 
@@ -142,7 +148,7 @@ current release hold.
 | VMF residual risk accepted without vendor clearance | PASS | ADR-0019 records VMF risk acceptance and Release Hold lift. |
 | Local manual Avast scan not reproduced for selected executable | PASS | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; Avast showed "このファイルは安全のようです"; no `IDP.HELU.PSD11` detection. Evidence only; not vendor clearance. |
 | Local authorized reproduction check not reproduced | PASS | 2026-08-11 check observed no Avast detection, deletion, block, or `IDP.HELU.PSD11` reproduction during ZIP extraction, `--help`, packaged `verify`, packaged `dry-run`, package generation, package verification, or Live E2E. Evidence only; not vendor clearance. |
-| Repository owner explicitly reopens the required next gate | PENDING | Follow ADR-0019 order: final verification, Live E2E, result review, package/dist, tag/release. |
+| Repository owner explicitly reopens the required next gate | PASS | 2026-08-12 responsible owner Go recorded as Risk Accepted Go while Avast response remains pending and vendor clearance is not obtained. |
 | Flagged executable re-run explicitly authorized, if needed | PENDING |  |
 | Live E2E explicitly authorized, if needed | PENDING |  |
 | Package creation/update explicitly authorized, if needed | PENDING |  |
@@ -150,6 +156,8 @@ current release hold.
 | Release explicitly authorized, if needed | PENDING |  |
 | Tag creation explicitly authorized, if needed | PENDING |  |
 | Publication explicitly authorized, if needed | PENDING |  |
+| Final verification before completion | PENDING | Mandatory for the Risk Accepted Go path. |
+| Post-release evidence capture | PENDING | Mandatory after any Risk Accepted Go release-path execution; must record artifact identity, publication evidence, final verification evidence, post-release observations, and continuing Avast pending / vendor clearance not obtained state. |
 
 Authorization for one condition does not authorize any other condition.
 
@@ -168,6 +176,7 @@ Record only sanitized notes needed to understand the intake decision.
 | 2026-08-09 | Repository owner / VMF | VMF risk accepted; Release Hold lifted; vendor clearance not obtained | ADR-0019 | Avast response not received; final verification, Live E2E, result review, package/dist, and tag/release not executed. |
 | 2026-08-11 | Repository owner / VMF | Manual scan not reproduced; gate may be reconsidered only through separate authorization | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; Avast showed "このファイルは安全のようです"; no `IDP.HELU.PSD11` detection | Avast vendor response not received; vendor clearance not obtained; final verification, release authorization, and any future release-path operations remain separately gated. |
 | 2026-08-11 | Repository owner / VMF | Authorized local reproduction check not reproduced | ZIP extraction PASS; `--help` exit 0; packaged `verify` exit 0 with minimal Markdown; packaged `dry-run` exit 0; package generation PASS; package verification PASS; Live E2E 4 passed / 0 failed / 0 skipped; no Avast detection, deletion, block, or `IDP.HELU.PSD11` reproduction observed | Avast vendor response not received; vendor clearance not obtained; Avast safety certification not claimed; local regenerated package identity does not replace the published package identity. |
+| 2026-08-12 | Responsible owner / VMF | Risk Accepted Go: proceed through explicit owner risk acceptance while Avast response remains pending | Avast response still not received; latest authorized reproducibility verification did not reproduce detection; owner Go recorded | Vendor clearance not obtained; Avast safety certification not claimed; final verification before completion and post-release evidence capture are mandatory. |
 
 ## 9. Explicit Non-Actions
 
@@ -176,6 +185,7 @@ This intake template does not:
 - receive or assert an Avast response;
 - claim Avast vendor clearance;
 - claim Avast safety certification;
+- claim Avast resolution;
 - approve release readiness;
 - approve package creation or package update;
 - write to `dist`;
