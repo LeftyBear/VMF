@@ -3061,6 +3061,46 @@ Avast UI, change Avast settings, release quarantine, add exclusions, rerun or
 re-run `vmf-publisher.exe`, process an Avast response, obtain vendor
 clearance, or claim Avast safety certification.
 
+## Publisher Operation-Specific Authorization Record
+
+Status: NO-GO / operation-specific authorization pending.
+
+Added
+`docs/development/Publisher_OperationSpecificAuthorizationRecord_2026-08-12.md`
+as the docs-only operation-specific authorization placeholder for the selected
+next operation:
+
+`Final verification / release execution completion decision for the existing canonical prerelease`.
+
+The record fixes the canonical identity as:
+
+- version: `0.0.1-dev`;
+- tag: `publisher-v0.0.1-dev`;
+- target commit: `382bd715d8307930d0aeb8bd48116dac3f57af5c`;
+- asset: `vmf-publisher-0.0.1-dev-win-x64.zip`;
+- size: 983422 bytes;
+- SHA-256:
+  `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`.
+
+No approver or approval timestamp is recorded. The only later permitted
+decision range is the completion decision for the existing canonical
+prerelease, and the current decision remains
+`NO-GO / operation-specific authorization pending`.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+create, rebuild, regenerate, verify, replace, or write package or `dist`
+output, create, delete, move, retarget, or replace tags, push tags, create,
+update, delete, or replace GitHub Releases or prereleases, upload, replace, or
+delete release assets, rerun publication, run Live E2E, set
+`VMF_PUBLISHER_GOOGLE_E2E=1`, mutate Google Docs or Google Drive, mutate OAuth
+credentials or token stores, operate the Avast UI, change Avast settings,
+release quarantine, add exclusions, rerun or re-run `vmf-publisher.exe`,
+process an Avast response, obtain vendor clearance, or claim Avast safety
+certification.
+
 ## Publisher 0.0.1-dev Final Status Freeze
 
 Status: RECORDED as docs-only final status freeze.

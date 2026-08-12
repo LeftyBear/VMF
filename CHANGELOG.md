@@ -9,6 +9,18 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 ## Changed
 
 - Added
+  `docs/development/Publisher_OperationSpecificAuthorizationRecord_2026-08-12.md`
+  as the docs-only operation-specific authorization placeholder for the final
+  verification / release execution completion decision for the existing
+  canonical prerelease. The record explicitly leaves approver and approval
+  timestamp as not recorded, fixes the canonical `0.0.1-dev` /
+  `publisher-v0.0.1-dev` identity, and keeps the current decision
+  `NO-GO / operation-specific authorization pending`. Package or `dist`
+  creation, tag/publication rerun, Release or asset update, Live E2E, Google
+  Docs / Drive mutation, OAuth/token-store operation, Avast operation, and
+  flagged executable re-run remain excluded.
+
+- Added
   `docs/development/Publisher_NextOperationAuthorizationScopeRecord_2026-08-12.md`
   as the docs-only next-operation authorization scope selection after release
   execution gate re-evaluation. The selected target is final verification /
