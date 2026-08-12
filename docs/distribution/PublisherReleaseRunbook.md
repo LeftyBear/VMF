@@ -167,6 +167,19 @@ detection-removal or non-reproduction evidence, and responsible-owner approval.
 Avast silence does not mean approval, safety confirmation, release
 authorization, or vendor clearance.
 
+Record latest-definition rescan evidence in
+`docs/development/Publisher_AvastResponseIntakeTemplate.md` before any
+vendor-clearance-dependent state change. The record must include scan
+date/time, scanner vendor/product/version, definition or signature version,
+scanned artifact identity, file hash, previous detection name, latest scan
+result, detection removed / not reproduced / still detected judgment,
+screenshot/log/evidence reference, operator notes, and responsible-owner
+review. Until both the evidence and responsible-owner approval are recorded
+for the exact selected artifact identity, Hold continues for
+vendor-clearance-dependent work. The rescan record does not authorize release,
+tag creation, publication, package or `dist` work, Live E2E, Google Docs or
+Google Drive mutation, or flagged executable re-run.
+
 ### 5.2 Workstream Separation After Hold Lift
 
 Keep each workstream separate after Release Hold lift:

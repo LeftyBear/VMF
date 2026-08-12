@@ -44,6 +44,7 @@ This section records the next Publisher release identity after the completed
 | Prior release identity unchanged | PASS | Existing `0.0.0-dev` tag, GitHub Release, and asset identity unchanged | Codex | 2026-08-09 | Historical identity was not retargeted, deleted, replaced, or reused. |
 | Avast clearance boundary preserved | PASS | Vendor clearance not obtained; ADR-0019 VMF-side residual risk acceptance basis retained | Codex | 2026-08-09 | Publication record does not claim Avast vendor clearance or Avast safety certification. |
 | Avast manual scan / CyberCapture recorded | PASS | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; release ZIP / repo Release exe match; Avast showed "このファイルは安全のようです"; no detection name; `IDP.HELU.PSD11` not reproduced | Codex | 2026-08-11 | Evidence-only local manual confirmation. It does not claim Avast vendor clearance, Avast safety certification, final release authorization, new package work, tag/release, or publication. |
+| Latest-definition rescan evidence template available | PASS | `docs/development/Publisher_AvastResponseIntakeTemplate.md` Section 4 records scan date/time, scanner identity, definition/signature version, artifact identity, file hash, previous detection, latest result, evidence reference, operator notes, and responsible-owner review fields | Codex | 2026-08-12 | Template only. This does not perform a rescan, claim vendor clearance, authorize release, update package/dist, run Live E2E, mutate Google Docs/Drive, or re-run a flagged executable. Hold continues for vendor-clearance-dependent work until evidence and responsible-owner approval are both recorded. |
 | Documentation update boundary | PASS | Docs-only release completion evidence update | Codex | 2026-08-09 | This update did not modify production code, tests, package, `dist`, tags, GitHub Release, or assets; no staging, commit, or push performed. |
 
 ## 1. Release Identity
@@ -172,6 +173,10 @@ The Avast pending risk can be closed only by recording one of these outcomes:
   non-reproduction is evidenced, and the responsible owner approves the
   vendor-clearance determination. An Avast response can support this record,
   but Avast silence cannot.
+- Rescan evidence is incomplete, inconclusive, missing scanner definition /
+  signature version, missing the exact artifact identity or file hash, missing
+  screenshot/log/evidence reference, or missing responsible-owner review:
+  `Hold continues` for vendor-clearance-dependent work.
 - Avast continues to classify the executable as unsafe and the repository owner
   rejects release continuation or requires remediation.
 - The repository owner explicitly accepts the AV exception posture without

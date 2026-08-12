@@ -43,6 +43,8 @@ The bundle records:
 - which checks are mock-backed, non-live, static, or external;
 - what diagnostic and error-handling behavior is expected;
 - which retry behavior is safe, bounded, and non-mutating;
+- which latest-definition antivirus rescan evidence, if any, supports the
+  vendor-clearance judgment for the selected artifact identity;
 - which hold conditions still block release continuation;
 - which evidence is intentionally excluded for security and privacy reasons.
 
@@ -261,7 +263,50 @@ Required references:
 - relevant Phase 4-3 review records;
 - release notes for the target release, when applicable.
 
-### 3.9 Hold And Resume Conditions
+### 3.9 Latest-Definition Rescan Evidence
+
+When vendor clearance is under review, the bundle must include or reference a
+completed `Latest-Definition Rescan Evidence Template` entry from
+`docs/development/Publisher_AvastResponseIntakeTemplate.md`.
+
+Required fields:
+
+- scan date/time, including timezone or UTC timestamp;
+- scanner vendor;
+- scanner product;
+- scanner product version;
+- definition or signature version;
+- scanned artifact name, role, size, and source;
+- file hash algorithm and hash;
+- package, release, commit, or tag identity reference, when applicable;
+- previous detection name;
+- latest scan result;
+- one selected result: `Detection removed`, `Detection not reproduced`, `Still
+  detected`, `Inconclusive / mismatch`, or `Not executed`;
+- screenshot, scanner log, vendor portal, quarantine/history, hash record, or
+  other evidence reference;
+- operator notes;
+- responsible-owner review and determination.
+
+Allowed interpretations:
+
+- `Detection removed` and `Detection not reproduced` are evidence inputs only.
+  They do not create release authorization, package approval, publication
+  approval, Avast safety certification, or vendor clearance by themselves.
+- `Still detected`, `Inconclusive / mismatch`, missing definition version,
+  missing artifact identity, missing evidence reference, or missing
+  responsible-owner review preserves `Hold continues` for
+  vendor-clearance-dependent work.
+- A vendor-clearance determination may change only when the exact selected
+  artifact identity, latest-definition scan evidence, detection removal or
+  non-reproduction evidence, and responsible-owner approval are all recorded.
+
+Do not call rescan evidence `PASS` unless the evidence was directly verified
+for the exact artifact identity during the evidence review. If no rescan was
+authorized or performed, record `NOT EXECUTED` or `BLOCKED` and preserve `Hold
+continues`.
+
+### 3.10 Hold And Resume Conditions
 
 The bundle must preserve the current release hold and resume conditions.
 
@@ -400,6 +445,13 @@ Before an Evidence Bundle is marked `Ready for Review`, verify:
 | Error handling matrix references the current specification. | PENDING |
 | Retry policy summary references the current specification. | PENDING |
 | Release runbook and checklist references are current. | PENDING |
+| Latest-definition rescan evidence is present, or explicitly marked not executed / blocked. | PENDING |
+| Rescan evidence records scanner vendor, product version, and definition / signature version. | PENDING |
+| Rescan evidence records exact scanned artifact identity and file hash. | PENDING |
+| Rescan evidence records previous detection name and latest scan result. | PENDING |
+| Rescan evidence records one clear result: detection removed, detection not reproduced, still detected, inconclusive / mismatch, or not executed. | PENDING |
+| Rescan screenshot, log, hash, or other evidence reference is recorded and redaction-reviewed. | PENDING |
+| Responsible-owner review is recorded before any vendor-clearance-dependent state changes. | PENDING |
 | Hold and resume conditions preserve the current release block. | PENDING |
 | Redaction review passed. | PENDING |
 | No prohibited contents are present. | PENDING |

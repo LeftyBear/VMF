@@ -109,7 +109,125 @@ Use `PASS` only for evidence directly verified during the intake review. Leave
 unknown, missing, blocked, or deferred evidence as `PENDING`, `BLOCKED`, `NOT
 EXECUTED`, or `DEFERRED`.
 
-## 4. Redaction Rules
+## 4. Latest-Definition Rescan Evidence Template
+
+Use this section when Avast does not provide an individual response, or when a
+responsible-owner review needs current scanner evidence before changing any
+vendor-clearance judgment. This section records evidence only. It is not
+release authorization, package approval, publication approval, Avast safety
+certification, or vendor clearance by itself.
+
+Do not fill this section by re-running a flagged executable unless that exact
+execution has separate repository-owner authorization. A static scan,
+quarantine/history readback, vendor portal result, or screenshot/log reference
+may be recorded only when it is within the separately approved operation.
+
+### 4.1 Rescan Metadata
+
+| Field | Value |
+| --- | --- |
+| Rescan evidence record date |  |
+| Scan date/time |  |
+| Scan timezone / UTC timestamp |  |
+| Scanner vendor |  |
+| Scanner product |  |
+| Scanner product version |  |
+| Definition / signature version |  |
+| Scan mode |  |
+| Scan environment summary |  |
+| Operator |  |
+| Operation authorization reference |  |
+
+### 4.2 Scanned Artifact Identity
+
+| Field | Value |
+| --- | --- |
+| Release / package version |  |
+| Scanned artifact name |  |
+| Scanned artifact path or source |  |
+| Artifact role |  |
+| Artifact size |  |
+| File hash algorithm | SHA-256 |
+| File hash |  |
+| Package / release identity reference |  |
+| Target commit or tag, if applicable |  |
+| Previous detection name |  |
+
+Record only safe paths or source labels. Do not record local absolute paths
+that expose usernames, token stores, credential locations, or private
+workspace structure.
+
+### 4.3 Latest Scan Result
+
+Select exactly one current result and leave the others blank.
+
+| Result | Selected | Required Evidence Reference | Required Interpretation |
+| --- | --- | --- | --- |
+| Detection removed |  |  | Latest-definition scan did not report the previous detection for the exact scanned artifact identity. This supports review only; responsible-owner approval is still required before any vendor-clearance determination changes. |
+| Detection not reproduced |  |  | Latest-definition scan or authorized reproduction evidence did not reproduce the previous detection for the exact scanned artifact identity. This supports review only; it is not Avast vendor clearance by itself. |
+| Still detected |  |  | Latest-definition scan still reports a detection for the exact scanned artifact identity. Hold continues unless a separate responsible-owner risk decision or remediation path is recorded. |
+| Inconclusive / mismatch |  |  | Artifact identity, scanner identity, definition version, result text, or evidence reference is missing, ambiguous, or mismatched. Hold continues. |
+| Not executed |  |  | Rescan was not authorized or not performed. Hold continues. |
+
+Latest scan result summary:
+
+```text
+
+```
+
+### 4.4 Evidence References
+
+| Evidence Type | Reference | Redaction Reviewed | Notes |
+| --- | --- | --- | --- |
+| Screenshot |  | PENDING |  |
+| Scanner log |  | PENDING |  |
+| Vendor portal result |  | PENDING |  |
+| Quarantine / history readback |  | PENDING |  |
+| Hash computation record |  | PENDING |  |
+| Evidence Bundle entry |  | PENDING |  |
+
+Evidence references must be redacted before external sharing. Do not include
+tokens, private URLs, local secret-bearing paths, account details, raw provider
+payloads, or screenshots/logs that expose unrelated private content.
+
+### 4.5 Operator Notes
+
+Record only sanitized notes needed to understand the rescan evidence.
+
+```text
+
+```
+
+### 4.6 Responsible-Owner Review
+
+| Field | Value |
+| --- | --- |
+| Reviewed by responsible owner |  |
+| Review date/time |  |
+| Artifact identity accepted for review | PENDING |
+| Scanner and definition version accepted for review | PENDING |
+| Evidence references accepted for review | PENDING |
+| Determination | Hold continues |
+| Determination basis |  |
+| Follow-up required |  |
+
+Allowed determinations:
+
+- `Hold continues`;
+- `Vendor-clearance evidence accepted for selected artifact identity`;
+- `Risk acceptance required`;
+- `Remediation required`;
+- `Escalation required`;
+- `No decision`.
+
+The default determination is `Hold continues`. Until latest-definition rescan
+evidence, detection removal or non-reproduction evidence, and responsible-owner
+approval are all recorded for the exact selected artifact identity, Hold
+continues for vendor-clearance-dependent work. This section does not authorize
+release, tag creation, publication, package or `dist` work, Live E2E, Google
+Docs or Google Drive mutation, or flagged executable re-run.
+
+## 5. Redaction Rules
 
 Do not record:
 
@@ -131,7 +249,7 @@ Allowed record content is limited to safe summaries, public product names,
 case/submission identifiers, dates, selected artifact hashes, stable status
 labels, and reviewer decisions.
 
-## 5. Release Gate Decision
+## 6. Release Gate Decision
 
 Select exactly one decision after the evidence checklist is complete.
 
@@ -145,7 +263,7 @@ Default vendor-clearance decision before review completion: vendor clearance
 not obtained. Current release-hold decision is governed by ADR-0019 VMF risk
 acceptance.
 
-## 6. Resume Conditions
+## 7. Resume Conditions
 
 All required resume conditions must be recorded before moving beyond the
 current release hold.
@@ -170,7 +288,7 @@ current release hold.
 
 Authorization for one condition does not authorize any other condition.
 
-## 7. Operator Notes
+## 8. Operator Notes
 
 Record only sanitized notes needed to understand the intake decision.
 
@@ -178,7 +296,7 @@ Record only sanitized notes needed to understand the intake decision.
 
 ```
 
-## 8. Decision Log
+## 9. Decision Log
 
 | Date | Actor | Decision | Evidence Reference | Remaining Blockers |
 | --- | --- | --- | --- | --- |
@@ -189,7 +307,7 @@ Record only sanitized notes needed to understand the intake decision.
 | 2026-08-12 | Codex / VMF | Local final verification checks passed; published artifact final verification not complete | Build PASS after transient local execution issue was resolved by serial rerun; unit tests 492 passed; non-live integration tests 16 passed; project-output dry-run PASS; format verification PASS; docs consistency / prohibited wording search PASS; local `dist` ZIP identity did not match recorded published identity | Release artifact identity unresolved; release, tag, publication, and distribution remain blocked until artifact identity is reconciled or explicitly superseded by an approved artifact rebuild path. |
 | 2026-08-12 | Codex / VMF | Artifact identity reconciled: recorded published identity remains authoritative | GitHub Release asset metadata matched 983404 bytes / SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; local `dist` ZIP matched the later regenerated local artifact SHA-256 `395770913d825b578e468c18c45510da4b7b1be570338640018e58835bd28768` | Local regenerated ZIP should be discarded or ignored as non-authoritative; any cleanup, restore, rebuild, release, tag, publication, or distribution action remains separately authorized. |
 
-## 9. Explicit Non-Actions
+## 10. Explicit Non-Actions
 
 This intake template does not:
 
