@@ -827,3 +827,27 @@ complete. No package/dist work, tag creation, release publication, artifact
 publication, flagged executable smoke, production code change, test change,
 Frozen specification change, public API change, staging, commit, or push was
 performed by this release completion documentation update.
+
+## 25. Publisher Release-Control Approval Receipt
+
+`docs/development/Publisher_ReleaseControlApprovalReceipt_2026-08-12.md`
+records receipt of the responsible owner confirmation as `Approved` for the
+current Publisher release-control position only.
+
+This receipt is not release authorization, tag authorization, publication
+authorization, package or `dist` authorization, Live E2E authorization, Google
+Docs or Google Drive mutation authorization, flagged executable re-run
+authorization, vendor clearance, or Avast safety certification.
+
+The release-control state remains unchanged: Avast response remains pending,
+vendor clearance has not been obtained, and any future release-path operation
+requires a separate explicit authorization record after applicable gate
+requirements are satisfied.
+
+No release, tag, publication, Live E2E, Google Docs mutation, Google Drive
+mutation, package or distribution artifact creation or update, `dist` write,
+flagged executable re-run, production code change, test change, Frozen
+specification change, public API change, vendor clearance, Avast resolution,
+approval expansion, release authorization, tag/release execution
+authorization, GitHub Release creation, or publication was performed by this
+docs-only release-control receipt reference update.

@@ -4,6 +4,21 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ---
 
+# 2026-08-12
+
+## Changed
+
+- Referenced
+  `docs/development/Publisher_ReleaseControlApprovalReceipt_2026-08-12.md`
+  from current Publisher status and the Voyage Log as docs-only /
+  local-only release-control status alignment. The receipt records `Approved`
+  for the current release-control position only and does not authorize release,
+  tag creation or update, publication, package or `dist` work, Live E2E,
+  Google Docs or Drive mutation, flagged executable re-run, vendor clearance,
+  Avast resolution, or Avast safety certification.
+
+---
+
 # 2026-08-09
 
 ## Added

@@ -2786,3 +2786,34 @@ response, vendor clearance, Avast safety certification, release approval,
 publication approval, replacement of the published package identity, or
 permission for future package, Live E2E, Google Docs / Drive mutation,
 tag/release/publication, push, or flagged-executable operations.
+
+## Publisher Release-Control Approval Receipt Reference
+
+Status: RECORDED as docs-only / local-only release-control status alignment.
+
+Referenced
+`docs/development/Publisher_ReleaseControlApprovalReceipt_2026-08-12.md` from
+the current status record. The receipt records responsible owner confirmation
+as `Approved` for the current Publisher release-control position only.
+
+The receipt does not authorize release, tag creation or update, publication,
+package creation or update, ZIP rebuild, artifact replacement, `dist` update,
+Live E2E, Google Docs mutation, Google Drive mutation, OAuth/token-store or
+credential operation, flagged executable re-run, Avast operation, production
+code change, test change, Frozen specification change, or public API change.
+
+Avast response remains pending, vendor clearance has not been obtained, and
+future release-path work remains separately gated by explicit authorization and
+applicable release-gate requirements.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+build, rebuild, regenerate packages, modify `dist`, create ZIPs, create,
+delete, move, retarget, or replace tags, push tags, create, update, delete, or
+replace GitHub Releases, replace assets, publish new artifacts, announce a
+release, run Live E2E, mutate Google Docs or Google Drive, mutate OAuth
+credentials or token stores, operate the Avast UI, change Avast settings,
+release quarantine, add exclusions, re-run `vmf-publisher.exe`, obtain vendor
+clearance, claim Avast safety certification, or create release authorization.
