@@ -48,9 +48,9 @@ OAuth/token-store/credentials, or perform any Avast operation.
 | Google Docs / Google Drive mutation | Performed only as part of the authorized Live E2E run; no publication performed |
 | Package creation or update by this docs update | Not performed; no `dist` write by this documentation-only update |
 | Package path / size / SHA-256 | `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
-| Local `dist` ZIP observation | 2026-08-12 static inspection observed local ZIP size 983422 bytes and SHA-256 `395770913D825B578E468C18C45510DA4B7B1BE570338640018E58835BD28768`; this does not match the recorded published identity |
-| Artifact identity reconciliation | GitHub Release asset metadata confirmed the recorded published identity: 983404 bytes and SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; the local `dist` ZIP matches the 2026-08-11 regenerated local ZIP evidence and is not the published artifact |
-| Package generation / verification | PASS / PASS; manifest files 14; secret/static package inspection PASS |
+| Local `dist` ZIP package evidence | 2026-08-12 package evidence recorded for `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`: 983422 bytes; SHA-256 `0174810D21C6072B8206ACF2FED90B72C2E6BE499C65B231D7D72D71FD69CB76`; manifest `VMF Publisher` / `0.0.1-dev` / `win-x64` / `Release` / `selfContained=false` / 14 files; Static package verification PASS; Build/package PASS |
+| Artifact identity reconciliation | GitHub Release asset metadata confirmed the recorded published identity: 983404 bytes and SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6`; the local `dist` ZIP package evidence above is not the recorded published artifact and must not be treated as a replacement release asset |
+| Package generation / verification | PASS / PASS for recorded package evidence; manifest files 14; secret/static package inspection PASS |
 | GitHub Release | Published prerelease `true`: https://github.com/LeftyBear/VMF/releases/tag/vmf-publisher-v0.0.1-dev; release name `VMF Publisher 0.0.1-dev` |
 | Release asset | `vmf-publisher-0.0.1-dev-win-x64.zip`; 983404 bytes; remote asset digest matched local verified package SHA-256 `73582c24e4c3bf279aeb8fd2044b84a30a3d621eac623188dcfa4406ac32bcc6` |
 | Flagged executable re-run | Not performed |
@@ -163,8 +163,10 @@ The build passed after serial rerun with warnings 0 / errors 0.
 No new publication or vendor-clearance evidence is created by this approval
 package. The recorded `PASS` package evidence is limited to the supplied
 package generation, package verification, and static package inspection facts
-for the fixed package identity. ADR-0019 records risk acceptance and Hold lift
-only.
+for the explicit artifact identity being recorded. ADR-0019 records risk
+acceptance and Hold lift only. Local package evidence with a different size or
+SHA-256 does not replace the recorded GitHub Release asset identity unless a
+separate approved release-asset replacement path is recorded.
 
 ## 4. Ahead Commits Summary
 

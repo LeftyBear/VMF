@@ -2909,3 +2909,40 @@ Docs or Google Drive, mutate OAuth credentials or token stores, operate the
 Avast UI, change Avast settings, release quarantine, add exclusions, rerun or
 re-run `vmf-publisher.exe`, process an Avast response, obtain vendor
 clearance, or claim Avast safety certification.
+
+## Publisher Package Evidence Record
+
+Status: RECORDED as docs-only package evidence.
+
+Recorded package evidence in
+`docs/development/Publisher_ReleaseApprovalPackage.md` and
+`docs/development/CURRENT_STATUS.md` for artifact
+`dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`.
+
+Evidence recorded:
+
+- size: 983422 bytes;
+- SHA-256:
+  `0174810D21C6072B8206ACF2FED90B72C2E6BE499C65B231D7D72D71FD69CB76`;
+- manifest: `VMF Publisher` / `0.0.1-dev` / `win-x64` / `Release` /
+  `selfContained=false` / 14 files;
+- Static package verification PASS;
+- Build/package PASS.
+
+This record is package evidence only. It does not replace the recorded
+published GitHub Release asset identity, create or update a package, publish
+an artifact, update a release asset, obtain Avast vendor clearance, or claim
+Avast safety certification.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+build, rebuild, regenerate packages, modify `dist`, create ZIPs, create,
+delete, move, retarget, or replace tags, push tags, create, update, delete, or
+replace GitHub Releases or prereleases, upload, replace, or delete release
+assets, publish new artifacts, announce a release, run Live E2E, mutate Google
+Docs or Google Drive, mutate OAuth credentials or token stores, operate the
+Avast UI, change Avast settings, release quarantine, add exclusions, rerun or
+re-run `vmf-publisher.exe`, process an Avast response, obtain vendor
+clearance, or claim Avast safety certification.
