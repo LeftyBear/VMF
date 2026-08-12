@@ -3010,6 +3010,15 @@ The register covers:
 - separate authorization gates for Live E2E and Google Docs / Drive mutation;
 - `0.0.1-dev` follow-up vNext candidates.
 
+The backlog now assigns explicit `priority`, `rationale`, `prerequisite`,
+`release safety impact`, and blocked / ready state fields for each P0 / P1 /
+P2 item. The first ready post-`0.0.1-dev` item is `P1-01`, the docs-only
+post-release evidence summary template. The first release-path item remains
+`P0-01`, the Avast response outcome and owner decision record, which is
+blocked until an Avast response is received and reviewed. Avast-response
+dependent items, authorization / artifact-scope dependent items, and
+Avast-independent docs-only / design-ready items are separated in the backlog.
+
 ### Explicit non-actions
 
 This documentation update did not change production code, tests, public APIs,

@@ -20,6 +20,18 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
   perform OAuth operations, rerun Avast, re-run flagged executables, claim
   vendor clearance, or claim Avast safety certification.
 
+- Reprioritized `docs/development/Publisher_vNext_Backlog.md` with explicit
+  priority, rationale, prerequisite, release-safety impact, and blocked /
+  ready state fields for P0 / P1 / P2 candidates. The first ready
+  post-`0.0.1-dev` item is the Avast-independent docs-only `P1-01`
+  post-release evidence summary template; the first release-path item remains
+  `P0-01`, blocked until an Avast response is received and reviewed. The
+  backlog now separates Avast-response dependent items, authorization /
+  artifact-scope dependent items, and Avast-independent docs-only / design
+  items without changing release records, assets, packages, tags, Live E2E,
+  Google Docs / Drive, OAuth, Avast, flagged executable, vendor-clearance, or
+  safety-certification state.
+
 - Added
   `docs/releases/Publisher_0.0.1-dev_FinalStatusFreeze_2026-08-12.md`
   as the docs-only final status freeze for the published Publisher

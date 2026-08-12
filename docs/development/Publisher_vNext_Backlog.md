@@ -51,26 +51,31 @@ Priority does not authorize implementation. Each item still requires a
 separate scoped task, explicit verification plan, and any required approval
 gate.
 
+## First Item After 0.0.1-dev
+
+The first vNext backlog item to start after the completed `0.0.1-dev`
+prerelease sequence is `P1-01`, the post-release evidence summary template.
+It is docs-only, Avast-independent, and ready now. It improves future release
+traceability without processing an Avast response, touching release records,
+operating assets, updating packages or `dist/`, running Live E2E, mutating
+Google Docs / Drive, performing OAuth operations, rerunning Avast, or
+re-running the flagged executable.
+
+`P0-01` remains the first release-path item, but it is blocked until an Avast
+response is received and explicitly reviewed.
+
 ## P0 — Next Release-Path Gate Items
 
-- Record Avast false positive outcome and owner decision once the vendor
-  response is available.
-- Use `Publisher_AvastResponseIntakeTemplate.md` first for any received Avast
-  response, then use `Publisher_AvastResponseDecisionTemplate.md` to classify
-  the reviewed response for the exact selected artifact identity.
-- Confirm whether the next release-path decision proceeds on Avast vendor
-  clearance, continued VMF-side risk acceptance, or a new owner decision.
-- Reconcile release-readiness records after Avast clearance, rejection, or
-  continued pending status is reviewed.
-- Update go/no-go review only after all release-blocking dependencies are
-  resolved or explicitly waived by the owner.
-- Confirm whether Live E2E is authorized, not applicable, or remains deferred
-  for the next release-path scope.
-- Confirm whether Google Docs / Drive readback or mutation checks are
-  authorized, not applicable, or remain deferred for the next release-path
-  scope.
-- Re-run release artifact audit only after package-generation scope is
-  explicitly authorized.
+| ID | Item | Priority | Rationale | Prerequisite | Release safety impact | State |
+| --- | --- | --- | --- | --- | --- | --- |
+| P0-01 | Record Avast false positive outcome and owner decision. | P0 | The next release-path basis cannot be re-evaluated until the vendor response is preserved and reviewed. | Avast response received for the selected artifact identity. | Prevents treating pending, ambiguous, mismatched, or adverse vendor evidence as clearance. | Blocked / Avast response pending. |
+| P0-02 | Use intake first, then decision classification for any Avast response. | P0 | Keeps raw response capture separate from reviewed clearance, rejection, clarification, or residual-risk decisions. | P0-01 response receipt; `Publisher_AvastResponseIntakeTemplate.md`; `Publisher_AvastResponseDecisionTemplate.md`. | Preserves auditability and avoids accidental vendor-clearance or safety-certification claims. | Blocked / Avast response pending. |
+| P0-03 | Confirm the next release-path basis: Avast vendor clearance, continued VMF-side risk acceptance, or a new owner decision. | P0 | Future release-path work needs an explicit basis after the published prerelease and unresolved vendor response. | P0-02 decision classification and owner review. | Prevents implicit carryover from the `0.0.1-dev` prerelease authorization. | Blocked / depends on P0-02. |
+| P0-04 | Reconcile release-readiness records after Avast clearance, rejection, or continued pending status is reviewed. | P0 | Readiness records must reflect the reviewed Avast outcome without rewriting historical accepted-at-the-time evidence. | P0-03 owner basis decision. | Keeps current status, evidence, and historical hold/block wording separated. | Blocked / depends on P0-03. |
+| P0-05 | Update go/no-go review only after blockers are resolved or explicitly waived by the owner. | P0 | Go/no-go status must follow completed or waived release-blocking dependencies. | P0-04 reconciliation and explicit owner waiver where applicable. | Prevents a planning label from becoming release authorization. | Blocked / depends on P0-04. |
+| P0-06 | Confirm Live E2E status for the next release-path scope. | P0 | Live E2E remains a separate operation-specific gate even after `0.0.1-dev` publication. | Explicit authorization, non-applicability decision, or documented deferral. | Avoids unapproved live mutation and separates evidence from release clearance. | Blocked / requires separate authorization decision. |
+| P0-07 | Confirm Google Docs / Drive readback or mutation status for the next release-path scope. | P0 | Google Docs / Drive operations remain independently gated and may require credentials or cleanup evidence. | Explicit authorization, non-applicability decision, or documented deferral. | Prevents unauthorized Google mutation, OAuth operation, or token-store side effect. | Blocked / requires separate authorization decision. |
+| P0-08 | Re-run release artifact audit only after package-generation scope is explicitly authorized. | P0 | Artifact audit must match the approved package identity and cannot be refreshed from stale or local-only artifacts. | Approved package-generation or package-inspection scope. | Prevents package, `dist`, asset, or release identity drift. | Blocked / package scope not authorized. |
 
 ## Post-Release Follow-Up Register
 
@@ -110,31 +115,40 @@ executable, claim vendor clearance, or claim Avast safety certification.
 
 ## P1 — Evidence / Release-Safety Hardening Candidates
 
-- Add a compact post-release evidence summary template for future Publisher
-  release candidates.
-- Improve release-readiness checklist cross-links so blocked, deferred,
-  risk-accepted, and local-only evidence remain easy to audit.
-- Re-check supply-chain and package evidence only after the approved release
-  artifact exists.
-- Review Live E2E setup documentation for clearer authorization, credential,
-  and cleanup boundaries.
-- Review package verification scripts for clearer output that distinguishes
-  local verification from release clearance.
-- Review AV triage notes and convert durable lessons into a repeatable
-  release-safety checklist.
+| ID | Item | Priority | Rationale | Prerequisite | Release safety impact | State |
+| --- | --- | --- | --- | --- | --- | --- |
+| P1-01 | Add a compact post-release evidence summary template for future Publisher release candidates. | P1 | This is the first ready docs-only item after `0.0.1-dev` because it improves traceability without depending on Avast. | Current published-prerelease records and final status freeze. | Improves future evidence review while preserving separate release authorization gates. | Ready / Avast-independent. |
+| P1-02 | Improve release-readiness checklist cross-links for blocked, deferred, risk-accepted, and local-only evidence. | P1 | Cross-links reduce audit ambiguity between historical hold records and current status. | Current status and existing Phase 4-3 records. | Helps reviewers avoid mistaking historical blocked wording for current prerelease state or vendor clearance. | Ready / Avast-independent. |
+| P1-03 | Re-check supply-chain and package evidence only after the approved release artifact exists. | P1 | Evidence refresh must be tied to a specific approved artifact, not local or stale package output. | Future approved release artifact or explicitly authorized static inspection. | Prevents artifact identity drift and package evidence overclaiming. | Blocked / package scope not authorized. |
+| P1-04 | Review Live E2E setup documentation for clearer authorization, credential, and cleanup boundaries. | P1 | Documentation can clarify the gate without running Live E2E or touching OAuth state. | Existing Live E2E records and runbook text. | Reduces risk of unapproved live mutation or credential handling. | Ready / Avast-independent docs-only review. |
+| P1-05 | Review package verification scripts for clearer output that distinguishes local verification from release clearance. | P1 | Script messaging can make evidence labels harder to misread, but implementation requires a future code task. | Separate implementation authorization and tests. | Would reduce release-clearance overclaim risk when adopted. | Blocked / implementation scope not authorized. |
+| P1-06 | Convert durable AV triage lessons into a repeatable release-safety checklist. | P1 | Checklist hardening can proceed without a vendor response if it preserves pending/clearance boundaries. | Existing AV triage notes and redaction rules. | Improves future AV triage consistency without claiming Avast clearance. | Ready / Avast-independent docs-only review. |
 
 ## P2 — vNext Enhancements
 
-- Evaluate whether Google Picker plus `drive.file` least-privilege routing
-  should be adopted by a future scoped design task.
-- Evaluate additional Publisher diagnostics that improve troubleshooting
-  without changing published document semantics.
-- Evaluate clearer dry-run output for Google Docs publication planning.
-- Evaluate richer release-note generation from existing verification records.
-- Evaluate documentation improvements for OAuth Desktop setup and token-store
-  handling.
-- Evaluate whether vNext should include more explicit managed-document
-  readback reporting.
+| ID | Item | Priority | Rationale | Prerequisite | Release safety impact | State |
+| --- | --- | --- | --- | --- | --- | --- |
+| P2-01 | Evaluate whether Google Picker plus `drive.file` least-privilege routing should be adopted by a future scoped design task. | P2 | Least-privilege routing may reduce future operator risk, but it is not required for current release follow-up. | Future scoped design task. | Potential future credential and Drive-access risk reduction. | Ready for design only / Avast-independent. |
+| P2-02 | Evaluate additional Publisher diagnostics that improve troubleshooting without changing published document semantics. | P2 | Diagnostics may improve supportability but must preserve published document behavior. | Future scoped design and test plan. | Potential future observability improvement with no current release gate effect. | Ready for design only / Avast-independent. |
+| P2-03 | Evaluate clearer dry-run output for Google Docs publication planning. | P2 | Better dry-run output may reduce operator error in future Google Docs workflows. | Future scoped design and non-live verification plan. | Potential future planning clarity; no current clearance effect. | Ready for design only / Avast-independent. |
+| P2-04 | Evaluate richer release-note generation from existing verification records. | P2 | Automation could reduce documentation drift, but it is not required for the next release-path gate. | Future scoped design task and record-format review. | Potential future traceability improvement. | Ready for design only / Avast-independent. |
+| P2-05 | Evaluate documentation improvements for OAuth Desktop setup and token-store handling. | P2 | Guidance may reduce authentication confusion, but token-store operations remain prohibited unless separately authorized. | Future docs task with secret-redaction review. | Potential future credential-handling risk reduction. | Ready for docs-only design / Avast-independent. |
+| P2-06 | Evaluate whether vNext should include more explicit managed-document readback reporting. | P2 | Readback reporting may improve operator confidence but needs scoped design. | Future design task and non-live test plan. | Potential future verification clarity; no current release gate effect. | Ready for design only / Avast-independent. |
+
+## Dependency Split
+
+Avast-response dependent:
+
+- P0-01 through P0-05.
+
+Authorization or artifact-scope dependent, but not dependent on an Avast
+response:
+
+- P0-06, P0-07, P0-08, P1-03, and P1-05.
+
+Avast-independent docs-only / design-ready:
+
+- P1-01, P1-02, P1-04, P1-06, and P2-01 through P2-06.
 
 ## Vendor-Clearance Boundary
 
