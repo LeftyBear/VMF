@@ -142,17 +142,22 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-04 | Evaluate richer release-note generation from existing verification records. | P2 | Automation could reduce documentation drift, but it is not required for the next release-path gate. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; future scoped implementation decision. | Potential future traceability improvement. | Design complete / implementation decision pending. |
 | P2-05 | Evaluate documentation improvements for OAuth Desktop setup and token-store handling. | P2 | Guidance may reduce authentication confusion, but token-store operations remain prohibited unless separately authorized. | `Publisher_P2-05_OAuthDesktopTokenStoreDocumentationEvaluation.md`; docs-only implementation in installation and Live E2E guidance. | Reduces future credential-handling ambiguity without changing OAuth scope, authentication architecture, Google, package, release, or vendor-clearance gates. | Complete / docs-only guidance synchronized. |
 | P2-06 | Evaluate whether vNext should include more explicit managed-document readback reporting. | P2 | Readback reporting may improve operator confidence but needs scoped design. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; future narrow local-only implementation decision. | Potential future verification clarity; no current release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Design complete / implementation decision pending. |
-| P2-07 | Implement narrow managed-document readback reporting from the P2-06 design evaluation. | P2 | P2-06 found that readback state is safety-critical but under-reported in operator-facing diagnostics; a narrow implementation can improve clarity without changing readback semantics. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; explicit implementation task authorization; focused unit tests before broader verification. | Improves future verification clarity while preserving separation from publication success, release clearance, package approval, vendor clearance, and Avast safety certification. | Registered / implementation GO under the constraints below. |
+| P2-07 | Implement narrow managed-document readback reporting from the P2-06 design evaluation. | P2 | P2-06 found that readback state is safety-critical but under-reported in operator-facing diagnostics; a narrow implementation can improve clarity without changing readback semantics. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; explicit implementation task authorization; focused unit tests before broader verification. | Improves future verification clarity while preserving separation from publication success, release clearance, package approval, vendor clearance, and Avast safety certification. | Complete / narrow local-only implementation with focused unit coverage. |
 
-### P2-07 Managed-Document Readback Reporting Implementation Candidate
+### P2-07 Managed-Document Readback Reporting Implementation
 
-P2-07 is the implementation candidate derived from
-`Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`. This backlog
-registration is documentation-only. It does not implement `src/` or `tests/`
-changes and does not synchronize `CURRENT_STATUS.md`, the Voyage Log,
-`CHANGELOG.md`, release records, packages, `dist/`, tags, or external services.
+P2-07 is the completed narrow local-only implementation derived from
+`Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`. It adds
+value-safe readback status reporting to existing local structured diagnostics
+and operator-facing managed-document update summaries with focused unit
+coverage completed in commit `5e4b03f`.
 
-Allowed implementation scope for a later separately authorized task:
+This backlog synchronization is documentation-only. It does not implement new
+`src/` or `tests/` changes, does not synchronize the Voyage Log, `CHANGELOG.md`,
+release records, packages, `dist/`, tags, or external services, and does not
+broaden the completed implementation scope.
+
+Completed implementation scope:
 
 - add compact readback status reporting to existing local structured
   diagnostics and existing operator-facing managed-document update summaries;
@@ -205,7 +210,7 @@ Safe-value boundary:
   package approval, vendor clearance, Avast safety certification, or future
   operation authorization.
 
-Required focused unit tests for a later implementation:
+Completed focused unit-test coverage:
 
 - verified readback reports `verified` and cannot promote/save Verified State
   before successful readback verification;
@@ -224,10 +229,9 @@ Required focused unit tests for a later implementation:
   tokens, Authorization headers, credential paths, token-store paths, provider
   payloads, raw exception details, stack traces, and local sensitive paths.
 
-Implementation decision after backlog registration: GO for a later narrow
-local-only implementation only if the task is explicitly authorized and remains
-within the scope, vocabulary, safe-value boundary, and focused-test
-requirements above. NO-GO if implementation would require changing readback
+Implementation closeout after current-state synchronization review: COMPLETE
+for the narrow local-only implementation and focused unit coverage. The NO-GO
+boundary remains active for any follow-up that would require changing readback
 semantics, weakening Verified State promotion requirements, changing public
 contracts or persisted schemas, adding dependencies, exposing sensitive
 document/provider values, running live or external operations, or treating
@@ -247,15 +251,16 @@ response:
 
 Avast-independent docs-only / design-ready:
 
-- P2-01 through P2-07.
+- P2-01 through P2-06.
 
-Completed Avast-independent hardening:
+Completed Avast-independent hardening / enhancements:
 
 - P1-01.
 - P1-02.
 - P1-04.
 - P1-05.
 - P1-06.
+- P2-07.
 
 ## Vendor-Clearance Boundary
 
