@@ -325,8 +325,10 @@ P2-02 additional diagnostics is complete for the narrow local-only A/B
 implementation and closeout scope. `configurationCategory`, retry/delivery
 metadata, and `SUPPORT_SUMMARY` remain deferred and unimplemented.
 
-P2-03 clearer dry-run output evaluation is design-only complete with
-implementation decision pending. It does not treat dry-run as Live E2E, Google
+P2-03 clearer dry-run output is complete for the narrow local-only A/B
+implementation scope. P2-03-C structured dry-run output contract, P2-03-D
+failure boundary hints, and P2-03-E physical update dry-run bridge remain
+deferred and unimplemented. It does not treat dry-run as Live E2E, Google
 verification, publication authorization, release clearance, vendor clearance,
 or Avast safety certification.
 
@@ -339,6 +341,14 @@ readback semantics, Verified State promotion/save requirements, stable error
 codes, CLI classification, public APIs, persisted schemas, Google/OAuth
 authorization, release authorization, publication state, package state, vendor
 clearance, or Avast safety certification.
+
+P2-08 candidate selection is complete as docs-only / local-only comparison of
+remaining unimplemented P2 candidates. The selected next candidate is a
+release-note drift checker derived from P2-04-D. This selection does not
+authorize implementation, release-note rewriting, `CHANGELOG.md` edits,
+release, tag, publication, package, `dist`, GitHub asset, Live E2E, Google
+Docs / Drive, OAuth/token-store, Avast, vendor, flagged-executable, stage,
+commit, or push operations.
 
 ## 12. Publisher Avast Response Intake Template
 
