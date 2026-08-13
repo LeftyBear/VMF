@@ -2,7 +2,7 @@
 
 Status  : GO for selected completion decision only; Avast response pending
 Scope   : Docs-only / local-only release approval package organization after explicit owner risk acceptance
-Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_TestClassification.md, docs/distribution/PublisherReleaseRunbook.md
+Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_ReleaseCompletionRecord_2026-08-13.md, docs/development/Publisher_TestClassification.md, docs/distribution/PublisherReleaseRunbook.md
 
 This package summarizes the current VMF Publisher approval state for review. It
 is documentation/status alignment only. It does not approve a new release,
@@ -171,6 +171,7 @@ The build passed after serial rerun with warnings 0 / errors 0.
 | `docs/development/Publisher_ReleaseExecutionGateReevaluationRecord_2026-08-12.md` | Release execution gate re-evaluation | Records canonical identity consistency `PASS`, responsible-owner approval / release-gate `PASS`, final verification and published artifact verification `PASS`, operation-specific authorization `PASS`, and final decision `GO / final verification and release execution completion decision approved for the existing canonical prerelease only`. |
 | `docs/development/Publisher_NextOperationAuthorizationScopeRecord_2026-08-12.md` | Next operation authorization scope selection | Selects final verification / release execution completion decision for the existing canonical prerelease as the only next authorization target; later authorization is limited to that selected operation only. |
 | `docs/development/Publisher_OperationSpecificAuthorizationRecord_2026-08-12.md` | Operation-specific authorization record | Names final verification / release execution completion decision for the existing canonical prerelease as the only target, records Approver `VMF Publisher Responsible Owner — GitHub: LeftyBear`, Decision `Approved`, Approval timestamp `2026-08-13T09:06:11.4854490+09:00`, fixes the canonical `0.0.1-dev` / `publisher-v0.0.1-dev` identity, and records `GO` for that selected operation only. |
+| `docs/development/Publisher_ReleaseCompletionRecord_2026-08-13.md` | Release completion record | Records Final verification `PASS`, release execution completion decision `GO`, completion timestamp `2026-08-13T09:12:00.8497560+09:00`, Approver `VMF Publisher Responsible Owner — GitHub: LeftyBear`, and treats the existing published `publisher-v0.0.1-dev` GitHub prerelease as the canonical release artifact for the selected completion decision only. |
 | `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Release completion notes synchronized | Records canonical `0.0.1-dev` / `publisher-v0.0.1-dev` / 983422 byte / `0174810d...` identity and preserves older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` facts only as historical / superseded / non-canonical identity evidence. |
 
 No new publication or vendor-clearance evidence is created by this approval
@@ -209,9 +210,9 @@ existing-package inspection when explicitly in scope.
 The following future operations remain gated and must follow ADR-0019 order or
 a later operation-specific authorization:
 
-- final verification / release execution completion decision for the existing
-  canonical prerelease, which is the selected next authorization target but is
-  not yet authorized;
+- any new completion decision beyond the already authorized final
+  verification / release execution completion decision for the existing
+  canonical prerelease;
 - final verification for any other new decision;
 - Live E2E for a new decision;
 - result review for a new decision;
