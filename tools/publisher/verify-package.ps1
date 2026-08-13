@@ -52,6 +52,14 @@ function Get-PackageRelativePath {
     return [Uri]::UnescapeDataString($baseUri.MakeRelativeUri($pathUri).ToString())
 }
 
+function Write-VerificationBoundary {
+    param([string]$Status)
+
+    Write-Host "Verification boundary: local package-structure and manifest verification only."
+    Write-Host "Release clearance: NOT GRANTED by this script; publication, vendor clearance, and release authorization require separate records."
+    Write-Host "Verification result: $Status"
+}
+
 $fullPackagePath = [IO.Path]::GetFullPath($PackagePath)
 if (-not (Test-Path $fullPackagePath)) {
     throw "Package not found: $PackagePath"
@@ -151,10 +159,12 @@ try {
     }
 
     if ($failures.Count -gt 0) {
+        Write-VerificationBoundary "FAILED"
         Write-Error ("Publisher package verification failed:`n" + ($failures -join "`n"))
         exit 1
     }
 
+    Write-VerificationBoundary "PASSED"
     Write-Host "Publisher package verification passed: $fullPackagePath"
 }
 finally {
