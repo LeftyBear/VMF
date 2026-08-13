@@ -342,13 +342,17 @@ codes, CLI classification, public APIs, persisted schemas, Google/OAuth
 authorization, release authorization, publication state, package state, vendor
 clearance, or Avast safety certification.
 
-P2-08 candidate selection is complete as docs-only / local-only comparison of
-remaining unimplemented P2 candidates. The selected next candidate is a
-release-note drift checker derived from P2-04-D. This selection does not
-authorize implementation, release-note rewriting, `CHANGELOG.md` edits,
-release, tag, publication, package, `dist`, GitHub asset, Live E2E, Google
-Docs / Drive, OAuth/token-store, Avast, vendor, flagged-executable, stage,
-commit, or push operations.
+P2-08 release-note drift checker implementation is complete as a narrow
+local-only implementation in commit `75be0fc`. It adds bounded `MATCH` /
+`MISSING` / `CONFLICT` drift status reporting by reusing the existing P2-04
+allow-listed release-note source-field boundary and preserves source
+references. Focused ReleaseNote unit coverage passed 26 / 0 / 0, full Publisher
+unit coverage passed 536 / 0 / 0, Release build passed with warnings 0 / errors
+0, format passed, and `git diff --check` passed. This synchronization does not
+rewrite release notes, edit `CHANGELOG.md`, perform release, tag, publication,
+package, `dist`, GitHub asset, Live E2E, Google Docs / Drive,
+OAuth/token-store, Avast, vendor, flagged-executable, stage, commit, or push
+operations.
 
 ## 12. Publisher Avast Response Intake Template
 

@@ -143,7 +143,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-05 | Evaluate documentation improvements for OAuth Desktop setup and token-store handling. | P2 | Guidance may reduce authentication confusion, but token-store operations remain prohibited unless separately authorized. | `Publisher_P2-05_OAuthDesktopTokenStoreDocumentationEvaluation.md`; docs-only implementation in installation and Live E2E guidance. | Reduces future credential-handling ambiguity without changing OAuth scope, authentication architecture, Google, package, release, or vendor-clearance gates. | Complete / docs-only guidance synchronized. |
 | P2-06 | Evaluate whether vNext should include more explicit managed-document readback reporting. | P2 | Readback reporting may improve operator confidence but needs scoped design. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; future narrow local-only implementation decision. | Potential future verification clarity; no current release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Design complete / implementation decision pending. |
 | P2-07 | Implement narrow managed-document readback reporting from the P2-06 design evaluation. | P2 | P2-06 found that readback state is safety-critical but under-reported in operator-facing diagnostics; a narrow implementation can improve clarity without changing readback semantics. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; explicit implementation task authorization; focused unit tests before broader verification. | Improves future verification clarity while preserving separation from publication success, release clearance, package approval, vendor clearance, and Avast safety certification. | Complete / narrow local-only implementation with focused unit coverage. |
-| P2-08 | Select the next unimplemented P2 enhancement candidate after P2-07 closeout. | P2 | A documented comparison prevents deferred or design-pending items from being treated as implicitly approved implementation scope. | `Publisher_P2-08_CandidateSelection.md`; future scoped task authorization before implementation. | Keeps vNext sequencing local-only while preserving release, Google, OAuth, package, vendor-clearance, and Avast boundaries. | Selected / release-note drift checker candidate chosen. |
+| P2-08 | Implement the release-note drift checker selected after P2-07 closeout. | P2 | Bounded local drift checking reduces release-note ambiguity without rewriting approved release notes or promoting gated decisions. | `Publisher_P2-08_CandidateSelection.md`; P2-04 allow-listed source-field boundary; commit `75be0fc`. | Keeps vNext release-note review local-only while preserving release, Google, OAuth, package, vendor-clearance, and Avast boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
 
 ### P2-07 Managed-Document Readback Reporting Implementation
 
@@ -262,11 +262,15 @@ Completed Avast-independent hardening / enhancements:
 - P1-05.
 - P1-06.
 - P2-07.
+- P2-08.
 
-Selected next Avast-independent enhancement candidate:
+Latest completed Avast-independent enhancement candidate:
 
 - P2-08: release-note drift checker derived from the deferred P2-04-D
-  candidate; implementation remains pending a separate local-only scoped task.
+  candidate; narrow local-only implementation complete in commit `75be0fc`
+  with focused ReleaseNote unit coverage 26 / 0 / 0, Publisher unit coverage
+  536 / 0 / 0, Release build warnings 0 / errors 0, format PASS, and
+  `git diff --check` PASS.
 
 ## Vendor-Clearance Boundary
 
