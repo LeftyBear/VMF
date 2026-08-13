@@ -53,7 +53,12 @@ internal static class CliApplication
         var sessionId = CreateSessionId();
         var stopwatch = Stopwatch.StartNew();
         var command = NormalizeCommand(arguments);
-        var logger = new StructuredPublisherLogger(sessionId, command);
+        var logger = new StructuredPublisherLogger(
+            sessionId,
+            command,
+            arguments.Length,
+            IsRecognizedCommand(command),
+            ExpectedArgumentShape(command));
         logger.SessionStarted();
         logger.CommandStarted();
 
@@ -742,6 +747,18 @@ internal static class CliApplication
 
     private static bool IsHelp(string value) => value is "-h" or "--help" or "help";
 
+    private static bool IsRecognizedCommand(string command) =>
+        command is "publish" or "verify" or "diff" or "dry-run" or "help";
+
+    private static string ExpectedArgumentShape(string command) => command switch
+    {
+        "publish" => "publish-markdown-path",
+        "verify" => "verify-optional-markdown-path",
+        "diff" => "diff-before-after",
+        "dry-run" => "dry-run-markdown-path",
+        _ => "none",
+    };
+
     private static string CreateSessionId() =>
         "pub-" + DateTimeOffset.UtcNow.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) +
         "-" + Guid.NewGuid().ToString("N")[..8];
@@ -805,12 +822,31 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
 {
     private readonly string sessionId;
     private readonly string command;
+    private readonly int argumentCount;
+    private readonly bool recognizedCommand;
+    private readonly string expectedArgumentShape;
     private string phase;
+    private string? lastPhase;
+    private string? lastOperation;
+    private string? lastEventCode;
 
     internal StructuredPublisherLogger(string sessionId, string command)
+        : this(sessionId, command, 0, command is "publish" or "verify" or "diff" or "dry-run" or "help", "none")
+    {
+    }
+
+    internal StructuredPublisherLogger(
+        string sessionId,
+        string command,
+        int argumentCount,
+        bool recognizedCommand,
+        string expectedArgumentShape)
     {
         this.sessionId = sessionId;
         this.command = command;
+        this.argumentCount = argumentCount;
+        this.recognizedCommand = recognizedCommand;
+        this.expectedArgumentShape = expectedArgumentShape;
         phase = "session";
     }
 
@@ -827,7 +863,12 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             null);
 
     internal void CommandStarted() =>
-        Write("info", "COMMAND_STARTED", "Publisher command started.", CommandPhase(), FirstOperation(), null);
+        Write("info", "COMMAND_STARTED", "Publisher command started.", CommandPhase(), FirstOperation(), new Dictionary<string, object?>
+        {
+            ["argumentCount"] = argumentCount,
+            ["recognizedCommand"] = recognizedCommand,
+            ["expectedArgumentShape"] = expectedArgumentShape,
+        });
 
     internal void CommandFinished(CliResult result) =>
         Write(
@@ -844,7 +885,37 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
     internal void PublishPlan(string code, CompiledDocument document) =>
         Write("info", code, "Local publish plan compiled.", "planner", "plan", new Dictionary<string, object?>
         {
+            ["mode"] = "local-dry-run",
             ["stepCount"] = document.Steps.Count,
+            ["operationCount"] = document.Operations.Count,
+            ["batchUpdateStepCount"] = document.Steps.OfType<BatchUpdateStep>().Count(),
+            ["tableStepCount"] = document.Steps.OfType<InsertTableStep>().Count(),
+            ["imageStepCount"] = document.Steps.OfType<InsertImageStep>().Count(),
+            ["insertTextOperationCount"] = CountOperations(document, DocumentOperationKind.InsertText),
+            ["headingOperationCount"] = CountOperations(document, DocumentOperationKind.ApplyHeading),
+            ["listOperationCount"] = CountOperations(document, DocumentOperationKind.CreateBullet),
+            ["textStyleOperationCount"] = CountOperations(document, DocumentOperationKind.UpdateTextStyle),
+            ["paragraphAlignmentOperationCount"] = CountOperations(document, DocumentOperationKind.UpdateParagraphAlignment),
+            ["codeBlockOperationCount"] = CountOperations(document, DocumentOperationKind.ApplyCodeBlockStyle),
+            ["quoteOperationCount"] = CountOperations(document, DocumentOperationKind.ApplyQuoteBlockStyle),
+            ["markdownCompilation"] = "succeeded",
+            ["planningEvidence"] = "local-only",
+            ["safePlanSummary"] = CreateSafePlanSummary(document),
+            ["googleDocsMutation"] = "not-attempted",
+            ["googleDriveMutation"] = "not-attempted",
+            ["oauthOperation"] = "not-attempted",
+            ["tokenStoreOperation"] = "not-attempted",
+            ["physicalUpdatePlanApplied"] = false,
+            ["readbackStatus"] = "not-attempted",
+            ["readbackPhase"] = "post-apply-readback",
+            ["readbackEvidenceBoundary"] = "managed-document-readback-only",
+            ["readbackVerified"] = false,
+            ["verifiedStateSaved"] = false,
+            ["publicationAuthorized"] = false,
+            ["releaseClearance"] = false,
+            ["packageApproval"] = false,
+            ["avastSafetyCertification"] = false,
+            ["vendorClearance"] = false,
         });
 
     internal void DiffSummary(CompiledDocument before, CompiledDocument after) =>
@@ -864,6 +935,19 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             ["exceptionType"] = result.ExceptionType,
             ["documentId"] = result.DocumentId,
             ["documentUrl"] = result.DocumentUrl,
+            ["readbackStatus"] = ReadbackStatus(result),
+            ["readbackPhase"] = ReadbackPhase(result),
+            ["readbackEvidenceBoundary"] = "managed-document-readback-only",
+            ["readbackVerified"] = ReadbackStatus(result) == "verified",
+            ["verifiedStateSaved"] = false,
+            ["publicationAuthorized"] = false,
+            ["releaseClearance"] = false,
+            ["packageApproval"] = false,
+            ["avastSafetyCertification"] = false,
+            ["vendorClearance"] = false,
+            ["lastPhase"] = lastPhase,
+            ["lastOperation"] = lastOperation,
+            ["lastEventCode"] = lastEventCode,
         });
 
     internal void LocalVerifyReport(LocalVerifyReport report) =>
@@ -872,6 +956,8 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
     internal void SetContext(string phase, string operation)
     {
         this.phase = phase;
+        lastPhase = phase;
+        lastOperation = operation;
     }
 
     private void Write(
@@ -905,6 +991,12 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
         }
 
         Console.Error.WriteLine(JsonSerializer.Serialize(payload));
+        if (operation != "summary")
+        {
+            lastPhase = phase;
+            lastOperation = operation;
+            lastEventCode = code;
+        }
     }
 
     private string CommandPhase() => command switch
@@ -945,6 +1037,45 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
         PublishErrorCodes.ImageAltTextUpdateFailed => "insertImage",
         PublishErrorCodes.ImageTempFileDeleteFailed => "cleanupTemporaryImage",
         _ => "summary",
+    };
+
+    private static int CountOperations(CompiledDocument document, DocumentOperationKind kind) =>
+        document.Operations.Count(operation => operation.Kind == kind);
+
+    private static string CreateSafePlanSummary(CompiledDocument document)
+    {
+        var operationCount = document.Operations.Count;
+        var stepCount = document.Steps.Count;
+        var tableStepCount = document.Steps.OfType<InsertTableStep>().Count();
+        var imageStepCount = document.Steps.OfType<InsertImageStep>().Count();
+        var headingCount = CountOperations(document, DocumentOperationKind.ApplyHeading);
+        var listCount = CountOperations(document, DocumentOperationKind.CreateBullet);
+        var codeBlockCount = CountOperations(document, DocumentOperationKind.ApplyCodeBlockStyle);
+        var quoteCount = CountOperations(document, DocumentOperationKind.ApplyQuoteBlockStyle);
+
+        return string.Create(
+            CultureInfo.InvariantCulture,
+            $"Local dry-run compiled {stepCount} publish step(s) and {operationCount} operation(s): headings={headingCount}, lists={listCount}, tables={tableStepCount}, images={imageStepCount}, codeBlocks={codeBlockCount}, quotes={quoteCount}. Google Docs/Drive mutation, readback verification, Verified State save, publication approval, release-clearance, and vendor-clearance were not attempted.");
+    }
+
+    private static string ReadbackStatus(CliResult result) => result.Code switch
+    {
+        UpdateErrorCodes.ReadbackFailed => "failed",
+        UpdateErrorCodes.ReadbackMismatch or UpdateErrorCodes.ManagedRegionMismatch => "mismatch",
+        UpdateErrorCodes.RevisionConflict => "revision-conflict",
+        "DRY_RUN_SUCCEEDED" or "VERIFY_SUCCEEDED" or "DIFF_SUCCEEDED" or "HELP" => "not-applicable",
+        _ when result.Classification == ErrorClassification.Verification => "failed",
+        _ => "not-applicable",
+    };
+
+    private static string? ReadbackPhase(CliResult result) => result.Code switch
+    {
+        UpdateErrorCodes.ReadbackFailed or
+            UpdateErrorCodes.ReadbackMismatch or
+            UpdateErrorCodes.ManagedRegionMismatch => "post-apply-readback",
+        UpdateErrorCodes.RevisionConflict => "pre-apply-read",
+        _ when result.Classification == ErrorClassification.Verification => "post-apply-readback",
+        _ => null,
     };
 }
 

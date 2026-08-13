@@ -71,6 +71,97 @@ public sealed class PhysicalUpdateApplicationResult
 
     /// <summary>Gets whether an upper layer must create a new plan.</summary>
     public bool ReplanRequired { get; }
+
+    /// <summary>Gets value-safe readback reporting for operator diagnostics.</summary>
+    internal ReadbackStatusReport ReadbackReport { get; init; } =
+        ReadbackStatusReport.NotAttemptedReport();
+}
+
+/// <summary>Represents value-safe managed-document readback reporting.</summary>
+internal sealed record ReadbackStatusReport(
+    string Status,
+    string? Phase,
+    bool ReadbackVerified,
+    bool VerifiedStateSaved,
+    bool PublicationAuthorized,
+    bool ReleaseClearance,
+    bool VendorClearance)
+{
+    internal const string Verified = "verified";
+    internal const string Failed = "failed";
+    internal const string Mismatch = "mismatch";
+    internal const string RevisionConflict = "revision-conflict";
+    internal const string NotAttempted = "not-attempted";
+    internal const string NotApplicable = "not-applicable";
+    internal const string Blocked = "blocked";
+
+    internal const string PreApplyRead = "pre-apply-read";
+    internal const string Apply = "apply";
+    internal const string PostApplyReadback = "post-apply-readback";
+    internal const string VerifiedStateSave = "verified-state-save";
+
+    internal static ReadbackStatusReport FromVerifiedStateSave() => new(
+        Verified,
+        VerifiedStateSave,
+        ReadbackVerified: true,
+        VerifiedStateSaved: true,
+        PublicationAuthorized: false,
+        ReleaseClearance: false,
+        VendorClearance: false);
+
+    internal static ReadbackStatusReport FromException(PhysicalUpdateException exception) => new(
+        StatusFromCode(exception.Code),
+        PhaseFromCode(exception.Code),
+        ReadbackVerified: false,
+        VerifiedStateSaved: false,
+        PublicationAuthorized: false,
+        ReleaseClearance: false,
+        VendorClearance: false);
+
+    internal static ReadbackStatusReport NotAttemptedReport() => new(
+        NotAttempted,
+        null,
+        ReadbackVerified: false,
+        VerifiedStateSaved: false,
+        PublicationAuthorized: false,
+        ReleaseClearance: false,
+        VendorClearance: false);
+
+    internal static ReadbackStatusReport NotApplicableReport() => new(
+        NotApplicable,
+        null,
+        ReadbackVerified: false,
+        VerifiedStateSaved: false,
+        PublicationAuthorized: false,
+        ReleaseClearance: false,
+        VendorClearance: false);
+
+    internal static ReadbackStatusReport BlockedReport() => new(
+        Blocked,
+        PostApplyReadback,
+        ReadbackVerified: false,
+        VerifiedStateSaved: false,
+        PublicationAuthorized: false,
+        ReleaseClearance: false,
+        VendorClearance: false);
+
+    private static string StatusFromCode(string code) => code switch
+    {
+        UpdateErrorCodes.ReadbackFailed => Failed,
+        UpdateErrorCodes.ReadbackMismatch or UpdateErrorCodes.ManagedRegionMismatch => Mismatch,
+        UpdateErrorCodes.RevisionConflict => RevisionConflict,
+        _ => Failed,
+    };
+
+    private static string? PhaseFromCode(string code) => code switch
+    {
+        UpdateErrorCodes.RevisionConflict => PreApplyRead,
+        UpdateErrorCodes.ReadbackFailed or
+            UpdateErrorCodes.ReadbackMismatch or
+            UpdateErrorCodes.ManagedRegionMismatch => PostApplyReadback,
+        UpdateErrorCodes.ApplicationFailed => Apply,
+        _ => null,
+    };
 }
 
 /// <summary>Coordinates execution, readback verification, recovery, and verified-state save.</summary>
@@ -125,7 +216,10 @@ public sealed class PhysicalUpdateApplicationService
                 candidate,
                 logicalPlan,
                 cancellationToken).ConfigureAwait(false);
-            return new PhysicalUpdateApplicationResult(execution, null, state, replanRequired: false);
+            return new PhysicalUpdateApplicationResult(execution, null, state, replanRequired: false)
+            {
+                ReadbackReport = ReadbackStatusReport.FromVerifiedStateSave(),
+            };
         }
 
         if (execution.Status == PhysicalUpdateExecutionStatus.IndeterminateFailure)
@@ -140,21 +234,34 @@ public sealed class PhysicalUpdateApplicationService
                     candidate,
                     logicalPlan,
                     cancellationToken).ConfigureAwait(false);
-                return new PhysicalUpdateApplicationResult(execution, recovery, state, replanRequired: false);
+                return new PhysicalUpdateApplicationResult(execution, recovery, state, replanRequired: false)
+                {
+                    ReadbackReport = ReadbackStatusReport.FromVerifiedStateSave(),
+                };
             }
 
             return new PhysicalUpdateApplicationResult(
                 execution,
                 recovery,
                 savedState: null,
-                replanRequired: recovery == RecoveryReconciliationStatus.NotApplied);
+                replanRequired: recovery == RecoveryReconciliationStatus.NotApplied)
+            {
+                ReadbackReport = recovery == RecoveryReconciliationStatus.NotApplied
+                    ? ReadbackStatusReport.NotAttemptedReport()
+                    : ReadbackStatusReport.BlockedReport(),
+            };
         }
 
         return new PhysicalUpdateApplicationResult(
             execution,
             recoveryStatus: null,
             savedState: null,
-            replanRequired: execution.Status == PhysicalUpdateExecutionStatus.TransientFailure);
+            replanRequired: execution.Status == PhysicalUpdateExecutionStatus.TransientFailure)
+        {
+            ReadbackReport = execution.Status == PhysicalUpdateExecutionStatus.TransientFailure
+                ? ReadbackStatusReport.NotAttemptedReport()
+                : ReadbackStatusReport.BlockedReport(),
+        };
     }
 
     private async Task<VerifiedPublishState> VerifyAndSaveAsync(

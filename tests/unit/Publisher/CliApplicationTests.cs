@@ -31,6 +31,8 @@ public sealed class CliApplicationTests
         Assert.Equal("Publisher diagnostic session started.", lines[0].GetProperty("message").GetString());
         Assert.Equal("COMMAND_STARTED", lines[1].GetProperty("code").GetString());
         Assert.Contains(lines, line => line.GetProperty("code").GetString() == "COMMAND_COMPLETED");
+        AssertCommandStartedShape(lines, 1, true, "none");
+        AssertInvocationShapeFieldsOnlyOnCommandStarted(lines);
     }
 
     [Fact]
@@ -51,7 +53,13 @@ public sealed class CliApplicationTests
             Assert.Equal("verify", summary.GetProperty("command").GetString());
             Assert.Equal("verify", summary.GetProperty("phase").GetString());
             Assert.Equal("summary", summary.GetProperty("operation").GetString());
+            Assert.Equal("verify", summary.GetProperty("lastPhase").GetString());
+            Assert.Equal("report", summary.GetProperty("lastOperation").GetString());
+            Assert.Equal("LOCAL_VERIFY_REPORT", summary.GetProperty("lastEventCode").GetString());
             AssertStructuredFields(JsonLines(capture.Error));
+            AssertLastSafeOperationFieldsOnlyOnFinalSummary(JsonLines(capture.Error));
+            AssertCommandStartedShape(JsonLines(capture.Error), 2, true, "verify-optional-markdown-path");
+            AssertInvocationShapeFieldsOnlyOnCommandStarted(JsonLines(capture.Error));
 
             var report = LocalVerifyReport(capture.Error);
             Assert.Equal("localVerify", report.GetProperty("reportType").GetString());
@@ -122,10 +130,26 @@ public sealed class CliApplicationTests
         Assert.Equal("publish", summary.GetProperty("command").GetString());
         Assert.Equal("publish", summary.GetProperty("phase").GetString());
         Assert.Equal("summary", summary.GetProperty("operation").GetString());
+        Assert.Equal("publish", summary.GetProperty("lastPhase").GetString());
+        Assert.Equal("loadSettings", summary.GetProperty("lastOperation").GetString());
+        Assert.Equal("COMMAND_STARTED", summary.GetProperty("lastEventCode").GetString());
         Assert.Equal("Publisher input is invalid.", summary.GetProperty("message").GetString());
         Assert.DoesNotContain(path, capture.Error, StringComparison.Ordinal);
         Assert.Contains(JsonLines(capture.Error), line =>
             line.GetProperty("code").GetString() == "COMMAND_FAILED");
+    }
+
+    [Fact]
+    public async Task RunAsync_PublishUsageErrorReportsSafeInvocationShape()
+    {
+        using var capture = new ConsoleCapture();
+
+        var exitCode = await CliApplication.RunAsync(["publish"], CancellationToken.None);
+
+        Assert.Equal(2, exitCode);
+        Assert.Contains("publish requires exactly one Markdown file path.", capture.Error, StringComparison.Ordinal);
+        AssertCommandStartedShape(JsonLines(capture.Error), 1, true, "publish-markdown-path");
+        AssertInvocationShapeFieldsOnlyOnCommandStarted(JsonLines(capture.Error));
     }
 
     [Theory]
@@ -210,6 +234,9 @@ public sealed class CliApplicationTests
             Assert.Equal("CANCELED", summary.GetProperty("code").GetString());
             Assert.Equal("Canceled", summary.GetProperty("classification").GetString());
             Assert.Equal("Operation was canceled.", summary.GetProperty("message").GetString());
+            Assert.Equal("verify", summary.GetProperty("lastPhase").GetString());
+            Assert.Equal("compile", summary.GetProperty("lastOperation").GetString());
+            Assert.Equal("COMMAND_STARTED", summary.GetProperty("lastEventCode").GetString());
             Assert.DoesNotContain(
                 "OperationCanceledException",
                 summary.GetProperty("message").GetString(),
@@ -282,13 +309,147 @@ public sealed class CliApplicationTests
             Assert.Equal("dry-run", plan.GetProperty("command").GetString());
             Assert.Equal("planner", plan.GetProperty("phase").GetString());
             Assert.Equal("plan", plan.GetProperty("operation").GetString());
+            Assert.Equal("local-dry-run", plan.GetProperty("mode").GetString());
             Assert.True(plan.TryGetProperty("stepCount", out _));
+            AssertDryRunPlanSummary(plan, stepCount: 1, operationCount: 3);
+            Assert.Equal(1, plan.GetProperty("headingOperationCount").GetInt32());
+            Assert.Equal(0, plan.GetProperty("listOperationCount").GetInt32());
+            Assert.Equal(0, plan.GetProperty("tableStepCount").GetInt32());
+            Assert.Equal(0, plan.GetProperty("imageStepCount").GetInt32());
+            AssertDryRunBoundary(plan);
             Assert.DoesNotContain(path, capture.Error, StringComparison.Ordinal);
         }
         finally
         {
             File.Delete(path);
         }
+    }
+
+    [Fact]
+    public async Task RunAsync_DryRunBoundaryDoesNotClaimPublicationVerificationOrClearance()
+    {
+        using var capture = new ConsoleCapture();
+        var path = Path.Combine(Path.GetTempPath(), $"vmf-publisher-dry-run-{Guid.NewGuid():N}.md");
+        await File.WriteAllTextAsync(path, "# Title\n\nParagraph.\n");
+
+        try
+        {
+            var exitCode = await CliApplication.RunAsync(["dry-run", path], CancellationToken.None);
+
+            Assert.Equal(0, exitCode);
+            var plan = JsonLines(capture.Error)
+                .Single(line => line.GetProperty("code").GetString() == "DRY_RUN_PLAN");
+            AssertDryRunBoundary(plan);
+            Assert.Equal("DRY_RUN_SUCCEEDED", LastJsonLine(capture.Error).GetProperty("code").GetString());
+            Assert.DoesNotContain("publication success", capture.Error, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("google verification", capture.Error, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("verified state saved", capture.Error, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("release clearance", capture.Error, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("vendor clearance", capture.Error, StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public async Task RunAsync_DryRunReportsRepresentativeSafePlanSummary()
+    {
+        using var capture = new ConsoleCapture();
+        var path = Path.Combine(Path.GetTempPath(), $"vmf-publisher-dry-run-{Guid.NewGuid():N}.md");
+        await File.WriteAllTextAsync(
+            path,
+            """
+            # Sensitive Title token-secret
+
+            Paragraph with https://private.example.test/doc and Authorization: Bearer value.
+
+            - Item one
+            - Item two
+
+            | Name | Value |
+            | --- | --- |
+            | token | secret |
+
+            ```text
+            credential=value
+            ```
+
+            > quoted private content
+            """);
+
+        try
+        {
+            var exitCode = await CliApplication.RunAsync(["dry-run", path], CancellationToken.None);
+
+            Assert.Equal(0, exitCode);
+            var plan = JsonLines(capture.Error)
+                .Single(line => line.GetProperty("code").GetString() == "DRY_RUN_PLAN");
+            AssertDryRunPlanSummary(plan, stepCount: 3, operationCount: 11);
+            Assert.Equal(2, plan.GetProperty("batchUpdateStepCount").GetInt32());
+            Assert.Equal(1, plan.GetProperty("tableStepCount").GetInt32());
+            Assert.Equal(0, plan.GetProperty("imageStepCount").GetInt32());
+            Assert.Equal(1, plan.GetProperty("headingOperationCount").GetInt32());
+            Assert.Equal(1, plan.GetProperty("listOperationCount").GetInt32());
+            Assert.Equal(1, plan.GetProperty("codeBlockOperationCount").GetInt32());
+            Assert.Equal(1, plan.GetProperty("quoteOperationCount").GetInt32());
+            Assert.Equal("succeeded", plan.GetProperty("markdownCompilation").GetString());
+            Assert.Equal("local-only", plan.GetProperty("planningEvidence").GetString());
+            Assert.DoesNotContain(path, capture.Error, StringComparison.Ordinal);
+            Assert.DoesNotContain("Sensitive Title", capture.Error, StringComparison.Ordinal);
+            Assert.DoesNotContain("private.example.test", capture.Error, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("Authorization", capture.Error, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("credential=value", capture.Error, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("token-secret", capture.Error, StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public async Task RunAsync_DryRunEmptyInputReportsZeroPlanSummary()
+    {
+        using var capture = new ConsoleCapture();
+        var path = Path.Combine(Path.GetTempPath(), $"vmf-publisher-dry-run-empty-{Guid.NewGuid():N}.md");
+        await File.WriteAllTextAsync(path, string.Empty);
+
+        try
+        {
+            var exitCode = await CliApplication.RunAsync(["dry-run", path], CancellationToken.None);
+
+            Assert.Equal(0, exitCode);
+            var plan = JsonLines(capture.Error)
+                .Single(line => line.GetProperty("code").GetString() == "DRY_RUN_PLAN");
+            AssertDryRunPlanSummary(plan, stepCount: 0, operationCount: 0);
+            Assert.Equal(0, plan.GetProperty("batchUpdateStepCount").GetInt32());
+            Assert.Equal(0, plan.GetProperty("tableStepCount").GetInt32());
+            Assert.Equal(0, plan.GetProperty("imageStepCount").GetInt32());
+            Assert.Equal(0, plan.GetProperty("insertTextOperationCount").GetInt32());
+            Assert.Equal(0, plan.GetProperty("headingOperationCount").GetInt32());
+            Assert.Equal(0, plan.GetProperty("listOperationCount").GetInt32());
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public async Task RunAsync_DryRunInvalidInputDoesNotEmitPlanBoundaryOrSensitivePath()
+    {
+        using var capture = new ConsoleCapture();
+        var path = Path.Combine(Path.GetTempPath(), $"vmf-publisher-token-secret-{Guid.NewGuid():N}.md");
+
+        var exitCode = await CliApplication.RunAsync(["dry-run", path], CancellationToken.None);
+
+        Assert.Equal(1, exitCode);
+        Assert.DoesNotContain("DRY_RUN_PLAN", capture.Error, StringComparison.Ordinal);
+        Assert.DoesNotContain("local-dry-run", capture.Error, StringComparison.Ordinal);
+        Assert.DoesNotContain(path, capture.Error, StringComparison.Ordinal);
+        Assert.DoesNotContain("token-secret", capture.Error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -305,7 +466,26 @@ public sealed class CliApplicationTests
         Assert.Equal("unknown", summary.GetProperty("command").GetString());
         Assert.Equal("cli", summary.GetProperty("phase").GetString());
         Assert.Equal("summary", summary.GetProperty("operation").GetString());
+        AssertCommandStartedShape(JsonLines(capture.Error), 1, false, "none");
+        AssertInvocationShapeFieldsOnlyOnCommandStarted(JsonLines(capture.Error));
         Assert.DoesNotContain(sensitiveCommand, capture.Error, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task RunAsync_SafeInvocationShapeDoesNotEchoSensitiveArguments()
+    {
+        using var capture = new ConsoleCapture();
+        var sensitiveArgument = @"C:\Users\biz\private-token-secret.md";
+
+        var exitCode = await CliApplication.RunAsync(
+            ["diff", sensitiveArgument, "https://private.example.test/doc"],
+            CancellationToken.None);
+
+        Assert.Equal(1, exitCode);
+        AssertCommandStartedShape(JsonLines(capture.Error), 3, true, "diff-before-after");
+        Assert.DoesNotContain(sensitiveArgument, capture.Error, StringComparison.Ordinal);
+        Assert.DoesNotContain("private.example.test", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("token-secret", capture.Error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -322,6 +502,11 @@ public sealed class CliApplicationTests
         var summary = LastJsonLine(capture.Error);
         Assert.Equal("CONFIG_INTEGER_INVALID", summary.GetProperty("code").GetString());
         Assert.Equal("Publisher configuration is invalid.", summary.GetProperty("message").GetString());
+        Assert.Equal("verify", summary.GetProperty("lastPhase").GetString());
+        Assert.Equal("report", summary.GetProperty("lastOperation").GetString());
+        Assert.Equal("LOCAL_VERIFY_REPORT", summary.GetProperty("lastEventCode").GetString());
+        AssertCommandStartedShape(JsonLines(capture.Error), 1, true, "verify-optional-markdown-path");
+        AssertInvocationShapeFieldsOnlyOnCommandStarted(JsonLines(capture.Error));
         Assert.DoesNotContain("secret-token", capture.Error, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(@"C:\Users\biz", capture.Error, StringComparison.OrdinalIgnoreCase);
 
@@ -418,6 +603,71 @@ public sealed class CliApplicationTests
     }
 
     [Fact]
+    public void StructuredPublisherLogger_SummaryIncludesLastSafeOperationWithoutSensitiveValues()
+    {
+        using var capture = new ConsoleCapture();
+        var logger = new StructuredPublisherLogger("pub-test", "publish");
+        const string sensitive = "https://private.example.test/body C:\\secret\\file.md token=abc Authorization: Bearer value";
+
+        logger.SetContext("publish", "execute");
+        logger.Info("PUBLISH_EXECUTE_STARTED", "Publish execution started.", "publish", "execute");
+        logger.Summary(
+            CliResult.Failure(
+                1,
+                "PUBLISHER_ERROR",
+                "An internal Publisher error occurred.",
+                ErrorClassification.Internal,
+                "InvalidOperationException"),
+            TimeSpan.FromMilliseconds(25));
+
+        var summary = LastJsonLine(capture.Error);
+        Assert.Equal("publish", summary.GetProperty("lastPhase").GetString());
+        Assert.Equal("execute", summary.GetProperty("lastOperation").GetString());
+        Assert.Equal("PUBLISH_EXECUTE_STARTED", summary.GetProperty("lastEventCode").GetString());
+        Assert.DoesNotContain(sensitive, capture.Error, StringComparison.Ordinal);
+        Assert.DoesNotContain("private.example.test", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"C:\secret", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Authorization", capture.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [InlineData(UpdateErrorCodes.ReadbackFailed, "failed", "post-apply-readback")]
+    [InlineData(UpdateErrorCodes.ReadbackMismatch, "mismatch", "post-apply-readback")]
+    [InlineData(UpdateErrorCodes.ManagedRegionMismatch, "mismatch", "post-apply-readback")]
+    [InlineData(UpdateErrorCodes.RevisionConflict, "revision-conflict", "pre-apply-read")]
+    public void StructuredPublisherLogger_SummaryReportsReadbackStatusWithoutClearance(
+        string code,
+        string expectedStatus,
+        string expectedPhase)
+    {
+        using var capture = new ConsoleCapture();
+        var logger = new StructuredPublisherLogger("pub-test", "publish");
+
+        logger.Summary(
+            CliResult.Failure(
+                4,
+                code,
+                "Publisher verification failed.",
+                ErrorClassification.Verification),
+            TimeSpan.FromMilliseconds(25));
+
+        var summary = LastJsonLine(capture.Error);
+        Assert.Equal(expectedStatus, summary.GetProperty("readbackStatus").GetString());
+        Assert.Equal(expectedPhase, summary.GetProperty("readbackPhase").GetString());
+        Assert.Equal("managed-document-readback-only", summary.GetProperty("readbackEvidenceBoundary").GetString());
+        Assert.False(summary.GetProperty("readbackVerified").GetBoolean());
+        Assert.False(summary.GetProperty("verifiedStateSaved").GetBoolean());
+        Assert.False(summary.GetProperty("publicationAuthorized").GetBoolean());
+        Assert.False(summary.GetProperty("releaseClearance").GetBoolean());
+        Assert.False(summary.GetProperty("packageApproval").GetBoolean());
+        Assert.False(summary.GetProperty("avastSafetyCertification").GetBoolean());
+        Assert.False(summary.GetProperty("vendorClearance").GetBoolean());
+        Assert.DoesNotContain("https://", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"C:\secret", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Authorization", capture.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void StructuredPublisherLogger_SummaryPreservesDocumentCompatibilityFields()
     {
         using var capture = new ConsoleCapture();
@@ -479,6 +729,88 @@ public sealed class CliApplicationTests
             Assert.True(line.TryGetProperty("operation", out _));
             Assert.True(line.TryGetProperty("code", out _));
             Assert.True(line.TryGetProperty("message", out _));
+        }
+    }
+
+    private static void AssertDryRunBoundary(JsonElement plan)
+    {
+        Assert.Equal("local-dry-run", plan.GetProperty("mode").GetString());
+        Assert.Equal("not-attempted", plan.GetProperty("googleDocsMutation").GetString());
+        Assert.Equal("not-attempted", plan.GetProperty("googleDriveMutation").GetString());
+        Assert.Equal("not-attempted", plan.GetProperty("oauthOperation").GetString());
+        Assert.Equal("not-attempted", plan.GetProperty("tokenStoreOperation").GetString());
+        Assert.False(plan.GetProperty("physicalUpdatePlanApplied").GetBoolean());
+        Assert.Equal("not-attempted", plan.GetProperty("readbackStatus").GetString());
+        Assert.Equal("post-apply-readback", plan.GetProperty("readbackPhase").GetString());
+        Assert.Equal("managed-document-readback-only", plan.GetProperty("readbackEvidenceBoundary").GetString());
+        Assert.False(plan.GetProperty("readbackVerified").GetBoolean());
+        Assert.False(plan.GetProperty("verifiedStateSaved").GetBoolean());
+        Assert.False(plan.GetProperty("publicationAuthorized").GetBoolean());
+        Assert.False(plan.GetProperty("releaseClearance").GetBoolean());
+        Assert.False(plan.GetProperty("packageApproval").GetBoolean());
+        Assert.False(plan.GetProperty("avastSafetyCertification").GetBoolean());
+        Assert.False(plan.GetProperty("vendorClearance").GetBoolean());
+    }
+
+    private static void AssertDryRunPlanSummary(JsonElement plan, int stepCount, int operationCount)
+    {
+        Assert.Equal(stepCount, plan.GetProperty("stepCount").GetInt32());
+        Assert.Equal(operationCount, plan.GetProperty("operationCount").GetInt32());
+        Assert.True(plan.TryGetProperty("batchUpdateStepCount", out _));
+        Assert.True(plan.TryGetProperty("tableStepCount", out _));
+        Assert.True(plan.TryGetProperty("imageStepCount", out _));
+        Assert.True(plan.TryGetProperty("insertTextOperationCount", out _));
+        Assert.True(plan.TryGetProperty("headingOperationCount", out _));
+        Assert.True(plan.TryGetProperty("listOperationCount", out _));
+        Assert.True(plan.TryGetProperty("textStyleOperationCount", out _));
+        Assert.True(plan.TryGetProperty("paragraphAlignmentOperationCount", out _));
+        Assert.True(plan.TryGetProperty("codeBlockOperationCount", out _));
+        Assert.True(plan.TryGetProperty("quoteOperationCount", out _));
+        Assert.Equal("succeeded", plan.GetProperty("markdownCompilation").GetString());
+        Assert.Equal("local-only", plan.GetProperty("planningEvidence").GetString());
+
+        var safeSummary = plan.GetProperty("safePlanSummary").GetString();
+        Assert.NotNull(safeSummary);
+        Assert.Contains($"compiled {stepCount} publish step(s)", safeSummary, StringComparison.Ordinal);
+        Assert.Contains($"{operationCount} operation(s)", safeSummary, StringComparison.Ordinal);
+        Assert.Contains("Google Docs/Drive mutation", safeSummary, StringComparison.Ordinal);
+        Assert.Contains("were not attempted", safeSummary, StringComparison.Ordinal);
+    }
+
+    private static void AssertCommandStartedShape(
+        IEnumerable<JsonElement> lines,
+        int argumentCount,
+        bool recognizedCommand,
+        string expectedArgumentShape)
+    {
+        var commandStarted = lines.Single(line => line.GetProperty("code").GetString() == "COMMAND_STARTED");
+        Assert.Equal(argumentCount, commandStarted.GetProperty("argumentCount").GetInt32());
+        Assert.Equal(recognizedCommand, commandStarted.GetProperty("recognizedCommand").GetBoolean());
+        Assert.Equal(expectedArgumentShape, commandStarted.GetProperty("expectedArgumentShape").GetString());
+    }
+
+    private static void AssertInvocationShapeFieldsOnlyOnCommandStarted(IEnumerable<JsonElement> lines)
+    {
+        foreach (var line in lines)
+        {
+            var isCommandStarted = line.GetProperty("code").GetString() == "COMMAND_STARTED";
+            Assert.Equal(isCommandStarted, line.TryGetProperty("argumentCount", out _));
+            Assert.Equal(isCommandStarted, line.TryGetProperty("recognizedCommand", out _));
+            Assert.Equal(isCommandStarted, line.TryGetProperty("expectedArgumentShape", out _));
+        }
+    }
+
+    private static void AssertLastSafeOperationFieldsOnlyOnFinalSummary(IEnumerable<JsonElement> lines)
+    {
+        foreach (var line in lines)
+        {
+            var operation = line.GetProperty("operation").GetString();
+            var isFinalSummary = operation == "summary" &&
+                line.TryGetProperty("exitCode", out _) &&
+                line.TryGetProperty("classification", out _);
+            Assert.Equal(isFinalSummary, line.TryGetProperty("lastPhase", out _));
+            Assert.Equal(isFinalSummary, line.TryGetProperty("lastOperation", out _));
+            Assert.Equal(isFinalSummary, line.TryGetProperty("lastEventCode", out _));
         }
     }
 

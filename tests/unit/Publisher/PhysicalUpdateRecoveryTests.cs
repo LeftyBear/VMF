@@ -95,6 +95,13 @@ public sealed class PhysicalUpdateRecoveryTests
             CancellationToken.None);
 
         Assert.NotNull(result.SavedState);
+        Assert.Equal("verified", result.ReadbackReport.Status);
+        Assert.Equal("verified-state-save", result.ReadbackReport.Phase);
+        Assert.True(result.ReadbackReport.ReadbackVerified);
+        Assert.True(result.ReadbackReport.VerifiedStateSaved);
+        Assert.False(result.ReadbackReport.PublicationAuthorized);
+        Assert.False(result.ReadbackReport.ReleaseClearance);
+        Assert.False(result.ReadbackReport.VendorClearance);
         Assert.Equal(1, store.SaveCount);
         Assert.Same(result.SavedState, store.Saved);
     }
@@ -135,8 +142,35 @@ public sealed class PhysicalUpdateRecoveryTests
             CancellationToken.None);
 
         Assert.Equal(RecoveryReconciliationStatus.NotApplied, result.RecoveryStatus);
+        Assert.Equal("not-attempted", result.ReadbackReport.Status);
+        Assert.Null(result.ReadbackReport.Phase);
+        Assert.False(result.ReadbackReport.ReadbackVerified);
+        Assert.False(result.ReadbackReport.VerifiedStateSaved);
         Assert.True(result.ReplanRequired);
         Assert.Equal(0, store.SaveCount);
+    }
+
+    [Theory]
+    [InlineData(UpdateErrorCodes.ReadbackFailed, "failed", "post-apply-readback")]
+    [InlineData(UpdateErrorCodes.ReadbackMismatch, "mismatch", "post-apply-readback")]
+    [InlineData(UpdateErrorCodes.ManagedRegionMismatch, "mismatch", "post-apply-readback")]
+    [InlineData(UpdateErrorCodes.RevisionConflict, "revision-conflict", "pre-apply-read")]
+    public void ReadbackStatusReport_MapsStableCodesToClosedVocabulary(
+        string code,
+        string expectedStatus,
+        string expectedPhase)
+    {
+        var report = ReadbackStatusReport.FromException(new PhysicalUpdateException(
+            code,
+            "sensitive https://private.example.test C:\\secret token Authorization: Bearer value"));
+
+        Assert.Equal(expectedStatus, report.Status);
+        Assert.Equal(expectedPhase, report.Phase);
+        Assert.False(report.ReadbackVerified);
+        Assert.False(report.VerifiedStateSaved);
+        Assert.False(report.PublicationAuthorized);
+        Assert.False(report.ReleaseClearance);
+        Assert.False(report.VendorClearance);
     }
 
     private static VerifiedPublishState Baseline(params (string Id, string Hash)[] blocks) => new(
