@@ -8,6 +8,20 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Added `docs/development/Publisher_ReleaseCompletionRecord_2026-08-13.md`
+  and synchronized the post-release closeout state through current release
+  records. The completion record marks Final verification `PASS`, release
+  execution completion decision `GO`, completion timestamp
+  `2026-08-13T09:12:00.8497560+09:00`, and treats the existing published
+  `publisher-v0.0.1-dev` GitHub prerelease as the canonical release artifact
+  for the selected completion decision only. Historical 2026-08-12
+  `NO-GO` / pending scope records remain accepted-at-the-time history, not the
+  current completion state. This docs-only closeout does not create or update
+  package or `dist` outputs, rerun tags or publication, update GitHub Release
+  records or assets, run Live E2E, mutate Google Docs or Drive, operate on
+  OAuth/token stores, operate on Avast, re-run flagged executables, obtain
+  vendor clearance, claim Avast safety certification, stage, commit, or push.
+
 - Updated
   `docs/development/Publisher_OperationSpecificAuthorizationRecord_2026-08-12.md`
   to record Approver `VMF Publisher Responsible Owner — GitHub: LeftyBear`,

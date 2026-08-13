@@ -3285,3 +3285,51 @@ credentials or token stores, operate the Avast UI, change Avast settings,
 release quarantine, add exclusions, rerun or re-run `vmf-publisher.exe`,
 process an Avast response, obtain vendor clearance, claim Avast safety
 certification, stage, commit, or push.
+
+## Publisher 0.0.1-dev Release Completion Closeout
+
+Status: GO / release execution completion recorded for the existing canonical
+prerelease only.
+
+Added `docs/development/Publisher_ReleaseCompletionRecord_2026-08-13.md` to
+close the selected release-control operation for the already published VMF
+Publisher `0.0.1-dev` canonical prerelease.
+
+The completion record fixes:
+
+- Final verification: `PASS`;
+- Release execution completion decision: `GO`;
+- Completion timestamp: `2026-08-13T09:12:00.8497560+09:00`;
+- Approver: `VMF Publisher Responsible Owner — GitHub: LeftyBear`;
+- authorized operation:
+  `Final verification / release execution completion decision for the existing canonical prerelease only`.
+
+The canonical completion target remains:
+
+- version: `0.0.1-dev`;
+- tag: `publisher-v0.0.1-dev`;
+- target commit: `382bd715d8307930d0aeb8bd48116dac3f57af5c`;
+- artifact: `vmf-publisher-0.0.1-dev-win-x64.zip`;
+- size: 983422 bytes;
+- SHA-256:
+  `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`.
+
+Historical `NO-GO`, pending authorization, and earlier
+`vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` records remain
+accepted-at-the-time history, superseded where applicable by the current
+completion record. They are not the current release-completion state and are
+not the canonical completion identity.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+create, rebuild, regenerate, verify for change, replace, or write package or
+`dist` output, create, delete, move, retarget, or replace tags, push tags,
+create, update, delete, or replace GitHub Releases or prereleases, upload,
+replace, or delete release assets, rerun publication, run Live E2E, set
+`VMF_PUBLISHER_GOOGLE_E2E=1`, mutate Google Docs or Google Drive, mutate OAuth
+credentials or token stores, operate the Avast UI, change Avast settings,
+release quarantine, add exclusions, rerun or re-run `vmf-publisher.exe`,
+process an Avast response, obtain vendor clearance, claim Avast safety
+certification, stage, commit, or push.
