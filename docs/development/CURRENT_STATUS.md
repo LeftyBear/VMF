@@ -319,11 +319,14 @@ The vNext hardening backlog includes:
   documentation, package-verification output, and AV triage checklist lessons;
 - P2 vNext enhancements: Google Picker plus `drive.file` reconsideration,
   diagnostics, dry-run output, release-note generation, OAuth Desktop
-  documentation, and managed-document readback reporting.
+  documentation, managed-document readback reporting, release-note drift
+  checking, and configuration failure summary classification.
 
 P2-02 additional diagnostics is complete for the narrow local-only A/B
-implementation and closeout scope. `configurationCategory`, retry/delivery
-metadata, and `SUPPORT_SUMMARY` remain deferred and unimplemented.
+implementation and closeout scope. Retry/delivery metadata and
+`SUPPORT_SUMMARY` remain deferred and unimplemented. The later P2-09
+configuration failure summary classification item completes the formerly
+deferred `configurationCategory` summary field only.
 
 P2-03 clearer dry-run output is complete for the narrow local-only A/B
 implementation scope. P2-03-C structured dry-run output contract, P2-03-D
@@ -351,6 +354,22 @@ unit coverage passed 536 / 0 / 0, Release build passed with warnings 0 / errors
 0, format passed, and `git diff --check` passed. This synchronization does not
 rewrite release notes, edit `CHANGELOG.md`, perform release, tag, publication,
 package, `dist`, GitHub asset, Live E2E, Google Docs / Drive,
+OAuth/token-store, Avast, vendor, flagged-executable, stage, commit, or push
+operations.
+
+P2-09 configuration failure summary classification is complete as a narrow
+local-only implementation in commit `d7c761d`. It adds the
+`configurationCategory` field only to structured command-summary diagnostics
+classified as `Configuration`, derives the value from existing stable
+`CONFIG_*` codes, and restricts output to the allow-listed categories `cli`,
+`googleApi`, `publisher`, and `unknown`. Unknown future `CONFIG_*` codes map
+to `unknown`; non-configuration failures omit the field. Focused
+`CliApplicationTests` coverage checks the allow-list, non-configuration
+omission, and configuration-summary-only emission. This synchronization does
+not add retry/delivery metadata, add `SUPPORT_SUMMARY`, expose configuration
+values, credentials, token-store paths, local sensitive paths, provider
+payloads, raw exceptions, or stack traces, and does not perform release, tag,
+publication, package, `dist`, GitHub asset, Live E2E, Google Docs / Drive,
 OAuth/token-store, Avast, vendor, flagged-executable, stage, commit, or push
 operations.
 

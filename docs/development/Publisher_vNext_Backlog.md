@@ -144,6 +144,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-06 | Evaluate whether vNext should include more explicit managed-document readback reporting. | P2 | Readback reporting may improve operator confidence but needs scoped design. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; future narrow local-only implementation decision. | Potential future verification clarity; no current release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Design complete / implementation decision pending. |
 | P2-07 | Implement narrow managed-document readback reporting from the P2-06 design evaluation. | P2 | P2-06 found that readback state is safety-critical but under-reported in operator-facing diagnostics; a narrow implementation can improve clarity without changing readback semantics. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; explicit implementation task authorization; focused unit tests before broader verification. | Improves future verification clarity while preserving separation from publication success, release clearance, package approval, vendor clearance, and Avast safety certification. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-08 | Implement the release-note drift checker selected after P2-07 closeout. | P2 | Bounded local drift checking reduces release-note ambiguity without rewriting approved release notes or promoting gated decisions. | `Publisher_P2-08_CandidateSelection.md`; P2-04 allow-listed source-field boundary; commit `75be0fc`. | Keeps vNext release-note review local-only while preserving release, Google, OAuth, package, vendor-clearance, and Avast boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
+| P2-09 | Implement allow-listed configuration failure summary classification. | P2 | The P2-02 deferred `configurationCategory` field improves local troubleshooting while preserving safe diagnostic boundaries. | Existing stable `CONFIG_*` codes; P2-02 allow-listed category boundary; commit `d7c761d`. | Adds bounded local failure summary context without exposing configuration values or changing release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
 
 ### P2-07 Managed-Document Readback Reporting Implementation
 
@@ -238,6 +239,54 @@ contracts or persisted schemas, adding dependencies, exposing sensitive
 document/provider values, running live or external operations, or treating
 readback evidence as release or vendor clearance.
 
+### P2-09 Configuration Failure Summary Classification
+
+P2-09 is the completed narrow local-only implementation of the P2-02 deferred
+`configurationCategory` summary field. Commit `d7c761d` adds the field only to
+structured command-summary diagnostics whose classification is
+`Configuration`.
+
+Completed implementation scope:
+
+- derive the summary value only from existing stable `CONFIG_*` error codes;
+- emit only allow-listed category labels: `cli`, `googleApi`, `publisher`, and
+  `unknown`;
+- map unknown future `CONFIG_*` codes to `unknown` instead of exposing the raw
+  configuration source;
+- omit `configurationCategory` from non-configuration failures and successful
+  summaries;
+- add focused `CliApplicationTests` coverage for allow-list mapping,
+  non-configuration omission, and configuration-summary-only emission.
+
+Safe-value boundary:
+
+- allowed values are bounded category labels and existing stable error-code
+  routing inputs;
+- prohibited values include raw configuration values, credentials, credential
+  paths, token-store paths, OAuth tokens, Authorization headers, private Google
+  resource IDs, private URLs, provider payloads, raw HTTP bodies, raw
+  exception messages, stack traces, local sensitive paths, usernames,
+  hostnames, and account identifiers;
+- configuration failure summary classification remains local troubleshooting
+  evidence only and must not be represented as release approval, package
+  approval, publication approval, vendor clearance, Avast safety certification,
+  or future operation authorization.
+
+Non-goals:
+
+- no retry/delivery metadata, `SUPPORT_SUMMARY`, richer diagnostic payload, new
+  configuration source, public API change, persisted schema change, OAuth scope
+  change, authentication architecture change, dependency addition, release
+  record change, package identity change, or publication-flow change;
+- no release, tag, publication, package or `dist` update, GitHub asset
+  operation, Live E2E, Google Docs mutation, Google Drive mutation, OAuth login,
+  token-store read/write/delete/cleanup/reuse, Avast operation, vendor
+  clearance judgment, flagged executable re-run, stage, commit, or push.
+
+Verification result recorded for P2-09: focused `CliApplicationTests` coverage
+was added with the implementation in commit `d7c761d`. Current-state
+synchronization is documentation-only and records no new source or test change.
+
 ## Dependency Split
 
 Avast-response dependent:
@@ -263,14 +312,16 @@ Completed Avast-independent hardening / enhancements:
 - P1-06.
 - P2-07.
 - P2-08.
+- P2-09.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-08: release-note drift checker derived from the deferred P2-04-D
-  candidate; narrow local-only implementation complete in commit `75be0fc`
-  with focused ReleaseNote unit coverage 26 / 0 / 0, Publisher unit coverage
-  536 / 0 / 0, Release build warnings 0 / errors 0, format PASS, and
-  `git diff --check` PASS.
+- P2-09: configuration failure summary classification derived from the
+  deferred P2-02 `configurationCategory` candidate; narrow local-only
+  implementation complete in commit `d7c761d` with allow-listed categories
+  `cli`, `googleApi`, `publisher`, and `unknown`, focused `CliApplicationTests`
+  coverage for mapping and omission behavior, and no release, Google, OAuth,
+  package, vendor-clearance, or Avast operation.
 
 ## Vendor-Clearance Boundary
 
