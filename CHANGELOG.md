@@ -8,6 +8,42 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ## Changed
 
+- Completed P2-05 docs-only OAuth Desktop token-store guidance closeout and
+  added P2-06 managed-document readback reporting design evaluation. P2-05
+  remains documentation-only and does not change OAuth scope, authentication
+  architecture, Google/OAuth/token-store operation, package, release, or
+  vendor-clearance state. P2-06 is design-only and preserves Verified State /
+  Readback Verification semantics while separating readback evidence from
+  publication success, release clearance, and vendor clearance.
+
+- Closed P2-02 additional diagnostics after narrow local-only P2-02-A /
+  P2-02-B implementation, keeping `configurationCategory`, retry/delivery
+  metadata, and `SUPPORT_SUMMARY` deferred. Added P2-03 clearer dry-run output
+  design evaluation for future local-only implementation consideration without
+  changing dry-run semantics, Google state, OAuth/token-store state, release
+  clearance, publication authorization, vendor clearance, packages, `dist`,
+  stage, commit, or push.
+
+- Implemented P1-05 as a new independent post-`0.0.1-dev` scope. Updated
+  `tools/publisher/verify-package.ps1` so package verification output states
+  that it is local package-structure and manifest verification only, does not
+  grant release clearance, and requires separate records for publication,
+  vendor clearance, and release authorization. Verified success and failure
+  behavior with temporary ZIP packages only; no package or `dist` artifact was
+  created or updated, and the existing `0.0.1-dev` release was not reopened.
+
+- Completed docs-only post-release closeout consistency confirmation for
+  Publisher `0.0.1-dev`. Updated the closeout record, current status, handoff,
+  release runbook, release checklist, traceability matrix, and vNext backlog
+  so current-state fields distinguish the completed canonical prerelease and
+  post-release closeout from historical `NO-GO`, pending, blocked, Hold, and
+  Avast-pending records. The next version / next phase starts only under a new
+  scope. This docs-only update does not create or update package or `dist`
+  outputs, rerun tags or publication, update GitHub Release records or assets,
+  run Live E2E, mutate Google Docs or Drive, operate on OAuth/token stores,
+  operate on Avast, re-run flagged executables, obtain vendor clearance, claim
+  Avast safety certification, stage, commit, or push.
+
 - Added `docs/development/Publisher_ReleaseCompletionRecord_2026-08-13.md`
   and synchronized the post-release closeout state through current release
   records. The completion record marks Final verification `PASS`, release

@@ -1,13 +1,14 @@
 # VMF Publisher Handoff
 
-Status  : Phase 4 local-only verification complete / 0.0.1-dev GitHub prerelease published
+Status  : Post-release closeout complete / next version or next phase requires a new scope
 Scope   : Handoff for next worker, next chat, Codex, or Work Mode
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/distribution/ReleaseChecklist.md
 
 This document is the handoff boundary for continuing VMF Publisher work after
-Phase 4 local-only verification and the completed `0.0.1-dev` GitHub
-prerelease publication. It is intended to prevent accidental new release gate
-movement while Avast false positive vendor clearance remains pending.
+Phase 4 local-only verification, the completed `0.0.1-dev` GitHub prerelease
+publication, and post-release closeout. It is intended to prevent accidental
+new release gate movement while Avast false positive vendor clearance remains
+separately gated.
 
 Subsequent update: ADR-0019 records VMF-side residual risk acceptance and the
 Release Hold lift. The `0.0.1-dev` tag, GitHub prerelease, and asset upload are
@@ -22,10 +23,13 @@ Begin from this state:
 
 - Phase 4 local-only verification safety scope is complete;
 - current state is local verification complete / Release Hold lifted by VMF
-  risk acceptance / `0.0.1-dev` GitHub prerelease published;
+  risk acceptance / `0.0.1-dev` GitHub prerelease published / post-release
+  closeout complete;
 - Avast false positive handling is pending;
 - Avast vendor clearance has not been obtained and Avast safety certification
   is not claimed;
+- next version or next phase work starts as a new scope, not as an extension
+  of `0.0.1-dev`;
 - `0.0.1-dev` release, tag, publication, package, Live E2E, Google Docs
   mutation, and Google Drive mutation are historical completed release-path
   records, not authorization for new operations;

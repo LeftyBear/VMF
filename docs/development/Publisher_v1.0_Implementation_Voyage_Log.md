@@ -3286,6 +3286,100 @@ release quarantine, add exclusions, rerun or re-run `vmf-publisher.exe`,
 process an Avast response, obtain vendor clearance, claim Avast safety
 certification, stage, commit, or push.
 
+## P1-05 Package Verification Output Boundary
+
+Status: COMPLETE as a new independent implementation scope after `0.0.1-dev`
+closeout.
+
+Updated `tools/publisher/verify-package.ps1` so package verification output
+states the verification boundary before the final result:
+
+- verification is local package-structure and manifest verification only;
+- release clearance is not granted by the script;
+- publication, vendor clearance, and release authorization require separate
+  records;
+- the result is explicitly printed as `PASSED` or `FAILED`.
+
+The validation used temporary valid and invalid ZIP packages. It did not
+create, rebuild, regenerate, replace, or write package or `dist` output, did
+not run the published `0.0.1-dev` package, did not reopen the existing
+`0.0.1-dev` release, did not publish releases, mutate Google Docs / Drive,
+operate OAuth/token stores, process Avast response evidence, obtain vendor
+clearance, claim Avast safety certification, stage, commit, or push.
+
+## P2-05 OAuth Desktop Token-Store Documentation Closeout And P2-06 Readback Reporting Design
+
+P2-05 status: COMPLETE / docs-only guidance synchronized.
+
+P2-05 updated the OAuth Desktop and token-store operator guidance in
+`docs/distribution/InstallationGuide.md` and
+`docs/distribution/LiveE2EOperations.md`. The update preserved ADR-0002's
+OAuth Desktop / Service Account boundary, preserved the existing Documents and
+Drive scope decision, kept Google Picker plus `drive.file` deferred, and did
+not perform OAuth login, consent, token-store operation, Google Docs / Drive
+operation, Live E2E, package or `dist` work, release, tag, publication,
+GitHub asset operation, Avast operation, flagged executable re-run, vendor
+clearance judgment, stage, commit, or push.
+
+P2-06 status: DESIGN COMPLETE / implementation decision pending.
+
+`docs/development/Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`
+evaluates value-safe managed-document readback reporting. It preserves
+ADR-0004's revision conflict hard stop, Physical Update Plan ordering,
+mandatory Readback Verification, and Verified State promotion/save only after
+successful readback verification. It also preserves ADR-0006 / ADR-0007 safe
+diagnostics and error-classification boundaries.
+
+The recommended future implementation is narrow local-only reporting work:
+closed readback status vocabulary, value-safe phase labels, and tests for
+success, failure, mismatch, revision conflict, no-change, dry-run
+not-attempted, and sensitive-value exclusion. It must not expose raw document
+content, document IDs, private URLs, provider payloads, raw exceptions,
+credentials, tokens, token-store paths, or local sensitive paths. Readback
+reporting remains separate from publication success, release authorization,
+package approval, vendor clearance, and Avast safety certification.
+
+## Publisher 0.0.1-dev Post-Release Closeout Consistency Confirmation
+
+Status: COMPLETE / current-state consistency confirmation PASS.
+
+Updated the docs-only post-release closeout boundary after the completed
+Publisher `0.0.1-dev` canonical prerelease release-completion decision.
+`docs/development/Publisher_PostReleaseCloseoutRecord_2026-08-13.md` now
+records closeout completion and current-state consistency confirmation `PASS`.
+
+Synchronized current-state wording across:
+
+- `docs/development/CURRENT_STATUS.md`;
+- `docs/development/HANDOFF.md`;
+- `docs/development/Publisher_vNext_Backlog.md`;
+- `docs/development/Test_Traceability_Matrix.md`;
+- `docs/distribution/PublisherReleaseRunbook.md`;
+- `docs/distribution/ReleaseChecklist.md`;
+- `CHANGELOG.md`.
+
+Historical `NO-GO`, pending, blocked, Hold, release blocked, and Avast-pending
+records remain accepted-at-the-time history or future-gate status where
+applicable. They are not the current release-completion or closeout state.
+
+The resulting boundary is that the `0.0.1-dev` release execution is closed,
+post-release closeout is complete, and the next version / next phase may start
+only as a new scoped task with any required operation-specific authorization.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+create, rebuild, regenerate, verify for change, replace, or write package or
+`dist` output, create, delete, move, retarget, or replace tags, push tags,
+create, update, delete, or replace GitHub Releases or prereleases, upload,
+replace, or delete release assets, rerun publication, run Live E2E, set
+`VMF_PUBLISHER_GOOGLE_E2E=1`, mutate Google Docs or Google Drive, mutate OAuth
+credentials or token stores, operate the Avast UI, change Avast settings,
+release quarantine, add exclusions, rerun or re-run `vmf-publisher.exe`,
+process an Avast response, obtain vendor clearance, claim Avast safety
+certification, stage, commit, or push.
+
 ## Publisher 0.0.1-dev Release Completion Closeout
 
 Status: GO / release execution completion recorded for the existing canonical

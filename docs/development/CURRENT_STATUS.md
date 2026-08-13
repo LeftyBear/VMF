@@ -25,7 +25,7 @@ set only; it is not release execution.
 
 | Item | State |
 | --- | --- |
-| Overall status | GO / final verification and release execution completion decision approved for the existing canonical prerelease only |
+| Overall status | Post-release closeout complete; next version / next phase may start only under a new scope |
 | Local verification | Complete within the approved local-only safety boundary |
 | Release readiness | Completed for the `0.0.1-dev` GitHub prerelease; release completion evidence recorded docs-only |
 | Release gate | Hold lifted by VMF-side residual risk acceptance; release execution advanced through GitHub prerelease publication |
@@ -77,9 +77,13 @@ set only; it is not release execution.
 | Publisher Next Operation Authorization Scope Record | Done as documentation-only / local-only scope selection; narrows the next possible authorization target to final verification / release execution completion decision for the existing canonical prerelease only. The later operation-specific authorization record approves only that selected operation. |
 | Publisher Operation-Specific Authorization Record | Done as documentation-only / local-only authorization record; names final verification / release execution completion decision for the existing canonical prerelease as the only target, records Approver `VMF Publisher Responsible Owner — GitHub: LeftyBear`, Decision `Approved`, Approval timestamp `2026-08-13T09:06:11.4854490+09:00`, fixes the canonical `0.0.1-dev` / `publisher-v0.0.1-dev` identity, and records `GO` for that selected operation only. |
 | Publisher Release Completion Record | Done as documentation-only / local-only completion record; records Final verification `PASS`, release execution completion decision `GO`, completion timestamp `2026-08-13T09:12:00.8497560+09:00`, Approver `VMF Publisher Responsible Owner — GitHub: LeftyBear`, and treats the existing published `publisher-v0.0.1-dev` GitHub prerelease as the canonical release artifact for the selected completion decision only. This record performs no package / `dist`, tag / publication, GitHub Release / asset update, Live E2E, Google, OAuth, Avast, flagged executable, staging, commit, or push operation. |
+| Publisher Post-Release Closeout Record | Complete as documentation-only / local-only post-release closeout; records responsible-owner start judgment `GO`, current-state consistency confirmation `PASS`, the order `post-release closeout -> current-state consistency confirmation -> next version / next phase start`, and that any next phase begins under a new boundary rather than as an extension of `0.0.1-dev`. |
 | Publisher Responsible-Owner Approval and Release Gate Re-evaluation Record | Done as documentation-only / local-only release-gate decision record; records responsible-owner approval Approved and release-gate evaluation PASS under evidence-based vendor-clearance criteria after latest-definition Avast rescan evidence confirmed detection non-reproduction. It does not execute release, tag, publication, distribution, package/dist modification, Live E2E, Google Docs / Drive mutation, or flagged executable re-run. |
 | Publisher Residual Risk Release Authorization Approval Memo | Done as documentation-only / local-only formal approval record; records approved VMF-side residual risk acceptance plus release authorization for `0.0.1-dev` without claiming Avast vendor clearance or Avast safety certification and without performing new release-path operations. |
-| Publisher vNext Backlog | Done as documentation-only / local-only backlog record; reprioritized to put next release-path gate basis, Avast outcome intake, go/no-go reconciliation, Live E2E / Google Docs authorization, and artifact audit ahead of evidence hardening and vNext enhancements while preserving published `0.0.1-dev` state and separate authorization gates. Post-release follow-up register now records Avast response decision paths, vendor-clearance status/evidence updates if obtained, adverse-response handling, separate Live E2E / Google Docs / Drive gates, and `0.0.1-dev` vNext candidates without performing release, asset, package, tag, Live E2E, Google, OAuth, Avast, or flagged-executable operations. The completed Avast-independent docs-only items are `P1-01`, `P1-02`, and `P1-04`; the first release-path item remains `P0-01`, blocked until an Avast response is received and reviewed. |
+| Publisher vNext Backlog | Done as documentation-only / local-only backlog record; reprioritized to put next release-path gate basis, Avast outcome intake, go/no-go reconciliation, Live E2E / Google Docs authorization, and artifact audit ahead of evidence hardening and vNext enhancements while preserving published `0.0.1-dev` state and separate authorization gates. Post-release follow-up register now records Avast response decision paths, vendor-clearance status/evidence updates if obtained, adverse-response handling, separate Live E2E / Google Docs / Drive gates, and `0.0.1-dev` vNext candidates without performing release, asset, package, tag, Live E2E, Google, OAuth, Avast, or flagged-executable operations. Completed independent hardening items include `P1-01`, `P1-02`, `P1-04`, `P1-05`, and `P1-06`; the first release-path item remains `P0-01`, blocked until an Avast response is received and reviewed. |
+| Publisher P1-05 package verification output boundary | Complete as a new independent implementation scope after `0.0.1-dev` closeout; `tools/publisher/verify-package.ps1` now prints that verification is local package-structure and manifest verification only, and that release clearance, publication, vendor clearance, and release authorization require separate records. Temporary valid/invalid package checks were used; no package or `dist` artifact was created or updated, and the existing `0.0.1-dev` release was not reopened. |
+| Publisher P2-05 OAuth Desktop token-store documentation | Complete as docs-only guidance synchronization; InstallationGuide and LiveE2EOperations now clarify OAuth Desktop setup, token-store lifecycle authorization, placeholder-only path examples, ADR-0002 scope continuity, and safe evidence boundaries. No OAuth scope, authentication architecture, Google Docs / Drive, OAuth/token-store operation, Live E2E, package, `dist`, release, vendor-clearance, Avast, flagged-executable, stage, commit, or push operation was performed. |
+| Publisher P2-06 managed-document readback reporting evaluation | Design complete / implementation decision pending as docs-only evaluation; identifies value-safe status vocabulary and reporting improvements while preserving ADR-0004 Verified State / Readback Verification semantics, ADR-0006 safe diagnostics, ADR-0007 CLI classification, and the separation from publication success, release clearance, and vendor clearance. No actual readback, Google, OAuth/token-store, Live E2E, package, release, vendor, stage, commit, or push operation was performed. |
 | Publisher Live E2E Operations | Updated as documentation-only / local-only setup guidance for P1-04. It clarifies per-run authorization, OAuth/token-store credential boundaries, cleanup scope, and cross-references to current status, preflight hard stops, test classification, and the release runbook. This update did not execute Live E2E, set `VMF_PUBLISHER_GOOGLE_E2E=1`, mutate Google Docs or Google Drive, operate on OAuth/token stores/credentials, create cleanup actions, touch package or `dist` output, re-run flagged executables, publish releases, claim vendor clearance, or claim Avast safety certification. |
 | Publisher Avast Response Decision Template | Done as documentation-only / local-only decision template; no Avast response received; vendor clearance remains not obtained; release block continues for vendor-clearance purposes unless a future reviewed response satisfies the template. |
 | Publisher Avast Response Intake Template | Done as documentation-only / local-only template; no Avast response received; vendor clearance remains not obtained. |
@@ -315,6 +319,21 @@ The vNext hardening backlog includes:
 - P2 vNext enhancements: Google Picker plus `drive.file` reconsideration,
   diagnostics, dry-run output, release-note generation, OAuth Desktop
   documentation, and managed-document readback reporting.
+
+P2-02 additional diagnostics is complete for the narrow local-only A/B
+implementation and closeout scope. `configurationCategory`, retry/delivery
+metadata, and `SUPPORT_SUMMARY` remain deferred and unimplemented.
+
+P2-03 clearer dry-run output evaluation is design-only complete with
+implementation decision pending. It does not treat dry-run as Live E2E, Google
+verification, publication authorization, release clearance, vendor clearance,
+or Avast safety certification.
+
+P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
+synchronization. P2-06 managed-document readback reporting evaluation is
+design-only complete with implementation decision pending. Neither item changes
+Google/OAuth authorization, release authorization, publication state, package
+state, vendor clearance, or Avast safety certification.
 
 ## 12. Publisher Avast Response Intake Template
 
@@ -826,12 +845,13 @@ The recorded decision inputs are:
 - the 2026-07-25 False Positive submission remains unanswered as of
   2026-08-09.
 
-The current formal state is:
+At the time ADR-0019 was recorded, the current formal state was:
 
 `Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance / 0.0.1-dev GitHub prerelease published`.
 
 Avast vendor clearance remains not obtained. Avast safety certification is not
-claimed. Release execution has advanced through GitHub prerelease publication.
+claimed. Later records now complete release execution and post-release
+closeout for the existing canonical prerelease.
 
 The next required order is fixed:
 

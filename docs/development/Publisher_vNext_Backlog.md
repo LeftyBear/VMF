@@ -4,8 +4,11 @@
 
 - Current state: Phase 4 local-only verification complete.
 - Release state: `0.0.1-dev` GitHub prerelease published after ADR-0019
-  VMF-side residual risk acceptance; any new release-path work remains
-  separately gated.
+  VMF-side residual risk acceptance; release completion is formally recorded
+  for the existing canonical prerelease, and post-release closeout is complete.
+- Next boundary: after closeout, the next version / next phase starts as a new
+  scope rather than an extension of the `0.0.1-dev` release execution.
+- Any new release-path work remains separately gated.
 - External dependency: Avast false positive response pending; vendor clearance
   has not been obtained and Avast safety certification is not claimed.
 - This backlog is documentation-only and does not authorize release, publication, Live E2E, package generation, or Google Docs/Drive mutation.
@@ -14,6 +17,8 @@
 - Package and `dist/` artifacts have not been updated for this backlog.
 - No new release, tag, or publication has been performed for this backlog.
 - The flagged executable has not been re-run for this backlog.
+- P1-05 was implemented as a new independent scope after `0.0.1-dev`
+  closeout; it did not reopen the existing prerelease.
 
 ## Scope
 
@@ -61,8 +66,7 @@ operating assets, updating packages or `dist/`, running Live E2E, mutating
 Google Docs / Drive, performing OAuth operations, rerunning Avast, or
 re-running the flagged executable.
 
-The next Avast-independent docs-only candidates are `P1-06` and selected P2
-design items.
+The next Avast-independent docs-only candidates are selected P2 design items.
 
 `P0-01` remains the first release-path item, but it is blocked until an Avast
 response is received and explicitly reviewed.
@@ -96,7 +100,8 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | PF-03 | Vendor clearance is accepted | Update current status, release notes, and evidence index to say vendor clearance was obtained for the exact artifact identity and date while preserving that Avast safety certification is not claimed unless the vendor explicitly provides that certification. | `CURRENT_STATUS.md`, applicable release notes, release approval/evidence index, Voyage Log, CHANGELOG. | Docs-only status update unless a separate release-path operation is authorized. |
 | PF-04 | Avast response is adverse, ambiguous, artifact-mismatched, or requests additional action | Keep vendor clearance not obtained; stop release-path assumptions; classify whether remediation, resubmission, package rebuild, withdrawal/rollback consideration, owner risk decision, or abandonment requires a new task. | Intake/decision templates, current status, issue/failure record if authorized. | No package rebuild, asset replacement, withdrawal, or rerun without separate approval. |
 | PF-05 | Live E2E or Google Docs / Drive checks are proposed after `0.0.1-dev` | Treat each Live E2E, Google Docs mutation, Google Drive mutation, OAuth/token-store operation, and cleanup check as a separate gate with its own authorization and evidence plan. | Authorization record and redacted evidence only after approval. | No implicit carryover from prerelease publication or vendor response. |
-| PF-06 | vNext planning resumes | Choose from the P0/P1/P2 candidates below; keep candidate labels separate from adopted behavior and release authorization. | Backlog update or scoped design record. | Docs-only unless a future implementation task is approved. |
+| PF-06 | Post-release closeout starts | Confirm closeout records, current-state consistency, and the next-version / next-phase boundary before selecting new work. | `Publisher_PostReleaseCloseoutRecord_2026-08-13.md`; current status / backlog alignment records. | Docs-only closeout; not additional `0.0.1-dev` release execution. |
+| PF-07 | vNext planning resumes | Choose from the P0/P1/P2 candidates below under a new scoped task; keep candidate labels separate from adopted behavior and release authorization. | Backlog update or scoped design record. | Docs-only unless a future implementation task is approved. |
 
 ## Avast Response Decision Paths
 
@@ -124,7 +129,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P1-02 | Improve release-readiness checklist cross-links for blocked, deferred, risk-accepted, and local-only evidence. | P1 | Cross-links reduce audit ambiguity between historical hold records and current status. | Current status and existing Phase 4-3 records. | Helps reviewers avoid mistaking historical blocked wording for current prerelease state or vendor clearance. | Complete / docs-only cross-links added. |
 | P1-03 | Re-check supply-chain and package evidence only after the approved release artifact exists. | P1 | Evidence refresh must be tied to a specific approved artifact, not local or stale package output. | Future approved release artifact or explicitly authorized static inspection. | Prevents artifact identity drift and package evidence overclaiming. | Blocked / package scope not authorized. |
 | P1-04 | Review Live E2E setup documentation for clearer authorization, credential, and cleanup boundaries. | P1 | Documentation clarifies the gate without running Live E2E or touching OAuth state. | Existing Live E2E records and runbook text. | Reduces risk of unapproved live mutation or credential handling. | Complete / docs-only boundary and cross-link update. |
-| P1-05 | Review package verification scripts for clearer output that distinguishes local verification from release clearance. | P1 | Script messaging can make evidence labels harder to misread, but implementation requires a future code task. | Separate implementation authorization and tests. | Would reduce release-clearance overclaim risk when adopted. | Blocked / implementation scope not authorized. |
+| P1-05 | Review package verification scripts for clearer output that distinguishes local verification from release clearance. | P1 | Script messaging can make evidence labels harder to misread. | New independent implementation scope after `0.0.1-dev` closeout; temporary-package script verification. | Reduces release-clearance overclaim risk without granting publication, vendor clearance, or release authorization. | Complete / script output boundary added. |
 | P1-06 | Convert durable AV triage lessons into a repeatable release-safety checklist. | P1 | Checklist hardening can proceed without a vendor response if it preserves pending/clearance boundaries. | Existing AV triage notes and redaction rules. | Improves future AV triage consistency without claiming Avast clearance. | Complete / docs-only AV triage hardening added. |
 
 ## P2 — vNext Enhancements
@@ -132,11 +137,11 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | ID | Item | Priority | Rationale | Prerequisite | Release safety impact | State |
 | --- | --- | --- | --- | --- | --- | --- |
 | P2-01 | Evaluate whether Google Picker plus `drive.file` least-privilege routing should be adopted by a future scoped design task. | P2 | Least-privilege routing may reduce future operator risk, but it is not required for current release follow-up. | Future scoped design task. | Potential future credential and Drive-access risk reduction. | Ready for design only / Avast-independent. |
-| P2-02 | Evaluate additional Publisher diagnostics that improve troubleshooting without changing published document semantics. | P2 | Diagnostics may improve supportability but must preserve published document behavior. | Future scoped design and test plan. | Potential future observability improvement with no current release gate effect. | Ready for design only / Avast-independent. |
-| P2-03 | Evaluate clearer dry-run output for Google Docs publication planning. | P2 | Better dry-run output may reduce operator error in future Google Docs workflows. | Future scoped design and non-live verification plan. | Potential future planning clarity; no current clearance effect. | Ready for design only / Avast-independent. |
-| P2-04 | Evaluate richer release-note generation from existing verification records. | P2 | Automation could reduce documentation drift, but it is not required for the next release-path gate. | Future scoped design task and record-format review. | Potential future traceability improvement. | Ready for design only / Avast-independent. |
-| P2-05 | Evaluate documentation improvements for OAuth Desktop setup and token-store handling. | P2 | Guidance may reduce authentication confusion, but token-store operations remain prohibited unless separately authorized. | Future docs task with secret-redaction review. | Potential future credential-handling risk reduction. | Ready for docs-only design / Avast-independent. |
-| P2-06 | Evaluate whether vNext should include more explicit managed-document readback reporting. | P2 | Readback reporting may improve operator confidence but needs scoped design. | Future design task and non-live test plan. | Potential future verification clarity; no current release gate effect. | Ready for design only / Avast-independent. |
+| P2-02 | Evaluate additional Publisher diagnostics that improve troubleshooting without changing published document semantics. | P2 | Diagnostics may improve supportability but must preserve published document behavior. | P2-02-A / P2-02-B narrow local-only implementation and closeout record. | Improves local troubleshooting with no release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Complete / A and B implemented; C, D, and E deferred. |
+| P2-03 | Evaluate clearer dry-run output for Google Docs publication planning. | P2 | Better dry-run output may reduce operator error in future Google Docs workflows. | `Publisher_P2-03_ClearerDryRunOutputEvaluation.md`; P2-03-A / P2-03-B narrow local-only implementation and closeout record. | Potential future planning clarity; no current clearance effect. | Complete / A and B implemented; C, D, and E deferred. |
+| P2-04 | Evaluate richer release-note generation from existing verification records. | P2 | Automation could reduce documentation drift, but it is not required for the next release-path gate. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; future scoped implementation decision. | Potential future traceability improvement. | Design complete / implementation decision pending. |
+| P2-05 | Evaluate documentation improvements for OAuth Desktop setup and token-store handling. | P2 | Guidance may reduce authentication confusion, but token-store operations remain prohibited unless separately authorized. | `Publisher_P2-05_OAuthDesktopTokenStoreDocumentationEvaluation.md`; docs-only implementation in installation and Live E2E guidance. | Reduces future credential-handling ambiguity without changing OAuth scope, authentication architecture, Google, package, release, or vendor-clearance gates. | Complete / docs-only guidance synchronized. |
+| P2-06 | Evaluate whether vNext should include more explicit managed-document readback reporting. | P2 | Readback reporting may improve operator confidence but needs scoped design. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; future narrow local-only implementation decision. | Potential future verification clarity; no current release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Design complete / implementation decision pending. |
 
 ## Dependency Split
 
@@ -147,17 +152,20 @@ Avast-response dependent:
 Authorization or artifact-scope dependent, but not dependent on an Avast
 response:
 
-- P0-06, P0-07, P0-08, P1-03, and P1-05.
+- P0-06, P0-07, and P0-08.
+- P1-03.
 
 Avast-independent docs-only / design-ready:
 
-- P1-06 and P2-01 through P2-06.
+- P2-01 through P2-06.
 
-Completed Avast-independent docs-only:
+Completed Avast-independent hardening:
 
 - P1-01.
 - P1-02.
 - P1-04.
+- P1-05.
+- P1-06.
 
 ## Vendor-Clearance Boundary
 
@@ -211,5 +219,4 @@ clearance boundary.
    release-path task.
 5. Release artifact audit status after package-generation scope is authorized.
 6. Security and supply-chain review status for the approved release artifact.
-7. Next docs-only hardening candidate: P1-06.
-8. vNext enhancement candidates.
+7. vNext enhancement candidates.

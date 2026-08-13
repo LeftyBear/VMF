@@ -12,14 +12,15 @@ change public APIs, or modify Frozen specifications.
 
 ## 1. Current Formal State
 
-The current formal state remains:
+The current formal state is:
 
-`Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance`.
+`0.0.1-dev release completion recorded / post-release closeout complete / next version or next phase requires a new scope`.
 
 Avast vendor clearance remains not obtained, Avast safety certification is not
 claimed, and the 2026-07-25 False Positive submission remains unanswered. VMF
 has accepted the residual risk through ADR-0019 and lifted the Release Hold.
-This document exists to keep the post-hold sequence explicit:
+The `0.0.1-dev` post-hold sequence is recorded complete. This document keeps
+the release-gate sequence explicit for future scoped release-path work:
 
 `final verification -> Live E2E -> result review -> package/dist -> tag/release`.
 

@@ -10,23 +10,24 @@ modify `dist/`, execute Live E2E, mutate Google Docs or Google Drive, re-run
 flagged executables, submit files to antivirus vendors, approve a release,
 change production code, change public APIs, or modify Frozen specifications.
 
-The current formal state remains:
+The current formal state is:
 
-`Phase 4 local-only verification complete / release blocked`.
+`0.0.1-dev release completion recorded / post-release closeout complete / next version or next phase requires a new scope`.
 
 Avast false-positive handling remains pending. The bundle design must not be
 used as antivirus vendor clearance, package approval, Live E2E evidence,
-release readiness, or permission to resume the release path.
+release readiness for a new scope, or permission to resume a future release
+path.
 
 Current operating snapshot:
 
 | Item | State |
 | --- | --- |
-| Formal state | Phase 4 local-only verification complete / release blocked |
-| Release gate | Blocked |
+| Formal state | `0.0.1-dev` release completion recorded / post-release closeout complete |
+| Release gate | Closed for `0.0.1-dev`; future release-path work separately gated |
 | Avast false-positive handling | Pending |
 | Vendor clearance | Not obtained |
-| Approval recommendation | Hold |
+| Approval recommendation | No active `0.0.1-dev` release execution remains; future release-path authorization required |
 
 ## 1. Purpose
 

@@ -48,15 +48,15 @@ Current operating snapshot:
 
 | Item | State |
 | --- | --- |
-| Formal state | NO-GO / downstream identity synchronized; release execution gate re-evaluation pending |
-| Release gate | Hold lifted by ADR-0019; release execution advanced through GitHub prerelease publication, but further release execution is blocked until canonical identity synchronization is reviewed |
+| Formal state | Post-release closeout complete for the existing canonical `0.0.1-dev` prerelease; next version / next phase requires a new scope |
+| Release gate | Hold lifted by ADR-0019; release execution completed for the existing canonical GitHub prerelease; future release-path work remains separately gated |
 | Release identity | Canonical current identity: `0.0.1-dev` / `publisher-v0.0.1-dev`; annotated tag object `04a101729dbab431f9e67e1b7e43e6b9a94dd6e0`; target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`; older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` records are historical / superseded / non-canonical |
 | Package identity | Canonical current published artifact: `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`; 983422 bytes; SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76` |
 | Package target commit | Canonical target commit: `382bd715d8307930d0aeb8bd48116dac3f57af5c` |
 | Avast false-positive handling | Vendor response pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
-| Approval recommendation | NO-GO until the release execution gate is re-evaluated after downstream identity synchronization |
+| Approval recommendation | No active `0.0.1-dev` release execution remains; future package/dist, tag, publication, Live E2E, Google/OAuth, Avast, and flagged-executable operations require separate authorization |
 | Final verification / Live E2E / result review | PASS / Live E2E 4 of 4 PASS / result review complete |
 | Package generation / verification | PASS / PASS; manifest files 14; secret/static package inspection PASS |
 | Tag state | Pushed; remote tag readback PASS |

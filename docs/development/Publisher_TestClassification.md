@@ -16,16 +16,17 @@ verification, evidence, and current coverage status.
 
 ## 1. Current Boundary
 
-The current formal state remains:
+The current formal state is:
 
-`Phase 4 local-only verification complete / Release Hold lifted by VMF risk acceptance`.
+`0.0.1-dev release completion recorded / post-release closeout complete / next version or next phase requires a new scope`.
 
 Avast vendor clearance has not been obtained, Avast safety certification is
 not claimed, and the 2026-07-25 False Positive submission remains unanswered.
 ADR-0019 records VMF-side residual risk acceptance and lifts the Release Hold.
-Verification and release execution must follow this order: final verification,
-Live E2E, result review, package/dist, tag/release. Each step remains a
-separate authorization gate.
+The `0.0.1-dev` release execution sequence is recorded complete. Future
+verification and release execution must follow this order under a new scope:
+final verification, Live E2E, result review, package/dist, tag/release. Each
+step remains a separate authorization gate.
 
 ## 2. Test Classification
 
