@@ -173,6 +173,121 @@ public sealed class PhysicalUpdateRecoveryTests
         Assert.False(report.VendorClearance);
     }
 
+    [Fact]
+    public void ReadbackStatusReport_UsesOnlyClosedVocabulary()
+    {
+        var reports = new[]
+        {
+            ReadbackStatusReport.FromVerifiedStateSave(),
+            ReadbackStatusReport.FromException(new PhysicalUpdateException(
+                UpdateErrorCodes.ReadbackFailed,
+                "readback failed")),
+            ReadbackStatusReport.FromException(new PhysicalUpdateException(
+                UpdateErrorCodes.ReadbackMismatch,
+                "readback mismatch")),
+            ReadbackStatusReport.FromException(new PhysicalUpdateException(
+                UpdateErrorCodes.RevisionConflict,
+                "revision conflict")),
+            ReadbackStatusReport.NotAttemptedReport(),
+            ReadbackStatusReport.NotApplicableReport(),
+            ReadbackStatusReport.BlockedReport(),
+        };
+
+        var allowed = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "verified",
+            "failed",
+            "mismatch",
+            "revision-conflict",
+            "not-attempted",
+            "not-applicable",
+            "blocked",
+        };
+
+        Assert.All(reports, report => Assert.Contains(report.Status, allowed));
+    }
+
+    [Fact]
+    public void ReadbackStatusReport_ExcludesSensitiveExceptionValues()
+    {
+        var sensitive = string.Join(
+            " ",
+            "document-id=private-doc",
+            "https://private.example.test/doc",
+            "Authorization: Bearer token-value",
+            "C:\\Users\\secret\\token-store",
+            "credential_path=C:\\secret\\credentials.json",
+            "provider_payload={secret}",
+            "System.InvalidOperationException: raw stack trace");
+
+        var report = ReadbackStatusReport.FromException(new PhysicalUpdateException(
+            UpdateErrorCodes.ReadbackMismatch,
+            sensitive));
+
+        var exposed = string.Join(
+            " ",
+            report.Status,
+            report.Phase,
+            report.ReadbackVerified,
+            report.VerifiedStateSaved,
+            report.PublicationAuthorized,
+            report.ReleaseClearance,
+            report.VendorClearance);
+
+        Assert.DoesNotContain("private-doc", exposed, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("https://", exposed, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Authorization", exposed, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("token-value", exposed, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"C:\Users", exposed, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("credentials.json", exposed, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("provider_payload", exposed, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("stack trace", exposed, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task ApplicationService_DivergedIndeterminateResultReportsBlockedWithoutSaving()
+    {
+        var baseline = Baseline(("a", "old"));
+        var candidate = Candidate(("a", "new"));
+        var store = new RecordingWriter();
+        var service = new PhysicalUpdateApplicationService(
+            new StubExecutor(new PhysicalUpdateExecutionResult(
+                PhysicalUpdateExecutionStatus.IndeterminateFailure,
+                "google-document",
+                "required-revision",
+                null,
+                1,
+                1,
+                1,
+                "INDETERMINATE_FAILURE",
+                "unknown")),
+            new StubSnapshotReader(Snapshot(
+                candidate.Identity,
+                Revision(4),
+                Fingerprint("third-party").Value,
+                [Block("x", "third-party")])),
+            new PhysicalUpdateRecoveryReconciler(),
+            new PhysicalUpdateApplicationSnapshotVerifier(),
+            new PublishResultVerifier(),
+            new VerifiedPublishStatePromoter(),
+            store);
+
+        var result = await service.ExecuteAsync(
+            baseline,
+            candidate,
+            LogicalPlan(baseline, candidate),
+            PhysicalPlan(baseline, candidate),
+            CancellationToken.None);
+
+        Assert.Equal(RecoveryReconciliationStatus.Diverged, result.RecoveryStatus);
+        Assert.Equal("blocked", result.ReadbackReport.Status);
+        Assert.Equal("post-apply-readback", result.ReadbackReport.Phase);
+        Assert.False(result.ReadbackReport.ReadbackVerified);
+        Assert.False(result.ReadbackReport.VerifiedStateSaved);
+        Assert.False(result.ReplanRequired);
+        Assert.Equal(0, store.SaveCount);
+    }
+
     private static VerifiedPublishState Baseline(params (string Id, string Hash)[] blocks) => new(
         Identity(),
         Versions(),

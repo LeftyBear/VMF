@@ -142,6 +142,96 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-04 | Evaluate richer release-note generation from existing verification records. | P2 | Automation could reduce documentation drift, but it is not required for the next release-path gate. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; future scoped implementation decision. | Potential future traceability improvement. | Design complete / implementation decision pending. |
 | P2-05 | Evaluate documentation improvements for OAuth Desktop setup and token-store handling. | P2 | Guidance may reduce authentication confusion, but token-store operations remain prohibited unless separately authorized. | `Publisher_P2-05_OAuthDesktopTokenStoreDocumentationEvaluation.md`; docs-only implementation in installation and Live E2E guidance. | Reduces future credential-handling ambiguity without changing OAuth scope, authentication architecture, Google, package, release, or vendor-clearance gates. | Complete / docs-only guidance synchronized. |
 | P2-06 | Evaluate whether vNext should include more explicit managed-document readback reporting. | P2 | Readback reporting may improve operator confidence but needs scoped design. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; future narrow local-only implementation decision. | Potential future verification clarity; no current release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Design complete / implementation decision pending. |
+| P2-07 | Implement narrow managed-document readback reporting from the P2-06 design evaluation. | P2 | P2-06 found that readback state is safety-critical but under-reported in operator-facing diagnostics; a narrow implementation can improve clarity without changing readback semantics. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; explicit implementation task authorization; focused unit tests before broader verification. | Improves future verification clarity while preserving separation from publication success, release clearance, package approval, vendor clearance, and Avast safety certification. | Registered / implementation GO under the constraints below. |
+
+### P2-07 Managed-Document Readback Reporting Implementation Candidate
+
+P2-07 is the implementation candidate derived from
+`Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`. This backlog
+registration is documentation-only. It does not implement `src/` or `tests/`
+changes and does not synchronize `CURRENT_STATUS.md`, the Voyage Log,
+`CHANGELOG.md`, release records, packages, `dist/`, tags, or external services.
+
+Allowed implementation scope for a later separately authorized task:
+
+- add compact readback status reporting to existing local structured
+  diagnostics and existing operator-facing managed-document update summaries;
+- use only the closed readback status vocabulary listed below;
+- include value-safe lifecycle phase labels that distinguish pre-apply read,
+  physical apply, post-apply readback, verification, promotion, and Verified
+  State save;
+- preserve existing stable error codes, CLI classification, exit-code
+  behavior, Physical Update Plan ordering, and Verified State promotion/save
+  semantics;
+- add focused unit tests for the required cases listed below.
+
+Non-goals:
+
+- no actual Google readback, Google Docs mutation, Google Drive mutation,
+  OAuth login, token-store read/write/delete/cleanup/reuse, Live E2E, package
+  or `dist` update, release, tag, publication, GitHub asset operation, Avast
+  operation, flagged executable re-run, vendor-clearance judgment, stage,
+  commit, or push;
+- no Frozen specification, public API, persisted schema, OAuth scope,
+  authentication architecture, release-record, package-identity, or
+  publication-flow change;
+- no change that reports failure, mismatch, unknown delivery, skipped
+  readback, dry-run, or non-applicable states as success;
+- no richer mismatch diagnostics unless they remain bounded, synthetic-data
+  tested, and value-safe.
+
+Closed readback status vocabulary:
+
+- `verified`
+- `failed`
+- `mismatch`
+- `revision-conflict`
+- `not-attempted`
+- `not-applicable`
+- `blocked`
+
+Safe-value boundary:
+
+- allowed values are bounded status labels, stable error codes, existing CLI
+  classifications, boolean boundary fields, non-content counts, and lifecycle
+  phase labels;
+- prohibited values include raw document content, block text, document IDs,
+  private Google resource IDs, private URLs, OAuth tokens, credentials,
+  credential paths, token-store paths, Authorization headers, provider
+  payloads, raw HTTP bodies, raw exception messages, stack traces, local
+  sensitive paths, usernames, hostnames, and account identifiers;
+- readback reporting remains evidence of managed-document verification only
+  and must not be represented as publication approval, release clearance,
+  package approval, vendor clearance, Avast safety certification, or future
+  operation authorization.
+
+Required focused unit tests for a later implementation:
+
+- verified readback reports `verified` and cannot promote/save Verified State
+  before successful readback verification;
+- readback acquisition failure reports `failed` with the existing stable error
+  classification;
+- readback mismatch reports `mismatch` without exposing content or provider
+  identifiers;
+- revision conflict reports `revision-conflict` and remains a hard stop;
+- no-change / empty-plan paths report either verified readback completion or
+  `not-applicable` only where readback is genuinely not applicable;
+- dry-run / local-only paths report `not-attempted` and do not imply Google
+  mutation, publication success, release clearance, or vendor clearance;
+- blocked preconditions report `blocked` without weakening existing failure
+  behavior;
+- sensitive-value exclusion tests cover document IDs, private URLs, OAuth
+  tokens, Authorization headers, credential paths, token-store paths, provider
+  payloads, raw exception details, stack traces, and local sensitive paths.
+
+Implementation decision after backlog registration: GO for a later narrow
+local-only implementation only if the task is explicitly authorized and remains
+within the scope, vocabulary, safe-value boundary, and focused-test
+requirements above. NO-GO if implementation would require changing readback
+semantics, weakening Verified State promotion requirements, changing public
+contracts or persisted schemas, adding dependencies, exposing sensitive
+document/provider values, running live or external operations, or treating
+readback evidence as release or vendor clearance.
 
 ## Dependency Split
 
@@ -157,7 +247,7 @@ response:
 
 Avast-independent docs-only / design-ready:
 
-- P2-01 through P2-06.
+- P2-01 through P2-07.
 
 Completed Avast-independent hardening:
 
