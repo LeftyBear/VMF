@@ -3241,3 +3241,47 @@ output, run Live E2E, mutate Google Docs or Google Drive, mutate OAuth
 credentials or token stores, operate the Avast UI, change Avast settings,
 release quarantine, add exclusions, rerun or re-run `vmf-publisher.exe`,
 stage, commit, or push.
+
+## Publisher Operation-Specific Authorization Approval Sync
+
+Status: GO / final verification and release execution completion decision
+approved for the existing canonical prerelease only.
+
+Updated
+`docs/development/Publisher_OperationSpecificAuthorizationRecord_2026-08-12.md`
+to record the selected operation-specific authorization:
+
+- Approver: `VMF Publisher Responsible Owner — GitHub: LeftyBear`;
+- Decision: `Approved`;
+- Approval timestamp: `2026-08-13T09:06:11.4854490+09:00`;
+- authorized operation:
+  `Final verification / release execution completion decision for the existing canonical prerelease`.
+
+The canonical identity remains:
+
+- version: `0.0.1-dev`;
+- tag: `publisher-v0.0.1-dev`;
+- target commit: `382bd715d8307930d0aeb8bd48116dac3f57af5c`;
+- artifact: `vmf-publisher-0.0.1-dev-win-x64.zip`;
+- size: 983422 bytes;
+- SHA-256:
+  `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`.
+
+Synchronized `docs/development/CURRENT_STATUS.md`,
+`docs/development/Publisher_ReleaseApprovalPackage.md`, and
+`docs/development/Publisher_ReleaseExecutionGateReevaluationRecord_2026-08-12.md`
+to re-evaluate the selected completion decision as `GO`.
+
+### Explicit non-actions
+
+This documentation update did not change production code, tests, public APIs,
+persisted schemas, canonical formats, or Frozen specifications. It did not
+create, rebuild, regenerate, verify, replace, or write package or `dist`
+output, create, delete, move, retarget, or replace tags, push tags, create,
+update, delete, or replace GitHub Releases or prereleases, upload, replace, or
+delete release assets, rerun publication, run Live E2E, set
+`VMF_PUBLISHER_GOOGLE_E2E=1`, mutate Google Docs or Google Drive, mutate OAuth
+credentials or token stores, operate the Avast UI, change Avast settings,
+release quarantine, add exclusions, rerun or re-run `vmf-publisher.exe`,
+process an Avast response, obtain vendor clearance, claim Avast safety
+certification, stage, commit, or push.

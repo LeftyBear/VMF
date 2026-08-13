@@ -1,6 +1,6 @@
 # Publisher Release Approval Package
 
-Status  : NO-GO; next operation authorization pending; Avast response pending
+Status  : GO for selected completion decision only; Avast response pending
 Scope   : Docs-only / local-only release approval package organization after explicit owner risk acceptance
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_TestClassification.md, docs/distribution/PublisherReleaseRunbook.md
 
@@ -28,9 +28,9 @@ OAuth/token-store/credentials, or perform any Avast operation.
 
 | Item | State |
 | --- | --- |
-| Formal release state | NO-GO / next operation authorization pending |
-| Approval recommendation | NO-GO until a separate next-operation authorization is recorded; release execution gate re-evaluation passed identity, approval, final verification, and published artifact checks, but package/dist, tag, publication, distribution, Live E2E, Google Docs / Drive, and flagged executable operations remain separately gated |
-| Next operation authorization target | Selected as final verification / release execution completion decision for the existing canonical prerelease only; this selection grants no authorization and excludes new package/dist work plus tag/publication rerun. Operation-specific authorization placeholder exists with approver and approval timestamp not recorded, so the current decision remains `NO-GO / operation-specific authorization pending`. |
+| Formal release state | GO / final verification and release execution completion decision approved for the existing canonical prerelease only |
+| Approval recommendation | GO for final verification / release execution completion decision for the existing canonical prerelease only; package/dist, tag, publication, distribution, Live E2E, Google Docs / Drive, OAuth/token-store, Avast, and flagged executable operations remain separately gated |
+| Next operation authorization target | Selected as final verification / release execution completion decision for the existing canonical prerelease only; this selection excludes new package/dist work plus tag/publication rerun. Operation-specific authorization records Approver `VMF Publisher Responsible Owner — GitHub: LeftyBear`, Decision `Approved`, Approval timestamp `2026-08-13T09:06:11.4854490+09:00`, and the authorized operation only. Current decision is `GO / final verification and release execution completion decision approved for the existing canonical prerelease only`. |
 | Avast false-positive handling | Vendor response pending; latest authorized latest-definition rescan did not reproduce the detection; responsible-owner approval recorded for the current release-control assessment |
 | Vendor clearance | Accepted for release-gate purposes under documented evidence-based criteria; Avast direct response remains pending |
 | Avast safety certification | Not claimed |
@@ -96,8 +96,9 @@ Historical decision: Approval Recommendation = Risk Accepted Go.
 This section preserves the earlier owner-risk-acceptance decision as
 accepted-at-the-time evidence for the previous release-path execution
 sequence. It does not overwrite the current formal state in Section 1, which
-remains `NO-GO / next operation authorization pending` until a separate
-operation-specific authorization is recorded.
+is now `GO / final verification and release execution completion decision
+approved for the existing canonical prerelease only` after the separate
+operation-specific authorization record was updated.
 
 Basis:
 
@@ -167,9 +168,9 @@ The build passed after serial rerun with warnings 0 / errors 0.
 | `docs/distribution/PublisherReleaseRunbook.md` | Draft | Defines release operation sequencing and authorization gates. |
 | `docs/distribution/ReleaseChecklist.md` | Existing release checklist plus release completion record | Preserves completed `0.0.0-dev` evidence and records `0.0.1-dev` annotated tag object, peeled/package target commit, evidence docs commit, GitHub prerelease URL, asset identity, remote/local digest match, package generation PASS, and package verification PASS. |
 | `docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md` | Canonical identity reconciliation | Records `0.0.1-dev` / `publisher-v0.0.1-dev`, target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`, GitHub Release URL, asset name, 983422 bytes, SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`, and NO-GO until downstream synchronization and release execution gate re-evaluation. |
-| `docs/development/Publisher_ReleaseExecutionGateReevaluationRecord_2026-08-12.md` | Release execution gate re-evaluation | Records canonical identity consistency `PASS`, responsible-owner approval / release-gate `PASS`, final verification and published artifact verification `PASS`, next-operation authorization `BLOCKED`, and final decision `NO-GO / next operation authorization pending`. |
-| `docs/development/Publisher_NextOperationAuthorizationScopeRecord_2026-08-12.md` | Next operation authorization scope selection | Selects final verification / release execution completion decision for the existing canonical prerelease as the only next authorization target; grants no authorization and keeps `NO-GO / operation-specific authorization pending`. |
-| `docs/development/Publisher_OperationSpecificAuthorizationRecord_2026-08-12.md` | Operation-specific authorization pending record | Names final verification / release execution completion decision for the existing canonical prerelease as the only target, records approver and approval timestamp as not recorded, fixes the canonical `0.0.1-dev` / `publisher-v0.0.1-dev` identity, and keeps `NO-GO / operation-specific authorization pending`. |
+| `docs/development/Publisher_ReleaseExecutionGateReevaluationRecord_2026-08-12.md` | Release execution gate re-evaluation | Records canonical identity consistency `PASS`, responsible-owner approval / release-gate `PASS`, final verification and published artifact verification `PASS`, operation-specific authorization `PASS`, and final decision `GO / final verification and release execution completion decision approved for the existing canonical prerelease only`. |
+| `docs/development/Publisher_NextOperationAuthorizationScopeRecord_2026-08-12.md` | Next operation authorization scope selection | Selects final verification / release execution completion decision for the existing canonical prerelease as the only next authorization target; later authorization is limited to that selected operation only. |
+| `docs/development/Publisher_OperationSpecificAuthorizationRecord_2026-08-12.md` | Operation-specific authorization record | Names final verification / release execution completion decision for the existing canonical prerelease as the only target, records Approver `VMF Publisher Responsible Owner — GitHub: LeftyBear`, Decision `Approved`, Approval timestamp `2026-08-13T09:06:11.4854490+09:00`, fixes the canonical `0.0.1-dev` / `publisher-v0.0.1-dev` identity, and records `GO` for that selected operation only. |
 | `docs/releases/Publisher_0.0.1-dev_ReleaseNotes.md` | Release completion notes synchronized | Records canonical `0.0.1-dev` / `publisher-v0.0.1-dev` / 983422 byte / `0174810d...` identity and preserves older `vmf-publisher-v0.0.1-dev` / 983404 byte / `73582c...` facts only as historical / superseded / non-canonical identity evidence. |
 
 No new publication or vendor-clearance evidence is created by this approval
@@ -233,7 +234,8 @@ a later operation-specific authorization:
 
 This section preserves historical execution-order rules for the earlier Risk
 Accepted Go path. It does not grant current authorization and does not replace
-the Section 1 `NO-GO / next operation authorization pending` state.
+the Section 1 `GO / final verification and release execution completion
+decision approved for the existing canonical prerelease only` state.
 
 Release-path work under Risk Accepted Go may proceed only in this order, with
 each step separately authorized and recorded:
@@ -358,13 +360,13 @@ certification.
 
 Historical decision: Approval Recommendation = Risk Accepted Go.
 
-Current recommendation: `NO-GO / next operation authorization pending`.
+Current recommendation: `GO / final verification and release execution completion decision approved for the existing canonical prerelease only`.
 
 The Risk Accepted Go recommendation is retained as historical evidence for the
 previous release-path sequence. It does not overwrite the current formal
 release state, does not authorize a new package or `dist` operation, does not
-authorize tag or publication rerun, and does not authorize the selected next
-operation until a separate operation-specific authorization record is created.
+authorize tag or publication rerun, and does not broaden the selected
+operation-specific authorization.
 
 This docs-only update does not perform release execution.
 

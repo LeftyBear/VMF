@@ -1,7 +1,7 @@
 # Publisher Release Execution Gate Re-evaluation Record
 
-Status  : NO-GO / next operation authorization pending
-Date    : 2026-08-12
+Status  : GO / final verification and release execution completion decision approved
+Date    : 2026-08-13
 Scope   : Publisher `0.0.1-dev` release execution gate re-evaluation after canonical identity synchronization
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md, docs/development/Publisher_ResponsibleOwnerApprovalReleaseGateReevaluationRecord_2026-08-12.md, docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md, docs/releases/Publisher_0.0.1-dev_PrereleaseRecord_2026-08-12.md, docs/releases/Publisher_0.0.1-dev_FinalStatusFreeze_2026-08-12.md
 
@@ -18,18 +18,18 @@ or push.
 
 ## 1. Decision
 
-Release execution gate decision: `NO-GO`.
+Release execution gate decision: `GO` for the final verification / release
+execution completion decision for the existing canonical prerelease only.
 
-Reason: canonical identity inconsistency is resolved, and the current
-published artifact identity is verified, but no new next-operation
-authorization is recorded for package / `dist` work, tag operations, GitHub
-Release or asset changes, publication, Live E2E, Google Docs / Drive mutation,
-OAuth or token-store operations, Avast operations, or flagged executable
-re-run.
+Reason: canonical identity inconsistency is resolved, the current published
+artifact identity is verified, final verification and published artifact
+verification are recorded as passing, and operation-specific authorization is
+recorded by `Publisher_OperationSpecificAuthorizationRecord_2026-08-12.md`.
 
-The next decision point is operation-specific authorization. Until that
-authorization is recorded, the release path remains stopped even though the
-identity reconciliation itself is complete.
+This decision does not authorize package / `dist` work, tag operations,
+GitHub Release or asset changes, publication or publication rerun, Live E2E,
+Google Docs / Drive mutation, OAuth or token-store operations, Avast
+operations, or flagged executable re-run.
 
 ## 2. Gate Checks
 
@@ -38,7 +38,7 @@ identity reconciliation itself is complete.
 | Canonical release identity consistency | PASS | Canonical identity is `publisher-v0.0.1-dev`, target commit `382bd715d8307930d0aeb8bd48116dac3f57af5c`, GitHub Release URL `https://github.com/LeftyBear/VMF/releases/tag/publisher-v0.0.1-dev`, asset `vmf-publisher-0.0.1-dev-win-x64.zip`, size 983422 bytes, SHA-256 `0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`. Confirmed by downstream docs, `gh release view`, and local artifact hash. |
 | Responsible-owner approval / release-gate PASS | PASS | `Publisher_ResponsibleOwnerApprovalReleaseGateReevaluationRecord_2026-08-12.md` records responsible-owner approval `Approved` and release-gate `PASS`; `Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md` records residual risk acceptance plus release authorization for Publisher `0.0.1-dev`. The older `vmf-publisher-v0.0.1-dev` identity text is historical / superseded / non-canonical after reconciliation and does not change the current canonical identity. |
 | Final verification and published artifact verification | PASS for current gate review | Current status and release approval package record final verification PASS. Direct read-only verification in this review confirmed local artifact size 983422 bytes, SHA-256 `0174810D21C6072B8206ACF2FED90B72C2E6BE499C65B231D7D72D71FD69CB76`, GitHub Release asset digest `sha256:0174810d21c6072b8206acf2fed90b72c2e6be499c65b231d7d72d71fd69cb76`, and `tools\publisher\verify-package.ps1` PASS for `dist\release\Publisher\vmf-publisher-0.0.1-dev-win-x64.zip`. |
-| Next operation authorization | BLOCKED | Runbook and approval package require separate authorization for package / `dist`, tag, GitHub Release or asset, publication, Live E2E, Google Docs / Drive, OAuth/token-store, Avast, and flagged executable operations. No new authorization for any next operation is recorded by this gate review. |
+| Operation-specific authorization | PASS | `Publisher_OperationSpecificAuthorizationRecord_2026-08-12.md` records Approver `VMF Publisher Responsible Owner — GitHub: LeftyBear`, Decision `Approved`, Approval timestamp `2026-08-13T09:06:11.4854490+09:00`, and the authorized operation as final verification / release execution completion decision for the existing canonical prerelease only. |
 
 ## 3. Read-only Evidence Collected In This Review
 
@@ -57,12 +57,12 @@ local path content was recorded.
 
 Current state:
 
-`NO-GO / next operation authorization pending`.
+`GO / final verification and release execution completion decision approved for the existing canonical prerelease only`.
 
-Allowed work remains limited to documentation-only synchronization,
-read-only investigation, and separately authorized local verification that does
-not mutate packages, `dist`, tags, GitHub Release records, assets, external
-services, OAuth/token stores, Avast state, or flagged executables.
+This GO decision is complete for the selected completion decision only. Any
+future work remains limited to documentation-only synchronization, read-only
+investigation, and separately authorized local verification unless another
+operation-specific authorization is recorded.
 
 Blocked until separately authorized:
 

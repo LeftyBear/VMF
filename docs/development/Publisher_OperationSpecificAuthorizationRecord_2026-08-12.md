@@ -1,13 +1,12 @@
 # Publisher Operation-Specific Authorization Record
 
-Status  : NO-GO / operation-specific authorization pending
-Date    : 2026-08-12
+Status  : GO / operation-specific authorization approved for the selected completion decision only
+Date    : 2026-08-13
 Scope   : Final verification / release execution completion decision for the existing canonical prerelease
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_NextOperationAuthorizationScopeRecord_2026-08-12.md, docs/development/Publisher_ReleaseExecutionGateReevaluationRecord_2026-08-12.md, docs/development/Publisher_ReleaseIdentityReconciliationRecord_2026-08-12.md
 
-This record is the operation-specific authorization placeholder for the next
-selected Publisher release-control decision. It does not grant authorization
-until the approving owner and approval timestamp are explicitly recorded.
+This record is the operation-specific authorization record for the selected
+Publisher release-control decision.
 
 It is documentation-only. It does not create, replace, rebuild, verify, or
 publish packages, modify `dist`, create, move, retarget, delete, or push tags,
@@ -21,9 +20,9 @@ specifications, change public APIs, stage, commit, or push.
 
 | Item | Value |
 | --- | --- |
-| Authorization state | `NO-GO / operation-specific authorization pending` |
-| Approver / authorizer | Not recorded |
-| Approval timestamp | Not recorded |
+| Authorization state | `Approved` |
+| Approver / authorizer | VMF Publisher Responsible Owner — GitHub: LeftyBear |
+| Approval timestamp | `2026-08-13T09:06:11.4854490+09:00` |
 | Target operation | Final verification / release execution completion decision for the existing canonical prerelease |
 | Target version | `0.0.1-dev` |
 | Canonical tag | `publisher-v0.0.1-dev` |
@@ -39,9 +38,9 @@ specifications, change public APIs, stage, commit, or push.
 
 ## 2. Permitted Decision Range
 
-When explicit approval is later recorded, the only permitted judgment range is
-the final verification / release execution completion decision for the
-existing canonical prerelease identity listed above.
+The only permitted judgment range is the final verification / release
+execution completion decision for the existing canonical prerelease identity
+listed above.
 
 That decision may only classify the already published canonical prerelease as
 one of these outcomes:
@@ -51,10 +50,10 @@ one of these outcomes:
 - operation-specific completion decision rejected;
 - operation-specific completion decision still pending.
 
-Any later authorization must name the approver, approval timestamp, canonical
-identity, and this exact target operation. It must not broaden the decision
-into package, `dist`, tag, GitHub Release, asset, Live E2E, Google, OAuth,
-Avast, or flagged-executable authority unless those operations are separately
+This authorization names the approver, approval timestamp, canonical identity,
+and this exact target operation. It must not broaden the decision into
+package, `dist`, tag, GitHub Release, asset, Live E2E, Google, OAuth, Avast,
+or flagged-executable authority unless those operations are separately
 authorized by another explicit record.
 
 ## 3. Excluded Operations
@@ -79,9 +78,15 @@ This record does not authorize:
 
 ## 4. Current Decision
 
-No approver or approval timestamp has been recorded in this operation-specific
-authorization record.
+Approver and approval timestamp are recorded for the selected operation only.
 
-Current formal decision remains:
+Current formal decision:
 
-`NO-GO / operation-specific authorization pending`.
+`GO / final verification and release execution completion decision approved for the existing canonical prerelease only`.
+
+Re-evaluation result: the final verification / release execution completion
+decision for the existing canonical prerelease is `GO`.
+
+This `GO` does not authorize package or `dist` creation, tag or publication
+rerun, GitHub Release or asset update, Live E2E, Google / OAuth operation,
+Avast operation, or flagged executable operation.

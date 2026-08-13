@@ -4,6 +4,27 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ---
 
+# 2026-08-13
+
+## Changed
+
+- Updated
+  `docs/development/Publisher_OperationSpecificAuthorizationRecord_2026-08-12.md`
+  to record Approver `VMF Publisher Responsible Owner — GitHub: LeftyBear`,
+  Decision `Approved`, Approval timestamp
+  `2026-08-13T09:06:11.4854490+09:00`, and the authorized operation
+  `Final verification / release execution completion decision for the existing canonical prerelease`
+  only. Synchronized current status, the release approval package, and the
+  release execution gate re-evaluation to `GO` for that selected completion
+  decision only while preserving the canonical `0.0.1-dev` /
+  `publisher-v0.0.1-dev` / target commit
+  `382bd715d8307930d0aeb8bd48116dac3f57af5c` / 983422 byte /
+  `0174810d...` identity. This docs-only update does not create or update
+  package or `dist` outputs, rerun tags or publication, update GitHub Release
+  records or assets, run Live E2E, mutate Google Docs or Drive, operate on
+  OAuth/token stores, operate on Avast, re-run flagged executables, obtain
+  vendor clearance, or claim Avast safety certification.
+
 # 2026-08-12
 
 ## Changed
