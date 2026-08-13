@@ -94,6 +94,56 @@ For CLI timeout overrides, use:
 - `VMF_PUBLISHER_OPERATION_TIMEOUT_SECONDS`
 - `VMF_PUBLISHER_HTTP_TIMEOUT_SECONDS`
 
+### OAuth Desktop Setup Checklist
+
+ADR-0002 (`docs/architecture/ADR-0002-oauth-2-0-desktop-authentication.md`)
+is the authentication decision source. This guide summarizes operator setup
+only; it does not change OAuth scopes, adopt Google Picker, adopt
+`drive.file`, or authorize OAuth consent.
+
+Before selecting `OAuthDesktop`, confirm:
+
+- the operation is for a personal Gmail / My Drive local operator workflow;
+- a separate operation-specific authorization allows OAuth Desktop use for
+  this run;
+- the installed-application credential JSON is stored outside the repository,
+  outside `dist`, and outside the extracted release package;
+- the token-store directory is stored outside the repository, outside `dist`,
+  and outside the extracted release package;
+- local configuration records only paths needed by the operator and is not
+  copied into repository docs, release packages, logs, or evidence bundles;
+- the live publish, Live E2E, Google Docs / Drive operation, OAuth consent,
+  token-store reuse, token-store creation, token-store deletion,
+  token-store cleanup, and reauthorization gates have each been separately
+  authorized when applicable.
+
+### Authentication Mode Responsibilities
+
+| Mode | Intended responsibility | Operator boundary |
+| --- | --- | --- |
+| `OAuthDesktop` | Preferred local operator mode for personal Gmail and My Drive workflows. | Requires installed-application OAuth client credentials and a persistent token-store path outside the repository and package. OAuth login, consent, reauthorization, and token-store lifecycle operations require separate authorization. |
+| `ServiceAccount` | Automation or prepared Shared Drive workflows where the destination is explicitly accessible to the service identity. | Requires service-account credentials outside the repository and package. It is not the preferred path for ordinary personal Gmail / My Drive operation. |
+
+The current OAuth Desktop scopes remain Documents and Drive as recorded in
+ADR-0002. Google Picker and `drive.file` remain deferred and are not adopted
+by this guide.
+
+### Token-Store Lifecycle Authorization
+
+| Token-store action | Authorization requirement | Documentation boundary |
+| --- | --- | --- |
+| Reuse existing token store | Requires explicit operation-specific authorization for credentialed reuse. | Do not inspect, copy, archive, log, or paste token-store contents. |
+| Create token store through OAuth consent | Requires explicit authorization for OAuth consent and token-store creation. | Do not record OAuth codes, refresh tokens, account identifiers, or token contents. |
+| Delete token store | Requires explicit authorization for token-store deletion. | Do not treat deletion as documentation cleanup or ordinary local verification. |
+| Cleanup stale token-store files | Requires explicit authorization for credentialed cleanup. | Do not enumerate or quote token-store file contents in evidence. |
+| Reauthorize / refresh consent | Requires explicit authorization for OAuth reauthorization. | Record only redacted status labels and approved outcome evidence. |
+
+Credential files, service-account keys, token stores, OAuth tokens,
+Authorization headers, credential-bearing local configuration, private URLs,
+local sensitive paths, raw provider payloads, raw HTTP bodies, raw exceptions,
+and stack traces must not be committed, packaged, copied into `dist`, written
+to logs, or included in release or operation evidence.
+
 ## 5. Local Smoke Test
 
 Run configuration validation without requiring Google publish settings:
@@ -141,4 +191,3 @@ Record the publish session ID, exit code, classification, document ID, document
 URL, and any readback evidence in the release or operation record. Do not
 record secrets, credential paths containing sensitive names, token contents, or
 private URLs.
-

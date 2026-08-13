@@ -16,6 +16,13 @@ or clean up Google Docs / Drive resources, run package or `dist` operations,
 execute flagged artifacts, publish releases, claim Avast vendor clearance, or
 claim Avast safety certification.
 
+ADR-0002 (`docs/architecture/ADR-0002-oauth-2-0-desktop-authentication.md`)
+records the OAuth Desktop authentication decision. This guide preserves that
+decision: OAuth Desktop remains the preferred local operator mode for personal
+Gmail / My Drive workflows, Service Account remains available for automation
+or prepared Shared Drive workflows, Documents and Drive scopes remain
+unchanged, and Google Picker plus `drive.file` remain deferred.
+
 ## 1. Authorization Gate
 
 Before running Live E2E, record approval for:
@@ -52,8 +59,8 @@ Set the credential and destination variables for the approved run:
 
 ```powershell
 $env:VMF_PUBLISHER_GOOGLE_AUTH_MODE = "OAuthDesktop"
-$env:VMF_PUBLISHER_GOOGLE_CREDENTIALS_PATH = "C:\Secrets\vmf-publisher-oauth-client.json"
-$env:VMF_PUBLISHER_GOOGLE_TOKEN_STORE_PATH = "C:\Secrets\vmf-publisher-token-store"
+$env:VMF_PUBLISHER_GOOGLE_CREDENTIALS_PATH = "<approved-local-credential-json-path>"
+$env:VMF_PUBLISHER_GOOGLE_TOKEN_STORE_PATH = "<approved-local-token-store-path>"
 $env:VMF_PUBLISHER_GOOGLE_E2E_FOLDER_ID = "<approved-folder-id>"
 ```
 
@@ -73,6 +80,38 @@ tokens, client secrets, service-account private keys, Authorization headers, or
 provider payloads. If reauthorization or token-store cleanup is needed, it
 must be authorized and recorded as a credentialed Google operation, not as a
 documentation task.
+
+### Redaction Checklist
+
+Evidence may record redacted operational labels only:
+
+- authentication mode label, such as `OAuthDesktop` or `ServiceAccount`;
+- approved gate label and operation date;
+- command name and exit code;
+- result classification, warning count, and error count;
+- redacted resource labels, such as approved folder, created document, or
+  cleanup target;
+- readback status without private document content beyond the minimum approved
+  verification excerpt.
+
+Evidence, logs, release records, and documentation updates must not include:
+
+- credential JSON content, client secrets, private keys, OAuth codes, refresh
+  tokens, access tokens, token-store files, or token-store contents;
+- Authorization headers, cookies, raw HTTP bodies, raw provider payloads, raw
+  exceptions, or stack traces;
+- private Google Docs / Drive URLs, private folder IDs, private document IDs,
+  account identifiers, or email addresses unless the operation authorization
+  explicitly names a redacted recording form;
+- local sensitive paths, repository-external credential paths, token-store
+  paths, usernames, hostnames, or private infrastructure names;
+- screenshots or transcripts that expose any prohibited value above.
+
+Live E2E approval, OAuth Desktop approval, token-store lifecycle approval,
+Google Docs mutation approval, Google Drive mutation approval, cleanup
+approval, package or `dist` approval, release approval, and vendor-clearance
+approval are separate gates. Approval for one gate must not be reported as
+approval for another gate.
 
 ## 3. Execution
 
