@@ -134,6 +134,7 @@ public sealed class CliApplicationTests
         Assert.Equal("loadSettings", summary.GetProperty("lastOperation").GetString());
         Assert.Equal("COMMAND_STARTED", summary.GetProperty("lastEventCode").GetString());
         Assert.Equal("Publisher input is invalid.", summary.GetProperty("message").GetString());
+        Assert.False(summary.TryGetProperty("configurationCategory", out _));
         Assert.DoesNotContain(path, capture.Error, StringComparison.Ordinal);
         Assert.Contains(JsonLines(capture.Error), line =>
             line.GetProperty("code").GetString() == "COMMAND_FAILED");
@@ -183,6 +184,33 @@ public sealed class CliApplicationTests
         Assert.Equal(ErrorClassification.Internal, classification);
         Assert.Equal(1, ExitCodeFor(classification));
         Assert.Equal("An internal Publisher error occurred.", SafeMessage(classification));
+    }
+
+    [Theory]
+    [InlineData("CONFIG_TIMEOUT_INVALID", "cli")]
+    [InlineData("CONFIG_INTEGER_INVALID", "cli")]
+    [InlineData("CONFIG_CREDENTIALS_PATH_REQUIRED", "googleApi")]
+    [InlineData("CONFIG_FOLDER_ID_REQUIRED", "googleApi")]
+    [InlineData("CONFIG_TOKEN_STORE_PATH_REQUIRED", "googleApi")]
+    [InlineData("CONFIG_AUTHENTICATION_MODE_INVALID", "googleApi")]
+    [InlineData("CONFIG_IMAGE_MAX_WIDTH_INVALID", "publisher")]
+    [InlineData("CONFIG_BOOLEAN_INVALID", "publisher")]
+    [InlineData("CONFIG_NUMBER_INVALID", "publisher")]
+    [InlineData("CONFIG_FUTURE_SAFE_CODE", "unknown")]
+    public void ConfigurationCategory_MapsOnlyAllowListedCategories(string code, string expected)
+    {
+        Assert.Equal(expected, ConfigurationCategory(code));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("MARKDOWN_FILE_NOT_FOUND")]
+    [InlineData("USAGE_ERROR")]
+    [InlineData("PUBLISHER_ERROR")]
+    public void ConfigurationCategory_NonConfigurationCodesReturnNull(string? code)
+    {
+        Assert.Null(ConfigurationCategory(code));
     }
 
     [Fact]
@@ -502,11 +530,13 @@ public sealed class CliApplicationTests
         var summary = LastJsonLine(capture.Error);
         Assert.Equal("CONFIG_INTEGER_INVALID", summary.GetProperty("code").GetString());
         Assert.Equal("Publisher configuration is invalid.", summary.GetProperty("message").GetString());
+        Assert.Equal("cli", summary.GetProperty("configurationCategory").GetString());
         Assert.Equal("verify", summary.GetProperty("lastPhase").GetString());
         Assert.Equal("report", summary.GetProperty("lastOperation").GetString());
         Assert.Equal("LOCAL_VERIFY_REPORT", summary.GetProperty("lastEventCode").GetString());
         AssertCommandStartedShape(JsonLines(capture.Error), 1, true, "verify-optional-markdown-path");
         AssertInvocationShapeFieldsOnlyOnCommandStarted(JsonLines(capture.Error));
+        AssertConfigurationCategoryFieldsOnlyOnConfigurationSummary(JsonLines(capture.Error));
         Assert.DoesNotContain("secret-token", capture.Error, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(@"C:\Users\biz", capture.Error, StringComparison.OrdinalIgnoreCase);
 
@@ -687,6 +717,7 @@ public sealed class CliApplicationTests
         Assert.Equal("publish", summary.GetProperty("phase").GetString());
         Assert.Equal("summary", summary.GetProperty("operation").GetString());
         Assert.Equal("document-id", summary.GetProperty("documentId").GetString());
+        Assert.False(summary.TryGetProperty("configurationCategory", out _));
         Assert.Equal(
             "https://docs.google.com/document/d/document-id/edit",
             summary.GetProperty("documentUrl").GetString());
@@ -814,6 +845,17 @@ public sealed class CliApplicationTests
         }
     }
 
+    private static void AssertConfigurationCategoryFieldsOnlyOnConfigurationSummary(IEnumerable<JsonElement> lines)
+    {
+        foreach (var line in lines)
+        {
+            var isConfigurationSummary = line.GetProperty("operation").GetString() == "summary" &&
+                line.TryGetProperty("classification", out var classification) &&
+                classification.GetString() == "Configuration";
+            Assert.Equal(isConfigurationSummary, line.TryGetProperty("configurationCategory", out _));
+        }
+    }
+
     private static void AssertLocalVerifyCheckOrder(JsonElement report)
     {
         var names = report.GetProperty("checks")
@@ -910,6 +952,15 @@ public sealed class CliApplicationTests
             BindingFlags.NonPublic | BindingFlags.Static);
 
         return Assert.IsType<string>(method?.Invoke(null, [classification]));
+    }
+
+    private static string? ConfigurationCategory(string? code)
+    {
+        var method = typeof(CliApplication).GetMethod(
+            "ConfigurationCategory",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        return method?.Invoke(null, [code]) as string;
     }
 
     private static PublishService CreatePublishService(Func<CompiledDocument, PublishedDocument> publish)

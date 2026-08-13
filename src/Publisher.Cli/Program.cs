@@ -87,7 +87,8 @@ internal static class CliApplication
                 ExitCodeFor(classification),
                 exception.Code,
                 SafeMessage(classification),
-                classification);
+                classification,
+                configurationCategory: ConfigurationCategory(exception.Code));
             logger.CommandFinished(result);
             logger.Summary(result, stopwatch.Elapsed);
             return result.ExitCode;
@@ -645,6 +646,29 @@ internal static class CliApplication
         return ErrorClassification.Internal;
     }
 
+    private static string? ConfigurationCategory(string? errorCode)
+    {
+        if (string.IsNullOrWhiteSpace(errorCode) ||
+            !errorCode.StartsWith("CONFIG_", StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        return errorCode switch
+        {
+            "CONFIG_CREDENTIALS_PATH_REQUIRED" or
+            "CONFIG_FOLDER_ID_REQUIRED" or
+            "CONFIG_TOKEN_STORE_PATH_REQUIRED" or
+            "CONFIG_AUTHENTICATION_MODE_INVALID" => "googleApi",
+            "CONFIG_IMAGE_MAX_WIDTH_INVALID" => "publisher",
+            "CONFIG_TIMEOUT_INVALID" => "cli",
+            "CONFIG_BOOLEAN_INVALID" => "publisher",
+            "CONFIG_NUMBER_INVALID" => "publisher",
+            "CONFIG_INTEGER_INVALID" => "cli",
+            _ => "unknown",
+        };
+    }
+
     private static bool IsTransientCode(string errorCode) =>
         errorCode.Contains("TIMEOUT", StringComparison.OrdinalIgnoreCase) ||
         errorCode.Contains("TRANSIENT", StringComparison.OrdinalIgnoreCase) ||
@@ -933,6 +957,9 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             ["classification"] = result.Classification.ToString(),
             ["elapsedMilliseconds"] = (long)elapsed.TotalMilliseconds,
             ["exceptionType"] = result.ExceptionType,
+            ["configurationCategory"] = result.Classification == ErrorClassification.Configuration
+                ? result.ConfigurationCategory
+                : null,
             ["documentId"] = result.DocumentId,
             ["documentUrl"] = result.DocumentUrl,
             ["readbackStatus"] = ReadbackStatus(result),
@@ -1113,7 +1140,8 @@ internal sealed record CliResult(
     ErrorClassification Classification,
     string? DocumentId,
     string? DocumentUrl,
-    string? ExceptionType)
+    string? ExceptionType,
+    string? ConfigurationCategory)
 {
     internal bool Succeeded => ExitCode == 0;
 
@@ -1122,15 +1150,16 @@ internal sealed record CliResult(
         string message,
         string? documentId = null,
         string? documentUrl = null) =>
-        new(0, code, message, ErrorClassification.None, documentId, documentUrl, null);
+        new(0, code, message, ErrorClassification.None, documentId, documentUrl, null, null);
 
     internal static CliResult Failure(
         int exitCode,
         string code,
         string message,
         ErrorClassification classification,
-        string? exceptionType = null) =>
-        new(exitCode, code, message, classification, null, null, exceptionType);
+        string? exceptionType = null,
+        string? configurationCategory = null) =>
+        new(exitCode, code, message, classification, null, null, exceptionType, configurationCategory);
 }
 
 internal enum ErrorClassification
