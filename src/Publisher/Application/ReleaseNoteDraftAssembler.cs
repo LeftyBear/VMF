@@ -394,3 +394,134 @@ public enum ReleaseNoteDraftDiagnosticKind
     /// <summary>A source field was ignored because the source kind is not permitted by the manifest.</summary>
     SourceKindNotPermitted,
 }
+
+/// <summary>Compares approved release-note fields with allow-listed source records without rewriting files.</summary>
+internal sealed class ReleaseNoteDriftChecker
+{
+    /// <summary>Checks release-note field drift against the existing draft assembler boundary.</summary>
+    /// <param name="request">The drift-check request.</param>
+    /// <returns>The bounded drift-check result.</returns>
+    public ReleaseNoteDriftCheckResult Check(ReleaseNoteDriftCheckRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var expected = new ReleaseNoteDraftAssembler().Assemble(new ReleaseNoteDraftRequest(
+            "Publisher Release Note Drift Check",
+            request.FieldNames,
+            request.SourceRecords)
+        {
+            Manifest = request.Manifest,
+        });
+
+        var releaseNoteFields = request.ReleaseNoteFields
+            .GroupBy(field => field.Name, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(field => field.Value).ToList(),
+                StringComparer.OrdinalIgnoreCase);
+
+        var fields = new List<ReleaseNoteDriftField>();
+        foreach (var expectedField in expected.Fields)
+        {
+            if (expectedField.Status is ReleaseNoteDraftFieldStatus.Conflict)
+            {
+                fields.Add(new ReleaseNoteDriftField(
+                    expectedField.Name,
+                    ReleaseNoteDriftStatus.Conflict,
+                    expectedField.Value,
+                    "CONFLICT",
+                    expectedField.SourcePaths,
+                    "Allow-listed source records conflict."));
+                continue;
+            }
+
+            if (expectedField.Status is ReleaseNoteDraftFieldStatus.NotRecorded or ReleaseNoteDraftFieldStatus.ManualOnly)
+            {
+                fields.Add(new ReleaseNoteDriftField(
+                    expectedField.Name,
+                    ReleaseNoteDriftStatus.Missing,
+                    expectedField.Value,
+                    "MISSING",
+                    expectedField.SourcePaths,
+                    "Expected value is not approval-ready from allow-listed sources."));
+                continue;
+            }
+
+            if (!releaseNoteFields.TryGetValue(expectedField.Name, out var actualValues) || actualValues.Count == 0)
+            {
+                fields.Add(new ReleaseNoteDriftField(
+                    expectedField.Name,
+                    ReleaseNoteDriftStatus.Missing,
+                    expectedField.Value,
+                    "MISSING",
+                    expectedField.SourcePaths,
+                    "Release note field is missing."));
+                continue;
+            }
+
+            if (actualValues.Count > 1 || !StringComparer.Ordinal.Equals(actualValues[0], expectedField.Value))
+            {
+                fields.Add(new ReleaseNoteDriftField(
+                    expectedField.Name,
+                    ReleaseNoteDriftStatus.Conflict,
+                    expectedField.Value,
+                    string.Join(" | ", actualValues),
+                    expectedField.SourcePaths,
+                    "Release note field does not match the allow-listed source value."));
+                continue;
+            }
+
+            fields.Add(new ReleaseNoteDriftField(
+                expectedField.Name,
+                ReleaseNoteDriftStatus.Match,
+                expectedField.Value,
+                actualValues[0],
+                expectedField.SourcePaths,
+                "Release note field matches the allow-listed source value."));
+        }
+
+        return new ReleaseNoteDriftCheckResult(
+            fields,
+            expected.Diagnostics,
+            fields.Any(field => field.Status is ReleaseNoteDriftStatus.Missing or ReleaseNoteDriftStatus.Conflict)
+                || expected.HasBlockingConflict);
+    }
+}
+
+/// <summary>Input for local-only release-note drift checking.</summary>
+internal sealed record ReleaseNoteDriftCheckRequest(
+    IReadOnlyList<string> FieldNames,
+    IReadOnlyList<ReleaseNoteSourceField> ReleaseNoteFields,
+    IReadOnlyList<ReleaseNoteSourceRecord> SourceRecords)
+{
+    /// <summary>The explicit allow-list of field/source combinations available to the drift checker.</summary>
+    public ReleaseNoteSourceFieldManifest Manifest { get; init; } = ReleaseNoteSourceFieldManifest.Empty;
+}
+
+/// <summary>The bounded status assigned to one release-note field comparison.</summary>
+internal enum ReleaseNoteDriftStatus
+{
+    /// <summary>The release note matches the allow-listed source value.</summary>
+    Match,
+
+    /// <summary>The release note or source value is missing or not approval-ready.</summary>
+    Missing,
+
+    /// <summary>The release note conflicts with the allow-listed source value or source records conflict.</summary>
+    Conflict,
+}
+
+/// <summary>One field-level release-note drift result.</summary>
+internal sealed record ReleaseNoteDriftField(
+    string Name,
+    ReleaseNoteDriftStatus Status,
+    string ExpectedValue,
+    string ActualValue,
+    IReadOnlyList<string> SourcePaths,
+    string Message);
+
+/// <summary>The complete release-note drift-check result.</summary>
+internal sealed record ReleaseNoteDriftCheckResult(
+    IReadOnlyList<ReleaseNoteDriftField> Fields,
+    IReadOnlyList<ReleaseNoteDraftDiagnostic> Diagnostics,
+    bool HasBlockingDrift);
