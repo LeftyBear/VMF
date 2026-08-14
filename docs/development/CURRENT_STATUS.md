@@ -320,8 +320,8 @@ The vNext hardening backlog includes:
 - P2 vNext enhancements: Google Picker plus `drive.file` reconsideration,
   diagnostics, dry-run output, release-note generation, OAuth Desktop
   documentation, managed-document readback reporting, release-note drift
-  checking, configuration failure summary classification, and safe retry
-  diagnostics.
+  checking, configuration failure summary classification, safe retry
+  diagnostics, and verification evidence extraction.
 
 P2-02 additional diagnostics is complete for the narrow local-only A/B
 implementation and closeout scope. The later P2-09 configuration failure
@@ -360,6 +360,23 @@ rewrite release notes, edit `CHANGELOG.md`, perform release, tag, publication,
 package, `dist`, GitHub asset, Live E2E, Google Docs / Drive,
 OAuth/token-store, Avast, vendor, flagged-executable, stage, commit, or push
 operations.
+
+P2-12 verification evidence extractor implementation is complete as a narrow
+local-only implementation in commit `f6c7d08`. It completes the P2-04-C
+deferred verification evidence extractor scope by normalizing allow-listed
+current-state Markdown verification tables only, rejecting non-allow-listed
+and historical sources, excluding sensitive values, and treating conflicting
+verification rows as blocking drift. Focused ReleaseNote unit coverage passed
+32 / 0 / 0, format passed, `git diff --check` passed, commit completed, and
+the commit was pushed so `HEAD == origin/main == f6c7d08`. This synchronization
+does not infer release approval, release authorization, publication
+authorization, risk acceptance, vendor clearance, Avast safety certification,
+Live E2E authorization, Google Docs / Drive authorization, OAuth/token-store
+authorization, package approval, or current state from historical records. It
+does not change stdout, exit codes, CLI classification, Frozen specifications,
+public APIs, persisted schemas, retry behavior, `deliveryState`, package or
+`dist` output, release records, Google/OAuth state, Avast state, vendor state,
+or flagged-executable status.
 
 P2-09 configuration failure summary classification is complete as a narrow
 local-only implementation in commit `d7c761d`. It adds the

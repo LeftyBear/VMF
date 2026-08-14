@@ -139,13 +139,14 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-01 | Evaluate whether Google Picker plus `drive.file` least-privilege routing should be adopted by a future scoped design task. | P2 | Least-privilege routing may reduce future operator risk, but it is not required for current release follow-up. | `Publisher_P2-01_GooglePickerDriveFileEvaluation.md`; `Publisher_P2-01_OAuthDesktopScopeBoundaryEvaluation.md`; future scoped design and adoption record before implementation. | Potential future credential and Drive-access risk reduction. | Design complete / implementation decision pending. |
 | P2-02 | Evaluate additional Publisher diagnostics that improve troubleshooting without changing published document semantics. | P2 | Diagnostics may improve supportability but must preserve published document behavior. | P2-02-A / P2-02-B narrow local-only implementation and closeout record. | Improves local troubleshooting with no release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Complete / A and B implemented; C, D, and E deferred. |
 | P2-03 | Evaluate clearer dry-run output for Google Docs publication planning. | P2 | Better dry-run output may reduce operator error in future Google Docs workflows. | `Publisher_P2-03_ClearerDryRunOutputEvaluation.md`; P2-03-A / P2-03-B narrow local-only implementation and closeout record. | Potential future planning clarity; no current clearance effect. | Complete / A and B implemented; C, D, and E deferred. |
-| P2-04 | Evaluate richer release-note generation from existing verification records. | P2 | Automation could reduce documentation drift, but it is not required for the next release-path gate. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; future scoped implementation decision. | Potential future traceability improvement. | Design complete / implementation decision pending. |
+| P2-04 | Evaluate richer release-note generation from existing verification records. | P2 | Automation could reduce documentation drift, but it is not required for the next release-path gate. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; future scoped implementation decision. | Potential future traceability improvement. | Complete / A, B, C, and D implemented; E deferred. |
 | P2-05 | Evaluate documentation improvements for OAuth Desktop setup and token-store handling. | P2 | Guidance may reduce authentication confusion, but token-store operations remain prohibited unless separately authorized. | `Publisher_P2-05_OAuthDesktopTokenStoreDocumentationEvaluation.md`; docs-only implementation in installation and Live E2E guidance. | Reduces future credential-handling ambiguity without changing OAuth scope, authentication architecture, Google, package, release, or vendor-clearance gates. | Complete / docs-only guidance synchronized. |
 | P2-06 | Evaluate whether vNext should include more explicit managed-document readback reporting. | P2 | Readback reporting may improve operator confidence but needs scoped design. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; future narrow local-only implementation decision. | Potential future verification clarity; no current release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Design complete / implementation decision pending. |
 | P2-07 | Implement narrow managed-document readback reporting from the P2-06 design evaluation. | P2 | P2-06 found that readback state is safety-critical but under-reported in operator-facing diagnostics; a narrow implementation can improve clarity without changing readback semantics. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; explicit implementation task authorization; focused unit tests before broader verification. | Improves future verification clarity while preserving separation from publication success, release clearance, package approval, vendor clearance, and Avast safety certification. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-08 | Implement the release-note drift checker selected after P2-07 closeout. | P2 | Bounded local drift checking reduces release-note ambiguity without rewriting approved release notes or promoting gated decisions. | `Publisher_P2-08_CandidateSelection.md`; P2-04 allow-listed source-field boundary; commit `75be0fc`. | Keeps vNext release-note review local-only while preserving release, Google, OAuth, package, vendor-clearance, and Avast boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-09 | Implement allow-listed configuration failure summary classification. | P2 | The P2-02 deferred `configurationCategory` field improves local troubleshooting while preserving safe diagnostic boundaries. | Existing stable `CONFIG_*` codes; P2-02 allow-listed category boundary; commit `d7c761d`. | Adds bounded local failure summary context without exposing configuration values or changing release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-10 | Implement safe retry diagnostics for final failure summaries. | P2 | The P2-02-D deferred retry diagnostics subset improves local troubleshooting while preserving safe diagnostic boundaries. | Existing retry/failure classification; P2-02-D allow-listed retry metadata boundary; commit `871ece5`. | Adds bounded local failure summary context without changing retry behavior, release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
+| P2-12 | Implement the P2-04-C verification evidence extractor. | P2 | Normalizing allow-listed verification evidence rows reduces release-note drift without inferring approval or gated operation state. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; P2-04 allow-listed source-field boundary; commit `f6c7d08`. | Keeps release-note evidence extraction local-only while preserving release, Google, OAuth, package, vendor-clearance, Avast, and `deliveryState` deferred boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
 
 ### P2-07 Managed-Document Readback Reporting Implementation
 
@@ -342,6 +343,56 @@ build passed with warnings 0 / errors 0, format passed, and `git diff --check`
 passed. Current-state synchronization is documentation-only and records no new
 source or test change.
 
+### P2-12 Verification Evidence Extractor
+
+P2-12 is the completed narrow local-only implementation of the P2-04-C
+verification evidence extractor. Commit `f6c7d08` adds an internal extractor
+that normalizes verification evidence rows from allow-listed current-state
+Markdown tables only.
+
+Completed implementation scope:
+
+- read only explicitly allow-listed source records supplied to the extractor;
+- accept only current-state records and reject historical or template records;
+- normalize verification table columns for command, result, warnings, errors,
+  passed, failed, skipped, and source path;
+- exclude sensitive command or evidence values before returning rows;
+- treat conflicting rows for the same command as blocking drift using the full
+  result/count fingerprint;
+- keep the implementation internal to the Publisher application test surface.
+
+Safe-value and non-inference boundary:
+
+- allowed values are checked-in Markdown table cells that pass the allow-list,
+  current-state, and sensitive-value filters;
+- prohibited values include local absolute paths, tokens, secrets,
+  Authorization headers, localhost/private URLs, raw provider payloads, raw
+  exception details, stacks, credentials, token-store paths, and external
+  resource identifiers;
+- extracted verification rows are draft evidence inputs only and must not be
+  represented as release approval, release authorization, publication
+  authorization, risk acceptance, vendor clearance, Avast safety
+  certification, Live E2E authorization, Google Docs / Drive authorization,
+  OAuth/token-store authorization, package approval, or current state inferred
+  from historical records.
+
+Non-goals:
+
+- no release-note rewrite, `CHANGELOG.md` edit, package or `dist` update,
+  release, tag, publication, GitHub asset operation, Live E2E, Google Docs
+  mutation, Google Drive mutation, OAuth login, token-store read/write/delete,
+  Avast operation, vendor-clearance judgment, flagged executable re-run, or
+  external lookup;
+- no stdout, exit-code, CLI classification, Frozen specification, public API,
+  persisted schema, retry behavior, `deliveryState`, `SUPPORT_SUMMARY`,
+  OAuth scope, authentication architecture, or release-record change.
+
+Verification result recorded for P2-12: focused ReleaseNote unit coverage
+passed 32 / 0 / 0, format passed, `git diff --check` passed, commit `f6c7d08`
+was created and pushed, and `HEAD == origin/main == f6c7d08`. This
+current-state synchronization is documentation-only and records no new source
+or test change.
+
 ## Dependency Split
 
 Avast-response dependent:
@@ -369,15 +420,16 @@ Completed Avast-independent hardening / enhancements:
 - P2-08.
 - P2-09.
 - P2-10.
+- P2-12.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-10: safe retry diagnostics derived from the deferred P2-02-D retry
-  diagnostics candidate; narrow local-only implementation complete in commit
-  `871ece5` with `attemptCount` / `retryable` only in structured stderr final
-  failure summaries, omission from unknown and success summaries, focused
-  `CliApplicationTests` coverage, and no release, Google, OAuth, package,
-  vendor-clearance, or Avast operation.
+- P2-12: verification evidence extractor derived from the deferred P2-04-C
+  candidate; narrow local-only implementation complete in commit `f6c7d08`
+  with allow-listed current-state Markdown table extraction only, fail-closed
+  conflict and sensitive-value handling, focused ReleaseNote unit coverage,
+  and no release, Google, OAuth, package, vendor-clearance, Avast, or
+  `deliveryState` operation.
 
 ## Vendor-Clearance Boundary
 
