@@ -962,6 +962,7 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
                 : null,
             ["attemptCount"] = result.Succeeded ? null : result.RetryDiagnostics?.AttemptCount,
             ["retryable"] = result.Succeeded ? null : result.RetryDiagnostics?.Retryable,
+            ["failureBoundary"] = FailureBoundary(result),
             ["documentId"] = result.DocumentId,
             ["documentUrl"] = result.DocumentUrl,
             ["readbackStatus"] = ReadbackStatus(result),
@@ -1054,6 +1055,25 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
         "none" or "help" or "unknown" => "cli",
         _ => phase,
     };
+
+    private string? FailureBoundary(CliResult result)
+    {
+        if (result.Succeeded || command != "dry-run")
+        {
+            return null;
+        }
+
+        return result.Classification switch
+        {
+            ErrorClassification.Usage => "usage",
+            ErrorClassification.Configuration => "configuration",
+            ErrorClassification.Input when lastOperation == "compile" => "compile",
+            ErrorClassification.Input => "input",
+            ErrorClassification.Canceled => "cancellation",
+            ErrorClassification.Internal => "internal",
+            _ => "unknown",
+        };
+    }
 
     private static string WarningPhase(string code) => code switch
     {

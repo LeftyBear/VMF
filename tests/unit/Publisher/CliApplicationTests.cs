@@ -478,6 +478,22 @@ public sealed class CliApplicationTests
         Assert.DoesNotContain("local-dry-run", capture.Error, StringComparison.Ordinal);
         Assert.DoesNotContain(path, capture.Error, StringComparison.Ordinal);
         Assert.DoesNotContain("token-secret", capture.Error, StringComparison.OrdinalIgnoreCase);
+        var summary = LastJsonLine(capture.Error);
+        Assert.Equal("input", summary.GetProperty("failureBoundary").GetString());
+    }
+
+    [Fact]
+    public async Task RunAsync_DryRunUsageFailureReportsFailureBoundaryOnlyOnFinalSummary()
+    {
+        using var capture = new ConsoleCapture();
+
+        var exitCode = await CliApplication.RunAsync(["dry-run"], CancellationToken.None);
+
+        Assert.Equal(2, exitCode);
+        var summary = LastJsonLine(capture.Error);
+        Assert.Equal("USAGE_ERROR", summary.GetProperty("code").GetString());
+        Assert.Equal("usage", summary.GetProperty("failureBoundary").GetString());
+        AssertFailureBoundaryFieldsOnlyOnDryRunFailureSummary(JsonLines(capture.Error));
     }
 
     [Fact]
@@ -707,6 +723,80 @@ public sealed class CliApplicationTests
     }
 
     [Theory]
+    [InlineData("USAGE_ERROR", "Usage", "usage")]
+    [InlineData("CONFIG_TIMEOUT_INVALID", "Configuration", "configuration")]
+    [InlineData("MARKDOWN_FILE_NOT_FOUND", "Input", "input")]
+    [InlineData("PUBLISHER_ERROR", "Internal", "internal")]
+    [InlineData("CANCELED", "Canceled", "cancellation")]
+    [InlineData("HTTP_503", "Transient", "unknown")]
+    public void StructuredPublisherLogger_DryRunFailureSummaryReportsAllowListedBoundary(
+        string code,
+        string classificationName,
+        string expectedBoundary)
+    {
+        using var capture = new ConsoleCapture();
+        var logger = new StructuredPublisherLogger("pub-test", "dry-run");
+        var classification = Enum.Parse<ErrorClassification>(classificationName);
+
+        logger.Summary(
+            CliResult.Failure(
+                ExitCodeFor(classification),
+                code,
+                SafeMessage(classification),
+                classification),
+            TimeSpan.FromMilliseconds(25));
+
+        var summary = LastJsonLine(capture.Error);
+        Assert.Equal(expectedBoundary, summary.GetProperty("failureBoundary").GetString());
+        Assert.DoesNotContain("https://", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"C:\secret", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Authorization", capture.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void StructuredPublisherLogger_DryRunCompileFailureReportsCompileBoundary()
+    {
+        using var capture = new ConsoleCapture();
+        var logger = new StructuredPublisherLogger("pub-test", "dry-run");
+
+        logger.SetContext("planner", "compile");
+        logger.Summary(
+            CliResult.Failure(
+                1,
+                "MARKDOWN_PARSE_FAILED",
+                "Publisher input is invalid.",
+                ErrorClassification.Input),
+            TimeSpan.FromMilliseconds(25));
+
+        var summary = LastJsonLine(capture.Error);
+        Assert.Equal("compile", summary.GetProperty("failureBoundary").GetString());
+    }
+
+    [Fact]
+    public void StructuredPublisherLogger_OmitsFailureBoundaryOutsideDryRunFailureSummary()
+    {
+        using var capture = new ConsoleCapture();
+        var publishLogger = new StructuredPublisherLogger("pub-test", "publish");
+        var dryRunLogger = new StructuredPublisherLogger("pub-test", "dry-run");
+
+        publishLogger.Summary(
+            CliResult.Failure(
+                1,
+                "MARKDOWN_FILE_NOT_FOUND",
+                "Publisher input is invalid.",
+                ErrorClassification.Input),
+            TimeSpan.FromMilliseconds(25));
+        dryRunLogger.Summary(
+            CliResult.Success("DRY_RUN_SUCCEEDED", "Dry run completed."),
+            TimeSpan.FromMilliseconds(25));
+
+        foreach (var line in JsonLines(capture.Error))
+        {
+            Assert.False(line.TryGetProperty("failureBoundary", out _));
+        }
+    }
+
+    [Theory]
     [InlineData(UpdateErrorCodes.ReadbackFailed, "failed", "post-apply-readback")]
     [InlineData(UpdateErrorCodes.ReadbackMismatch, "mismatch", "post-apply-readback")]
     [InlineData(UpdateErrorCodes.ManagedRegionMismatch, "mismatch", "post-apply-readback")]
@@ -901,6 +991,18 @@ public sealed class CliApplicationTests
                 line.TryGetProperty("classification", out var classification) &&
                 classification.GetString() == "Configuration";
             Assert.Equal(isConfigurationSummary, line.TryGetProperty("configurationCategory", out _));
+        }
+    }
+
+    private static void AssertFailureBoundaryFieldsOnlyOnDryRunFailureSummary(IEnumerable<JsonElement> lines)
+    {
+        foreach (var line in lines)
+        {
+            var isDryRunFailureSummary = line.GetProperty("command").GetString() == "dry-run" &&
+                line.GetProperty("operation").GetString() == "summary" &&
+                line.TryGetProperty("exitCode", out var exitCode) &&
+                exitCode.GetInt32() != 0;
+            Assert.Equal(isDryRunFailureSummary, line.TryGetProperty("failureBoundary", out _));
         }
     }
 
