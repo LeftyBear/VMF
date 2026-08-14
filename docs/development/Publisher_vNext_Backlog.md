@@ -147,7 +147,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-09 | Implement allow-listed configuration failure summary classification. | P2 | The P2-02 deferred `configurationCategory` field improves local troubleshooting while preserving safe diagnostic boundaries. | Existing stable `CONFIG_*` codes; P2-02 allow-listed category boundary; commit `d7c761d`. | Adds bounded local failure summary context without exposing configuration values or changing release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-10 | Implement safe retry diagnostics for final failure summaries. | P2 | The P2-02-D deferred retry diagnostics subset improves local troubleshooting while preserving safe diagnostic boundaries. | Existing retry/failure classification; P2-02-D allow-listed retry metadata boundary; commit `871ece5`. | Adds bounded local failure summary context without changing retry behavior, release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-12 | Implement the P2-04-C verification evidence extractor. | P2 | Normalizing allow-listed verification evidence rows reduces release-note drift without inferring approval or gated operation state. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; P2-04 allow-listed source-field boundary; commit `f6c7d08`. | Keeps release-note evidence extraction local-only while preserving release, Google, OAuth, package, vendor-clearance, Avast, and `deliveryState` deferred boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
-| P2-13 | Implement dry-run failure boundary hints selected after P2-12 closeout. | P2 | Bounded failure-boundary hints can reduce dry-run troubleshooting ambiguity by reusing existing CLI classifications and safe diagnostic routing. | `Publisher_P2-13_CandidateSelection.md`; P2-03-D failure-boundary hint boundary; separate implementation authorization required. | Keeps dry-run troubleshooting local-only while preserving dry-run semantics, stdout, exit codes, Google, OAuth, package, release, vendor-clearance, and Avast boundaries. | Selected / implementation decision pending. |
+| P2-13 | Implement dry-run failure boundary hints selected after P2-12 closeout. | P2 | Bounded failure-boundary hints can reduce dry-run troubleshooting ambiguity by reusing existing CLI classifications and safe diagnostic routing. | `Publisher_P2-13_CandidateSelection.md`; P2-03-D failure-boundary hint boundary; commit `91d3969`. | Keeps dry-run troubleshooting local-only while preserving dry-run semantics, stdout, exit codes, Google, OAuth, package, release, vendor-clearance, and Avast boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
 
 ### P2-07 Managed-Document Readback Reporting Implementation
 
@@ -422,23 +422,17 @@ Completed Avast-independent hardening / enhancements:
 - P2-09.
 - P2-10.
 - P2-12.
+- P2-13.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-12: verification evidence extractor derived from the deferred P2-04-C
-  candidate; narrow local-only implementation complete in commit `f6c7d08`
-  with allow-listed current-state Markdown table extraction only, fail-closed
-  conflict and sensitive-value handling, focused ReleaseNote unit coverage,
-  and no release, Google, OAuth, package, vendor-clearance, Avast, or
-  `deliveryState` operation.
-
-Next selected Avast-independent enhancement candidate:
-
 - P2-13: dry-run failure boundary hints derived from the deferred P2-03-D
-  candidate; selection is docs-only / local-only and does not authorize
-  implementation, dry-run semantic changes, stdout changes, exit-code changes,
-  Google, OAuth, package, release, vendor-clearance, Avast, or flagged
-  executable operations.
+  candidate; narrow local-only implementation complete in commit `91d3969`
+  with optional `failureBoundary` output limited to dry-run final failure
+  summaries, allow-listed boundary labels only, focused `CliApplicationTests`
+  coverage, and no stdout, exit-code, dry-run semantic, public API, persisted
+  schema, Google, OAuth, package, release, vendor-clearance, Avast, or flagged
+  executable operation.
 
 ## Vendor-Clearance Boundary
 

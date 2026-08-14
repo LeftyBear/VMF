@@ -321,7 +321,8 @@ The vNext hardening backlog includes:
   diagnostics, dry-run output, release-note generation, OAuth Desktop
   documentation, managed-document readback reporting, release-note drift
   checking, configuration failure summary classification, safe retry
-  diagnostics, and verification evidence extraction.
+  diagnostics, verification evidence extraction, and dry-run failure boundary
+  diagnostics.
 
 P2-02 additional diagnostics is complete for the narrow local-only A/B
 implementation and closeout scope. The later P2-09 configuration failure
@@ -333,11 +334,16 @@ structured stderr final failure summaries only. `maxAttempts`,
 unimplemented.
 
 P2-03 clearer dry-run output is complete for the narrow local-only A/B
-implementation scope. P2-03-C structured dry-run output contract, P2-03-D
-failure boundary hints, and P2-03-E physical update dry-run bridge remain
-deferred and unimplemented. It does not treat dry-run as Live E2E, Google
-verification, publication authorization, release clearance, vendor clearance,
-or Avast safety certification.
+implementation scope. P2-13 completes the formerly deferred P2-03-D failure
+boundary hints as a narrow local-only implementation in commit `91d3969`.
+P2-13 adds the optional `failureBoundary` field only to dry-run final failure
+summaries, derives the value from existing CLI classification / safe routing
+context, and restricts output to the allow-listed labels `usage`,
+`configuration`, `input`, `compile`, `cancellation`, `internal`, and
+`unknown`. P2-03-C structured dry-run output contract and P2-03-E physical
+update dry-run bridge remain deferred and unimplemented. It does not treat
+dry-run as Live E2E, Google verification, publication authorization, release
+clearance, vendor clearance, or Avast safety certification.
 
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is
@@ -407,6 +413,18 @@ stdout, Frozen specifications, public APIs, or persisted schemas; and does not
 perform release, tag, publication, package, `dist`, GitHub asset, Live E2E,
 Google Docs / Drive, OAuth/token-store, Avast, vendor, or flagged-executable
 operations.
+
+P2-13 dry-run failure boundary diagnostics is complete as a narrow local-only
+implementation in commit `91d3969`. It adds only the optional allow-listed
+`failureBoundary` field to dry-run final failure summaries; dry-run success
+summaries and non-dry-run summaries omit the field. Focused
+`CliApplicationTests` coverage passed 72 / 0 / 0, full Publisher unit coverage
+passed 568 / 0 / 0, Release build passed with warnings 0 / errors 0, format
+passed, and `git diff --check` passed. This synchronization does not change
+classification, stdout, exit code, dry-run semantics, Frozen specifications,
+public APIs, persisted schemas, Google Docs / Drive behavior, OAuth state,
+package or release state, vendor-clearance state, Avast state, or
+flagged-executable status.
 
 ## 12. Publisher Avast Response Intake Template
 
