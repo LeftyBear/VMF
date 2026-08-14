@@ -46,6 +46,7 @@ are accepted-at-the-time history, not the current release-completion state.
 | Avast clearance boundary preserved | PASS | Vendor clearance not obtained; ADR-0019 VMF-side residual risk acceptance basis retained | Codex | 2026-08-09 | Publication record does not claim Avast vendor clearance or Avast safety certification. |
 | Avast manual scan / CyberCapture recorded | PASS | `vmf-publisher.exe` SHA-256 `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`; release ZIP / repo Release exe match; Avast showed "このファイルは安全のようです"; no detection name; `IDP.HELU.PSD11` not reproduced | Codex | 2026-08-11 | Evidence-only local manual confirmation. It does not claim Avast vendor clearance, Avast safety certification, final release authorization, new package work, tag/release, or publication. |
 | Latest-definition rescan evidence template available | PASS | `docs/development/Publisher_AvastResponseIntakeTemplate.md` Section 4 records scan date/time, scanner identity, definition/signature version, artifact identity, file hash, previous detection, latest result, evidence reference, operator notes, and responsible-owner review fields | Codex | 2026-08-12 | Template only. This does not perform a rescan, claim vendor clearance, authorize release, update package/dist, run Live E2E, mutate Google Docs/Drive, or re-run a flagged executable. Hold continues for vendor-clearance-dependent work until evidence and responsible-owner approval are both recorded. |
+| Avast pending normal-development decision recorded | PASS | `docs/development/Publisher_AvastPendingNormalDevelopmentOwnerReevaluation_2026-08-14.md` | Codex | 2026-08-14 | Responsible-owner current decision records that unanswered Avast response receipt is not a blocking condition for normal development continuation. This does not claim Avast vendor clearance, Avast safety certification, release authorization, package approval, or future public/general release approval. |
 | Documentation update boundary | PASS | Docs-only release completion evidence update | Codex | 2026-08-09 | This update did not modify production code, tests, package, `dist`, tags, GitHub Release, or assets; no staging, commit, or push performed. |
 
 ## 1. Release Identity
@@ -187,3 +188,9 @@ Release completion requires all required items to be PASS or explicitly
 approved as N/A. A failed package verification, missing release evidence,
 unapproved live external update, secret exposure, or Frozen specification
 change blocks the release.
+
+The 2026-08-14 Avast-pending normal-development decision does not change the
+historical release-completion criteria above. It separates normal development
+continuation from future public/general release authorization. Any future
+public/general release must use the selected future artifact identity and the
+security state current at that time for a fresh release/security gate.

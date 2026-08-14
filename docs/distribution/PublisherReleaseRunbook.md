@@ -56,6 +56,7 @@ Current operating snapshot:
 | Avast false-positive handling | Vendor response pending; VMF risk acceptance recorded |
 | Vendor clearance | Not obtained |
 | Avast safety certification | Not claimed |
+| Normal development continuation | 2026-08-14 responsible-owner re-evaluation records that unanswered Avast response receipt is not a blocking condition for normal development continuation; future public/general release still requires a fresh artifact-specific release/security gate |
 | Approval recommendation | No active `0.0.1-dev` release execution remains; future package/dist, tag, publication, Live E2E, Google/OAuth, Avast, and flagged-executable operations require separate authorization |
 | Final verification / Live E2E / result review | PASS / Live E2E 4 of 4 PASS / result review complete |
 | Package generation / verification | PASS / PASS; manifest files 14; secret/static package inspection PASS |
@@ -167,6 +168,12 @@ detection-removal or non-reproduction evidence, and responsible-owner approval.
 Avast silence does not mean approval, safety confirmation, release
 authorization, or vendor clearance.
 
+The 2026-08-14 responsible-owner re-evaluation records that Avast response
+receipt is not a blocking condition for normal development continuation.
+Normal development continuation is separate from future public/general release
+authorization and does not claim Avast vendor clearance or Avast safety
+certification.
+
 Record latest-definition rescan evidence in
 `docs/development/Publisher_AvastResponseIntakeTemplate.md` before any
 vendor-clearance-dependent state change. The record must include scan
@@ -186,11 +193,11 @@ Keep each workstream separate after Release Hold lift:
 
 | Workstream | Current Handling |
 | --- | --- |
-| Allowed local-only work | Documentation updates, read-only investigation, source build, unit tests, non-live integration tests with Live E2E disabled, mock-backed verification, dry-run checks that do not publish or execute the flagged package, and static existing-package inspection when explicitly in scope. |
-| Gated release/live/mutation work | Final verification, Live E2E, result review, package or `dist` writes, tagged release work, publication, Google Docs or Google Drive mutation, token-store mutation, temporary public image hosting, and flagged executable re-run require the fixed ADR-0019 order and separate authorization. |
+| Normal development continuation | Documentation updates, read-only investigation, scoped source work, source build, unit tests, non-live integration tests with Live E2E disabled, mock-backed verification, and dry-run checks that do not publish or execute the flagged package may proceed under their own scoped tasks without waiting for an Avast response. |
+| Gated release/live/mutation work | Future public/general release authorization, final verification for a release, Live E2E, result review, package or `dist` writes, tagged release work, publication, Google Docs or Google Drive mutation, token-store mutation, temporary public image hosting, and flagged executable re-run require a fresh operation-specific authorization and applicable release/security gate. |
 | Avast-response intake work | Record only a received vendor response, artifact identity, SHA-256, classification, redaction review, and decision in `Publisher_AvastResponseIntakeTemplate.md`; a response can support vendor clearance only when the ADR-0003 evidence and owner-approval criteria are also satisfied. |
-| Vendor-clearance-dependent work | Do not treat vendor clearance as obtained until latest-definition rescan evidence, detection-removal or non-reproduction evidence, and responsible-owner approval are recorded. The release path relies on ADR-0019 VMF residual risk acceptance unless a future record changes the vendor-clearance state. |
-| Final release-resume work | Proceed in fixed order: final verification, Live E2E, result review, package/dist, tag/release. |
+| Vendor-clearance-dependent work | Do not treat vendor clearance as obtained from Avast silence, local no-detection evidence, or a submitted false-positive report. If vendor-clearance wording is needed, record the received response or evidence basis, artifact identity, detection-removal or non-reproduction evidence, and responsible-owner decision. |
+| Future public/general release work | Re-enter the release procedure for the selected future artifact identity and security state current at that time. Normal development continuation does not authorize release, package/dist, tag, publication, Live E2E, Google, OAuth, Avast, or flagged-executable operations. |
 
 ## 6. Local Verification
 

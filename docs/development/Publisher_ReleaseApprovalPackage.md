@@ -1,6 +1,6 @@
 # Publisher Release Approval Package
 
-Status  : GO for selected completion decision only; Avast response pending
+Status  : GO for selected completion decision only; Avast response pending; normal development not blocked by unanswered Avast response
 Scope   : Docs-only / local-only release approval package organization after explicit owner risk acceptance
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_PreflightHardening.md, docs/development/Publisher_ReleaseCompletionRecord_2026-08-13.md, docs/development/Publisher_TestClassification.md, docs/distribution/PublisherReleaseRunbook.md
 
@@ -32,8 +32,9 @@ OAuth/token-store/credentials, or perform any Avast operation.
 | Approval recommendation | GO for final verification / release execution completion decision for the existing canonical prerelease only; package/dist, tag, publication, distribution, Live E2E, Google Docs / Drive, OAuth/token-store, Avast, and flagged executable operations remain separately gated |
 | Next operation authorization target | Selected as final verification / release execution completion decision for the existing canonical prerelease only; this selection excludes new package/dist work plus tag/publication rerun. Operation-specific authorization records Approver `VMF Publisher Responsible Owner — GitHub: LeftyBear`, Decision `Approved`, Approval timestamp `2026-08-13T09:06:11.4854490+09:00`, and the authorized operation only. Current decision is `GO / final verification and release execution completion decision approved for the existing canonical prerelease only`. |
 | Avast false-positive handling | Vendor response pending; latest authorized latest-definition rescan did not reproduce the detection; responsible-owner approval recorded for the current release-control assessment |
-| Vendor clearance | Accepted for release-gate purposes under documented evidence-based criteria; Avast direct response remains pending |
+| Avast vendor clearance | Not obtained from Avast; Avast direct response remains pending. Evidence-based release-gate handling and responsible-owner decisions remain separate from Avast vendor clearance. |
 | Avast safety certification | Not claimed |
+| Normal development continuation | Responsible-owner re-evaluation on 2026-08-14 records that Avast response receipt is not a blocking condition for normal development continuation. This does not claim Avast vendor clearance, Avast safety certification, release authorization, package approval, or future public/general release approval. |
 | Release authorization record | Created and pushed in commit `57e71e240b9e42dbca03bae6dbf4d8a20216c58a`; repository synchronization only, not release execution by this docs update |
 | Formal residual-risk release approval memo | `docs/development/Publisher_ResidualRiskReleaseAuthorizationApprovalMemo_2026-08-12.md` records Approved VMF-side residual risk acceptance plus release authorization for the fixed `0.0.1-dev` release identity; vendor clearance remains not obtained and Avast safety certification is not claimed |
 | Current status update | `docs/development/CURRENT_STATUS.md` updated and pushed in commit `a04126ce24c7abd376bec943466c30cd565bb70e`; documentation/status alignment only |
@@ -88,6 +89,13 @@ or a new decision:
 
 Authorization for one gate must not be treated as authorization for any other
 gate.
+
+Normal development continuation is separate from future public/general release
+authorization. The 2026-08-14 Avast-pending owner re-evaluation permits normal
+development to continue without waiting for an Avast response, provided the
+work remains within its scoped local/docs/source/test boundaries. Any future
+public/general release must pass a fresh release and security gate for the
+selected future artifact identity and the security state current at that time.
 
 ## 2.1 Risk Accepted Go Basis
 
@@ -387,6 +395,10 @@ Basis:
   not reproduced for `vmf-publisher.exe` SHA-256
   `892743735eb84f47f57b427349077c7070376ae6b58b9c9bb3e404637d06ba7f`, without
   converting the state into vendor clearance or release authorization;
+- the 2026-08-14 responsible-owner re-evaluation records that unanswered Avast
+  response receipt is not a blocking condition for normal development
+  continuation, without changing future public/general release gate
+  requirements;
 - final verification and Live E2E have passed and result review is recorded;
 - package generation and package verification are recorded as `PASS` for the
   fixed `0.0.1-dev` package identity;

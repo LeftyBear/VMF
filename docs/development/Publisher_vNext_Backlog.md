@@ -11,6 +11,10 @@
 - Any new release-path work remains separately gated.
 - External dependency: Avast false positive response pending; vendor clearance
   has not been obtained and Avast safety certification is not claimed.
+- Owner re-evaluation on 2026-08-14 records that Avast response receipt is not
+  a blocking condition for normal development continuation. This does not grant
+  Avast vendor clearance, Avast safety certification, release authorization, or
+  any future public/general release approval.
 - This backlog is documentation-only and does not authorize release, publication, Live E2E, package generation, or Google Docs/Drive mutation.
 - Live E2E has not been executed for this backlog.
 - Google Docs / Drive mutation has not been executed for this backlog.
@@ -66,20 +70,25 @@ operating assets, updating packages or `dist/`, running Live E2E, mutating
 Google Docs / Drive, performing OAuth operations, rerunning Avast, or
 re-running the flagged executable.
 
-The next Avast-independent docs-only candidates are selected P2 design items.
+The next normal-development candidates may proceed under their own scoped tasks
+when they preserve local-only, docs-only, source, test, package, release,
+Google, OAuth, Avast, flagged-executable, public API, persisted schema, and
+Frozen specification boundaries.
 
-`P0-01` remains the first release-path item, but it is blocked until an Avast
-response is received and explicitly reviewed.
+`P0-01` remains the first Avast-response intake item, but it is no longer a
+blocker for normal development continuation. It remains relevant to future
+vendor-clearance wording and future public/general release gate review if an
+Avast response is received.
 
 ## P0 — Next Release-Path Gate Items
 
 | ID | Item | Priority | Rationale | Prerequisite | Release safety impact | State |
 | --- | --- | --- | --- | --- | --- | --- |
-| P0-01 | Record Avast false positive outcome and owner decision. | P0 | The next release-path basis cannot be re-evaluated until the vendor response is preserved and reviewed. | Avast response received for the selected artifact identity. | Prevents treating pending, ambiguous, mismatched, or adverse vendor evidence as clearance. | Blocked / Avast response pending. |
-| P0-02 | Use intake first, then decision classification for any Avast response. | P0 | Keeps raw response capture separate from reviewed clearance, rejection, clarification, or residual-risk decisions. | P0-01 response receipt; `Publisher_AvastResponseIntakeTemplate.md`; `Publisher_AvastResponseDecisionTemplate.md`. | Preserves auditability and avoids accidental vendor-clearance or safety-certification claims. | Blocked / Avast response pending. |
-| P0-03 | Confirm the next release-path basis: Avast vendor clearance, continued VMF-side risk acceptance, or a new owner decision. | P0 | Future release-path work needs an explicit basis after the published prerelease and unresolved vendor response. | P0-02 decision classification and owner review. | Prevents implicit carryover from the `0.0.1-dev` prerelease authorization. | Blocked / depends on P0-02. |
-| P0-04 | Reconcile release-readiness records after Avast clearance, rejection, or continued pending status is reviewed. | P0 | Readiness records must reflect the reviewed Avast outcome without rewriting historical accepted-at-the-time evidence. | P0-03 owner basis decision. | Keeps current status, evidence, and historical hold/block wording separated. | Blocked / depends on P0-03. |
-| P0-05 | Update go/no-go review only after blockers are resolved or explicitly waived by the owner. | P0 | Go/no-go status must follow completed or waived release-blocking dependencies. | P0-04 reconciliation and explicit owner waiver where applicable. | Prevents a planning label from becoming release authorization. | Blocked / depends on P0-04. |
+| P0-01 | Record Avast false positive outcome and owner decision if a response is received. | P0 | The response, if received, must be preserved and reviewed before it changes vendor-clearance wording or future release/security gate evidence. | Avast response received for the selected artifact identity. | Prevents treating pending, ambiguous, mismatched, or adverse vendor evidence as clearance. | Pending / not blocking normal development continuation. |
+| P0-02 | Use intake first, then decision classification for any Avast response. | P0 | Keeps raw response capture separate from reviewed clearance, rejection, clarification, or residual-risk decisions. | P0-01 response receipt; `Publisher_AvastResponseIntakeTemplate.md`; `Publisher_AvastResponseDecisionTemplate.md`. | Preserves auditability and avoids accidental vendor-clearance or safety-certification claims. | Pending / only if response received. |
+| P0-03 | Confirm the next future public/general release-path basis: Avast vendor clearance, continued VMF-side risk acceptance, or a new owner decision. | P0 | Future public/general release work needs a fresh artifact-specific basis and current security review. | Future public/general release scope or P0-02 decision classification and owner review. | Prevents implicit carryover from the `0.0.1-dev` prerelease authorization or normal-development continuation. | Blocked for future release authorization / not blocking normal development continuation. |
+| P0-04 | Reconcile release-readiness records after Avast clearance, rejection, continued pending status, or future release scope is reviewed. | P0 | Readiness records must reflect the reviewed Avast outcome or fresh release/security gate without rewriting historical accepted-at-the-time evidence. | P0-03 owner basis decision for a future public/general release. | Keeps current status, evidence, and historical hold/block wording separated. | Blocked for future release authorization / not blocking normal development continuation. |
+| P0-05 | Update go/no-go review only after future release blockers are resolved or explicitly waived by the owner. | P0 | Go/no-go status must follow completed or waived release-blocking dependencies for the selected future artifact. | P0-04 reconciliation and explicit owner waiver where applicable. | Prevents a planning label or normal-development decision from becoming release authorization. | Blocked for future release authorization / not blocking normal development continuation. |
 | P0-06 | Confirm Live E2E status for the next release-path scope. | P0 | Live E2E remains a separate operation-specific gate even after `0.0.1-dev` publication. | Explicit authorization, non-applicability decision, or documented deferral. | Avoids unapproved live mutation and separates evidence from release clearance. | Blocked / requires separate authorization decision. |
 | P0-07 | Confirm Google Docs / Drive readback or mutation status for the next release-path scope. | P0 | Google Docs / Drive operations remain independently gated and may require credentials or cleanup evidence. | Explicit authorization, non-applicability decision, or documented deferral. | Prevents unauthorized Google mutation, OAuth operation, or token-store side effect. | Blocked / requires separate authorization decision. |
 | P0-08 | Re-run release artifact audit only after package-generation scope is explicitly authorized. | P0 | Artifact audit must match the approved package identity and cannot be refreshed from stale or local-only artifacts. | Approved package-generation or package-inspection scope. | Prevents package, `dist`, asset, or release identity drift. | Blocked / package scope not authorized. |
@@ -469,7 +478,8 @@ or test change.
 
 ## Dependency Split
 
-Avast-response dependent:
+Avast-response dependent for vendor-clearance wording, but not blocking normal
+development continuation:
 
 - P0-01 through P0-05.
 
@@ -512,13 +522,17 @@ Latest completed Avast-independent enhancement candidate:
 
 ## Vendor-Clearance Boundary
 
-The following work remains gated because the Avast false positive response is
-not available and vendor clearance has not been obtained:
+The Avast false positive response remains unavailable, vendor clearance has not
+been obtained, and Avast safety certification is not claimed. The
+2026-08-14 owner re-evaluation removes Avast response receipt as a blocking
+condition for normal development continuation only.
+
+The following work remains separately gated:
 
 - Treating Avast vendor clearance as complete.
 - Claiming Avast safety certification.
-- Performing a new release publication.
-- Creating or updating release tags for new release work.
+- Performing a future public/general release publication.
+- Creating or updating release tags for future public/general release work.
 - Publishing or replacing package artifacts.
 - Re-running the flagged executable without exact authorization.
 - Treating local package or smoke evidence as AV/vendor clearance.
@@ -549,17 +563,24 @@ This backlog should remain consistent with:
 
 The backlog does not replace any release-readiness record. It identifies
 candidate next work while preserving the current published `0.0.1-dev` record,
-the ADR-0019 VMF risk acceptance basis, and the unresolved Avast vendor
-clearance boundary.
+the ADR-0019 VMF risk acceptance basis, the unresolved Avast vendor-clearance
+boundary, and the 2026-08-14 normal-development continuation decision.
 
 ## Recommended Next Review Order
 
-1. Avast false positive response and any owner follow-up decision.
-2. Next release-path basis: Avast clearance, continued VMF-side risk
-   acceptance, or new owner decision.
-3. Current release-readiness checklist state and go/no-go review status.
-4. Live E2E and Google Docs / Drive authorization status for the next scoped
+1. Confirm the scoped task is normal development or future public/general
+   release work.
+2. For normal development, apply the 2026-08-14 owner re-evaluation and keep
+   release, package, Google, OAuth, Avast, and flagged-executable operations
+   out of scope unless separately authorized.
+3. If an Avast response arrives, record the response and any owner follow-up
+   decision before changing vendor-clearance wording.
+4. For future public/general release, establish the release-path basis from the
+   selected artifact identity and security state current at that time: Avast
+   clearance, continued VMF-side risk acceptance, or new owner decision.
+5. Current release-readiness checklist state and go/no-go review status.
+6. Live E2E and Google Docs / Drive authorization status for the next scoped
    release-path task.
-5. Release artifact audit status after package-generation scope is authorized.
-6. Security and supply-chain review status for the approved release artifact.
-7. vNext enhancement candidates.
+7. Release artifact audit status after package-generation scope is authorized.
+8. Security and supply-chain review status for the approved release artifact.
+9. vNext enhancement candidates.
