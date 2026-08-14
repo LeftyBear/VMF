@@ -329,9 +329,9 @@ implementation and closeout scope. The later P2-09 configuration failure
 summary classification item completes the formerly deferred
 `configurationCategory` summary field only. P2-10 completes the narrow
 P2-02-D safe retry diagnostics subset for `attemptCount` and `retryable` in
-structured stderr final failure summaries only. `maxAttempts`,
-`deliveryState`, `httpStatus`, and `SUPPORT_SUMMARY` remain deferred and
-unimplemented.
+structured stderr final failure summaries only. P2-14 subsequently completes
+the narrow `maxAttempts` final failure summary field. `deliveryState`,
+`httpStatus`, and `SUPPORT_SUMMARY` remain deferred and unimplemented.
 
 P2-03 clearer dry-run output is complete for the narrow local-only A/B
 implementation scope. P2-13 completes the formerly deferred P2-03-D failure
@@ -407,9 +407,8 @@ when retry diagnostics are safely known. Unknown retry diagnostics and success
 summaries omit both fields. Focused `CliApplicationTests` coverage passed
 63 / 0 / 0, full Publisher unit coverage passed 553 / 0 / 0, Release build
 passed with warnings 0 / errors 0, format passed, and `git diff --check`
-passed. This synchronization does not add `maxAttempts`, `deliveryState`,
-`httpStatus`, or `SUPPORT_SUMMARY`; does not change classification, exit code,
-stdout, Frozen specifications, public APIs, or persisted schemas; and does not
+passed. This P2-10 synchronization did not change classification, exit code,
+stdout, Frozen specifications, public APIs, or persisted schemas; and did not
 perform release, tag, publication, package, `dist`, GitHub asset, Live E2E,
 Google Docs / Drive, OAuth/token-store, Avast, vendor, or flagged-executable
 operations.
@@ -425,6 +424,20 @@ classification, stdout, exit code, dry-run semantics, Frozen specifications,
 public APIs, persisted schemas, Google Docs / Drive behavior, OAuth state,
 package or release state, vendor-clearance state, Avast state, or
 flagged-executable status.
+
+P2-14 maxAttempts retry diagnostics is complete as a narrow local-only
+implementation in commit `7df613d`. It adds only the allow-listed numeric
+`maxAttempts` field to structured stderr final failure summaries when retry
+diagnostics are safely known. Success summaries, non-retry failures, and
+unknown retry diagnostics omit the field. Focused `CliApplicationTests`
+coverage passed 72 / 0 / 0, full Publisher unit coverage passed 568 / 0 / 0,
+Release build passed with warnings 0 / errors 0, format passed, and
+`git diff --check` passed. This synchronization does not add `deliveryState`,
+`httpStatus`, or `SUPPORT_SUMMARY`; does not change classification, exit code,
+stdout, retry behavior, Frozen specifications, public APIs, or persisted
+schemas; and does not perform release, tag, publication, package, `dist`,
+GitHub asset, Live E2E, Google Docs / Drive, OAuth/token-store, Avast, vendor,
+or flagged-executable operations.
 
 ## 12. Publisher Avast Response Intake Template
 

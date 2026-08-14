@@ -148,6 +148,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-10 | Implement safe retry diagnostics for final failure summaries. | P2 | The P2-02-D deferred retry diagnostics subset improves local troubleshooting while preserving safe diagnostic boundaries. | Existing retry/failure classification; P2-02-D allow-listed retry metadata boundary; commit `871ece5`. | Adds bounded local failure summary context without changing retry behavior, release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-12 | Implement the P2-04-C verification evidence extractor. | P2 | Normalizing allow-listed verification evidence rows reduces release-note drift without inferring approval or gated operation state. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; P2-04 allow-listed source-field boundary; commit `f6c7d08`. | Keeps release-note evidence extraction local-only while preserving release, Google, OAuth, package, vendor-clearance, Avast, and `deliveryState` deferred boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-13 | Implement dry-run failure boundary hints selected after P2-12 closeout. | P2 | Bounded failure-boundary hints can reduce dry-run troubleshooting ambiguity by reusing existing CLI classifications and safe diagnostic routing. | `Publisher_P2-13_CandidateSelection.md`; P2-03-D failure-boundary hint boundary; commit `91d3969`. | Keeps dry-run troubleshooting local-only while preserving dry-run semantics, stdout, exit codes, Google, OAuth, package, release, vendor-clearance, and Avast boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
+| P2-14 | Implement maxAttempts retry diagnostics for final failure summaries. | P2 | The remaining low-risk P2-02-D retry budget field improves local troubleshooting while preserving safe diagnostic boundaries. | Existing retry diagnostics boundary; explicit narrow implementation authorization; commit `7df613d`. | Adds bounded local failure summary context without changing retry policy, release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
 
 ### P2-07 Managed-Document Readback Reporting Implementation
 
@@ -295,7 +296,8 @@ synchronization is documentation-only and records no new source or test change.
 P2-10 is the completed narrow local-only implementation of the P2-02-D safe
 retry diagnostics subset. Commit `871ece5` adds only `attemptCount` and
 `retryable` to structured stderr final failure summaries when retry diagnostics
-are safely known.
+are safely known. P2-14 subsequently completed the narrow `maxAttempts`
+diagnostic in commit `7df613d`.
 
 Completed implementation scope:
 
@@ -307,9 +309,18 @@ Completed implementation scope:
 - preserve classification, exit-code behavior, stdout compatibility, Frozen
   specifications, public APIs, and persisted schemas.
 
+Subsequent P2-14 completed implementation scope:
+
+- emit `maxAttempts` as numeric allow-listed metadata;
+- emit the field only on final failure summaries when retry diagnostics are
+  safely known;
+- omit the field from success summaries, non-retry failures, and unknown retry
+  diagnostics;
+- preserve classification, exit-code behavior, stdout compatibility, retry
+  behavior, Frozen specifications, public APIs, and persisted schemas.
+
 Deferred scope:
 
-- `maxAttempts`;
 - `deliveryState`;
 - `httpStatus`;
 - `SUPPORT_SUMMARY`.
@@ -328,10 +339,10 @@ Safe-value boundary:
 
 Non-goals:
 
-- no `maxAttempts`, `deliveryState`, `httpStatus`, `SUPPORT_SUMMARY`, richer
-  diagnostic payload, public API change, persisted schema change, OAuth scope
-  change, authentication architecture change, dependency addition, release
-  record change, package identity change, publication-flow change, retry-policy
+- no `deliveryState`, `httpStatus`, `SUPPORT_SUMMARY`, richer diagnostic
+  payload, public API change, persisted schema change, OAuth scope change,
+  authentication architecture change, dependency addition, release record
+  change, package identity change, publication-flow change, retry-policy
   behavior change, classification change, exit-code change, or stdout change;
 - no release, tag, publication, package or `dist` update, GitHub asset
   operation, Live E2E, Google Docs mutation, Google Drive mutation, OAuth login,
@@ -343,6 +354,12 @@ passed 63 / 0 / 0, full Publisher unit coverage passed 553 / 0 / 0, Release
 build passed with warnings 0 / errors 0, format passed, and `git diff --check`
 passed. Current-state synchronization is documentation-only and records no new
 source or test change.
+
+Verification result recorded for P2-14: focused `CliApplicationTests` coverage
+passed 72 / 0 / 0, full Publisher unit coverage passed 568 / 0 / 0, Release
+build passed with warnings 0 / errors 0, format passed, and `git diff --check`
+passed. Commit `7df613d` is pushed to `origin/main`. Current-state
+synchronization is documentation-only and records no new source or test change.
 
 ### P2-12 Verification Evidence Extractor
 
@@ -423,15 +440,16 @@ Completed Avast-independent hardening / enhancements:
 - P2-10.
 - P2-12.
 - P2-13.
+- P2-14.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-13: dry-run failure boundary hints derived from the deferred P2-03-D
-  candidate; narrow local-only implementation complete in commit `91d3969`
-  with optional `failureBoundary` output limited to dry-run final failure
-  summaries, allow-listed boundary labels only, focused `CliApplicationTests`
-  coverage, and no stdout, exit-code, dry-run semantic, public API, persisted
-  schema, Google, OAuth, package, release, vendor-clearance, Avast, or flagged
+- P2-14: `maxAttempts` retry diagnostics derived from the deferred P2-02-D
+  candidate; narrow local-only implementation complete in commit `7df613d`
+  with numeric `maxAttempts` output limited to final failure summaries when
+  retry diagnostics are safely known, focused `CliApplicationTests` coverage,
+  and no stdout, exit-code, retry-behavior, public API, persisted schema,
+  Google, OAuth, package, release, vendor-clearance, Avast, or flagged
   executable operation.
 
 ## Vendor-Clearance Boundary
