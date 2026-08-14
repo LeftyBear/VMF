@@ -457,6 +457,17 @@ and does not perform release, tag, publication, package, `dist`, GitHub asset,
 Live E2E, Google Docs / Drive, OAuth/token-store, Avast, vendor, or
 flagged-executable operations.
 
+P2-17 CHANGELOG draft helper evaluation is design-complete as a docs-only /
+local-only investigation. It records that a future helper may be acceptable
+only as draft-only output derived from the existing P2-04 allow-listed
+release-note draft boundary. It does not implement a helper, edit
+`CHANGELOG.md`, generate or update release notes, infer release approval,
+release authorization, publication authorization, risk acceptance, vendor
+clearance, Avast false-positive resolution, or Avast safety certification, and
+does not perform release, tag, publication, package, `dist`, GitHub asset, Live
+E2E, Google Docs / Drive, OAuth/token-store, Avast, vendor, flagged-executable,
+stage, commit, or push operations.
+
 ## 12. Publisher Avast Response Intake Template
 
 `Publisher_AvastResponseIntakeTemplate.md` defines a safe intake record for a
