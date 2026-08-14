@@ -961,6 +961,7 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
                 ? result.ConfigurationCategory
                 : null,
             ["attemptCount"] = result.Succeeded ? null : result.RetryDiagnostics?.AttemptCount,
+            ["maxAttempts"] = result.Succeeded ? null : result.RetryDiagnostics?.MaxAttempts,
             ["retryable"] = result.Succeeded ? null : result.RetryDiagnostics?.Retryable,
             ["failureBoundary"] = FailureBoundary(result),
             ["documentId"] = result.DocumentId,
@@ -1186,7 +1187,7 @@ internal sealed record CliResult(
         new(exitCode, code, message, classification, null, null, exceptionType, configurationCategory, retryDiagnostics);
 }
 
-internal sealed record RetryDiagnostics(int AttemptCount, bool Retryable);
+internal sealed record RetryDiagnostics(int AttemptCount, int MaxAttempts, bool Retryable);
 
 internal enum ErrorClassification
 {

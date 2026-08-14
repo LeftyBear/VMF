@@ -688,13 +688,13 @@ public sealed class CliApplicationTests
                 "TRANSIENT_FAILURE",
                 "A transient external service error occurred.",
                 ErrorClassification.Transient,
-                retryDiagnostics: new RetryDiagnostics(3, true)),
+                retryDiagnostics: new RetryDiagnostics(3, 5, true)),
             TimeSpan.FromMilliseconds(25));
 
         var summary = LastJsonLine(capture.Error);
         Assert.Equal(3, summary.GetProperty("attemptCount").GetInt32());
+        Assert.Equal(5, summary.GetProperty("maxAttempts").GetInt32());
         Assert.True(summary.GetProperty("retryable").GetBoolean());
-        Assert.False(summary.TryGetProperty("maxAttempts", out _));
         Assert.False(summary.TryGetProperty("deliveryState", out _));
         Assert.False(summary.TryGetProperty("httpStatus", out _));
         Assert.False(summary.TryGetProperty("SUPPORT_SUMMARY", out _));
@@ -719,6 +719,7 @@ public sealed class CliApplicationTests
 
         var summary = LastJsonLine(capture.Error);
         Assert.False(summary.TryGetProperty("attemptCount", out _));
+        Assert.False(summary.TryGetProperty("maxAttempts", out _));
         Assert.False(summary.TryGetProperty("retryable", out _));
     }
 
