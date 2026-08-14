@@ -320,13 +320,17 @@ The vNext hardening backlog includes:
 - P2 vNext enhancements: Google Picker plus `drive.file` reconsideration,
   diagnostics, dry-run output, release-note generation, OAuth Desktop
   documentation, managed-document readback reporting, release-note drift
-  checking, and configuration failure summary classification.
+  checking, configuration failure summary classification, and safe retry
+  diagnostics.
 
 P2-02 additional diagnostics is complete for the narrow local-only A/B
-implementation and closeout scope. Retry/delivery metadata and
-`SUPPORT_SUMMARY` remain deferred and unimplemented. The later P2-09
-configuration failure summary classification item completes the formerly
-deferred `configurationCategory` summary field only.
+implementation and closeout scope. The later P2-09 configuration failure
+summary classification item completes the formerly deferred
+`configurationCategory` summary field only. P2-10 completes the narrow
+P2-02-D safe retry diagnostics subset for `attemptCount` and `retryable` in
+structured stderr final failure summaries only. `maxAttempts`,
+`deliveryState`, `httpStatus`, and `SUPPORT_SUMMARY` remain deferred and
+unimplemented.
 
 P2-03 clearer dry-run output is complete for the narrow local-only A/B
 implementation scope. P2-03-C structured dry-run output contract, P2-03-D
@@ -371,6 +375,20 @@ values, credentials, token-store paths, local sensitive paths, provider
 payloads, raw exceptions, or stack traces, and does not perform release, tag,
 publication, package, `dist`, GitHub asset, Live E2E, Google Docs / Drive,
 OAuth/token-store, Avast, vendor, flagged-executable, stage, commit, or push
+operations.
+
+P2-10 safe retry diagnostics is complete as a narrow local-only implementation
+in commit `871ece5`. It adds only the allow-listed numeric / boolean fields
+`attemptCount` and `retryable` to structured stderr final failure summaries
+when retry diagnostics are safely known. Unknown retry diagnostics and success
+summaries omit both fields. Focused `CliApplicationTests` coverage passed
+63 / 0 / 0, full Publisher unit coverage passed 553 / 0 / 0, Release build
+passed with warnings 0 / errors 0, format passed, and `git diff --check`
+passed. This synchronization does not add `maxAttempts`, `deliveryState`,
+`httpStatus`, or `SUPPORT_SUMMARY`; does not change classification, exit code,
+stdout, Frozen specifications, public APIs, or persisted schemas; and does not
+perform release, tag, publication, package, `dist`, GitHub asset, Live E2E,
+Google Docs / Drive, OAuth/token-store, Avast, vendor, or flagged-executable
 operations.
 
 ## 12. Publisher Avast Response Intake Template

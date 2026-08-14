@@ -145,6 +145,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-07 | Implement narrow managed-document readback reporting from the P2-06 design evaluation. | P2 | P2-06 found that readback state is safety-critical but under-reported in operator-facing diagnostics; a narrow implementation can improve clarity without changing readback semantics. | `Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`; explicit implementation task authorization; focused unit tests before broader verification. | Improves future verification clarity while preserving separation from publication success, release clearance, package approval, vendor clearance, and Avast safety certification. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-08 | Implement the release-note drift checker selected after P2-07 closeout. | P2 | Bounded local drift checking reduces release-note ambiguity without rewriting approved release notes or promoting gated decisions. | `Publisher_P2-08_CandidateSelection.md`; P2-04 allow-listed source-field boundary; commit `75be0fc`. | Keeps vNext release-note review local-only while preserving release, Google, OAuth, package, vendor-clearance, and Avast boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-09 | Implement allow-listed configuration failure summary classification. | P2 | The P2-02 deferred `configurationCategory` field improves local troubleshooting while preserving safe diagnostic boundaries. | Existing stable `CONFIG_*` codes; P2-02 allow-listed category boundary; commit `d7c761d`. | Adds bounded local failure summary context without exposing configuration values or changing release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
+| P2-10 | Implement safe retry diagnostics for final failure summaries. | P2 | The P2-02-D deferred retry diagnostics subset improves local troubleshooting while preserving safe diagnostic boundaries. | Existing retry/failure classification; P2-02-D allow-listed retry metadata boundary; commit `871ece5`. | Adds bounded local failure summary context without changing retry behavior, release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
 
 ### P2-07 Managed-Document Readback Reporting Implementation
 
@@ -287,6 +288,60 @@ Verification result recorded for P2-09: focused `CliApplicationTests` coverage
 was added with the implementation in commit `d7c761d`. Current-state
 synchronization is documentation-only and records no new source or test change.
 
+### P2-10 Safe Retry Diagnostics
+
+P2-10 is the completed narrow local-only implementation of the P2-02-D safe
+retry diagnostics subset. Commit `871ece5` adds only `attemptCount` and
+`retryable` to structured stderr final failure summaries when retry diagnostics
+are safely known.
+
+Completed implementation scope:
+
+- emit `attemptCount` as numeric allow-listed metadata;
+- emit `retryable` as boolean allow-listed metadata;
+- emit both fields only on final failure summaries when retry diagnostics are
+  safely known;
+- omit both fields from unknown retry diagnostics and success summaries;
+- preserve classification, exit-code behavior, stdout compatibility, Frozen
+  specifications, public APIs, and persisted schemas.
+
+Deferred scope:
+
+- `maxAttempts`;
+- `deliveryState`;
+- `httpStatus`;
+- `SUPPORT_SUMMARY`.
+
+Safe-value boundary:
+
+- allowed values are bounded numeric and boolean retry diagnostic metadata;
+- prohibited values include raw exception messages, stack traces, raw HTTP
+  bodies, provider payloads, local paths, raw URLs, private URLs, credentials,
+  token-store paths, OAuth tokens, cookies, Authorization headers, usernames,
+  hostnames, and account identifiers;
+- safe retry diagnostics remain local troubleshooting evidence only and must
+  not be represented as release approval, package approval, publication
+  approval, vendor clearance, Avast safety certification, or future operation
+  authorization.
+
+Non-goals:
+
+- no `maxAttempts`, `deliveryState`, `httpStatus`, `SUPPORT_SUMMARY`, richer
+  diagnostic payload, public API change, persisted schema change, OAuth scope
+  change, authentication architecture change, dependency addition, release
+  record change, package identity change, publication-flow change, retry-policy
+  behavior change, classification change, exit-code change, or stdout change;
+- no release, tag, publication, package or `dist` update, GitHub asset
+  operation, Live E2E, Google Docs mutation, Google Drive mutation, OAuth login,
+  token-store read/write/delete/cleanup/reuse, Avast operation, vendor
+  clearance judgment, or flagged executable re-run.
+
+Verification result recorded for P2-10: focused `CliApplicationTests` coverage
+passed 63 / 0 / 0, full Publisher unit coverage passed 553 / 0 / 0, Release
+build passed with warnings 0 / errors 0, format passed, and `git diff --check`
+passed. Current-state synchronization is documentation-only and records no new
+source or test change.
+
 ## Dependency Split
 
 Avast-response dependent:
@@ -313,15 +368,16 @@ Completed Avast-independent hardening / enhancements:
 - P2-07.
 - P2-08.
 - P2-09.
+- P2-10.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-09: configuration failure summary classification derived from the
-  deferred P2-02 `configurationCategory` candidate; narrow local-only
-  implementation complete in commit `d7c761d` with allow-listed categories
-  `cli`, `googleApi`, `publisher`, and `unknown`, focused `CliApplicationTests`
-  coverage for mapping and omission behavior, and no release, Google, OAuth,
-  package, vendor-clearance, or Avast operation.
+- P2-10: safe retry diagnostics derived from the deferred P2-02-D retry
+  diagnostics candidate; narrow local-only implementation complete in commit
+  `871ece5` with `attemptCount` / `retryable` only in structured stderr final
+  failure summaries, omission from unknown and success summaries, focused
+  `CliApplicationTests` coverage, and no release, Google, OAuth, package,
+  vendor-clearance, or Avast operation.
 
 ## Vendor-Clearance Boundary
 
