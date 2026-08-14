@@ -526,6 +526,115 @@ internal sealed record ReleaseNoteDriftCheckResult(
     IReadOnlyList<ReleaseNoteDraftDiagnostic> Diagnostics,
     bool HasBlockingDrift);
 
+/// <summary>Builds one local-only CHANGELOG candidate bullet from an assembled release-note draft.</summary>
+internal sealed class ReleaseNoteChangelogDraftHelper
+{
+    private const string DraftPrefix = "DRAFT ONLY - derived documentation: ";
+
+    /// <summary>Creates a bounded draft bullet without editing CHANGELOG.md.</summary>
+    /// <param name="request">The CHANGELOG draft request.</param>
+    /// <returns>The draft bullet result.</returns>
+    public ReleaseNoteChangelogDraftResult CreateBullet(ReleaseNoteChangelogDraftRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var blockingDiagnostics = request.Draft.Diagnostics
+            .Where(IsBlockingDiagnostic)
+            .ToList();
+        var blockingFields = request.Draft.Fields
+            .Where(field => field.Status is not ReleaseNoteDraftFieldStatus.Recorded)
+            .ToList();
+
+        if (request.Draft.HasBlockingConflict || blockingDiagnostics.Count > 0 || blockingFields.Count > 0)
+        {
+            return new ReleaseNoteChangelogDraftResult(
+                string.Empty,
+                blockingFields,
+                blockingDiagnostics,
+                IsDraftAvailable: false);
+        }
+
+        var version = FieldValue(request.Draft, "version");
+        var tag = FieldValue(request.Draft, "tag");
+        var releaseStatus = FieldValue(request.Draft, "release status");
+        var verification = FieldValue(request.Draft, "verification");
+
+        if (string.IsNullOrWhiteSpace(version) || string.IsNullOrWhiteSpace(releaseStatus))
+        {
+            return new ReleaseNoteChangelogDraftResult(
+                string.Empty,
+                request.Draft.Fields
+                    .Where(field => field.Name is "version" or "release status")
+                    .ToList(),
+                request.Draft.Diagnostics,
+                IsDraftAvailable: false);
+        }
+
+        var builder = new StringBuilder();
+        builder.Append("- ");
+        builder.Append(DraftPrefix);
+        builder.Append(Sanitize(version));
+
+        if (!string.IsNullOrWhiteSpace(tag))
+        {
+            builder.Append(" (");
+            builder.Append(Sanitize(tag));
+            builder.Append(')');
+        }
+
+        builder.Append(" - ");
+        builder.Append(Sanitize(releaseStatus));
+
+        if (!string.IsNullOrWhiteSpace(verification))
+        {
+            builder.Append("; verification ");
+            builder.Append(Sanitize(verification));
+        }
+
+        var sourcePaths = request.Draft.Fields
+            .SelectMany(field => field.SourcePaths)
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+        if (sourcePaths.Count > 0)
+        {
+            builder.Append("; sources: ");
+            builder.Append(string.Join(", ", sourcePaths.Select(Sanitize)));
+        }
+
+        return new ReleaseNoteChangelogDraftResult(
+            builder.ToString(),
+            [],
+            request.Draft.Diagnostics,
+            IsDraftAvailable: true);
+    }
+
+    private static bool IsBlockingDiagnostic(ReleaseNoteDraftDiagnostic diagnostic) =>
+        diagnostic.Kind is ReleaseNoteDraftDiagnosticKind.Missing
+            or ReleaseNoteDraftDiagnosticKind.Conflict
+            or ReleaseNoteDraftDiagnosticKind.HistoricalNotPromoted
+            or ReleaseNoteDraftDiagnosticKind.SensitiveValueExcluded
+            or ReleaseNoteDraftDiagnosticKind.UnmanifestedField
+            or ReleaseNoteDraftDiagnosticKind.SourceKindNotPermitted;
+
+    private static string? FieldValue(ReleaseNoteDraftResult draft, string fieldName) =>
+        draft.Fields
+            .SingleOrDefault(field => StringComparer.OrdinalIgnoreCase.Equals(field.Name, fieldName))
+            ?.Value;
+
+    private static string Sanitize(string value) =>
+        value.ReplaceLineEndings(" ").Replace("|", "/", StringComparison.Ordinal).Trim();
+}
+
+/// <summary>Input for a local-only CHANGELOG draft bullet.</summary>
+internal sealed record ReleaseNoteChangelogDraftRequest(ReleaseNoteDraftResult Draft);
+
+/// <summary>The local-only CHANGELOG draft bullet and review diagnostics.</summary>
+internal sealed record ReleaseNoteChangelogDraftResult(
+    string Bullet,
+    IReadOnlyList<ReleaseNoteDraftField> BlockingFields,
+    IReadOnlyList<ReleaseNoteDraftDiagnostic> Diagnostics,
+    bool IsDraftAvailable);
+
 /// <summary>Extracts normalized verification evidence rows from allow-listed Markdown records.</summary>
 internal sealed class ReleaseNoteVerificationEvidenceExtractor
 {

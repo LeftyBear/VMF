@@ -468,6 +468,20 @@ does not perform release, tag, publication, package, `dist`, GitHub asset, Live
 E2E, Google Docs / Drive, OAuth/token-store, Avast, vendor, flagged-executable,
 stage, commit, or push operations.
 
+P2-17 CHANGELOG draft helper implementation is complete as a narrow local-only
+implementation in
+`docs/development/Publisher_P2-17_CHANGELOGDraftHelperImplementationScope.md`.
+It adds an internal Publisher Application helper that returns one draft-only
+candidate CHANGELOG bullet from an assembled P2-04 allow-listed release-note
+draft result. Focused `ReleaseNote` unit coverage passed 39 / 0 / 0, full
+Publisher unit coverage passed 575 / 0 / 0, Release build passed with warnings
+0 / errors 0, format passed, and `git diff --check` passed with CRLF conversion
+warnings only. This implementation does not edit `CHANGELOG.md`, generate or
+update approved release notes, change Frozen specifications, public APIs,
+persisted schemas, release records, package identity, publication state, Google
+Docs / Drive behavior, OAuth/token-store state, Avast state, vendor-clearance
+state, or flagged-executable status. Commit and push remain separate gates.
+
 ## 12. Publisher Avast Response Intake Template
 
 `Publisher_AvastResponseIntakeTemplate.md` defines a safe intake record for a
