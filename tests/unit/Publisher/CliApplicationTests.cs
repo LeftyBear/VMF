@@ -33,6 +33,7 @@ public sealed class CliApplicationTests
         Assert.Contains(lines, line => line.GetProperty("code").GetString() == "COMMAND_COMPLETED");
         AssertCommandStartedShape(lines, 1, true, "none");
         AssertInvocationShapeFieldsOnlyOnCommandStarted(lines);
+        AssertSupportSummaryFieldsOnlyOnFinalFailureSummary(lines);
     }
 
     [Fact]
@@ -60,6 +61,7 @@ public sealed class CliApplicationTests
             AssertLastSafeOperationFieldsOnlyOnFinalSummary(JsonLines(capture.Error));
             AssertCommandStartedShape(JsonLines(capture.Error), 2, true, "verify-optional-markdown-path");
             AssertInvocationShapeFieldsOnlyOnCommandStarted(JsonLines(capture.Error));
+            AssertSupportSummaryFieldsOnlyOnFinalFailureSummary(JsonLines(capture.Error));
 
             var report = LocalVerifyReport(capture.Error);
             Assert.Equal("localVerify", report.GetProperty("reportType").GetString());
@@ -494,6 +496,7 @@ public sealed class CliApplicationTests
         Assert.Equal("USAGE_ERROR", summary.GetProperty("code").GetString());
         Assert.Equal("usage", summary.GetProperty("failureBoundary").GetString());
         AssertFailureBoundaryFieldsOnlyOnDryRunFailureSummary(JsonLines(capture.Error));
+        AssertSupportSummaryFieldsOnlyOnFinalFailureSummary(JsonLines(capture.Error));
     }
 
     [Fact]
@@ -695,9 +698,27 @@ public sealed class CliApplicationTests
         Assert.Equal(3, summary.GetProperty("attemptCount").GetInt32());
         Assert.Equal(5, summary.GetProperty("maxAttempts").GetInt32());
         Assert.True(summary.GetProperty("retryable").GetBoolean());
+        var supportSummary = summary.GetProperty("SUPPORT_SUMMARY");
+        Assert.Equal("TRANSIENT_FAILURE", supportSummary.GetProperty("resultCode").GetString());
+        Assert.Equal("Transient", supportSummary.GetProperty("classification").GetString());
+        Assert.Equal(75, supportSummary.GetProperty("exitCode").GetInt32());
+        Assert.Equal("publish", supportSummary.GetProperty("command").GetString());
+        Assert.Equal("publish", supportSummary.GetProperty("phase").GetString());
+        Assert.Equal("summary", supportSummary.GetProperty("operation").GetString());
+        Assert.Equal(
+            "A transient external service error occurred.",
+            supportSummary.GetProperty("safeMessage").GetString());
+        Assert.Equal(3, supportSummary.GetProperty("attemptCount").GetInt32());
+        Assert.Equal(5, supportSummary.GetProperty("maxAttempts").GetInt32());
+        Assert.True(supportSummary.GetProperty("retryable").GetBoolean());
+        Assert.Equal("not-applicable", supportSummary.GetProperty("readbackStatus").GetString());
+        Assert.Equal(
+            "managed-document-readback-only",
+            supportSummary.GetProperty("readbackEvidenceBoundary").GetString());
         Assert.False(summary.TryGetProperty("deliveryState", out _));
         Assert.False(summary.TryGetProperty("httpStatus", out _));
-        Assert.False(summary.TryGetProperty("SUPPORT_SUMMARY", out _));
+        Assert.False(supportSummary.TryGetProperty("deliveryState", out _));
+        Assert.False(supportSummary.TryGetProperty("httpStatus", out _));
         Assert.DoesNotContain("https://", capture.Error, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(@"C:\secret", capture.Error, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Authorization", capture.Error, StringComparison.OrdinalIgnoreCase);
@@ -857,6 +878,7 @@ public sealed class CliApplicationTests
         Assert.False(summary.TryGetProperty("configurationCategory", out _));
         Assert.False(summary.TryGetProperty("attemptCount", out _));
         Assert.False(summary.TryGetProperty("retryable", out _));
+        Assert.False(summary.TryGetProperty("SUPPORT_SUMMARY", out _));
         Assert.Equal(
             "https://docs.google.com/document/d/document-id/edit",
             summary.GetProperty("documentUrl").GetString());
@@ -1004,6 +1026,17 @@ public sealed class CliApplicationTests
                 line.TryGetProperty("exitCode", out var exitCode) &&
                 exitCode.GetInt32() != 0;
             Assert.Equal(isDryRunFailureSummary, line.TryGetProperty("failureBoundary", out _));
+        }
+    }
+
+    private static void AssertSupportSummaryFieldsOnlyOnFinalFailureSummary(IEnumerable<JsonElement> lines)
+    {
+        foreach (var line in lines)
+        {
+            var isFinalFailureSummary = line.GetProperty("operation").GetString() == "summary" &&
+                line.TryGetProperty("exitCode", out var exitCode) &&
+                exitCode.GetInt32() != 0;
+            Assert.Equal(isFinalFailureSummary, line.TryGetProperty("SUPPORT_SUMMARY", out _));
         }
     }
 

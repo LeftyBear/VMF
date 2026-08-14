@@ -979,6 +979,7 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             ["lastPhase"] = lastPhase,
             ["lastOperation"] = lastOperation,
             ["lastEventCode"] = lastEventCode,
+            ["SUPPORT_SUMMARY"] = SupportSummary(result),
         });
 
     internal void LocalVerifyReport(LocalVerifyReport report) =>
@@ -1074,6 +1075,54 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             ErrorClassification.Internal => "internal",
             _ => "unknown",
         };
+    }
+
+    private Dictionary<string, object?>? SupportSummary(CliResult result)
+    {
+        if (result.Succeeded)
+        {
+            return null;
+        }
+
+        var supportSummary = new Dictionary<string, object?>
+        {
+            ["resultCode"] = result.Code,
+            ["classification"] = result.Classification.ToString(),
+            ["exitCode"] = result.ExitCode,
+            ["command"] = command,
+            ["phase"] = SummaryPhase(),
+            ["operation"] = "summary",
+            ["safeMessage"] = result.Message,
+            ["lastPhase"] = lastPhase,
+            ["lastOperation"] = lastOperation,
+            ["lastEventCode"] = lastEventCode,
+            ["readbackStatus"] = ReadbackStatus(result),
+            ["readbackPhase"] = ReadbackPhase(result),
+            ["readbackEvidenceBoundary"] = "managed-document-readback-only",
+        };
+
+        if (result.Classification == ErrorClassification.Configuration &&
+            result.ConfigurationCategory is not null)
+        {
+            supportSummary["configurationCategory"] = result.ConfigurationCategory;
+        }
+
+        if (result.RetryDiagnostics is not null)
+        {
+            supportSummary["attemptCount"] = result.RetryDiagnostics.AttemptCount;
+            supportSummary["maxAttempts"] = result.RetryDiagnostics.MaxAttempts;
+            supportSummary["retryable"] = result.RetryDiagnostics.Retryable;
+        }
+
+        var failureBoundary = FailureBoundary(result);
+        if (failureBoundary is not null)
+        {
+            supportSummary["failureBoundary"] = failureBoundary;
+        }
+
+        return supportSummary
+            .Where(pair => pair.Value is not null)
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
     }
 
     private static string WarningPhase(string code) => code switch
