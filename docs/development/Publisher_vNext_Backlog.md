@@ -137,7 +137,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | ID | Item | Priority | Rationale | Prerequisite | Release safety impact | State |
 | --- | --- | --- | --- | --- | --- | --- |
 | P2-01 | Evaluate whether Google Picker plus `drive.file` least-privilege routing should be adopted by a future scoped design task. | P2 | Least-privilege routing may reduce future operator risk, but it is not required for current release follow-up. | `Publisher_P2-01_GooglePickerDriveFileEvaluation.md`; `Publisher_P2-01_OAuthDesktopScopeBoundaryEvaluation.md`; future scoped design and adoption record before implementation. | Potential future credential and Drive-access risk reduction. | Design complete / implementation decision pending. |
-| P2-02 | Evaluate additional Publisher diagnostics that improve troubleshooting without changing published document semantics. | P2 | Diagnostics may improve supportability but must preserve published document behavior. | P2-02-A / P2-02-B narrow local-only implementation and closeout record. | Improves local troubleshooting with no release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Complete / A and B implemented; C, D, and E deferred. |
+| P2-02 | Evaluate additional Publisher diagnostics that improve troubleshooting without changing published document semantics. | P2 | Diagnostics may improve supportability but must preserve published document behavior. | P2-02-A / P2-02-B narrow local-only implementation and closeout record; follow-on P2-09, P2-10, P2-14, and P2-16 completions. | Improves local troubleshooting with no release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Complete / A, B, C, E, and the narrow retry subset of D implemented; `deliveryState` and `httpStatus` deferred. |
 | P2-03 | Evaluate clearer dry-run output for Google Docs publication planning. | P2 | Better dry-run output may reduce operator error in future Google Docs workflows. | `Publisher_P2-03_ClearerDryRunOutputEvaluation.md`; P2-03-A / P2-03-B narrow local-only implementation and closeout record. | Potential future planning clarity; no current clearance effect. | Complete / A and B implemented; C, D, and E deferred. |
 | P2-04 | Evaluate richer release-note generation from existing verification records. | P2 | Automation could reduce documentation drift, but it is not required for the next release-path gate. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; future scoped implementation decision. | Potential future traceability improvement. | Complete / A, B, C, and D implemented; E deferred. |
 | P2-05 | Evaluate documentation improvements for OAuth Desktop setup and token-store handling. | P2 | Guidance may reduce authentication confusion, but token-store operations remain prohibited unless separately authorized. | `Publisher_P2-05_OAuthDesktopTokenStoreDocumentationEvaluation.md`; docs-only implementation in installation and Live E2E guidance. | Reduces future credential-handling ambiguity without changing OAuth scope, authentication architecture, Google, package, release, or vendor-clearance gates. | Complete / docs-only guidance synchronized. |
@@ -149,6 +149,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-12 | Implement the P2-04-C verification evidence extractor. | P2 | Normalizing allow-listed verification evidence rows reduces release-note drift without inferring approval or gated operation state. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; P2-04 allow-listed source-field boundary; commit `f6c7d08`. | Keeps release-note evidence extraction local-only while preserving release, Google, OAuth, package, vendor-clearance, Avast, and `deliveryState` deferred boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-13 | Implement dry-run failure boundary hints selected after P2-12 closeout. | P2 | Bounded failure-boundary hints can reduce dry-run troubleshooting ambiguity by reusing existing CLI classifications and safe diagnostic routing. | `Publisher_P2-13_CandidateSelection.md`; P2-03-D failure-boundary hint boundary; commit `91d3969`. | Keeps dry-run troubleshooting local-only while preserving dry-run semantics, stdout, exit codes, Google, OAuth, package, release, vendor-clearance, and Avast boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-14 | Implement maxAttempts retry diagnostics for final failure summaries. | P2 | The remaining low-risk P2-02-D retry budget field improves local troubleshooting while preserving safe diagnostic boundaries. | Existing retry diagnostics boundary; explicit narrow implementation authorization; commit `7df613d`. | Adds bounded local failure summary context without changing retry policy, release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
+| P2-16 | Implement support summary diagnostics for final failure summaries. | P2 | The deferred P2-02-E `SUPPORT_SUMMARY` field can improve supportability as a compact reconstruction of existing CLI-safe final summary fields. | Existing CLI final summary fields; explicit narrow implementation authorization; commit `d61fd00`. | Adds bounded local failure summary context without changing release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
 
 ### P2-07 Managed-Document Readback Reporting Implementation
 
@@ -322,8 +323,7 @@ Subsequent P2-14 completed implementation scope:
 Deferred scope:
 
 - `deliveryState`;
-- `httpStatus`;
-- `SUPPORT_SUMMARY`.
+- `httpStatus`.
 
 Safe-value boundary:
 
@@ -339,7 +339,7 @@ Safe-value boundary:
 
 Non-goals:
 
-- no `deliveryState`, `httpStatus`, `SUPPORT_SUMMARY`, richer diagnostic
+- no `deliveryState`, `httpStatus`, richer diagnostic
   payload, public API change, persisted schema change, OAuth scope change,
   authentication architecture change, dependency addition, release record
   change, package identity change, publication-flow change, retry-policy
@@ -360,6 +360,62 @@ passed 72 / 0 / 0, full Publisher unit coverage passed 568 / 0 / 0, Release
 build passed with warnings 0 / errors 0, format passed, and `git diff --check`
 passed. Commit `7df613d` is pushed to `origin/main`. Current-state
 synchronization is documentation-only and records no new source or test change.
+
+### P2-16 Support Summary Diagnostics
+
+P2-16 is the completed narrow local-only implementation of the P2-02-E
+`SUPPORT_SUMMARY` support summary field. Commit `d61fd00` adds the nested
+field only to structured stderr final failure summaries by reconstructing
+already available CLI-safe final summary fields.
+
+Completed implementation scope:
+
+- emit `SUPPORT_SUMMARY` only on final failure summaries;
+- omit `SUPPORT_SUMMARY` from success summaries;
+- reuse existing CLI-safe fields only, including result code, classification,
+  exit code, command, phase, operation, safe message, adopted P2-02 fields,
+  retry diagnostics when already known, failure boundary when already known,
+  and readback safe status fields;
+- preserve classification, exit-code behavior, stdout compatibility, retry
+  behavior, Frozen specifications, Application and Domain behavior, public
+  APIs, interfaces, and persisted schemas.
+
+Deferred scope:
+
+- `deliveryState`;
+- `httpStatus`.
+
+Safe-value boundary:
+
+- allowed values are existing bounded CLI-safe final summary values only;
+- prohibited values include raw exception messages, stack traces, raw HTTP
+  bodies, provider payloads, local paths, raw URLs, private URLs, credentials,
+  token-store paths, OAuth tokens, cookies, Authorization headers, usernames,
+  hostnames, and account identifiers;
+- support summary diagnostics remain local troubleshooting evidence only and
+  must not be represented as release approval, package approval, publication
+  approval, vendor clearance, Avast safety certification, or future operation
+  authorization.
+
+Non-goals:
+
+- no `deliveryState`, `httpStatus`, richer diagnostic payload, public API
+  change, interface change, persisted schema change, OAuth scope change,
+  authentication architecture change, dependency addition, release record
+  change, package identity change, publication-flow change, retry-policy
+  behavior change, classification change, exit-code change, stdout change, or
+  Application / Domain behavior change;
+- no release, tag, publication, package or `dist` update, GitHub asset
+  operation, Live E2E, Google Docs mutation, Google Drive mutation, OAuth login,
+  token-store read/write/delete/cleanup/reuse, Avast operation, vendor
+  clearance judgment, or flagged executable re-run.
+
+Verification result recorded for P2-16: focused `CliApplicationTests` coverage
+passed 72 / 0 / 0, full Publisher unit coverage passed 568 / 0 / 0, Release
+build passed with warnings 0 / errors 0, format passed, `git diff --check`
+passed, commit `d61fd00` was created and pushed, and
+`HEAD == origin/main == d61fd00`. This current-state synchronization is
+documentation-only and records no new source or test change.
 
 ### P2-12 Verification Evidence Extractor
 
@@ -402,7 +458,7 @@ Non-goals:
   Avast operation, vendor-clearance judgment, flagged executable re-run, or
   external lookup;
 - no stdout, exit-code, CLI classification, Frozen specification, public API,
-  persisted schema, retry behavior, `deliveryState`, `SUPPORT_SUMMARY`,
+  persisted schema, retry behavior, `deliveryState`,
   OAuth scope, authentication architecture, or release-record change.
 
 Verification result recorded for P2-12: focused ReleaseNote unit coverage
@@ -441,16 +497,18 @@ Completed Avast-independent hardening / enhancements:
 - P2-12.
 - P2-13.
 - P2-14.
+- P2-16.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-14: `maxAttempts` retry diagnostics derived from the deferred P2-02-D
-  candidate; narrow local-only implementation complete in commit `7df613d`
-  with numeric `maxAttempts` output limited to final failure summaries when
-  retry diagnostics are safely known, focused `CliApplicationTests` coverage,
-  and no stdout, exit-code, retry-behavior, public API, persisted schema,
-  Google, OAuth, package, release, vendor-clearance, Avast, or flagged
-  executable operation.
+- P2-16: `SUPPORT_SUMMARY` support summary diagnostics derived from the
+  deferred P2-02-E candidate; narrow local-only implementation complete in
+  commit `d61fd00` with nested `SUPPORT_SUMMARY` output limited to final
+  failure summaries and reconstructed only from existing CLI-safe fields,
+  focused `CliApplicationTests` coverage, and no stdout, exit-code,
+  retry-behavior, Application / Domain behavior, public API, interface,
+  persisted schema, Google, OAuth, package, release, vendor-clearance, Avast,
+  or flagged executable operation.
 
 ## Vendor-Clearance Boundary
 

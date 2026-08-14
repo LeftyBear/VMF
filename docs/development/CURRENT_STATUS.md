@@ -330,8 +330,10 @@ summary classification item completes the formerly deferred
 `configurationCategory` summary field only. P2-10 completes the narrow
 P2-02-D safe retry diagnostics subset for `attemptCount` and `retryable` in
 structured stderr final failure summaries only. P2-14 subsequently completes
-the narrow `maxAttempts` final failure summary field. `deliveryState`,
-`httpStatus`, and `SUPPORT_SUMMARY` remain deferred and unimplemented.
+the narrow `maxAttempts` final failure summary field. P2-16 completes the
+narrow P2-02-E `SUPPORT_SUMMARY` final failure summary field as a
+CLI-internal reconstruction of existing safe summary fields only.
+`deliveryState` and `httpStatus` remain deferred and unimplemented.
 
 P2-03 clearer dry-run output is complete for the narrow local-only A/B
 implementation scope. P2-13 completes the formerly deferred P2-03-D failure
@@ -438,6 +440,21 @@ stdout, retry behavior, Frozen specifications, public APIs, or persisted
 schemas; and does not perform release, tag, publication, package, `dist`,
 GitHub asset, Live E2E, Google Docs / Drive, OAuth/token-store, Avast, vendor,
 or flagged-executable operations.
+
+P2-16 support summary diagnostics is complete as a narrow local-only
+implementation in commit `d61fd00`. It adds only the nested
+`SUPPORT_SUMMARY` field to structured stderr final failure summaries by
+reusing existing CLI-safe final summary fields. Success summaries omit the
+field. Focused `CliApplicationTests` coverage passed 72 / 0 / 0, full
+Publisher unit coverage passed 568 / 0 / 0, Release build passed with warnings
+0 / errors 0, format passed, `git diff --check` passed, commit completed, and
+the commit was pushed so `HEAD == origin/main == d61fd00`. This
+synchronization does not add `deliveryState` or `httpStatus`; does not change
+classification, exit code, stdout, retry behavior, Frozen specifications,
+Application or Domain behavior, public APIs, interfaces, or persisted schemas;
+and does not perform release, tag, publication, package, `dist`, GitHub asset,
+Live E2E, Google Docs / Drive, OAuth/token-store, Avast, vendor, or
+flagged-executable operations.
 
 ## 12. Publisher Avast Response Intake Template
 
