@@ -1,15 +1,14 @@
 # Publisher P2-18 Dry-Run Contract Shape Decision
 
-Status  : Design complete / contract shape fixed / implementation not authorized
+Status  : Complete / contract shape fixed and implemented by P2-03-C
 Scope   : Decide the structured dry-run contract shape for the deferred P2-03-C candidate
 Depends : docs/development/Publisher_P2-03_ClearerDryRunOutputEvaluation.md, docs/development/Publisher_vNext_Backlog.md, docs/development/CURRENT_STATUS.md, docs/architecture/ADR-0006-diagnostic-logging-and-safe-observability.md, docs/architecture/ADR-0007-error-handling-and-failure-classification.md, src/Publisher.Cli/Program.cs, tests/unit/Publisher/CliApplicationTests.cs
 
-This record is a design-only decision gate. It fixes the contract shape that a
-future P2-03-C implementation may use, but it does not authorize implementation.
-No code, tests, public APIs, persisted schemas, packages, `dist` artifacts,
-Google Docs, Google Drive, OAuth state, token stores, Live E2E, release state,
-publication state, Avast state, vendor-clearance state, stage, commit, or push
-operation is authorized by this record.
+This record began as a design-only decision gate. The selected contract shape
+was later implemented by P2-03-C in commit `6fb29bb`. The implementation did
+not modify public APIs, persisted schemas, packages, `dist` artifacts, Google
+Docs, Google Drive, OAuth state, token stores, Live E2E, release state,
+publication state, Avast state, or vendor-clearance state.
 
 ## 1. Purpose
 
@@ -45,7 +44,7 @@ field is derived from existing CLI classification and safe routing context.
 
 ## 3. Decision
 
-Future P2-03-C implementation should add a new structured stderr event:
+P2-03-C implementation adds a new structured stderr event:
 
 - event code: `DRY_RUN_SUMMARY`;
 - level: `info`;
@@ -56,10 +55,9 @@ Future P2-03-C implementation should add a new structured stderr event:
 - emission: success path only, after `DRY_RUN_PLAN` and before the final
   `DRY_RUN_SUCCEEDED` command summary.
 
-The implementation must keep the existing `DRY_RUN_PLAN` event unchanged except
-for any separately reviewed bug fix. `DRY_RUN_PLAN` remains the current local
-planning event. `DRY_RUN_SUMMARY` becomes the new machine-readable contract
-event for automation.
+The implementation keeps the existing `DRY_RUN_PLAN` event unchanged.
+`DRY_RUN_PLAN` remains the current local planning event. `DRY_RUN_SUMMARY`
+becomes the new machine-readable contract event for automation.
 
 The contract should be flat, not nested. This matches the existing Publisher
 diagnostic style for command events, minimizes parser changes, and avoids
@@ -107,7 +105,7 @@ fixed-template, value-free, and covered by sensitive-value exclusion tests.
 
 ## 5. Compatibility Rules
 
-Future implementation must preserve:
+The implementation preserves:
 
 - existing `dry-run <markdown-file>` command syntax;
 - existing stdout behavior;
@@ -126,7 +124,7 @@ contract.
 
 P2-18 does not add a new failure taxonomy.
 
-Future implementation must not create a separate dry-run failure classification
+The implementation does not create a separate dry-run failure classification
 system. Failure reporting remains governed by ADR-0007 classification and the
 existing P2-13 `failureBoundary` field on dry-run final failure summaries.
 
@@ -136,7 +134,7 @@ message, result code, and optional `failureBoundary`.
 
 ## 7. Value-Safe Allow-List
 
-Future implementation must emit only bounded, deterministic, value-safe fields.
+The implementation emits only bounded, deterministic, value-safe fields.
 
 It must not emit:
 
@@ -156,12 +154,9 @@ It must not emit:
 
 ## 8. Implementation GO/NO-GO
 
-Implementation readiness: GO after separate explicit implementation
-authorization.
+Implementation result: GO / complete in commit `6fb29bb`.
 
-Implementation remains not authorized by this design record.
-
-Implementation GO conditions:
+Implementation completed within these GO conditions:
 
 - add only the `DRY_RUN_SUMMARY` structured stderr success event;
 - keep the event flat and value-safe;
@@ -172,7 +167,7 @@ Implementation GO conditions:
 - add focused unit coverage for event presence, field values, ordering,
   compatibility, and sensitive-value exclusion.
 
-NO-GO conditions:
+NO-GO conditions remain in effect for any follow-on scope:
 
 - changing public APIs or persisted schemas;
 - changing command syntax, stdout, exit codes, or CLI classification;
@@ -188,9 +183,9 @@ NO-GO conditions:
 - adding dependencies;
 - staging, committing, or pushing without separate authorization.
 
-## 9. Verification Plan For Future Implementation
+## 9. Verification
 
-Required local-only verification for a future implementation:
+Completed local-only verification for commit `6fb29bb`:
 
 ```powershell
 dotnet test tests\unit\Publisher\Vmf.Publisher.UnitTests.csproj --configuration Release --no-restore --filter "FullyQualifiedName~CliApplicationTests"
@@ -213,7 +208,7 @@ Prohibited verification:
 
 ## 10. Decision Summary
 
-P2-18 fixes the contract shape as:
+P2-18 fixed and P2-03-C implemented the contract shape as:
 
 - new `DRY_RUN_SUMMARY`, not expanded `DRY_RUN_PLAN`;
 - flat fields, not nested objects;
@@ -221,5 +216,5 @@ P2-18 fixes the contract shape as:
 - value-safe allow-list only;
 - no failure taxonomy expansion.
 
-The next step is a separate implementation authorization decision. Until that
-authorization exists, P2-03-C remains deferred for implementation.
+P2-03-C implementation is complete. P2-03-E physical update dry-run bridge
+remains deferred and requires a separate future scope.

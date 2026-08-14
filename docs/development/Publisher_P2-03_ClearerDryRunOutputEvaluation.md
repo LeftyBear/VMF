@@ -1,6 +1,6 @@
 # Publisher P2-03 Clearer Dry-Run Output Evaluation
 
-Status  : COMPLETE / P2-03-A and P2-03-B implemented; P2-03-C, P2-03-D, and P2-03-E deferred
+Status  : COMPLETE / P2-03-A, P2-03-B, P2-03-C, and P2-03-D implemented; P2-03-E deferred
 Scope   : Evaluate clearer local dry-run output for Google Docs publication planning without changing dry-run semantics
 Depends : docs/architecture/ADR-0004-verified-state-and-differential-update-safety.md, docs/architecture/ADR-0006-diagnostic-logging-and-safe-observability.md, docs/architecture/ADR-0007-error-handling-and-failure-classification.md, docs/development/Publisher_Phase4-2-1_DiagnosticLoggingSpecification.md, docs/development/Publisher_v1.0_Implementation_Voyage_Log.md, docs/development/Publisher_vNext_Backlog.md
 
@@ -308,11 +308,12 @@ Prohibited verification:
 Decision: COMPLETE for P2-03 as a whole.
 
 P2-03-A and P2-03-B were completed as a narrow local-only implementation.
-P2-03-C, P2-03-D, and P2-03-E remain deferred / unimplemented and are not
-required for P2-03 completion.
+P2-03-C and P2-03-D were completed later as separate scoped implementations.
+P2-03-E remains deferred / unimplemented and is not required for P2-03
+completion.
 
 Recommendation for the implemented scope: GO / close P2-03. Any future work on
-P2-03-C, P2-03-D, or P2-03-E must start as a separate scoped task.
+P2-03-E must start as a separate scoped task.
 
 Conditions for GO:
 
@@ -327,8 +328,8 @@ Conditions for GO:
 
 NO-GO for this current task:
 
-- do not proceed with P2-03-C, P2-03-D, or P2-03-E without a separate scoped
-  implementation decision;
+- do not proceed with P2-03-E without a separate scoped implementation
+  decision;
 - stop if any improvement requires public API changes, raw provider detail,
   credential or path inspection, external service mutation, package/release
   activity, or Verified State semantic changes.
@@ -342,10 +343,15 @@ Completed implementation scope:
 - P2-03-B: compact human-readable dry-run plan summary derived from local
   compiled publish steps.
 
+Completed follow-on scope after the original A/B closeout:
+
+- P2-03-C: structured dry-run output contract implemented by P2-18 / commit
+  `6fb29bb` as a new flat, success-only `DRY_RUN_SUMMARY` structured stderr
+  event that preserves `DRY_RUN_PLAN` compatibility.
+- P2-03-D: failure boundary hints implemented by P2-13 / commit `91d3969`.
+
 Deferred scope:
 
-- P2-03-C: structured dry-run output contract.
-- P2-03-D: failure boundary hints.
 - P2-03-E: physical update dry-run bridge.
 
 Recorded verification for the completed A/B implementation:

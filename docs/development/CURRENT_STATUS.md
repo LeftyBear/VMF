@@ -343,18 +343,24 @@ P2-13 adds the optional `failureBoundary` field only to dry-run final failure
 summaries, derives the value from existing CLI classification / safe routing
 context, and restricts output to the allow-listed labels `usage`,
 `configuration`, `input`, `compile`, `cancellation`, `internal`, and
-`unknown`. P2-03-C structured dry-run output contract and P2-03-E physical
-update dry-run bridge remain deferred and unimplemented. It does not treat
-dry-run as Live E2E, Google verification, publication authorization, release
-clearance, vendor clearance, or Avast safety certification.
+`unknown`. P2-03-C structured dry-run output contract is complete as a narrow
+CLI-only implementation in commit `6fb29bb`. P2-03-C adds a new flat,
+success-only `DRY_RUN_SUMMARY` structured stderr event after `DRY_RUN_PLAN` and
+before the final `DRY_RUN_SUCCEEDED` summary, while preserving `DRY_RUN_PLAN`
+compatibility, stdout, exit codes, CLI classification, failure taxonomy, public
+APIs, persisted schemas, Google/OAuth behavior, Verified State semantics,
+release/package state, vendor-clearance state, and Avast state. P2-03-E
+physical update dry-run bridge remains deferred and unimplemented. Dry-run
+does not count as Live E2E, Google verification, publication authorization,
+release clearance, vendor clearance, or Avast safety certification.
 
-P2-18 structured dry-run contract shape decision is design-complete and fixes
-the future P2-03-C shape as a new flat `DRY_RUN_SUMMARY` structured stderr
-success event, not an expansion of `DRY_RUN_PLAN`. The decision preserves
-existing `DRY_RUN_PLAN` parser compatibility, stdout, exit codes, CLI
-classification, P2-13 `failureBoundary`, ADR-0006 value-safe diagnostics, and
-ADR-0007 safe message / classification boundaries. Implementation remains not
-authorized; P2-03-C remains unimplemented until a separate implementation GO.
+P2-18 structured dry-run contract shape decision is design-complete and its
+selected shape was implemented by P2-03-C in commit `6fb29bb`. The implemented
+contract is a new flat `DRY_RUN_SUMMARY` structured stderr success event, not
+an expansion of `DRY_RUN_PLAN`. Focused `CliApplicationTests` passed 73 / 0 /
+0, Publisher unit tests passed 576 / 0 / 0, Release build passed with warnings
+0 / errors 0, format verification passed, and `git diff --check` passed with
+CRLF conversion warnings only.
 
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is
