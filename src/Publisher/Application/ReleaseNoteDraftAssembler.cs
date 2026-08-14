@@ -525,3 +525,231 @@ internal sealed record ReleaseNoteDriftCheckResult(
     IReadOnlyList<ReleaseNoteDriftField> Fields,
     IReadOnlyList<ReleaseNoteDraftDiagnostic> Diagnostics,
     bool HasBlockingDrift);
+
+/// <summary>Extracts normalized verification evidence rows from allow-listed Markdown records.</summary>
+internal sealed class ReleaseNoteVerificationEvidenceExtractor
+{
+    private static readonly string[] RequiredHeaders =
+    [
+        "command",
+        "result",
+        "warnings",
+        "errors",
+        "passed",
+        "failed",
+        "skipped",
+    ];
+
+    /// <summary>Extracts fixture-tested verification rows without inferring release or authorization state.</summary>
+    /// <param name="request">The extraction request.</param>
+    /// <returns>The normalized extraction result.</returns>
+    public ReleaseNoteVerificationEvidenceResult Extract(ReleaseNoteVerificationEvidenceRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var diagnostics = new List<ReleaseNoteVerificationEvidenceDiagnostic>();
+        var rows = new List<ReleaseNoteVerificationEvidenceRow>();
+
+        foreach (var record in request.SourceRecords)
+        {
+            if (!request.AllowListedSourcePaths.Contains(record.Path))
+            {
+                diagnostics.Add(ReleaseNoteVerificationEvidenceDiagnostic.SourceNotAllowListed(record.Path));
+                continue;
+            }
+
+            if (record.Kind != ReleaseNoteSourceRecordKind.CurrentState)
+            {
+                diagnostics.Add(ReleaseNoteVerificationEvidenceDiagnostic.SourceKindNotPermitted(record.Path, record.Kind));
+                continue;
+            }
+
+            rows.AddRange(ExtractRows(record, diagnostics));
+        }
+
+        var duplicates = rows
+            .GroupBy(row => row.Command, StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Select(Fingerprint).Distinct(StringComparer.Ordinal).Count() > 1)
+            .Select(group => group.Key)
+            .ToList();
+
+        foreach (var duplicate in duplicates)
+        {
+            diagnostics.Add(ReleaseNoteVerificationEvidenceDiagnostic.Conflict(duplicate));
+        }
+
+        return new ReleaseNoteVerificationEvidenceResult(
+            rows,
+            diagnostics,
+            diagnostics.Any(diagnostic => diagnostic.Kind is ReleaseNoteVerificationEvidenceDiagnosticKind.Conflict));
+    }
+
+    private static IEnumerable<ReleaseNoteVerificationEvidenceRow> ExtractRows(
+        ReleaseNoteVerificationEvidenceSourceRecord record,
+        List<ReleaseNoteVerificationEvidenceDiagnostic> diagnostics)
+    {
+        var lines = record.Markdown.Split(["\r\n", "\n"], StringSplitOptions.None);
+        for (var index = 0; index < lines.Length - 2; index++)
+        {
+            if (!IsTableLine(lines[index]) || !IsSeparatorLine(lines[index + 1]))
+            {
+                continue;
+            }
+
+            var headers = SplitTableLine(lines[index]);
+            if (!RequiredHeaders.All(required => headers.Contains(required, StringComparer.OrdinalIgnoreCase)))
+            {
+                continue;
+            }
+
+            var headerMap = headers
+                .Select((header, headerIndex) => new { Header = header, Index = headerIndex })
+                .ToDictionary(item => item.Header, item => item.Index, StringComparer.OrdinalIgnoreCase);
+
+            for (var rowIndex = index + 2; rowIndex < lines.Length && IsTableLine(lines[rowIndex]); rowIndex++)
+            {
+                var cells = SplitTableLine(lines[rowIndex]);
+                if (cells.Count < headers.Count)
+                {
+                    diagnostics.Add(ReleaseNoteVerificationEvidenceDiagnostic.MissingField(record.Path));
+                    continue;
+                }
+
+                var row = ToRow(record.Path, cells, headerMap, diagnostics);
+                if (row is not null)
+                {
+                    yield return row;
+                }
+            }
+        }
+    }
+
+    private static ReleaseNoteVerificationEvidenceRow? ToRow(
+        string sourcePath,
+        IReadOnlyList<string> cells,
+        IReadOnlyDictionary<string, int> headerMap,
+        List<ReleaseNoteVerificationEvidenceDiagnostic> diagnostics)
+    {
+        var command = Cell(cells, headerMap, "command");
+        var result = Cell(cells, headerMap, "result");
+
+        if (string.IsNullOrWhiteSpace(command) || string.IsNullOrWhiteSpace(result))
+        {
+            diagnostics.Add(ReleaseNoteVerificationEvidenceDiagnostic.MissingField(sourcePath));
+            return null;
+        }
+
+        var values = new[] { command, result, Cell(cells, headerMap, "warnings"), Cell(cells, headerMap, "errors"), Cell(cells, headerMap, "passed"), Cell(cells, headerMap, "failed"), Cell(cells, headerMap, "skipped") };
+        if (values.Any(ContainsSensitiveValue))
+        {
+            diagnostics.Add(ReleaseNoteVerificationEvidenceDiagnostic.SensitiveValueExcluded(sourcePath));
+            return null;
+        }
+
+        return new ReleaseNoteVerificationEvidenceRow(
+            command,
+            result,
+            Cell(cells, headerMap, "warnings"),
+            Cell(cells, headerMap, "errors"),
+            Cell(cells, headerMap, "passed"),
+            Cell(cells, headerMap, "failed"),
+            Cell(cells, headerMap, "skipped"),
+            sourcePath);
+    }
+
+    private static string Cell(
+        IReadOnlyList<string> cells,
+        IReadOnlyDictionary<string, int> headerMap,
+        string header) =>
+        cells[headerMap[header]].Trim();
+
+    private static bool IsTableLine(string line) => line.TrimStart().StartsWith('|');
+
+    private static bool IsSeparatorLine(string line)
+    {
+        var cells = SplitTableLine(line);
+        return cells.Count > 0 && cells.All(cell => cell.Length > 0 && cell.All(character => character is '-' or ':' or ' '));
+    }
+
+    private static List<string> SplitTableLine(string line) =>
+        line.Trim().Trim('|').Split('|').Select(cell => cell.Trim()).ToList();
+
+    private static bool ContainsSensitiveValue(string value) =>
+        value.Contains("Authorization", StringComparison.OrdinalIgnoreCase)
+        || value.Contains("Bearer ", StringComparison.OrdinalIgnoreCase)
+        || value.Contains("token", StringComparison.OrdinalIgnoreCase)
+        || value.Contains("secret", StringComparison.OrdinalIgnoreCase)
+        || value.Contains("http://localhost", StringComparison.OrdinalIgnoreCase)
+        || value.Contains("https://localhost", StringComparison.OrdinalIgnoreCase)
+        || Regex.IsMatch(value, @"(?i)\b[A-Z]:\\");
+
+    private static string Fingerprint(ReleaseNoteVerificationEvidenceRow row) =>
+        string.Join(
+            "\u001f",
+            row.Result,
+            row.Warnings,
+            row.Errors,
+            row.Passed,
+            row.Failed,
+            row.Skipped);
+}
+
+/// <summary>Input for local-only verification evidence extraction.</summary>
+internal sealed record ReleaseNoteVerificationEvidenceRequest(
+    IReadOnlyList<ReleaseNoteVerificationEvidenceSourceRecord> SourceRecords,
+    IReadOnlySet<string> AllowListedSourcePaths);
+
+/// <summary>One checked-in Markdown record available to the verification evidence extractor.</summary>
+internal sealed record ReleaseNoteVerificationEvidenceSourceRecord(
+    string Path,
+    ReleaseNoteSourceRecordKind Kind,
+    string Markdown);
+
+/// <summary>A normalized verification evidence row copied from an allow-listed table.</summary>
+internal sealed record ReleaseNoteVerificationEvidenceRow(
+    string Command,
+    string Result,
+    string Warnings,
+    string Errors,
+    string Passed,
+    string Failed,
+    string Skipped,
+    string SourcePath);
+
+/// <summary>The complete verification evidence extraction result.</summary>
+internal sealed record ReleaseNoteVerificationEvidenceResult(
+    IReadOnlyList<ReleaseNoteVerificationEvidenceRow> Rows,
+    IReadOnlyList<ReleaseNoteVerificationEvidenceDiagnostic> Diagnostics,
+    bool HasBlockingConflict);
+
+/// <summary>A bounded verification evidence extraction diagnostic.</summary>
+internal sealed record ReleaseNoteVerificationEvidenceDiagnostic(
+    ReleaseNoteVerificationEvidenceDiagnosticKind Kind,
+    string SourcePath,
+    string Message)
+{
+    public static ReleaseNoteVerificationEvidenceDiagnostic SourceNotAllowListed(string sourcePath) =>
+        new(ReleaseNoteVerificationEvidenceDiagnosticKind.SourceNotAllowListed, sourcePath, "Source record is not allow-listed.");
+
+    public static ReleaseNoteVerificationEvidenceDiagnostic SourceKindNotPermitted(string sourcePath, ReleaseNoteSourceRecordKind sourceKind) =>
+        new(ReleaseNoteVerificationEvidenceDiagnosticKind.SourceKindNotPermitted, sourcePath, "Source kind " + sourceKind + " is not permitted.");
+
+    public static ReleaseNoteVerificationEvidenceDiagnostic MissingField(string sourcePath) =>
+        new(ReleaseNoteVerificationEvidenceDiagnosticKind.MissingField, sourcePath, "Verification evidence table row is missing a required field.");
+
+    public static ReleaseNoteVerificationEvidenceDiagnostic Conflict(string command) =>
+        new(ReleaseNoteVerificationEvidenceDiagnosticKind.Conflict, command, "Verification evidence rows conflict for the same command.");
+
+    public static ReleaseNoteVerificationEvidenceDiagnostic SensitiveValueExcluded(string sourcePath) =>
+        new(ReleaseNoteVerificationEvidenceDiagnosticKind.SensitiveValueExcluded, sourcePath, "Verification evidence row was excluded as sensitive.");
+}
+
+/// <summary>The kind of bounded verification evidence extraction diagnostic.</summary>
+internal enum ReleaseNoteVerificationEvidenceDiagnosticKind
+{
+    SourceNotAllowListed,
+    SourceKindNotPermitted,
+    MissingField,
+    Conflict,
+    SensitiveValueExcluded,
+}
