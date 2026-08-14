@@ -348,6 +348,14 @@ update dry-run bridge remain deferred and unimplemented. It does not treat
 dry-run as Live E2E, Google verification, publication authorization, release
 clearance, vendor clearance, or Avast safety certification.
 
+P2-18 structured dry-run contract shape decision is design-complete and fixes
+the future P2-03-C shape as a new flat `DRY_RUN_SUMMARY` structured stderr
+success event, not an expansion of `DRY_RUN_PLAN`. The decision preserves
+existing `DRY_RUN_PLAN` parser compatibility, stdout, exit codes, CLI
+classification, P2-13 `failureBoundary`, ADR-0006 value-safe diagnostics, and
+ADR-0007 safe message / classification boundaries. Implementation remains not
+authorized; P2-03-C remains unimplemented until a separate implementation GO.
+
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is
 design-only complete. P2-07 managed-document readback reporting implementation
