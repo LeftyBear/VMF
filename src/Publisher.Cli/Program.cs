@@ -252,6 +252,7 @@ internal static class CliApplication
         logger.SetContext("planner", "compile");
         var compiled = await CompileAsync(arguments[1], settings.Publisher, cancellationToken).ConfigureAwait(false);
         logger.PublishPlan("DRY_RUN_PLAN", compiled);
+        logger.DryRunSummary(compiled);
         return CliResult.Success("DRY_RUN_SUCCEEDED", "Dry run completed.");
     }
 
@@ -940,6 +941,41 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             ["packageApproval"] = false,
             ["avastSafetyCertification"] = false,
             ["vendorClearance"] = false,
+        });
+
+    internal void DryRunSummary(CompiledDocument document) =>
+        Write("info", "DRY_RUN_SUMMARY", "Local dry-run summary compiled.", "planner", "summary", new Dictionary<string, object?>
+        {
+            ["contractVersion"] = 1,
+            ["mode"] = "local-dry-run",
+            ["planningResult"] = "succeeded",
+            ["markdownCompilation"] = "succeeded",
+            ["planningEvidence"] = "local-only",
+            ["stepCount"] = document.Steps.Count,
+            ["operationCount"] = document.Operations.Count,
+            ["batchUpdateStepCount"] = document.Steps.OfType<BatchUpdateStep>().Count(),
+            ["tableStepCount"] = document.Steps.OfType<InsertTableStep>().Count(),
+            ["imageStepCount"] = document.Steps.OfType<InsertImageStep>().Count(),
+            ["insertTextOperationCount"] = CountOperations(document, DocumentOperationKind.InsertText),
+            ["headingOperationCount"] = CountOperations(document, DocumentOperationKind.ApplyHeading),
+            ["listOperationCount"] = CountOperations(document, DocumentOperationKind.CreateBullet),
+            ["textStyleOperationCount"] = CountOperations(document, DocumentOperationKind.UpdateTextStyle),
+            ["paragraphAlignmentOperationCount"] = CountOperations(document, DocumentOperationKind.UpdateParagraphAlignment),
+            ["codeBlockOperationCount"] = CountOperations(document, DocumentOperationKind.ApplyCodeBlockStyle),
+            ["quoteOperationCount"] = CountOperations(document, DocumentOperationKind.ApplyQuoteBlockStyle),
+            ["googleDocsMutation"] = "not-attempted",
+            ["googleDriveMutation"] = "not-attempted",
+            ["oauthOperation"] = "not-attempted",
+            ["tokenStoreOperation"] = "not-attempted",
+            ["physicalUpdatePlanApplied"] = false,
+            ["readbackStatus"] = "not-attempted",
+            ["readbackVerified"] = false,
+            ["verifiedStateSaved"] = false,
+            ["publicationAuthorized"] = false,
+            ["releaseClearance"] = false,
+            ["packageApproval"] = false,
+            ["vendorClearance"] = false,
+            ["avastSafetyCertification"] = false,
         });
 
     internal void DiffSummary(CompiledDocument before, CompiledDocument after) =>
