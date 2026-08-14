@@ -660,6 +660,52 @@ public sealed class CliApplicationTests
         Assert.DoesNotContain("Authorization", capture.Error, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public void StructuredPublisherLogger_FailureSummaryIncludesSafeRetryDiagnosticsWhenKnown()
+    {
+        using var capture = new ConsoleCapture();
+        var logger = new StructuredPublisherLogger("pub-test", "publish");
+
+        logger.Summary(
+            CliResult.Failure(
+                75,
+                "TRANSIENT_FAILURE",
+                "A transient external service error occurred.",
+                ErrorClassification.Transient,
+                retryDiagnostics: new RetryDiagnostics(3, true)),
+            TimeSpan.FromMilliseconds(25));
+
+        var summary = LastJsonLine(capture.Error);
+        Assert.Equal(3, summary.GetProperty("attemptCount").GetInt32());
+        Assert.True(summary.GetProperty("retryable").GetBoolean());
+        Assert.False(summary.TryGetProperty("maxAttempts", out _));
+        Assert.False(summary.TryGetProperty("deliveryState", out _));
+        Assert.False(summary.TryGetProperty("httpStatus", out _));
+        Assert.False(summary.TryGetProperty("SUPPORT_SUMMARY", out _));
+        Assert.DoesNotContain("https://", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"C:\secret", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Authorization", capture.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void StructuredPublisherLogger_FailureSummaryOmitsRetryDiagnosticsWhenUnknown()
+    {
+        using var capture = new ConsoleCapture();
+        var logger = new StructuredPublisherLogger("pub-test", "publish");
+
+        logger.Summary(
+            CliResult.Failure(
+                1,
+                "PUBLISHER_ERROR",
+                "An internal Publisher error occurred.",
+                ErrorClassification.Internal),
+            TimeSpan.FromMilliseconds(25));
+
+        var summary = LastJsonLine(capture.Error);
+        Assert.False(summary.TryGetProperty("attemptCount", out _));
+        Assert.False(summary.TryGetProperty("retryable", out _));
+    }
+
     [Theory]
     [InlineData(UpdateErrorCodes.ReadbackFailed, "failed", "post-apply-readback")]
     [InlineData(UpdateErrorCodes.ReadbackMismatch, "mismatch", "post-apply-readback")]
@@ -718,6 +764,8 @@ public sealed class CliApplicationTests
         Assert.Equal("summary", summary.GetProperty("operation").GetString());
         Assert.Equal("document-id", summary.GetProperty("documentId").GetString());
         Assert.False(summary.TryGetProperty("configurationCategory", out _));
+        Assert.False(summary.TryGetProperty("attemptCount", out _));
+        Assert.False(summary.TryGetProperty("retryable", out _));
         Assert.Equal(
             "https://docs.google.com/document/d/document-id/edit",
             summary.GetProperty("documentUrl").GetString());

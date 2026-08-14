@@ -960,6 +960,8 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             ["configurationCategory"] = result.Classification == ErrorClassification.Configuration
                 ? result.ConfigurationCategory
                 : null,
+            ["attemptCount"] = result.Succeeded ? null : result.RetryDiagnostics?.AttemptCount,
+            ["retryable"] = result.Succeeded ? null : result.RetryDiagnostics?.Retryable,
             ["documentId"] = result.DocumentId,
             ["documentUrl"] = result.DocumentUrl,
             ["readbackStatus"] = ReadbackStatus(result),
@@ -1141,7 +1143,8 @@ internal sealed record CliResult(
     string? DocumentId,
     string? DocumentUrl,
     string? ExceptionType,
-    string? ConfigurationCategory)
+    string? ConfigurationCategory,
+    RetryDiagnostics? RetryDiagnostics)
 {
     internal bool Succeeded => ExitCode == 0;
 
@@ -1150,7 +1153,7 @@ internal sealed record CliResult(
         string message,
         string? documentId = null,
         string? documentUrl = null) =>
-        new(0, code, message, ErrorClassification.None, documentId, documentUrl, null, null);
+        new(0, code, message, ErrorClassification.None, documentId, documentUrl, null, null, null);
 
     internal static CliResult Failure(
         int exitCode,
@@ -1158,9 +1161,12 @@ internal sealed record CliResult(
         string message,
         ErrorClassification classification,
         string? exceptionType = null,
-        string? configurationCategory = null) =>
-        new(exitCode, code, message, classification, null, null, exceptionType, configurationCategory);
+        string? configurationCategory = null,
+        RetryDiagnostics? retryDiagnostics = null) =>
+        new(exitCode, code, message, classification, null, null, exceptionType, configurationCategory, retryDiagnostics);
 }
+
+internal sealed record RetryDiagnostics(int AttemptCount, bool Retryable);
 
 internal enum ErrorClassification
 {
