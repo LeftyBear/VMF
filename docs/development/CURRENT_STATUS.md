@@ -335,7 +335,8 @@ structured stderr final failure summaries only. P2-14 subsequently completes
 the narrow `maxAttempts` final failure summary field. P2-16 completes the
 narrow P2-02-E `SUPPORT_SUMMARY` final failure summary field as a
 CLI-internal reconstruction of existing safe summary fields only.
-`deliveryState` and `httpStatus` remain deferred and unimplemented.
+The formerly deferred `deliveryState` and `httpStatus` final failure summary
+diagnostics were later completed by P2-24 and P2-25 respectively.
 
 P2-03 clearer dry-run output is complete for the narrow local-only A/B
 implementation scope. P2-13 completes the formerly deferred P2-03-D failure
@@ -351,9 +352,10 @@ before the final `DRY_RUN_SUCCEEDED` summary, while preserving `DRY_RUN_PLAN`
 compatibility, stdout, exit codes, CLI classification, failure taxonomy, public
 APIs, persisted schemas, Google/OAuth behavior, Verified State semantics,
 release/package state, vendor-clearance state, and Avast state. P2-03-E
-physical update dry-run bridge remains deferred and unimplemented. Dry-run
-does not count as Live E2E, Google verification, publication authorization,
-release clearance, vendor clearance, or Avast safety certification.
+physical update dry-run separate-command design is complete by P2-26, while
+implementation remains NO-GO until separately authorized. Dry-run does not
+count as Live E2E, Google verification, publication authorization, release
+clearance, vendor clearance, or Avast safety certification.
 
 P2-18 structured dry-run contract shape decision is design-complete and its
 selected shape was implemented by P2-03-C in commit `6fb29bb`. The implemented
@@ -381,6 +383,19 @@ output, change structured diagnostics, call adapter apply, save Verified State,
 mutate Google Docs / Drive, operate OAuth/token stores, run Live E2E, update
 package or `dist`, publish releases, create tags, claim vendor clearance, claim
 Avast safety certification, or re-run flagged executables.
+
+P2-26 physical update dry-run separate-command design is complete as a
+docs-only / local-only design record. It fixes `preview-update` as the future
+command name, `UPDATE_PREVIEW_PLAN`, `UPDATE_PREVIEW_SUMMARY`, and
+`UPDATE_PREVIEW_FAILED` as the separate structured event family, and
+`physical-update-preview` as the evidence category. Actual implementation
+remains NO-GO until separately authorized with focused tests and an explicit
+non-destructive contract. Existing `dry-run` remains local Markdown planning
+only. P2-26 does not add a command, change CLI output, change structured
+diagnostics in code, call adapter apply, save Verified State, mutate Google
+Docs / Drive, operate OAuth/token stores, run Live E2E, update package or
+`dist`, publish releases, create tags, claim vendor clearance, claim Avast
+safety certification, or re-run flagged executables.
 
 P2-20 delivery-state diagnostics CLI decision is complete as a docs-only /
 local-only NO-GO decision. CLI exposure of delivery-state diagnostics remains
