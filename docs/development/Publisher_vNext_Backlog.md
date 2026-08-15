@@ -145,7 +145,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 
 | ID | Item | Priority | Rationale | Prerequisite | Release safety impact | State |
 | --- | --- | --- | --- | --- | --- | --- |
-| P2-01 | Evaluate whether Google Picker plus `drive.file` least-privilege routing should be adopted by a future scoped design task. | P2 | Least-privilege routing may reduce future operator risk, but it is not required for current release follow-up. | `Publisher_P2-01_GooglePickerDriveFileEvaluation.md`; `Publisher_P2-01_OAuthDesktopScopeBoundaryEvaluation.md`; future scoped design and adoption record before implementation. | Potential future credential and Drive-access risk reduction. | Design complete / implementation decision pending. |
+| P2-01 | Evaluate whether Google Picker plus `drive.file` least-privilege routing should be adopted by a future scoped design task. | P2 | Least-privilege routing may reduce future operator risk, but it is not required for current release follow-up. | `Publisher_P2-01_GooglePickerDriveFileEvaluation.md`; `Publisher_P2-01_OAuthDesktopScopeBoundaryEvaluation.md`; `Publisher_P2-01_LeastPrivilegeDesignReevaluation_2026-08-15.md`; future scoped design and adoption record before implementation. | Potential future credential and Drive-access risk reduction. | Design re-evaluation complete / split-route design GO / implementation NO-GO. |
 | P2-02 | Evaluate additional Publisher diagnostics that improve troubleshooting without changing published document semantics. | P2 | Diagnostics may improve supportability but must preserve published document behavior. | P2-02-A / P2-02-B narrow local-only implementation and closeout record; follow-on P2-09, P2-10, P2-14, and P2-16 completions. | Improves local troubleshooting with no release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Complete / A, B, C, E, and the narrow retry subset of D implemented; `deliveryState` and `httpStatus` deferred. |
 | P2-03 | Evaluate clearer dry-run output for Google Docs publication planning. | P2 | Better dry-run output may reduce operator error in future Google Docs workflows. | `Publisher_P2-03_ClearerDryRunOutputEvaluation.md`; P2-03-A / P2-03-B narrow local-only implementation and closeout record; P2-13 failure-boundary implementation; P2-18 contract shape decision; P2-03-C implementation commit `6fb29bb`. | Potential future planning clarity; no current clearance effect. | Complete / A, B, C, and D implemented; E deferred. |
 | P2-04 | Evaluate richer release-note generation from existing verification records. | P2 | Automation could reduce documentation drift, but it is not required for the next release-path gate. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; future scoped implementation decision. | Potential future traceability improvement. | Complete / A, B, C, and D implemented; E evaluated by P2-17 with implementation pending. |
@@ -501,7 +501,8 @@ response:
 
 Avast-independent docs-only / design-ready:
 
-- P2-01 through P2-06.
+- P2-01 split-route design remains GO as a future scoped design task only.
+- P2-02 through P2-06.
 - P2-17.
 
 Completed Avast-independent hardening / enhancements:
