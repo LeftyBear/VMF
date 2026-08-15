@@ -176,7 +176,8 @@ internal static class CliApplication
                 ExitCodeFor(classification),
                 result.Error?.Code ?? "PUBLISH_FAILED",
                 SafeMessage(classification),
-                classification);
+                classification,
+                deliveryState: result.Error?.DeliveryState);
         }
 
         Console.WriteLine("Google Drive API: success");
@@ -1250,7 +1251,8 @@ internal sealed record CliResult(
     string? DocumentUrl,
     string? ExceptionType,
     string? ConfigurationCategory,
-    RetryDiagnostics? RetryDiagnostics)
+    RetryDiagnostics? RetryDiagnostics,
+    RequestDeliveryState? DeliveryState)
 {
     internal bool Succeeded => ExitCode == 0;
 
@@ -1259,7 +1261,7 @@ internal sealed record CliResult(
         string message,
         string? documentId = null,
         string? documentUrl = null) =>
-        new(0, code, message, ErrorClassification.None, documentId, documentUrl, null, null, null);
+        new(0, code, message, ErrorClassification.None, documentId, documentUrl, null, null, null, null);
 
     internal static CliResult Failure(
         int exitCode,
@@ -1268,8 +1270,19 @@ internal sealed record CliResult(
         ErrorClassification classification,
         string? exceptionType = null,
         string? configurationCategory = null,
-        RetryDiagnostics? retryDiagnostics = null) =>
-        new(exitCode, code, message, classification, null, null, exceptionType, configurationCategory, retryDiagnostics);
+        RetryDiagnostics? retryDiagnostics = null,
+        RequestDeliveryState? deliveryState = null) =>
+        new(
+            exitCode,
+            code,
+            message,
+            classification,
+            null,
+            null,
+            exceptionType,
+            configurationCategory,
+            retryDiagnostics,
+            deliveryState);
 }
 
 internal sealed record RetryDiagnostics(int AttemptCount, int MaxAttempts, bool Retryable);

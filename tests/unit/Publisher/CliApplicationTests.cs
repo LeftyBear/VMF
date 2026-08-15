@@ -314,6 +314,30 @@ public sealed class CliApplicationTests
     }
 
     [Fact]
+    public async Task PublishService_PhysicalUpdateExceptionWithoutCarrierDoesNotInventDeliveryState()
+    {
+        var service = CreatePublishService(_ =>
+            throw new PhysicalUpdateException(UpdateErrorCodes.ReadbackMismatch, "readback mismatch"));
+
+        var result = await service.PublishAsync(new PublishRequest("input.md"), CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Error?.DeliveryState);
+    }
+
+    [Fact]
+    public void PublishResult_FailureCarriesDeliveryStateThroughPublishError()
+    {
+        var result = PublishResult.Failure(new PublishError(
+            "HTTP_503",
+            "A transient external service error occurred.",
+            RequestDeliveryState.NotSent));
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(RequestDeliveryState.NotSent, result.Error?.DeliveryState);
+    }
+
+    [Fact]
     public async Task PublishService_RethrowsOperationCanceledException()
     {
         var service = CreatePublishService(_ => throw new OperationCanceledException("secret cancel message"));
@@ -763,6 +787,39 @@ public sealed class CliApplicationTests
         Assert.DoesNotContain("https://", capture.Error, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(@"C:\secret", capture.Error, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Authorization", capture.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void CliResult_CarriesDeliveryStateWithoutStructuredOutputExposure()
+    {
+        using var capture = new ConsoleCapture();
+        var logger = new StructuredPublisherLogger("pub-test", "publish");
+        var result = CliResult.Failure(
+            75,
+            "HTTP_503",
+            "A transient external service error occurred.",
+            ErrorClassification.Transient,
+            deliveryState: RequestDeliveryState.Sent);
+
+        logger.Summary(result, TimeSpan.FromMilliseconds(25));
+
+        Assert.Equal(RequestDeliveryState.Sent, result.DeliveryState);
+        var summary = LastJsonLine(capture.Error);
+        Assert.False(summary.TryGetProperty("deliveryState", out _));
+        Assert.False(summary.GetProperty("SUPPORT_SUMMARY").TryGetProperty("deliveryState", out _));
+    }
+
+    [Fact]
+    public void PublishError_CarriesDeliveryStateWithoutChangingCodeOrMessage()
+    {
+        var error = new PublishError(
+            "HTTP_503",
+            "A transient external service error occurred.",
+            RequestDeliveryState.Unknown);
+
+        Assert.Equal("HTTP_503", error.Code);
+        Assert.Equal("A transient external service error occurred.", error.Message);
+        Assert.Equal(RequestDeliveryState.Unknown, error.DeliveryState);
     }
 
     [Fact]
