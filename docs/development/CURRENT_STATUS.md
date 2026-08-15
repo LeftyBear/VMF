@@ -86,6 +86,7 @@ set only; it is not release execution.
 | Publisher P2-05 OAuth Desktop token-store documentation | Complete as docs-only guidance synchronization; InstallationGuide and LiveE2EOperations now clarify OAuth Desktop setup, token-store lifecycle authorization, placeholder-only path examples, ADR-0002 scope continuity, and safe evidence boundaries. No OAuth scope, authentication architecture, Google Docs / Drive, OAuth/token-store operation, Live E2E, package, `dist`, release, vendor-clearance, Avast, flagged-executable, stage, commit, or push operation was performed. |
 | Publisher P2-06 managed-document readback reporting evaluation | Design complete; implementation decision closed by P2-07 as a narrow local-only implementation. The P2-06 docs-only evaluation identified value-safe status vocabulary and reporting improvements while preserving ADR-0004 Verified State / Readback Verification semantics, ADR-0006 safe diagnostics, ADR-0007 CLI classification, and the separation from publication success, release clearance, and vendor clearance. No actual readback, Google, OAuth/token-store, Live E2E, package, release, vendor, stage, commit, or push operation was performed by the P2-06 evaluation. |
 | Publisher P2-01 least-privilege design re-evaluation | Complete as docs-only / local-only re-evaluation after P2-06 closeout. The decision is GO for a future scoped split-route design task and NO-GO for implementation. ADR-0002 remains current: OAuth Desktop continues to use Documents plus full Drive until a later approved design and implementation task explicitly changes it. No Google Picker adoption, OAuth scope change, token-store operation, Google Docs / Drive mutation, Live E2E, package, `dist`, release, tag, publication, Avast, flagged-executable, stage, commit, or push operation was performed. |
+| Publisher P2-27 Google Picker / drive.file split-route design | Complete as docs-only / local-only design. It keeps ADR-0002 OAuth Desktop Documents plus full Drive as the only adopted behavior and defines a future selected-resource Route B candidate that requires a later adoption record and explicit implementation authorization before any code, OAuth, Google, token-store, Live E2E, package, release, tag, publication, Avast, vendor, flagged-executable, stage, commit, or push operation. |
 | Publisher P2-07 managed-document readback reporting implementation | Complete as narrow local-only implementation after P2-06; adds value-safe readback status reporting with closed vocabulary and operator-facing structured summary fields while preserving readback semantics, Verified State promotion/save requirements, stable error codes, CLI classification, public APIs, persisted schemas, OAuth scope, authentication architecture, release records, package identity, publication flow, and vendor-clearance boundaries. Focused unit coverage was completed in commit `5e4b03f`; no actual Google readback, Google Docs / Drive mutation, OAuth/token-store operation, Live E2E, package, `dist`, release, tag, publication, Avast, flagged-executable, stage, commit, or push operation was performed by this current-state synchronization review. |
 | Publisher Live E2E Operations | Updated as documentation-only / local-only setup guidance for P1-04. It clarifies per-run authorization, OAuth/token-store credential boundaries, cleanup scope, and cross-references to current status, preflight hard stops, test classification, and the release runbook. This update did not execute Live E2E, set `VMF_PUBLISHER_GOOGLE_E2E=1`, mutate Google Docs or Google Drive, operate on OAuth/token stores/credentials, create cleanup actions, touch package or `dist` output, re-run flagged executables, publish releases, claim vendor clearance, or claim Avast safety certification. |
 | Publisher Avast Response Decision Template | Done as documentation-only / local-only decision template; no Avast response received; vendor clearance remains not obtained; release block continues for vendor-clearance purposes unless a future reviewed response satisfies the template. |
@@ -515,6 +516,19 @@ messages, readback reporting, `deliveryState` semantics, Frozen
 specifications, persisted schemas, Google Docs / Drive, OAuth/token-store,
 Live E2E, package, `dist`, release, tag, publication, vendor-clearance, Avast,
 or flagged-executable gates.
+
+P2-27 Google Picker / `drive.file` split-route design is complete as a
+docs-only / local-only design record. It keeps the current ADR-0002 OAuth
+Desktop Documents plus full Drive route as the only adopted behavior and
+defines a future selected-resource Route B candidate for explicit existing
+document update and related least-privilege workflows. Implementation remains
+NO-GO until a later adoption record and explicit authorization define exact
+supported workflows, token-store lifecycle, configuration changes, tests, and
+any required Live E2E proof. P2-27 does not adopt Google Picker, adopt
+`drive.file`, change OAuth scopes, inspect or mutate token stores, call Google
+Docs / Drive, run Live E2E, change production code or tests, update package or
+`dist`, publish releases, create tags, claim vendor clearance, claim Avast
+safety certification, stage, commit, or push.
 
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is

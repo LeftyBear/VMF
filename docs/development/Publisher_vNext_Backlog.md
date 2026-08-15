@@ -145,7 +145,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 
 | ID | Item | Priority | Rationale | Prerequisite | Release safety impact | State |
 | --- | --- | --- | --- | --- | --- | --- |
-| P2-01 | Evaluate whether Google Picker plus `drive.file` least-privilege routing should be adopted by a future scoped design task. | P2 | Least-privilege routing may reduce future operator risk, but it is not required for current release follow-up. | `Publisher_P2-01_GooglePickerDriveFileEvaluation.md`; `Publisher_P2-01_OAuthDesktopScopeBoundaryEvaluation.md`; `Publisher_P2-01_LeastPrivilegeDesignReevaluation_2026-08-15.md`; future scoped design and adoption record before implementation. | Potential future credential and Drive-access risk reduction. | Design re-evaluation complete / split-route design GO / implementation NO-GO. |
+| P2-01 | Evaluate whether Google Picker plus `drive.file` least-privilege routing should be adopted by a future scoped design task. | P2 | Least-privilege routing may reduce future operator risk, but it is not required for current release follow-up. | `Publisher_P2-01_GooglePickerDriveFileEvaluation.md`; `Publisher_P2-01_OAuthDesktopScopeBoundaryEvaluation.md`; `Publisher_P2-01_LeastPrivilegeDesignReevaluation_2026-08-15.md`; `Publisher_P2-27_GooglePickerDriveFileSplitRouteDesign.md`; future adoption record before implementation. | Potential future credential and Drive-access risk reduction. | Complete / split-route design complete by P2-27; implementation remains NO-GO until adoption record and explicit authorization. |
 | P2-02 | Evaluate additional Publisher diagnostics that improve troubleshooting without changing published document semantics. | P2 | Diagnostics may improve supportability but must preserve published document behavior. | P2-02-A / P2-02-B narrow local-only implementation and closeout record; follow-on P2-09, P2-10, P2-14, P2-16, P2-24, and P2-25 completions. | Improves local troubleshooting with no release gate, publication, Google, OAuth, package, or vendor-clearance effect. | Complete / A, B, C, E, delivery-state diagnostics, HTTP-status diagnostics, and the narrow retry subset of D implemented. |
 | P2-03 | Evaluate clearer dry-run output for Google Docs publication planning. | P2 | Better dry-run output may reduce operator error in future Google Docs workflows. | `Publisher_P2-03_ClearerDryRunOutputEvaluation.md`; P2-03-A / P2-03-B narrow local-only implementation and closeout record; P2-13 failure-boundary implementation; P2-18 contract shape decision; P2-03-C implementation commit `6fb29bb`; P2-23 separate-command evaluation; P2-26 separate-command design. | Potential future planning clarity; no current clearance effect. | Complete / A, B, C, and D implemented; E design complete by P2-26; separate-command implementation remains NO-GO. |
 | P2-04 | Evaluate richer release-note generation from existing verification records. | P2 | Automation could reduce documentation drift, but it is not required for the next release-path gate. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; P2-08 drift checker; P2-12 verification evidence extractor; P2-17 CHANGELOG draft helper. | Potential future traceability improvement. | Complete / A, B, C, D, and E implemented through follow-on scoped tasks. |
@@ -504,7 +504,6 @@ response:
 
 Avast-independent docs-only / design-ready:
 
-- P2-01 split-route design remains GO as a future scoped design task only.
 - P2-02 through P2-06.
 - P2-17.
 
@@ -515,6 +514,7 @@ Completed Avast-independent hardening / enhancements:
 - P1-04.
 - P1-05.
 - P1-06.
+- P2-01 / P2-27 split-route design.
 - P2-07.
 - P2-08.
 - P2-09.
@@ -533,16 +533,18 @@ Completed Avast-independent hardening / enhancements:
 - P2-24.
 - P2-25.
 - P2-26.
+- P2-27.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-26: physical update dry-run separate-command design; docs-only /
-  local-only design complete. It fixes `preview-update` as the future command
-  name, `UPDATE_PREVIEW_*` as the separate structured event family, and
-  `physical-update-preview` as the evidence category. Implementation remains
-  NO-GO until separately authorized. Existing `dry-run`, stdout, exit codes,
-  classifications, Google / OAuth gates, package / release gates,
-  vendor-clearance, Avast, and flagged-executable boundaries are preserved.
+- P2-27: Google Picker / `drive.file` split-route design; docs-only /
+  local-only design complete. It keeps the current ADR-0002 OAuth Desktop
+  Documents plus full Drive route as the only adopted behavior and defines a
+  future selected-resource Route B candidate that still requires a later
+  adoption record and explicit implementation authorization. OAuth scope,
+  Google Picker adoption, Google Docs / Drive mutation, OAuth/token-store,
+  Live E2E, package / release, vendor-clearance, Avast, and flagged-executable
+  boundaries are preserved.
 
 ## Vendor-Clearance Boundary
 
