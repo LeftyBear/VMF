@@ -3321,7 +3321,7 @@ operation, Live E2E, package or `dist` work, release, tag, publication,
 GitHub asset operation, Avast operation, flagged executable re-run, vendor
 clearance judgment, stage, commit, or push.
 
-P2-06 status: DESIGN COMPLETE / implementation decision pending.
+P2-06 status: DESIGN COMPLETE / implementation decision closed by P2-07.
 
 `docs/development/Publisher_P2-06_ManagedDocumentReadbackReportingEvaluation.md`
 evaluates value-safe managed-document readback reporting. It preserves
@@ -3330,14 +3330,15 @@ mandatory Readback Verification, and Verified State promotion/save only after
 successful readback verification. It also preserves ADR-0006 / ADR-0007 safe
 diagnostics and error-classification boundaries.
 
-The recommended future implementation is narrow local-only reporting work:
-closed readback status vocabulary, value-safe phase labels, and tests for
-success, failure, mismatch, revision conflict, no-change, dry-run
-not-attempted, and sensitive-value exclusion. It must not expose raw document
-content, document IDs, private URLs, provider payloads, raw exceptions,
-credentials, tokens, token-store paths, or local sensitive paths. Readback
-reporting remains separate from publication success, release authorization,
-package approval, vendor clearance, and Avast safety certification.
+The recommended implementation was later completed by P2-07 as narrow
+local-only reporting work: closed readback status vocabulary, value-safe phase
+labels, and tests for success, failure, mismatch, revision conflict, no-change,
+dry-run not-attempted, and sensitive-value exclusion. It must not expose raw
+document content, document IDs, private URLs, provider payloads, raw
+exceptions, credentials, tokens, token-store paths, or local sensitive paths.
+Readback reporting remains separate from publication success, release
+authorization, package approval, vendor clearance, and Avast safety
+certification.
 
 ## Publisher 0.0.1-dev Post-Release Closeout Consistency Confirmation
 
