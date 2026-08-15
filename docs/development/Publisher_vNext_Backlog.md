@@ -174,6 +174,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-26 | Design the P2-03-E physical update dry-run separate command. | P2 | P2-23 confirmed GO for a future separate-command design while keeping implementation NO-GO. The design must fix command name, contract shape, evidence category, and authorization boundary before any implementation can be considered. | `Publisher_P2-26_PhysicalUpdateDryRunSeparateCommandDesign.md`; `Publisher_P2-23_PhysicalUpdateDryRunSeparateCommandEvaluation.md`; P2-19 existing `dry-run` integration NO-GO decision; ADR-0004 / ADR-0006 / ADR-0007. | Prevents future physical update preview work from being confused with local Markdown dry-run, Google mutation, readback verification, publication authorization, release clearance, package approval, vendor clearance, or Avast safety certification. | Complete / docs-only design; separate-command implementation remains NO-GO until separately authorized. |
 | P2-28 | Select the next candidate after P2-27 and fix the `preview-update` implementation-scope boundary. | P2 | P2-27 leaves Route B adoption too broad for the next local step, while P2-26 has already fixed the separate-command design for P2-03-E. Candidate selection should compare remaining P2 routes and choose one next bounded task. | `Publisher_P2-28_CandidateSelection.md`; `Publisher_P2-26_PhysicalUpdateDryRunSeparateCommandDesign.md`; `Publisher_P2-27_GooglePickerDriveFileSplitRouteDesign.md`; explicit later implementation authorization. | Preserves release, package, Google, OAuth, Live E2E, vendor-clearance, Avast, flagged-executable, Frozen spec, public API, persisted schema, existing `dry-run`, stdout, exit-code, and classification boundaries while preparing the next local-only scope record. | Complete / docs-only candidate selection; implementation remains NO-GO until separately authorized. |
 | P2-29 | Plan the first `preview-update` implementation slice selected by P2-28. | P2 | P2-28 selected the P2-26-derived `preview-update` route as the next bounded candidate, but implementation still needs a concrete local-only boundary, candidate change areas, safe-stop requirements, and focused test plan before any GO decision can be considered. | `Publisher_P2-29_PreviewUpdateImplementationScopePlanning.md`; `Publisher_P2-28_CandidateSelection.md`; `Publisher_P2-26_PhysicalUpdateDryRunSeparateCommandDesign.md`; explicit later implementation authorization. | Preserves release, package, Google, OAuth, Live E2E, vendor-clearance, Avast, flagged-executable, Frozen spec, public API, persisted schema, existing `dry-run`, stdout, exit-code, and classification boundaries while defining the first local-only implementation slice. | Complete / docs-only implementation-scope planning; implementation remains NO-GO until separately authorized. |
+| P2-30 | Select the GO / CONDITIONAL GO / NO-GO basis for the P2-29 `preview-update` implementation scope. | P2 | P2-29 fixed the first local-only implementation slice, but implementation should not start until start conditions, stop conditions, technical dependencies, local-only verification limits, and external Google / OAuth / Live E2E gates are separated. | `Publisher_P2-30_CandidateSelection.md`; `Publisher_P2-29_PreviewUpdateImplementationScopePlanning.md`; `Publisher_P2-26_PhysicalUpdateDryRunSeparateCommandDesign.md`; explicit later implementation authorization. | Records CONDITIONAL GO only for a future separately authorized local-only implementation task after local Verified State and snapshot input shapes are fixed, while preserving release, package, Google, OAuth, Live E2E, vendor-clearance, Avast, flagged-executable, Frozen spec, public API, persisted schema, existing `dry-run`, stdout, exit-code, and classification boundaries. | Complete / docs-only candidate selection; implementation remains NO-GO until separately authorized. |
 
 ### P2-07 Managed-Document Readback Reporting Implementation
 
@@ -538,14 +539,17 @@ Completed Avast-independent hardening / enhancements:
 - P2-27.
 - P2-28.
 - P2-29.
+- P2-30.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-29: `preview-update` implementation-scope planning after P2-28;
-  docs-only / local-only planning complete. It defines the first allowable
-  local-only implementation slice, candidate change areas, safe-stop
-  requirements, safe-value boundary, and focused test plan for a future
-  separately authorized command implementation. It does not implement
+- P2-30: candidate selection after P2-29; docs-only / local-only selection
+  complete. It organizes GO / CONDITIONAL GO / NO-GO decision inputs for the
+  P2-29 `preview-update` implementation scope, confirms implementation start
+  and stop conditions, separates local-only verification from Google / OAuth /
+  Live E2E gates, and records CONDITIONAL GO only for a future separately
+  authorized local-only implementation task after local Verified State and
+  local or synthetic snapshot input shapes are fixed. It does not implement
   `preview-update`, change existing `dry-run`, adopt Google Picker or
   `drive.file`, change OAuth scopes, call Google Docs / Drive, inspect or
   mutate token stores, run Live E2E, update package / release state, claim
