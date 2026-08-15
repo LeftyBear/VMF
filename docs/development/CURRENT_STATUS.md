@@ -396,6 +396,20 @@ stdout or exit codes, mutate Google Docs / Drive, operate OAuth/token stores,
 run Live E2E, update package or `dist`, publish releases, create tags, claim
 vendor clearance, or claim Avast safety certification.
 
+P2-21B delivery-state CLI diagnostics evaluation is complete as a docs-only /
+local-only design evaluation. It confirms that P2-21A satisfied the
+Application carrier precondition from P2-20, but direct CLI exposure remains
+NO-GO because the current publish / CLI result path does not yet carry
+`RequestDeliveryState?` from physical update results to final summaries. The
+next narrow GO candidate is a result-bridge implementation from Application
+publish results to `CliResult` with no CLI output change. Actual CLI
+`deliveryState` exposure remains a later separately authorized decision. This
+evaluation does not add `deliveryState` or `httpStatus` to CLI output, create
+a new delivery-state classification, change retry behavior, mutate Google Docs
+/ Drive, operate OAuth/token stores, run Live E2E, update package or `dist`,
+publish releases, create tags, claim vendor clearance, or claim Avast safety
+certification.
+
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is
 design-only complete. P2-07 managed-document readback reporting implementation
