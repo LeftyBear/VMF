@@ -410,6 +410,21 @@ a new delivery-state classification, change retry behavior, mutate Google Docs
 publish releases, create tags, claim vendor clearance, or claim Avast safety
 certification.
 
+P2-21C delivery-state CLI carrier bridge implementation is complete as a
+narrow local-only implementation in commit `f6717a1`. It carries nullable
+`RequestDeliveryState? DeliveryState` from Application publish failure results
+through `PublishError` and into `CliResult` without adding CLI output fields,
+changing the JSON summary schema, changing final summary contents, changing
+stdout or exit codes, creating a new delivery-state classification, or changing
+retry / failure classification. Focused CLI unit coverage passed 77 / 0 / 0,
+full Publisher unit coverage passed 586 / 0 / 0, Release build passed with
+warnings 0 / errors 0, format verification passed, and `git diff --check`
+passed with CRLF conversion warnings only. Actual CLI `deliveryState` exposure
+remains a later separately authorized decision. This implementation does not
+mutate Google Docs / Drive, operate OAuth/token stores, run Live E2E, update
+package or `dist`, publish releases, create tags, claim vendor clearance, or
+claim Avast safety certification.
+
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is
 design-only complete. P2-07 managed-document readback reporting implementation
