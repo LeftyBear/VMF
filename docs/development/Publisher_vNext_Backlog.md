@@ -166,6 +166,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-21A | Implement the Application boundary delivery-state carrier. | P2 | P2-20 requires a stable nullable carrier before any future CLI exposure can be reconsidered. | P2-20 CLI NO-GO decision; existing `RequestDeliveryState` enum; implementation commit `bb09ec5`. | Carries existing `NotSent`, `Sent`, and `Unknown` values through physical update results without adding CLI output, new classifications, release, Google, OAuth, package, vendor-clearance, or Avast effects. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-21B | Re-evaluate delivery-state diagnostics CLI exposure after P2-21A. | P2 | P2-21A satisfied the Application carrier precondition, but CLI exposure also requires a safe publish / CLI result bridge. | `Publisher_P2-21B_DeliveryStateCliDiagnosticsEvaluation.md`; P2-20; P2-21A carrier implementation. | Prevents exposing delivery state as a new classification or unsupported CLI field before the value reaches final summaries through a tested boundary. | Complete / direct CLI exposure remains NO-GO until result bridge. |
 | P2-21C | Implement the Application publish result to `CliResult` delivery-state carrier bridge. | P2 | P2-21B selected a result bridge before any CLI output exposure can be reconsidered. | `Publisher_P2-21B_DeliveryStateCliDiagnosticsEvaluation.md`; existing `RequestDeliveryState` enum; implementation commit `f6717a1`. | Carries nullable delivery state through `PublishError` and `CliResult` without changing CLI display, JSON schema, final summaries, stdout, exit codes, classifications, release, Google, OAuth, package, vendor-clearance, or Avast gates. | Complete / narrow local-only implementation; CLI exposure remains NO-GO. |
+| P2-21D | Re-evaluate delivery-state structured diagnostics exposure after P2-21C. | P2 | P2-21C completed the carrier path through `CliResult`, so the remaining question is whether a bounded final failure summary field is acceptable. | `Publisher_P2-21D_DeliveryStateCliExposureEvaluation.md`; P2-20; P2-21B; P2-21C carrier implementation. | Keeps delivery state value-safe and classification-neutral while preserving separate authorization for any actual CLI output change. | Complete / docs-only evaluation; CLI exposure implementation remains NO-GO until separately authorized. |
 
 ### P2-07 Managed-Document Readback Reporting Implementation
 
@@ -516,17 +517,21 @@ Completed Avast-independent hardening / enhancements:
 - P2-13.
 - P2-14.
 - P2-16.
+- P2-20.
+- P2-21A.
+- P2-21B.
+- P2-21C.
+- P2-21D.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-16: `SUPPORT_SUMMARY` support summary diagnostics derived from the
-  deferred P2-02-E candidate; narrow local-only implementation complete in
-  commit `d61fd00` with nested `SUPPORT_SUMMARY` output limited to final
-  failure summaries and reconstructed only from existing CLI-safe fields,
-  focused `CliApplicationTests` coverage, and no stdout, exit-code,
-  retry-behavior, Application / Domain behavior, public API, interface,
-  persisted schema, Google, OAuth, package, release, vendor-clearance, Avast,
-  or flagged executable operation.
+- P2-21D: delivery-state CLI exposure evaluation after the completed P2-21A
+  through P2-21C carrier path; docs-only / local-only decision complete with
+  CLI exposure implementation still NO-GO until separately authorized, no
+  `deliveryState` or `httpStatus` output added, and no classification,
+  exit-code, stdout, retry-behavior, public API, persisted schema, Google,
+  OAuth, package, release, vendor-clearance, Avast, or flagged executable
+  operation.
 
 ## Vendor-Clearance Boundary
 

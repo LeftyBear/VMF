@@ -425,6 +425,21 @@ mutate Google Docs / Drive, operate OAuth/token stores, run Live E2E, update
 package or `dist`, publish releases, create tags, claim vendor clearance, or
 claim Avast safety certification.
 
+P2-21D delivery-state CLI exposure evaluation is complete as a docs-only /
+local-only design evaluation. It confirms that the P2-21A through P2-21C
+carrier path is now complete enough to support a future narrow
+`deliveryState` final failure summary field, but actual CLI exposure
+implementation remains NO-GO until separately authorized. Any future
+implementation must emit only the existing `NotSent`, `Sent`, and `Unknown`
+values from non-null `CliResult.DeliveryState`, only on final failure
+summaries, with matching bounded `SUPPORT_SUMMARY` behavior if included, and
+without changing classification, exit code, stdout, command syntax, retry
+behavior, safe messages, readback reporting, Frozen specifications, public
+APIs, persisted schemas, Google Docs / Drive, OAuth/token-store, Live E2E,
+package, `dist`, release, tag, publication, vendor-clearance, or Avast safety
+certification gates. This evaluation does not add `deliveryState` or
+`httpStatus` to CLI output.
+
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is
 design-only complete. P2-07 managed-document readback reporting implementation
