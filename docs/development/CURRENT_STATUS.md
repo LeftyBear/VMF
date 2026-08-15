@@ -468,6 +468,23 @@ public APIs, persisted schemas, Google Docs / Drive, OAuth/token-store, Live
 E2E, package, `dist`, release, tag, publication, vendor-clearance, or Avast
 safety certification gates.
 
+P2-24 delivery-state final failure summary diagnostics implementation is
+complete as a narrow local-only implementation. Structured final failure
+summaries now emit `deliveryState` only when `CliResult.DeliveryState` is
+non-null and only as one of the existing bounded values `NotSent`, `Sent`, or
+`Unknown`; matching `SUPPORT_SUMMARY` entries are emitted under the same final
+failure boundary. Success summaries, failures without a carried delivery
+state, and unrelated failure paths omit the field. `httpStatus` remains
+unexposed. Focused `CliApplicationTests` coverage passed 80 / 0 / 0, full
+Publisher unit coverage passed 589 / 0 / 0, Release build passed with
+warnings 0 / errors 0, format verification passed, and `git diff --check`
+passed with CRLF conversion warnings only. This implementation does not change
+classification, stdout, exit codes, retry behavior, command syntax, safe
+messages, readback reporting, Frozen specifications, public APIs, persisted
+schemas, Google Docs / Drive, OAuth/token-store, Live E2E, package, `dist`,
+release, tag, publication, vendor-clearance, or Avast safety certification
+gates.
+
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is
 design-only complete, and its implementation decision was closed by P2-07.

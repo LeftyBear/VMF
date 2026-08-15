@@ -1000,6 +1000,7 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             ["attemptCount"] = result.Succeeded ? null : result.RetryDiagnostics?.AttemptCount,
             ["maxAttempts"] = result.Succeeded ? null : result.RetryDiagnostics?.MaxAttempts,
             ["retryable"] = result.Succeeded ? null : result.RetryDiagnostics?.Retryable,
+            ["deliveryState"] = DeliveryStateSummary(result),
             ["failureBoundary"] = FailureBoundary(result),
             ["documentId"] = result.DocumentId,
             ["documentUrl"] = result.DocumentUrl,
@@ -1151,6 +1152,12 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             supportSummary["retryable"] = result.RetryDiagnostics.Retryable;
         }
 
+        var deliveryState = DeliveryStateSummary(result);
+        if (deliveryState is not null)
+        {
+            supportSummary["deliveryState"] = deliveryState;
+        }
+
         var failureBoundary = FailureBoundary(result);
         if (failureBoundary is not null)
         {
@@ -1160,6 +1167,23 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
         return supportSummary
             .Where(pair => pair.Value is not null)
             .ToDictionary(pair => pair.Key, pair => pair.Value);
+    }
+
+    private static string? DeliveryStateSummary(CliResult result)
+    {
+        if (result.Succeeded)
+        {
+            return null;
+        }
+
+        return result.DeliveryState switch
+        {
+            RequestDeliveryState.NotSent => nameof(RequestDeliveryState.NotSent),
+            RequestDeliveryState.Sent => nameof(RequestDeliveryState.Sent),
+            RequestDeliveryState.Unknown => nameof(RequestDeliveryState.Unknown),
+            null => null,
+            _ => null,
+        };
     }
 
     private static string WarningPhase(string code) => code switch

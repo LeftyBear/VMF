@@ -780,17 +780,20 @@ public sealed class CliApplicationTests
         Assert.Equal(
             "managed-document-readback-only",
             supportSummary.GetProperty("readbackEvidenceBoundary").GetString());
-        Assert.False(summary.TryGetProperty("deliveryState", out _));
         Assert.False(summary.TryGetProperty("httpStatus", out _));
-        Assert.False(supportSummary.TryGetProperty("deliveryState", out _));
         Assert.False(supportSummary.TryGetProperty("httpStatus", out _));
         Assert.DoesNotContain("https://", capture.Error, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(@"C:\secret", capture.Error, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Authorization", capture.Error, StringComparison.OrdinalIgnoreCase);
     }
 
-    [Fact]
-    public void CliResult_CarriesDeliveryStateWithoutStructuredOutputExposure()
+    [Theory]
+    [InlineData(RequestDeliveryState.NotSent, "NotSent")]
+    [InlineData(RequestDeliveryState.Sent, "Sent")]
+    [InlineData(RequestDeliveryState.Unknown, "Unknown")]
+    public void StructuredPublisherLogger_FailureSummaryIncludesAllowListedDeliveryState(
+        RequestDeliveryState deliveryState,
+        string expectedValue)
     {
         using var capture = new ConsoleCapture();
         var logger = new StructuredPublisherLogger("pub-test", "publish");
@@ -799,11 +802,35 @@ public sealed class CliApplicationTests
             "HTTP_503",
             "A transient external service error occurred.",
             ErrorClassification.Transient,
-            deliveryState: RequestDeliveryState.Sent);
+            deliveryState: deliveryState);
 
         logger.Summary(result, TimeSpan.FromMilliseconds(25));
 
-        Assert.Equal(RequestDeliveryState.Sent, result.DeliveryState);
+        Assert.Equal(deliveryState, result.DeliveryState);
+        var summary = LastJsonLine(capture.Error);
+        Assert.Equal(expectedValue, summary.GetProperty("deliveryState").GetString());
+        Assert.Equal(expectedValue, summary.GetProperty("SUPPORT_SUMMARY").GetProperty("deliveryState").GetString());
+        Assert.False(summary.TryGetProperty("httpStatus", out _));
+        Assert.False(summary.GetProperty("SUPPORT_SUMMARY").TryGetProperty("httpStatus", out _));
+        Assert.DoesNotContain("https://", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"C:\secret", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Authorization", capture.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void StructuredPublisherLogger_OmitsDeliveryStateWhenCarrierIsNull()
+    {
+        using var capture = new ConsoleCapture();
+        var logger = new StructuredPublisherLogger("pub-test", "publish");
+        var result = CliResult.Failure(
+            1,
+            "PUBLISHER_ERROR",
+            "An internal Publisher error occurred.",
+            ErrorClassification.Internal);
+
+        logger.Summary(result, TimeSpan.FromMilliseconds(25));
+
+        Assert.Null(result.DeliveryState);
         var summary = LastJsonLine(capture.Error);
         Assert.False(summary.TryGetProperty("deliveryState", out _));
         Assert.False(summary.GetProperty("SUPPORT_SUMMARY").TryGetProperty("deliveryState", out _));
@@ -976,6 +1003,7 @@ public sealed class CliApplicationTests
         Assert.False(summary.TryGetProperty("configurationCategory", out _));
         Assert.False(summary.TryGetProperty("attemptCount", out _));
         Assert.False(summary.TryGetProperty("retryable", out _));
+        Assert.False(summary.TryGetProperty("deliveryState", out _));
         Assert.False(summary.TryGetProperty("SUPPORT_SUMMARY", out _));
         Assert.Equal(
             "https://docs.google.com/document/d/document-id/edit",

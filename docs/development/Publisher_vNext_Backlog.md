@@ -169,6 +169,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-21D | Re-evaluate delivery-state structured diagnostics exposure after P2-21C. | P2 | P2-21C completed the carrier path through `CliResult`, so the remaining question is whether a bounded final failure summary field is acceptable. | `Publisher_P2-21D_DeliveryStateCliExposureEvaluation.md`; P2-20; P2-21B; P2-21C carrier implementation. | Keeps delivery state value-safe and classification-neutral while preserving separate authorization for any actual CLI output change. | Complete / docs-only evaluation; CLI exposure implementation remains NO-GO until separately authorized. |
 | P2-22 | Evaluate HTTP status structured diagnostics exposure. | P2 | `httpStatus` remains the P2-02 deferred transport diagnostic after retry, support summary, readback, and delivery-state carrier work. | `Publisher_P2-22_HttpStatusCliExposureEvaluation.md`; P2-02 deferred `httpStatus`; P2-21D diagnostic-size boundary. | Keeps any future HTTP status field final-failure-only, sanitized, classification-neutral, and separate from Google / OAuth provider payloads, release, package, vendor-clearance, and Avast gates. | Complete / docs-only evaluation; CLI exposure implementation remains NO-GO until separately authorized. |
 | P2-23 | Evaluate P2-03-E physical update dry-run as a separate command. | P2 | P2-19 made integration into existing `dry-run` NO-GO, so any remaining physical update dry-run path must first prove a separate command, contract, evidence category, and authorization boundary. | `Publisher_P2-23_PhysicalUpdateDryRunSeparateCommandEvaluation.md`; P2-03-E deferred candidate; P2-19 existing `dry-run` integration NO-GO decision; ADR-0004 / ADR-0006 / ADR-0007. | Prevents physical update preview evidence from being confused with local Markdown dry-run, Google verification, publication authorization, release clearance, package approval, vendor clearance, or Avast safety certification. | Complete / docs-only evaluation; separate-command implementation remains NO-GO until separately authorized. |
+| P2-24 | Implement `deliveryState` final failure summary diagnostics. | P2 | P2-21D established the safe final-summary boundary after the `CliResult` carrier path was completed. | `Publisher_P2-21D_DeliveryStateCliExposureEvaluation.md`; existing `CliResult.DeliveryState`; explicit narrow implementation authorization. | Adds bounded local failure summary context without changing retry behavior, classification, stdout, exit codes, `httpStatus`, release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
 
 ### P2-07 Managed-Document Readback Reporting Implementation
 
@@ -527,15 +528,18 @@ Completed Avast-independent hardening / enhancements:
 - P2-21D.
 - P2-22.
 - P2-23.
+- P2-24.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-23: physical update dry-run separate-command evaluation after P2-19;
-  docs-only / local-only decision complete with future separate-command design
-  GO but implementation still NO-GO until separately authorized, existing
-  `dry-run` unchanged, no command syntax or diagnostic schema added, no Google
-  / OAuth operation, no Verified State save, no package or release operation,
-  and no vendor-clearance, Avast, or flagged executable operation.
+- P2-24: `deliveryState` final failure summary diagnostics; narrow local-only
+  implementation complete with focused unit coverage, exposing only existing
+  `NotSent`, `Sent`, and `Unknown` values from non-null
+  `CliResult.DeliveryState` on final failure summaries and matching
+  `SUPPORT_SUMMARY` entries, while preserving `httpStatus` omission,
+  classification, stdout, exit codes, retry behavior, Google / OAuth gates,
+  package / release gates, vendor-clearance, Avast, and flagged-executable
+  boundaries.
 
 ## Vendor-Clearance Boundary
 
