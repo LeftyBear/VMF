@@ -148,7 +148,8 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
                         "CANCELED_BEFORE_SEND",
                         exception.Message,
                         batch.Traces,
-                        operationIds));
+                        operationIds,
+                        exception.DeliveryState));
                 }
 
                 if (classification != PhysicalUpdateExecutionStatus.TransientFailure ||
@@ -328,7 +329,8 @@ public sealed class PhysicalUpdateExecutor : IPhysicalUpdateExecutor
             code,
             exception.Message,
             batch.Traces,
-            operationIds);
+            operationIds,
+            exception.DeliveryState);
     }
 
     private TimeSpan NextDelay(int completedAttempt, TimeSpan? retryAfter)

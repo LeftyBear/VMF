@@ -93,6 +93,29 @@ public sealed class GoogleDocsPhysicalPlanExecutorTests
         Assert.False(result.Applied);
     }
 
+    [Theory]
+    [InlineData(RequestDeliveryState.NotSent)]
+    [InlineData(RequestDeliveryState.Sent)]
+    [InlineData(RequestDeliveryState.Unknown)]
+    public async Task ExecuteAsync_ApiFailureCarriesDeliveryState(RequestDeliveryState deliveryState)
+    {
+        var gateway = new RecordingGateway
+        {
+            Exception = new GoogleDocsBatchUpdateException(
+                HttpStatusCode.Forbidden,
+                "forbidden",
+                retryAfter: null,
+                deliveryState,
+                "api failure"),
+        };
+
+        var result = await Executor(new RecordingBuilder(), gateway)
+            .ExecuteAsync(Plan(Delete(0)), dryRun: false, default);
+
+        Assert.Equal(PhysicalUpdateExecutionStatus.Rejected, result.Status);
+        Assert.Equal(deliveryState, result.DeliveryState);
+    }
+
     [Fact]
     public async Task ExecuteAsync_RejectsBuilderRevisionMismatch()
     {

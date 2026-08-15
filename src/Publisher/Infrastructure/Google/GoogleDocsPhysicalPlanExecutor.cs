@@ -122,7 +122,8 @@ public sealed class GoogleDocsPhysicalPlanExecutor : IPhysicalPlanExecutor
                 status == PhysicalUpdateExecutionStatus.RevisionConflict
                     ? UpdateErrorCodes.RevisionConflict
                     : UpdateErrorCodes.ApplicationFailed,
-                exception.Message);
+                exception.Message,
+                exception.DeliveryState);
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
@@ -170,7 +171,8 @@ public sealed class GoogleDocsPhysicalPlanExecutor : IPhysicalPlanExecutor
         int plannedOperationCount,
         int submittedRequestCount,
         string errorCode,
-        string message) => new(
+        string message,
+        RequestDeliveryState? deliveryState = null) => new(
             status,
             dryRun,
             documentId,
@@ -179,5 +181,6 @@ public sealed class GoogleDocsPhysicalPlanExecutor : IPhysicalPlanExecutor
             plannedOperationCount,
             submittedRequestCount,
             errorCode,
-            message);
+            message,
+            deliveryState);
 }

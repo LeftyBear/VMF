@@ -98,6 +98,22 @@ public sealed class PhysicalUpdateExecutorTests
         Assert.Equal(1, result.AttemptCount);
     }
 
+    [Theory]
+    [InlineData(RequestDeliveryState.NotSent, PhysicalUpdateExecutionStatus.TransientFailure, 1)]
+    [InlineData(RequestDeliveryState.Sent, PhysicalUpdateExecutionStatus.IndeterminateFailure, 1)]
+    [InlineData(RequestDeliveryState.Unknown, PhysicalUpdateExecutionStatus.IndeterminateFailure, 1)]
+    public async Task ExecuteAsync_CarriesDeliveryStateWithoutChangingClassification(
+        RequestDeliveryState deliveryState,
+        PhysicalUpdateExecutionStatus expectedStatus,
+        int expectedAttempts)
+    {
+        var result = await ExecuteFailure(Error(HttpStatusCode.TooManyRequests, deliveryState), expectedAttempts);
+
+        Assert.Equal(expectedStatus, result.Status);
+        Assert.Equal(expectedAttempts, result.AttemptCount);
+        Assert.Equal(deliveryState, result.DeliveryState);
+    }
+
     [Fact]
     public async Task ExecuteAsync_RetryLimitRetryAfterAndBackoffCapAreApplied()
     {
@@ -161,13 +177,13 @@ public sealed class PhysicalUpdateExecutorTests
         Assert.Equal(PhysicalUpdateExecutionStatus.Applied, result.Status);
     }
 
-    private static async Task<PhysicalUpdateExecutionResult> ExecuteFailure(Exception exception)
+    private static async Task<PhysicalUpdateExecutionResult> ExecuteFailure(Exception exception, int maxAttempts = 2)
     {
         var client = new RecordingClient { Failures = [exception] };
         var executor = new PhysicalUpdateExecutor(
             new RecordingMapper(),
             client,
-            new PhysicalUpdateRetryPolicy(2, TimeSpan.Zero, TimeSpan.Zero, 1, false),
+            new PhysicalUpdateRetryPolicy(maxAttempts, TimeSpan.Zero, TimeSpan.Zero, 1, false),
             new RecordingDelay());
         return await executor.ExecuteAsync(Plan(), CancellationToken.None);
     }

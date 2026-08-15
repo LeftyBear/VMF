@@ -311,7 +311,8 @@ public sealed class ApplyResult
         int plannedOperationCount,
         int submittedRequestCount,
         string? errorCode,
-        string message)
+        string message,
+        RequestDeliveryState? deliveryState = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
         ArgumentException.ThrowIfNullOrWhiteSpace(requiredRevisionId);
@@ -327,6 +328,7 @@ public sealed class ApplyResult
         SubmittedRequestCount = submittedRequestCount;
         ErrorCode = errorCode;
         Message = message;
+        DeliveryState = deliveryState;
     }
 
     /// <summary>Gets the terminal status.</summary>
@@ -355,6 +357,9 @@ public sealed class ApplyResult
 
     /// <summary>Gets a safe diagnostic message.</summary>
     public string Message { get; }
+
+    /// <summary>Gets the request delivery state carried from a failed batchUpdate request, when known.</summary>
+    public RequestDeliveryState? DeliveryState { get; }
 
     /// <summary>Gets whether the plan was applied.</summary>
     public bool Applied => Status == PhysicalUpdateExecutionStatus.Applied;
@@ -387,7 +392,8 @@ public sealed class PhysicalUpdateExecutionResult
         string diagnosticCode,
         string diagnosticMessage,
         IEnumerable<PhysicalUpdateRequestTrace>? requestTraces = null,
-        IEnumerable<string>? operationIds = null)
+        IEnumerable<string>? operationIds = null,
+        RequestDeliveryState? deliveryState = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
         ArgumentException.ThrowIfNullOrWhiteSpace(requiredRevisionId);
@@ -407,6 +413,7 @@ public sealed class PhysicalUpdateExecutionResult
         DiagnosticMessage = diagnosticMessage;
         RequestTraces = Array.AsReadOnly((requestTraces ?? []).ToArray());
         OperationIds = Array.AsReadOnly((operationIds ?? []).ToArray());
+        DeliveryState = deliveryState;
     }
 
     /// <summary>Gets the terminal status.</summary>
@@ -441,6 +448,9 @@ public sealed class PhysicalUpdateExecutionResult
 
     /// <summary>Gets source operation identifiers retained for idempotent recovery diagnostics.</summary>
     public IReadOnlyList<string> OperationIds { get; }
+
+    /// <summary>Gets the request delivery state carried from a failed batchUpdate request, when known.</summary>
+    public RequestDeliveryState? DeliveryState { get; }
 }
 
 /// <summary>Provides production delay behavior.</summary>
