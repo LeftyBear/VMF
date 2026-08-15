@@ -362,6 +362,25 @@ an expansion of `DRY_RUN_PLAN`. Focused `CliApplicationTests` passed 73 / 0 /
 0 / errors 0, format verification passed, and `git diff --check` passed with
 CRLF conversion warnings only.
 
+P2-19 physical update dry-run integration decision is complete as a docs-only /
+local-only NO-GO decision. Existing `dry-run` remains local Markdown planning
+only. If physical update dry-run is adopted later, it requires a separate
+command, separate contract, and separate authorization boundary. This decision
+does not implement physical update dry-run behavior, change CLI output, mutate
+Google Docs / Drive, operate OAuth/token stores, run Live E2E, update package
+or `dist`, publish releases, create tags, claim vendor clearance, or claim
+Avast safety certification.
+
+P2-20 delivery-state diagnostics CLI decision is complete as a docs-only /
+local-only NO-GO decision. CLI exposure of delivery-state diagnostics remains
+deferred until the Application boundary first carries `RequestDeliveryState?`
+through physical update results. The selected next step is P2-21A. This
+decision does not add `deliveryState` or `httpStatus` to CLI output, create a
+new delivery-state classification, change retry behavior, mutate Google Docs /
+Drive, operate OAuth/token stores, run Live E2E, update package or `dist`,
+publish releases, create tags, claim vendor clearance, or claim Avast safety
+certification.
+
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is
 design-only complete. P2-07 managed-document readback reporting implementation
