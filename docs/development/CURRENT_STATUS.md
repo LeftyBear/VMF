@@ -371,6 +371,16 @@ Google Docs / Drive, operate OAuth/token stores, run Live E2E, update package
 or `dist`, publish releases, create tags, claim vendor clearance, or claim
 Avast safety certification.
 
+P2-23 physical update dry-run separate-command evaluation is complete as a
+docs-only / local-only decision record. It confirms GO for future
+separate-command design of the deferred P2-03-E candidate, while actual
+implementation remains NO-GO until separately authorized. Existing `dry-run`
+remains local Markdown planning only. P2-23 does not add a command, change CLI
+output, change structured diagnostics, call adapter apply, save Verified State,
+mutate Google Docs / Drive, operate OAuth/token stores, run Live E2E, update
+package or `dist`, publish releases, create tags, claim vendor clearance, claim
+Avast safety certification, or re-run flagged executables.
+
 P2-20 delivery-state diagnostics CLI decision is complete as a docs-only /
 local-only NO-GO decision. CLI exposure of delivery-state diagnostics remains
 deferred until the Application boundary first carries `RequestDeliveryState?`
