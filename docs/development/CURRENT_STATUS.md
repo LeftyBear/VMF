@@ -485,6 +485,17 @@ schemas, Google Docs / Drive, OAuth/token-store, Live E2E, package, `dist`,
 release, tag, publication, vendor-clearance, or Avast safety certification
 gates.
 
+P2-25 candidate selection is complete as a docs-only / local-only backlog
+re-inventory after P2-24 closeout. `Publisher_P2-25_CandidateSelection.md`
+selects bounded `httpStatus` final failure summary diagnostics as the next
+scoped P2 candidate, derived from the P2-22 HTTP status exposure evaluation.
+The selection does not implement `httpStatus`, add CLI output, change
+structured diagnostics, classification, stdout, exit codes, retry behavior,
+public APIs, persisted schemas, Google Docs / Drive, OAuth/token-store, Live
+E2E, package, `dist`, release, tag, publication, vendor-clearance, Avast, or
+flagged-executable gates. Future implementation remains separately authorized
+and must prove a sanitized final-summary boundary before emitting any value.
+
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is
 design-only complete, and its implementation decision was closed by P2-07.

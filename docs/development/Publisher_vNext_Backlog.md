@@ -170,6 +170,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-22 | Evaluate HTTP status structured diagnostics exposure. | P2 | `httpStatus` remains the P2-02 deferred transport diagnostic after retry, support summary, readback, and delivery-state carrier work. | `Publisher_P2-22_HttpStatusCliExposureEvaluation.md`; P2-02 deferred `httpStatus`; P2-21D diagnostic-size boundary. | Keeps any future HTTP status field final-failure-only, sanitized, classification-neutral, and separate from Google / OAuth provider payloads, release, package, vendor-clearance, and Avast gates. | Complete / docs-only evaluation; CLI exposure implementation remains NO-GO until separately authorized. |
 | P2-23 | Evaluate P2-03-E physical update dry-run as a separate command. | P2 | P2-19 made integration into existing `dry-run` NO-GO, so any remaining physical update dry-run path must first prove a separate command, contract, evidence category, and authorization boundary. | `Publisher_P2-23_PhysicalUpdateDryRunSeparateCommandEvaluation.md`; P2-03-E deferred candidate; P2-19 existing `dry-run` integration NO-GO decision; ADR-0004 / ADR-0006 / ADR-0007. | Prevents physical update preview evidence from being confused with local Markdown dry-run, Google verification, publication authorization, release clearance, package approval, vendor clearance, or Avast safety certification. | Complete / docs-only evaluation; separate-command implementation remains NO-GO until separately authorized. |
 | P2-24 | Implement `deliveryState` final failure summary diagnostics. | P2 | P2-21D established the safe final-summary boundary after the `CliResult` carrier path was completed. | `Publisher_P2-21D_DeliveryStateCliExposureEvaluation.md`; existing `CliResult.DeliveryState`; explicit narrow implementation authorization. | Adds bounded local failure summary context without changing retry behavior, classification, stdout, exit codes, `httpStatus`, release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
+| P2-25 | Implement bounded `httpStatus` final failure summary diagnostics. | P2 | P2-22 established that a future sanitized HTTP status field may be acceptable, and P2-24 completed the adjacent final-summary diagnostic pattern while preserving `httpStatus` omission. | `Publisher_P2-25_CandidateSelection.md`; `Publisher_P2-22_HttpStatusCliExposureEvaluation.md`; explicit narrow implementation authorization. | Adds bounded local failure summary context only if the status is safely carried to the CLI boundary, without exposing provider payloads, changing classification, retry behavior, stdout, exit codes, release, Google, OAuth, package, or vendor-clearance gates. | Selected / next scoped task candidate; implementation not authorized by selection alone. |
 
 ### P2-07 Managed-Document Readback Reporting Implementation
 
@@ -540,6 +541,17 @@ Latest completed Avast-independent enhancement candidate:
   classification, stdout, exit codes, retry behavior, Google / OAuth gates,
   package / release gates, vendor-clearance, Avast, and flagged-executable
   boundaries.
+
+Selected next Avast-independent enhancement candidate:
+
+- P2-25: bounded `httpStatus` final failure summary diagnostics, selected by
+  `Publisher_P2-25_CandidateSelection.md` after P2-24 closeout. Selection is
+  docs-only / local-only and does not authorize implementation. Future
+  implementation must prove the status is safely available at the CLI
+  final-summary boundary, emit only final-failure-only sanitized values, keep
+  `SUPPORT_SUMMARY` consistent if included, preserve `deliveryState`
+  semantics, and avoid provider payloads, Google / OAuth operations, package /
+  release gates, vendor-clearance, Avast, and flagged-executable operations.
 
 ## Vendor-Clearance Boundary
 
