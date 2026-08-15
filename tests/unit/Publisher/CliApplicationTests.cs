@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Reflection;
+using System.Net;
 using Vmf.Publisher.Application;
 using Vmf.Publisher.Domain;
 
@@ -834,6 +835,52 @@ public sealed class CliApplicationTests
         var summary = LastJsonLine(capture.Error);
         Assert.False(summary.TryGetProperty("deliveryState", out _));
         Assert.False(summary.GetProperty("SUPPORT_SUMMARY").TryGetProperty("deliveryState", out _));
+    }
+
+    [Fact]
+    public void StructuredPublisherLogger_FailureSummaryIncludesBoundedHttpStatusWhenKnown()
+    {
+        using var capture = new ConsoleCapture();
+        var logger = new StructuredPublisherLogger("pub-test", "publish");
+        var result = CliResult.Failure(
+            75,
+            "HTTP_503",
+            "A transient external service error occurred.",
+            ErrorClassification.Transient,
+            deliveryState: RequestDeliveryState.Sent,
+            httpStatusCode: HttpStatusCode.ServiceUnavailable);
+
+        logger.Summary(result, TimeSpan.FromMilliseconds(25));
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, result.HttpStatusCode);
+        var summary = LastJsonLine(capture.Error);
+        Assert.Equal(503, summary.GetProperty("httpStatus").GetInt32());
+        Assert.Equal(503, summary.GetProperty("SUPPORT_SUMMARY").GetProperty("httpStatus").GetInt32());
+        Assert.Equal("Sent", summary.GetProperty("deliveryState").GetString());
+        Assert.Equal("Sent", summary.GetProperty("SUPPORT_SUMMARY").GetProperty("deliveryState").GetString());
+        Assert.DoesNotContain("ServiceUnavailable", capture.Error, StringComparison.Ordinal);
+        Assert.DoesNotContain("https://", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"C:\secret", capture.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Authorization", capture.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void StructuredPublisherLogger_OmitsHttpStatusWhenCarrierIsNull()
+    {
+        using var capture = new ConsoleCapture();
+        var logger = new StructuredPublisherLogger("pub-test", "publish");
+        var result = CliResult.Failure(
+            1,
+            "PUBLISHER_ERROR",
+            "An internal Publisher error occurred.",
+            ErrorClassification.Internal);
+
+        logger.Summary(result, TimeSpan.FromMilliseconds(25));
+
+        Assert.Null(result.HttpStatusCode);
+        var summary = LastJsonLine(capture.Error);
+        Assert.False(summary.TryGetProperty("httpStatus", out _));
+        Assert.False(summary.GetProperty("SUPPORT_SUMMARY").TryGetProperty("httpStatus", out _));
     }
 
     [Fact]

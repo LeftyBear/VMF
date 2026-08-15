@@ -1001,6 +1001,7 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             ["maxAttempts"] = result.Succeeded ? null : result.RetryDiagnostics?.MaxAttempts,
             ["retryable"] = result.Succeeded ? null : result.RetryDiagnostics?.Retryable,
             ["deliveryState"] = DeliveryStateSummary(result),
+            ["httpStatus"] = HttpStatusSummary(result),
             ["failureBoundary"] = FailureBoundary(result),
             ["documentId"] = result.DocumentId,
             ["documentUrl"] = result.DocumentUrl,
@@ -1158,6 +1159,12 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             supportSummary["deliveryState"] = deliveryState;
         }
 
+        var httpStatus = HttpStatusSummary(result);
+        if (httpStatus is not null)
+        {
+            supportSummary["httpStatus"] = httpStatus;
+        }
+
         var failureBoundary = FailureBoundary(result);
         if (failureBoundary is not null)
         {
@@ -1184,6 +1191,16 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             null => null,
             _ => null,
         };
+    }
+
+    private static int? HttpStatusSummary(CliResult result)
+    {
+        if (result.Succeeded || result.HttpStatusCode is null)
+        {
+            return null;
+        }
+
+        return (int)result.HttpStatusCode.Value;
     }
 
     private static string WarningPhase(string code) => code switch
@@ -1276,7 +1293,8 @@ internal sealed record CliResult(
     string? ExceptionType,
     string? ConfigurationCategory,
     RetryDiagnostics? RetryDiagnostics,
-    RequestDeliveryState? DeliveryState)
+    RequestDeliveryState? DeliveryState,
+    HttpStatusCode? HttpStatusCode)
 {
     internal bool Succeeded => ExitCode == 0;
 
@@ -1285,7 +1303,7 @@ internal sealed record CliResult(
         string message,
         string? documentId = null,
         string? documentUrl = null) =>
-        new(0, code, message, ErrorClassification.None, documentId, documentUrl, null, null, null, null);
+        new(0, code, message, ErrorClassification.None, documentId, documentUrl, null, null, null, null, null);
 
     internal static CliResult Failure(
         int exitCode,
@@ -1295,7 +1313,8 @@ internal sealed record CliResult(
         string? exceptionType = null,
         string? configurationCategory = null,
         RetryDiagnostics? retryDiagnostics = null,
-        RequestDeliveryState? deliveryState = null) =>
+        RequestDeliveryState? deliveryState = null,
+        HttpStatusCode? httpStatusCode = null) =>
         new(
             exitCode,
             code,
@@ -1306,7 +1325,8 @@ internal sealed record CliResult(
             exceptionType,
             configurationCategory,
             retryDiagnostics,
-            deliveryState);
+            deliveryState,
+            httpStatusCode);
 }
 
 internal sealed record RetryDiagnostics(int AttemptCount, int MaxAttempts, bool Retryable);
