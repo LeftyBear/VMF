@@ -381,6 +381,21 @@ Drive, operate OAuth/token stores, run Live E2E, update package or `dist`,
 publish releases, create tags, claim vendor clearance, or claim Avast safety
 certification.
 
+P2-21A delivery-state carrier implementation is complete as a narrow
+local-only Application boundary implementation in commit `bb09ec5`. It adds
+nullable `RequestDeliveryState? DeliveryState` carrier fields to
+`ApplyResult` and `PhysicalUpdateExecutionResult`, propagates the existing
+`NotSent`, `Sent`, and `Unknown` values from failed batchUpdate exceptions,
+and does not create a new delivery-state classification or change existing
+retry / failure classification. Focused physical update unit coverage passed
+23 / 0 / 0, full Publisher unit coverage passed 582 / 0 / 0, Release build
+passed with warnings 0 / errors 0, format verification passed, and
+`git diff --check` passed with CRLF conversion warnings only. This
+implementation does not add delivery-state diagnostics to CLI output, change
+stdout or exit codes, mutate Google Docs / Drive, operate OAuth/token stores,
+run Live E2E, update package or `dist`, publish releases, create tags, claim
+vendor clearance, or claim Avast safety certification.
+
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is
 design-only complete. P2-07 managed-document readback reporting implementation
