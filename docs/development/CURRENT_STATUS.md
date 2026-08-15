@@ -440,6 +440,23 @@ package, `dist`, release, tag, publication, vendor-clearance, or Avast safety
 certification gates. This evaluation does not add `deliveryState` or
 `httpStatus` to CLI output.
 
+P2-22 HTTP status CLI exposure evaluation is complete as a docs-only /
+local-only design evaluation. It confirms that a future narrow `httpStatus`
+final failure summary field is not rejected in principle, but only if a
+separately authorized local-only CLI diagnostics task can prove the value is
+already safely available at the final-summary boundary as a sanitized integer
+or bounded marker, final-failure-only, classification-neutral, and
+diagnostic-size controlled when considered with possible future
+`deliveryState` exposure. Actual `httpStatus` CLI exposure implementation
+remains NO-GO until separately authorized. This evaluation does not add
+`httpStatus` or `deliveryState` to CLI output, expose Google / OAuth provider
+payloads, raw responses, exception text, URLs, document identifiers,
+credentials, tokens, token-store paths, or account identifiers, or change
+stdout, failure classification, exit code, retry behavior, structured schema,
+public APIs, persisted schemas, Google Docs / Drive, OAuth/token-store, Live
+E2E, package, `dist`, release, tag, publication, vendor-clearance, or Avast
+safety certification gates.
+
 P2-05 OAuth Desktop token-store documentation is complete as docs-only guidance
 synchronization. P2-06 managed-document readback reporting evaluation is
 design-only complete. P2-07 managed-document readback reporting implementation
