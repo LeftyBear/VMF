@@ -698,6 +698,27 @@ perform release, tag, publication, package, `dist`, GitHub asset, Live E2E,
 Google Docs / Drive, OAuth/token-store, Avast, vendor, or flagged-executable
 operations.
 
+P2-10 current-state consistency guard is complete as a narrow local-only
+implementation under the user-requested label. This is a separate scope from
+the earlier completed `P2-10 Safe Retry Diagnostics` record, which remains
+historical and unchanged. The guard compares explicit caller-supplied
+current-state claims against an allow-listed manifest and closed vocabulary,
+rejects historical sources as non-current, and reports only bounded `Match` /
+`Conflict` results plus allow-listed diagnostics. It is static,
+package-independent, and documentation-claim oriented; it does not scrape broad
+Markdown or infer current release clearance from historical completion,
+publication, closeout, local verification, or risk-acceptance wording. Focused
+unit coverage passed 6 / 0 / 0, full Publisher unit coverage passed 597 / 0 /
+0, and Release build passed with warnings 0 / errors 0. `dotnet format
+VMF.Publisher.sln --verify-no-changes` currently fails on pre-existing
+`src/Publisher.Cli/Program.cs` whitespace with no working-tree diff in that
+file; this synchronization does not format unrelated files. This
+implementation does not change release authorization, package state,
+vendor-clearance state, Avast state, Live E2E state, or flagged-executable
+status; and does not perform release, tag, publication, package, `dist`, GitHub
+asset, Live E2E, Google Docs / Drive, OAuth/token-store, Avast, vendor, or
+flagged-executable operations.
+
 P2-17 CHANGELOG draft helper evaluation is design-complete as a docs-only /
 local-only investigation. It records that a future helper may be acceptable
 only as draft-only output derived from the existing P2-04 allow-listed

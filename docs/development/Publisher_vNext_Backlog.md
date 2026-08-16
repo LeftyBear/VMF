@@ -155,6 +155,7 @@ executable, claim vendor clearance, or claim Avast safety certification.
 | P2-08 | Implement the release-note drift checker selected after P2-07 closeout. | P2 | Bounded local drift checking reduces release-note ambiguity without rewriting approved release notes or promoting gated decisions. | `Publisher_P2-08_CandidateSelection.md`; P2-04 allow-listed source-field boundary; commit `75be0fc`. | Keeps vNext release-note review local-only while preserving release, Google, OAuth, package, vendor-clearance, and Avast boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-09 | Implement allow-listed configuration failure summary classification. | P2 | The P2-02 deferred `configurationCategory` field improves local troubleshooting while preserving safe diagnostic boundaries. | Existing stable `CONFIG_*` codes; P2-02 allow-listed category boundary; commit `d7c761d`. | Adds bounded local failure summary context without exposing configuration values or changing release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-10 | Implement safe retry diagnostics for final failure summaries. | P2 | The P2-02-D deferred retry diagnostics subset improves local troubleshooting while preserving safe diagnostic boundaries. | Existing retry/failure classification; P2-02-D allow-listed retry metadata boundary; commit `871ece5`. | Adds bounded local failure summary context without changing retry behavior, release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
+| P2-10-current-state-guard | Implement the user-requested current-state consistency guard without rewriting the existing P2-10 safe-retry record. | P2 | A static allow-listed guard prevents current-state records from being contradicted by release-cleared, vendor-cleared, or Live-E2E-complete claims when those states are not current. | `Publisher_P2-10_CurrentStateConsistencyGuardEvaluation.md`; `CURRENT_STATUS.md`; explicit current-state manifest supplied by local callers. | Preserves historical/current-state separation without changing release, Google, OAuth, package, Live E2E, Avast, flagged-executable, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage; format verification blocked by pre-existing unrelated `Program.cs` whitespace. |
 | P2-12 | Implement the P2-04-C verification evidence extractor. | P2 | Normalizing allow-listed verification evidence rows reduces release-note drift without inferring approval or gated operation state. | `Publisher_P2-04_ReleaseNoteGenerationEvaluation.md`; P2-04 allow-listed source-field boundary; commit `f6c7d08`. | Keeps release-note evidence extraction local-only while preserving release, Google, OAuth, package, vendor-clearance, Avast, and `deliveryState` deferred boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-13 | Implement dry-run failure boundary hints selected after P2-12 closeout. | P2 | Bounded failure-boundary hints can reduce dry-run troubleshooting ambiguity by reusing existing CLI classifications and safe diagnostic routing. | `Publisher_P2-13_CandidateSelection.md`; P2-03-D failure-boundary hint boundary; commit `91d3969`. | Keeps dry-run troubleshooting local-only while preserving dry-run semantics, stdout, exit codes, Google, OAuth, package, release, vendor-clearance, and Avast boundaries. | Complete / narrow local-only implementation with focused unit coverage. |
 | P2-14 | Implement maxAttempts retry diagnostics for final failure summaries. | P2 | The remaining low-risk P2-02-D retry budget field improves local troubleshooting while preserving safe diagnostic boundaries. | Existing retry diagnostics boundary; explicit narrow implementation authorization; commit `7df613d`. | Adds bounded local failure summary context without changing retry policy, release, Google, OAuth, package, or vendor-clearance gates. | Complete / narrow local-only implementation with focused unit coverage. |
@@ -490,6 +491,58 @@ tests passed, format passed, and `git diff --check` passed. Current-state
 synchronization records the completed narrow local-only implementation and does
 not broaden release authorization or vendor-clearance status.
 
+### P2-10 Current-State Consistency Guard
+
+This user-requested P2-10 current-state consistency guard is complete as a
+separate narrow local-only implementation. The existing `P2-10 Safe Retry
+Diagnostics` record remains the historical backlog item for retry diagnostics
+and is not rewritten or superseded by this guard label.
+
+Completed implementation scope:
+
+- compare explicit caller-supplied current-state claims against an
+  allow-listed manifest;
+- accept only allow-listed source paths and current-state source records;
+- reject historical completion wording as non-current;
+- report conflicts for release-cleared, vendor-cleared, or Live-E2E-complete
+  claims when the supplied current-state manifest keeps those states blocked,
+  not obtained, or not complete;
+- emit only bounded `Match` / `Conflict` results and allow-listed diagnostic
+  kinds.
+
+Safe-value boundary:
+
+- allowed values are closed current-state labels supplied by the manifest;
+- diagnostics do not include raw claim values;
+- prohibited values include credentials, tokens, Authorization headers, private
+  URLs, provider payloads, raw exception details, stacks, local sensitive paths,
+  usernames, hostnames, and account identifiers;
+- current-state consistency results remain local review evidence only and must
+  not be represented as release approval, release authorization, publication
+  authorization, package approval, vendor clearance, Avast safety
+  certification, Live E2E authorization, Google Docs / Drive authorization, or
+  OAuth/token-store authorization.
+
+Non-goals:
+
+- no broad Markdown scraping, release-note rewrite, `CHANGELOG.md` edit,
+  package or `dist` update, release, tag, publication, GitHub asset operation,
+  Live E2E, Google Docs mutation, Google Drive mutation, OAuth login,
+  token-store read/write/delete, Avast operation, vendor-clearance judgment,
+  flagged executable re-run, or external lookup;
+- no stdout, exit-code, CLI classification, Frozen specification, public API,
+  persisted schema, retry behavior, delivery-state, HTTP-status, OAuth scope,
+  authentication architecture, or release-record change.
+
+Verification result recorded for this guard: focused
+`CurrentStateConsistencyGuard` unit coverage passed 6 / 0 / 0, full Publisher
+unit coverage passed 597 / 0 / 0, and Release build passed with warnings 0 /
+errors 0. `dotnet format VMF.Publisher.sln --verify-no-changes` is currently
+blocked by pre-existing unrelated whitespace in `src/Publisher.Cli/Program.cs`
+with no working-tree diff in that file. Current-state synchronization records
+the completed narrow local-only implementation and does not broaden release
+authorization or vendor-clearance status.
+
 ### P2-12 Verification Evidence Extractor
 
 P2-12 is the completed narrow local-only implementation of the P2-04-C
@@ -589,13 +642,14 @@ Completed Avast-independent hardening / enhancements:
 - P2-29.
 - P2-30.
 - P2-31.
+- P2-10 current-state consistency guard.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-31: authorization/readiness planning complete as a docs-only / local-only
-  record. It closes the P2-30 implementation-start conditions and records GO
-  for a separately executed first narrow local-only `preview-update`
-  implementation slice. P2-31 itself performs no implementation.
+- P2-10 current-state consistency guard: narrow local-only implementation
+  complete under the user-requested label, without changing the existing P2-10
+  safe-retry record or any release, vendor, Google, OAuth, package, Live E2E,
+  Avast, or flagged-executable boundary.
 
 ## Vendor-Clearance Boundary
 
