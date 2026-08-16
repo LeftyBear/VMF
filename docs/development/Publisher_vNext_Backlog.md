@@ -540,21 +540,14 @@ Completed Avast-independent hardening / enhancements:
 - P2-28.
 - P2-29.
 - P2-30.
+- P2-31.
 
 Latest completed Avast-independent enhancement candidate:
 
-- P2-30: candidate selection after P2-29; docs-only / local-only selection
-  complete. It organizes GO / CONDITIONAL GO / NO-GO decision inputs for the
-  P2-29 `preview-update` implementation scope, confirms implementation start
-  and stop conditions, separates local-only verification from Google / OAuth /
-  Live E2E gates, and records CONDITIONAL GO only for a future separately
-  authorized local-only implementation task after local Verified State and
-  local or synthetic snapshot input shapes are fixed. It does not implement
-  `preview-update`, change existing `dry-run`, adopt Google Picker or
-  `drive.file`, change OAuth scopes, call Google Docs / Drive, inspect or
-  mutate token stores, run Live E2E, update package / release state, claim
-  vendor clearance, operate Avast, re-run flagged executables, stage, commit,
-  or push.
+- P2-31: authorization/readiness planning complete as a docs-only / local-only
+  record. It closes the P2-30 implementation-start conditions and records GO
+  for a separately executed first narrow local-only `preview-update`
+  implementation slice. P2-31 itself performs no implementation.
 
 ## Vendor-Clearance Boundary
 
