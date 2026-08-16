@@ -35,6 +35,7 @@ internal static class CliApplication
           vmf-publisher publish <markdown-file>
           vmf-publisher verify [markdown-file]
           vmf-publisher diff <before-markdown-file> <after-markdown-file>
+          vmf-publisher preview-update <markdown-file>
           vmf-publisher dry-run <markdown-file>
           vmf-publisher --help
 
@@ -42,6 +43,7 @@ internal static class CliApplication
           publish <markdown-file>          Publish a Markdown file to Google Docs.
           verify [markdown-file]           Validate configuration and optionally compile Markdown locally.
           diff <before> <after>            Compare compiled local Markdown summaries.
+          preview-update <markdown-file>   Compile Markdown and print a local-only preview-update plan.
           dry-run <markdown-file>          Compile Markdown and print a publish summary without Google writes.
 
         Options:
@@ -138,6 +140,7 @@ internal static class CliApplication
             "verify" => await VerifyAsync(arguments, logger, cancellationToken).ConfigureAwait(false),
             "diff" => await DiffAsync(arguments, logger, cancellationToken).ConfigureAwait(false),
             "dry-run" => await DryRunAsync(arguments, logger, cancellationToken).ConfigureAwait(false),
+            "preview-update" => await PreviewUpdateAsync(arguments, logger, cancellationToken).ConfigureAwait(false),
             _ => UsageFailure(logger, "Unknown command."),
         };
     }
@@ -255,6 +258,30 @@ internal static class CliApplication
         logger.PublishPlan("DRY_RUN_PLAN", compiled);
         logger.DryRunSummary(compiled);
         return CliResult.Success("DRY_RUN_SUCCEEDED", "Dry run completed.");
+    }
+
+    private static async Task<CliResult> PreviewUpdateAsync(
+    string[] arguments,
+    StructuredPublisherLogger logger,
+    CancellationToken cancellationToken)
+    {
+        logger.SetContext("planner", "validateArguments");
+        if (arguments.Length != 2)
+        {
+            return UsageFailure(logger, "preview-update requires exactly one Markdown file path.");
+        }
+
+        logger.SetContext("planner", "loadSettings");
+        var settings = LoadSettings(requireGooglePublishSettings: false);
+        ValidateMarkdownPath(arguments[1]);
+
+        logger.SetContext("planner", "compile");
+        var compiled = await CompileAsync(arguments[1], settings.Publisher, cancellationToken).ConfigureAwait(false);
+
+        logger.PreviewUpdatePlan(compiled);
+        logger.PreviewUpdateSummary(compiled);
+
+        return CliResult.Success("PREVIEW_UPDATE_SUCCEEDED", "Preview update completed.");
     }
 
     private static async Task<CliResult> DiffAsync(
@@ -774,7 +801,7 @@ internal static class CliApplication
     private static bool IsHelp(string value) => value is "-h" or "--help" or "help";
 
     private static bool IsRecognizedCommand(string command) =>
-        command is "publish" or "verify" or "diff" or "dry-run" or "help";
+        command is "publish" or "verify" or "diff" or "dry-run" or "preview-update" or "help";
 
     private static string ExpectedArgumentShape(string command) => command switch
     {
@@ -782,7 +809,9 @@ internal static class CliApplication
         "verify" => "verify-optional-markdown-path",
         "diff" => "diff-before-after",
         "dry-run" => "dry-run-markdown-path",
+        "preview-update" => "preview-update-markdown-path",
         _ => "none",
+
     };
 
     private static string CreateSessionId() =>
@@ -857,7 +886,7 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
     private string? lastEventCode;
 
     internal StructuredPublisherLogger(string sessionId, string command)
-        : this(sessionId, command, 0, command is "publish" or "verify" or "diff" or "dry-run" or "help", "none")
+        : this(sessionId, command, 0, command is "publish" or "verify" or "diff" or "dry-run" or "preview-update" or "help", "none")
     {
     }
 
@@ -978,6 +1007,80 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             ["vendorClearance"] = false,
             ["avastSafetyCertification"] = false,
         });
+
+        internal void PreviewUpdatePlan(CompiledDocument document) =>
+    Write("info", "PREVIEW_UPDATE_PLAN", "Local preview-update plan compiled.", "planner", "plan", new Dictionary<string, object?>
+    {
+        ["contractVersion"] = 1,
+        ["mode"] = "preview-update",
+        ["executionBoundary"] = "local-only",
+        ["stepCount"] = document.Steps.Count,
+        ["operationCount"] = document.Operations.Count,
+        ["batchUpdateStepCount"] = document.Steps.OfType<BatchUpdateStep>().Count(),
+        ["tableStepCount"] = document.Steps.OfType<InsertTableStep>().Count(),
+        ["imageStepCount"] = document.Steps.OfType<InsertImageStep>().Count(),
+        ["insertTextOperationCount"] = CountOperations(document, DocumentOperationKind.InsertText),
+        ["headingOperationCount"] = CountOperations(document, DocumentOperationKind.ApplyHeading),
+        ["listOperationCount"] = CountOperations(document, DocumentOperationKind.CreateBullet),
+        ["textStyleOperationCount"] = CountOperations(document, DocumentOperationKind.UpdateTextStyle),
+        ["paragraphAlignmentOperationCount"] = CountOperations(document, DocumentOperationKind.UpdateParagraphAlignment),
+        ["codeBlockOperationCount"] = CountOperations(document, DocumentOperationKind.ApplyCodeBlockStyle),
+        ["quoteOperationCount"] = CountOperations(document, DocumentOperationKind.ApplyQuoteBlockStyle),
+        ["markdownCompilation"] = "succeeded",
+        ["planningEvidence"] = "local-only",
+        ["safePlanSummary"] = CreateSafePreviewUpdateSummary(document),
+        ["googleDocsMutation"] = "not-attempted",
+        ["googleDriveMutation"] = "not-attempted",
+        ["oauthOperation"] = "not-attempted",
+        ["tokenStoreOperation"] = "not-attempted",
+        ["googleApiAttempted"] = false,
+        ["driveAttempted"] = false,
+        ["oauthAttempted"] = false,
+        ["tokenStoreAttempted"] = false,
+        ["physicalUpdateApplied"] = false,
+        ["physicalUpdatePlanApplied"] = false,
+        ["readbackStatus"] = "not-attempted",
+        ["readbackPhase"] = "post-apply-readback",
+        ["readbackEvidenceBoundary"] = "managed-document-readback-only",
+        ["readbackVerified"] = false,
+        ["verifiedStateSaved"] = false,
+        ["publicationAuthorized"] = false,
+        ["releaseClearance"] = false,
+        ["packageApproval"] = false,
+        ["vendorClearance"] = false,
+        ["avastSafetyCertification"] = false,
+    });
+
+        internal void PreviewUpdateSummary(CompiledDocument document) =>
+    Write("info", "PREVIEW_UPDATE_SUMMARY", "Local preview-update summary compiled.", "planner", "summary", new Dictionary<string, object?>
+    {
+        ["contractVersion"] = 1,
+        ["mode"] = "preview-update",
+        ["executionBoundary"] = "local-only",
+        ["planningResult"] = "succeeded",
+        ["markdownCompilation"] = "succeeded",
+        ["planningEvidence"] = "local-only",
+        ["stepCount"] = document.Steps.Count,
+        ["operationCount"] = document.Operations.Count,
+        ["googleDocsMutation"] = "not-attempted",
+        ["googleDriveMutation"] = "not-attempted",
+        ["oauthOperation"] = "not-attempted",
+        ["tokenStoreOperation"] = "not-attempted",
+        ["googleApiAttempted"] = false,
+        ["driveAttempted"] = false,
+        ["oauthAttempted"] = false,
+        ["tokenStoreAttempted"] = false,
+        ["physicalUpdateApplied"] = false,
+        ["physicalUpdatePlanApplied"] = false,
+        ["readbackStatus"] = "not-attempted",
+        ["readbackVerified"] = false,
+        ["verifiedStateSaved"] = false,
+        ["publicationAuthorized"] = false,
+        ["releaseClearance"] = false,
+        ["packageApproval"] = false,
+        ["vendorClearance"] = false,
+        ["avastSafetyCertification"] = false,
+    });
 
     internal void DiffSummary(CompiledDocument before, CompiledDocument after) =>
         Write("info", "DIFF_SUMMARY", "Local diff summary compiled.", "verification", "diff", new Dictionary<string, object?>
@@ -1235,12 +1338,28 @@ internal sealed class StructuredPublisherLogger : IPublisherLogger
             $"Local dry-run compiled {stepCount} publish step(s) and {operationCount} operation(s): headings={headingCount}, lists={listCount}, tables={tableStepCount}, images={imageStepCount}, codeBlocks={codeBlockCount}, quotes={quoteCount}. Google Docs/Drive mutation, readback verification, Verified State save, publication approval, release-clearance, and vendor-clearance were not attempted.");
     }
 
+    private static string CreateSafePreviewUpdateSummary(CompiledDocument document)
+    {
+        var operationCount = document.Operations.Count;
+        var stepCount = document.Steps.Count;
+        var tableStepCount = document.Steps.OfType<InsertTableStep>().Count();
+        var imageStepCount = document.Steps.OfType<InsertImageStep>().Count();
+        var headingCount = CountOperations(document, DocumentOperationKind.ApplyHeading);
+        var listCount = CountOperations(document, DocumentOperationKind.CreateBullet);
+        var codeBlockCount = CountOperations(document, DocumentOperationKind.ApplyCodeBlockStyle);
+        var quoteCount = CountOperations(document, DocumentOperationKind.ApplyQuoteBlockStyle);
+
+        return string.Create(
+            CultureInfo.InvariantCulture,
+            $"Local preview-update compiled {stepCount} publish step(s) and {operationCount} operation(s): headings={headingCount}, lists={listCount}, tables={tableStepCount}, images={imageStepCount}, codeBlocks={codeBlockCount}, quotes={quoteCount}. Google Docs/Drive mutation, OAuth, token-store access, physical update application, readback verification, Verified State save, publication approval, release-clearance, and vendor-clearance were not attempted.");
+    }
+
     private static string ReadbackStatus(CliResult result) => result.Code switch
     {
         UpdateErrorCodes.ReadbackFailed => "failed",
         UpdateErrorCodes.ReadbackMismatch or UpdateErrorCodes.ManagedRegionMismatch => "mismatch",
         UpdateErrorCodes.RevisionConflict => "revision-conflict",
-        "DRY_RUN_SUCCEEDED" or "VERIFY_SUCCEEDED" or "DIFF_SUCCEEDED" or "HELP" => "not-applicable",
+        "DRY_RUN_SUCCEEDED" or "PREVIEW_UPDATE_SUCCEEDED" or "VERIFY_SUCCEEDED" or "DIFF_SUCCEEDED" or "HELP" => "not-applicable",
         _ when result.Classification == ErrorClassification.Verification => "failed",
         _ => "not-applicable",
     };
