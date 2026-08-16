@@ -683,6 +683,21 @@ and does not perform release, tag, publication, package, `dist`, GitHub asset,
 Live E2E, Google Docs / Drive, OAuth/token-store, Avast, vendor, or
 flagged-executable operations.
 
+P2-32 first narrow local-only preview-update implementation is complete as a
+narrow local-only implementation. It adds the `preview-update <markdown-file>`
+CLI command, compiles Markdown locally, and emits `PREVIEW_UPDATE_PLAN` and
+`PREVIEW_UPDATE_SUMMARY` diagnostics without applying any physical document
+update. The implementation preserves the local-only boundary: Google Docs
+mutation, Google Drive mutation, OAuth, token-store access, physical update
+application, readback verification, Verified State save, publication approval,
+release-clearance, and vendor-clearance are not attempted. Publisher tests
+passed, Release build passed, format passed, and `git diff --check` passed.
+This synchronization does not change release authorization, package state,
+vendor-clearance state, Avast state, or flagged-executable status; and does not
+perform release, tag, publication, package, `dist`, GitHub asset, Live E2E,
+Google Docs / Drive, OAuth/token-store, Avast, vendor, or flagged-executable
+operations.
+
 P2-17 CHANGELOG draft helper evaluation is design-complete as a docs-only /
 local-only investigation. It records that a future helper may be acceptable
 only as draft-only output derived from the existing P2-04 allow-listed

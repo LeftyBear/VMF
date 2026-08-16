@@ -99,6 +99,22 @@ The vNext hardening backlog currently includes:
 - distribution verification;
 - security / trust workflow.
 
+### P2-32 Local-Only Preview-Update Follow-Up
+
+P2-32 completed the first narrow local-only `preview-update <markdown-file>`
+implementation as vNext follow-up work. It compiles Markdown locally and emits
+`PREVIEW_UPDATE_PLAN` and `PREVIEW_UPDATE_SUMMARY` diagnostics without applying
+any physical document update.
+
+This handoff update does not authorize or perform Live E2E, Google Docs
+mutation, Google Drive mutation, OAuth login, token-store access, package or
+`dist` update, release, tag creation, publication, Avast operation, vendor
+clearance judgment, or flagged executable re-run.
+
+For continuation, treat P2-32 as local-only planning evidence. Do not treat it
+as release clearance, publication approval, vendor clearance, Avast safety
+certification, or authorization for future external operations.
+
 ## 5. Required Reporting For Future Work
 
 Future local-only work should report:

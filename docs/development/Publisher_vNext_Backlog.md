@@ -442,6 +442,54 @@ passed, commit `d61fd00` was created and pushed, and
 `HEAD == origin/main == d61fd00`. This current-state synchronization is
 documentation-only and records no new source or test change.
 
+### P2-32 First Narrow Local-Only Preview-Update Implementation
+
+P2-32 is the completed first narrow local-only implementation of
+`preview-update` planning. It adds a `preview-update <markdown-file>` CLI
+command that compiles Markdown locally and emits preview-update plan and summary
+diagnostics without applying any physical document update.
+
+Completed implementation scope:
+
+- add `preview-update <markdown-file>` to CLI usage and command routing;
+- compile the supplied Markdown input locally;
+- emit `PREVIEW_UPDATE_PLAN` structured diagnostics;
+- emit `PREVIEW_UPDATE_SUMMARY` structured diagnostics;
+- report local-only preview-update boundary metadata;
+- preserve the no-mutation boundary for Google Docs, Google Drive, OAuth,
+  token-store access, physical update application, readback verification,
+  Verified State save, publication approval, release-clearance, and
+  vendor-clearance.
+
+Safe-value boundary:
+
+- allowed values are bounded mode labels, boolean boundary fields, operation
+  counts, publish-step counts, and non-content planning summaries;
+- prohibited values include raw document content, document IDs, private Google
+  resource IDs, private URLs, OAuth tokens, credentials, credential paths,
+  token-store paths, Authorization headers, provider payloads, raw HTTP bodies,
+  raw exception messages, stack traces, local sensitive paths, usernames,
+  hostnames, and account identifiers;
+- preview-update diagnostics remain local planning evidence only and must not be
+  represented as publication approval, release clearance, vendor clearance,
+  Avast safety certification, or future operation authorization.
+
+Non-goals:
+
+- no Google Docs mutation, Google Drive mutation, OAuth login, token-store
+  read/write/delete/cleanup/reuse, Live E2E, package or `dist` update, release,
+  tag, publication, GitHub asset operation, Avast operation, vendor-clearance
+  judgment, flagged executable re-run, or external service access;
+- no public API, persisted schema, OAuth scope, authentication architecture,
+  release-record, package-identity, or publication-flow change;
+- no readback verification, Verified State promotion, or physical update plan
+  application.
+
+Verification result recorded for P2-32: Publisher CLI build passed, Publisher
+tests passed, format passed, and `git diff --check` passed. Current-state
+synchronization records the completed narrow local-only implementation and does
+not broaden release authorization or vendor-clearance status.
+
 ### P2-12 Verification Evidence Extractor
 
 P2-12 is the completed narrow local-only implementation of the P2-04-C
