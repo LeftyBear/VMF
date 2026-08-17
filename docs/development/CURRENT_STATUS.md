@@ -139,9 +139,8 @@ Final candidate verification completed successfully:
 - format verification: PASS
 - `git diff --check`: PASS
 
-Publisher v1.0 technical verification is COMPLETE.
-
-Final responsible-owner completion decision remains PENDING.
+Publisher v1.0 is COMPLETE.
+Responsible-owner completion decision: GO.
 
 Historical `0.0.1-dev` evidence remains separate supporting evidence.
 Deferred vNext enhancements do not block v1.0 completion under the frozen
