@@ -123,6 +123,33 @@ be treated as release readiness, Live E2E evidence, Google Docs readback
 evidence, Google Drive cleanup evidence, package publication approval, or
 antivirus vendor clearance.
 
+## 1.1 Publisher v1.0 Completion
+
+Publisher v1.0 scope and Definition of Done are frozen.
+
+The selected completion candidate is
+`050b2f1e3b9c6e00c0352abcbf590013f4be9d12`.
+
+Final candidate verification completed successfully:
+
+- Release build: PASS
+- Publisher unit tests: 597 / 597 PASS
+- non-live integration tests: 16 / 16 PASS
+- Google Docs Live E2E: 4 / 4 PASS
+- format verification: PASS
+- `git diff --check`: PASS
+
+Publisher v1.0 technical verification is COMPLETE.
+
+Final responsible-owner completion decision remains PENDING.
+
+Historical `0.0.1-dev` evidence remains separate supporting evidence.
+Deferred vNext enhancements do not block v1.0 completion under the frozen
+scope.
+
+This status does not claim Avast vendor clearance or Avast safety
+certification.
+
 ## 2. Completed Local-Only Scope
 
 The completed local-only safety scope covers:
