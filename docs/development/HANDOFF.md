@@ -1,6 +1,6 @@
 # VMF Publisher Handoff
 
-Status  : Post-release closeout complete / next version or next phase requires a new scope
+Status  : Publisher v1.0 COMPLETE / future enhancement work is post-v1.0
 Scope   : Handoff for next worker, next chat, Codex, or Work Mode
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/distribution/ReleaseChecklist.md
 
@@ -18,6 +18,14 @@ this handoff does not authorize any new package, tag, release, publication,
 Live E2E, Google Docs / Drive mutation, or flagged executable run.
 
 ## 1. Starting State
+
+- Publisher v1.0 is COMPLETE under the frozen v1.0 scope and Definition of
+  Done;
+- responsible-owner completion decision is GO;
+- final v1.0 verification passed: Release build PASS, unit 597 / 597,
+  non-live integration 16 / 16, and Google Docs Live E2E 4 / 4;
+- remaining P2 / vNext work is post-v1.0 enhancement work and is not a
+  Publisher v1.0 completion blocker;
 
 Begin from this state:
 

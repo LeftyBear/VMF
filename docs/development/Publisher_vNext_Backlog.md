@@ -2,6 +2,11 @@
 
 ## Status
 
+- Publisher v1.0 completion state: COMPLETE.
+- Responsible-owner completion decision: GO.
+- Remaining items in this backlog are post-v1.0 follow-up, hardening, or
+  enhancement work and do not block the completed Publisher v1.0 state unless
+  a future task explicitly identifies a v1.0 defect requiring correction.
 - Current state: Phase 4 local-only verification complete.
 - Release state: `0.0.1-dev` GitHub prerelease published after ADR-0019
   VMF-side residual risk acceptance; release completion is formally recorded

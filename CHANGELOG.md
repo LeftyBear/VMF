@@ -4,6 +4,20 @@ All notable Build.xlam, VMF, documentation, release artifact, tooling, and test 
 
 ---
 
+# 2026-08-17
+
+## Changed
+
+- Declared Publisher v1.0 COMPLETE after scope freeze, Definition of Done,
+  candidate selection, final verification, completion evidence, and
+  responsible-owner completion decision. Final verification passed with
+  Release build PASS, Publisher unit tests 597 / 597, non-live integration
+  tests 16 / 16, Google Docs Live E2E 4 / 4, format verification PASS, and
+  `git diff --check` PASS. Deferred vNext enhancements remain outside the
+  frozen v1.0 completion scope. This completion does not claim Avast vendor
+  clearance or Avast safety certification and does not itself authorize any
+  separately gated release or publication operation.
+
 # 2026-08-13
 
 ## Changed
