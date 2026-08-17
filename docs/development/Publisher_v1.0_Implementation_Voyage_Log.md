@@ -3286,6 +3286,14 @@ release quarantine, add exclusions, rerun or re-run `vmf-publisher.exe`,
 process an Avast response, obtain vendor clearance, claim Avast safety
 certification, stage, commit, or push.
 
+## Publisher v1.0 Official CloseOut
+
+Status: COMPLETE.
+
+Publisher v1.0 has been formally closed out as a completed voyage milestone.
+Future Publisher work after this point is treated as a next-version or
+next-phase scope, not as continuation of the closed v1.0 voyage.
+
 ## P1-05 Package Verification Output Boundary
 
 Status: COMPLETE as a new independent implementation scope after `0.0.1-dev`
