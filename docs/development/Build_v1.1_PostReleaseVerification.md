@@ -1,9 +1,9 @@
 # Build v1.1 Post-Release Verification
 
-Version : 0.2
+Version : 0.3
 Status  : Completed Verification
 Scope   : Build.xlam v1.1 post-release state
-Date    : 2026-07-12
+Date    : 2026-08-19
 Depends : docs/releases/Build_v1.1_ReleaseReport.md, docs/releases/README.md, docs/build/VERSIONING.md
 
 ---
@@ -132,7 +132,55 @@ the current VMF generation tool scope.
 
 ---
 
-# 7. Decision
+# 7. P1 Verification Debt Closeout
+
+Status : PASS / COMPLETE
+
+This section records the P1 Verification Debt Closeout state for the Minimal
+YAML Reader runtime, Detailed Blueprint Parser acceptance, and existing Build
+VBA regression execution. It is evidence synchronization only. It does not
+modify Build.xlam, package or `dist` artifacts, implementation code, frozen
+specifications, public APIs, Publisher, Google, OAuth, release tags, or
+publication state.
+
+Minimal YAML Reader runtime:
+
+- Compile: PASS
+- TC-YR-001 through TC-YR-022: PASS 22 / 22
+- FAIL: 0
+
+Detailed Blueprint Parser:
+
+- Compile: PASS
+- TC-PAR-001 through TC-PAR-010: PASS 10 / 10
+- FAIL: 0
+
+Existing Build VBA Regression:
+
+- Build.xlam present: YES
+- VMFTestRunner.xlam created: YES
+- run-tests.ps1 result: PASS
+- Exit code: 0
+- Regression observed: NO
+- Failure detail: none
+
+Commands:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\test\setup-test-runner.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\test\run-tests.ps1
+```
+
+Existing Build VBA test suites covered:
+
+- Com / Infrastructure / VMF core
+- App generator phase 1-4
+- Project manifest / Manifest editor
+- Presentation UI / Generate module phase 5-6
+
+All listed suites passed.
+
+# 8. Decision
 
 Build.xlam v1.1 post-release verification is complete.
 
@@ -140,9 +188,10 @@ No post-release Build v1.1 issue was found.
 
 ---
 
-# 8. Revision History
+# 9. Revision History
 
 | Version | Status | Description |
 |---------|--------|-------------|
+| 0.3 | Completed Verification | Records P1 Verification Debt Closeout and existing Build VBA regression PASS / NO REGRESSION evidence |
 | 0.2 | Completed Verification | Updates VMF audit result after application manifest tooling alignment |
 | 0.1 | Completed Verification | Records Build v1.1 post-release verification evidence |

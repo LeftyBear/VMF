@@ -56,6 +56,39 @@ B005 remains reserved for Build v2.0 planning.
 
 B003, B006, B009, and B010 remain future candidates.
 
+## 2.3 P1 Verification Debt Closeout
+
+Status : COMPLETE
+
+This post-release closeout records the accepted verification state for the
+Minimal YAML Reader runtime, the Detailed Blueprint Parser, and the existing
+Build VBA regression suite. It is documentation-only and does not change the
+Build v1.1 adopted candidate set, frozen Build v1.0.x specifications, public
+APIs, implementation code, package or `dist` artifacts, Publisher records,
+Google / OAuth state, release tags, or publication state.
+
+| ID | Item | State | Verification |
+| --- | --- | --- | --- |
+| P1-82 | Minimal YAML Reader Runtime | COMPLETE | Compile PASS; TC-YR-001 through TC-YR-022 PASS 22 / 22; failures 0 |
+| P1-92 | VBA Execution Gate | COMPLETE | Existing Build VBA regression PASS; `run-tests.ps1` exit code 0; regression observed NO |
+| P1-100 | Detailed Blueprint Parser Acceptance | COMPLETE | Compile PASS; TC-PAR-001 through TC-PAR-010 PASS 10 / 10; failures 0 |
+| Existing Build VBA Regression | Regression confirmation | PASS / NO REGRESSION | `Build.xlam` present YES; `VMFTestRunner.xlam` created YES for the run; all existing Build VBA test suites passed |
+| Overall Acceptance | P1 Verification Debt Closeout | COMPLETE | Minimal YAML Reader runtime PASS, Detailed Blueprint Parser PASS, existing Build VBA regression PASS / NO REGRESSION |
+
+Regression command evidence:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\test\setup-test-runner.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\test\run-tests.ps1
+```
+
+Existing Build VBA suites covered by the regression run:
+
+- Com / Infrastructure / VMF core;
+- App generator phase 1-4;
+- Project manifest / Manifest editor;
+- Presentation UI / Generate module phase 5-6.
+
 ---
 
 # 3. Candidates

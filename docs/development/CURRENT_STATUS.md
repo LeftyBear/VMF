@@ -62,6 +62,7 @@ set only; it is not release execution.
 | Frozen specifications | Unchanged |
 | Public APIs | Unchanged |
 | Production design | Unchanged |
+| Build P1 Verification Debt Closeout | Complete as documentation-only / local-only status sync. P1-82 Minimal YAML Reader Runtime is COMPLETE with compile PASS and TC-YR-001 through TC-YR-022 PASS 22 / 22, failures 0. P1-92 VBA Execution Gate is COMPLETE with existing Build VBA regression PASS, `run-tests.ps1` exit code 0, and regression observed NO. P1-100 Detailed Blueprint Parser Acceptance is COMPLETE with compile PASS and TC-PAR-001 through TC-PAR-010 PASS 10 / 10, failures 0. `Build.xlam` was present, `VMFTestRunner.xlam` was created for the run and is not retained as a committed artifact. Overall Acceptance is COMPLETE. No implementation code, Frozen specification, public API, package / `dist` artifact, Publisher, Google, OAuth, release, tag, or publication operation was performed by this docs-only sync. |
 | Phase 4-2-1 diagnostic logging | Done as local-only implementation; release state unchanged |
 | Phase 4-2-2 error handling | Done as local-only implementation; release state unchanged |
 | Phase 4-2-3 retry policy specification | Done as documentation-only specification consolidation; release state unchanged |
