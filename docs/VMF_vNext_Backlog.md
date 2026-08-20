@@ -15,6 +15,7 @@ Frozen specification changes.
 | P2-01 | Blueprint Specification v0.1 scope definition | COMPLETE / docs-only scope definition | `docs/design/P2-01_BlueprintSpecificationV0_1ScopeDefinition.md` | Defines Blueprint v0.1 scope and the Blueprint / Manifest responsibility boundary. |
 | P2-02 | Blueprint Specification v0.1 field model definition | COMPLETE / docs-only schema design | `docs/design/P2-02_BlueprintSpecificationV0_1FieldModelDefinition.md` | Defines the Blueprint v0.1 field model and preserves docs-only boundaries. |
 | P2-03 | Blueprint Specification v0.1 example documents | COMPLETE / docs-only examples | `docs/design/P2-03_BlueprintSpecificationV0_1ExampleDocuments.md` | Provides valid and invalid Blueprint examples while preserving docs-only boundaries. |
+| P2-04 | Blueprint v0.1 validation rule definition | COMPLETE / docs-only validation specification | `docs/design/P2-04_BlueprintV0_1ValidationRuleDefinition.md` | Defines validation rules and Manifest derivation eligibility while preserving docs-only boundaries. |
 
 ## Boundary
 
@@ -22,6 +23,7 @@ Frozen specification changes.
 - P2-01 is complete and committed.
 - P2-02 is complete as docs-only schema design.
 - P2-03 is complete as docs-only examples.
+- P2-04 is complete as docs-only validation specification.
 - No implementation, VBA, Parser, Validator, Generator, tests, package / `dist`,
   external service, release, or Frozen specification change is authorized by
   this record.
