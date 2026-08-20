@@ -148,6 +148,19 @@ executable, claim vendor clearance, or claim Avast safety certification.
 
 ## P2 — vNext Enhancements
 
+## VMF Build P2 Scope Sync
+
+This sync records the separate VMF Build P2-01 Blueprint Specification v0.1
+scope definition. It is docs-only and does not change Publisher vNext scope,
+implementation code, VBA, Generator behavior, tests, package / `dist`
+artifacts, release state, external services, or Frozen specifications.
+
+| ID | Item | Priority | Rationale | Prerequisite | Safety impact | State |
+| --- | --- | --- | --- | --- | --- | --- |
+| P2-01 | Define Blueprint Specification v0.1 scope for the Build pipeline. | P2 | P2 starts from the verified P1 baseline and fixes the minimum Blueprint scope before any later implementation can reference it. | `docs/design/P2-01_BlueprintSpecificationV0_1ScopeDefinition.md`; P1 completion. | Keeps Blueprint as the reviewed design source of truth and Manifest as derived generation data while preserving docs-only boundaries. | COMPLETE / docs-only scope definition. |
+
+## Publisher P2 — vNext Enhancements
+
 | ID | Item | Priority | Rationale | Prerequisite | Release safety impact | State |
 | --- | --- | --- | --- | --- | --- | --- |
 | P2-01 | Evaluate whether Google Picker plus `drive.file` least-privilege routing should be adopted by a future scoped design task. | P2 | Least-privilege routing may reduce future operator risk, but it is not required for current release follow-up. | `Publisher_P2-01_GooglePickerDriveFileEvaluation.md`; `Publisher_P2-01_OAuthDesktopScopeBoundaryEvaluation.md`; `Publisher_P2-01_LeastPrivilegeDesignReevaluation_2026-08-15.md`; `Publisher_P2-27_GooglePickerDriveFileSplitRouteDesign.md`; future adoption record before implementation. | Potential future credential and Drive-access risk reduction. | Complete / split-route design complete by P2-27; implementation remains NO-GO until adoption record and explicit authorization. |
