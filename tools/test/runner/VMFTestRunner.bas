@@ -38,6 +38,7 @@ Public Function VMFRunAllTests(ByVal RepositoryRootPath As String) As String
         "AppRunGeneratorPhase1NegativeTests", _
         "AppRunGeneratorPhase2Tests", _
         "AppRunProjectManifestParseTests", _
+        "AppRunBlueprintValidatorTests", _
         "AppRunManifestEditorServiceTests", _
         "AppRunGenerateCommonPhase3_1Tests", _
         "AppRunGenerateManifestPhase3_2Tests", _
