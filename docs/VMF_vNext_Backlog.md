@@ -17,6 +17,7 @@ Frozen specification changes.
 | P2-03 | Blueprint Specification v0.1 example documents | COMPLETE / docs-only examples | `docs/design/P2-03_BlueprintSpecificationV0_1ExampleDocuments.md` | Provides valid and invalid Blueprint examples while preserving docs-only boundaries. |
 | P2-04 | Blueprint v0.1 validation rule definition | COMPLETE / docs-only validation specification | `docs/design/P2-04_BlueprintV0_1ValidationRuleDefinition.md` | Defines validation rules and Manifest derivation eligibility while preserving docs-only boundaries. |
 | P2-05 | Blueprint v0.1 error classification definition | COMPLETE / docs-only error classification specification | `docs/design/P2-05_BlueprintV0_1ErrorClassificationDefinition.md` | Defines validation error categories and future error-code readiness while preserving docs-only boundaries. |
+| P2-06 | Blueprint v0.1 validation error code definition | COMPLETE / docs-only error code specification | `docs/design/P2-06_BlueprintV0_1ValidationErrorCodeDefinition.md` | Defines validation error codes and severity mapping while preserving docs-only boundaries. |
 
 ## Boundary
 
@@ -26,6 +27,7 @@ Frozen specification changes.
 - P2-03 is complete as docs-only examples.
 - P2-04 is complete as docs-only validation specification.
 - P2-05 is complete as docs-only error classification specification.
+- P2-06 is complete as docs-only error code specification.
 - No implementation, VBA, Parser, Validator, Generator, tests, package / `dist`,
   external service, release, or Frozen specification change is authorized by
   this record.
