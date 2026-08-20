@@ -19,6 +19,7 @@ Frozen specification changes.
 | P2-05 | Blueprint v0.1 error classification definition | COMPLETE / docs-only error classification specification | `docs/design/P2-05_BlueprintV0_1ErrorClassificationDefinition.md` | Defines validation error categories and future error-code readiness while preserving docs-only boundaries. |
 | P2-06 | Blueprint v0.1 validation error code definition | COMPLETE / docs-only error code specification | `docs/design/P2-06_BlueprintV0_1ValidationErrorCodeDefinition.md` | Defines validation error codes and severity mapping while preserving docs-only boundaries. |
 | P2-07 | Blueprint v0.1 validator implementation scope planning | COMPLETE / docs-only implementation scope planning | `docs/design/P2-07_BlueprintV0_1ValidatorImplementationScopePlanning.md` | Defines future Validator implementation scope and GO / NO-GO boundaries while preserving docs-only boundaries. |
+| P2-08 | Blueprint validator minimal implementation candidate selection | COMPLETE / docs-only candidate selection | `docs/design/P2-08_BlueprintValidatorMinimalImplementationCandidateSelection.md` | Selects Candidate B -- Minimal Generatable Validation for a future implementation while preserving docs-only boundaries. |
 
 ## Boundary
 
@@ -30,6 +31,8 @@ Frozen specification changes.
 - P2-05 is complete as docs-only error classification specification.
 - P2-06 is complete as docs-only error code specification.
 - P2-07 is complete as docs-only implementation scope planning.
+- P2-08 is complete as docs-only candidate selection; selected candidate is
+  Candidate B -- Minimal Generatable Validation.
 - No implementation, VBA, Parser, Validator, Generator, tests, package / `dist`,
   external service, release, or Frozen specification change is authorized by
   this record.
