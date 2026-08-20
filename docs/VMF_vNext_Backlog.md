@@ -21,6 +21,7 @@ Frozen specification changes.
 | P2-07 | Blueprint v0.1 validator implementation scope planning | COMPLETE / docs-only implementation scope planning | `docs/design/P2-07_BlueprintV0_1ValidatorImplementationScopePlanning.md` | Defines future Validator implementation scope and GO / NO-GO boundaries while preserving docs-only boundaries. |
 | P2-08 | Blueprint validator minimal implementation candidate selection | COMPLETE / docs-only candidate selection | `docs/design/P2-08_BlueprintValidatorMinimalImplementationCandidateSelection.md` | Selects Candidate B -- Minimal Generatable Validation for a future implementation while preserving docs-only boundaries. |
 | P2-09 | Blueprint validator Candidate B implementation scope definition | COMPLETE / docs-only implementation scope definition | `docs/design/P2-09_BlueprintValidatorCandidateBImplementationScopeDefinition.md` | Fixes Candidate B implementation boundaries for a later task while preserving docs-only boundaries. |
+| P2-10 | Blueprint validator entry point and model design | COMPLETE / docs-only implementation design | `docs/design/P2-10_BlueprintValidatorEntryPointAndModelDesign.md` | Defines future Validator entry point and model design while preserving docs-only boundaries. |
 
 ## Boundary
 
@@ -36,6 +37,7 @@ Frozen specification changes.
   Candidate B -- Minimal Generatable Validation.
 - P2-09 is complete as docs-only implementation scope definition for Candidate
   B -- Minimal Generatable Validation.
+- P2-10 is complete as docs-only implementation design.
 - No implementation, VBA, Parser, Validator, Generator, tests, package / `dist`,
   external service, release, or Frozen specification change is authorized by
   this record.
