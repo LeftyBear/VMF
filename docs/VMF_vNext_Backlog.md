@@ -25,6 +25,8 @@ Frozen specification changes.
 | P2-11 | Blueprint validator Candidate B minimal implementation | COMPLETE / implementation verified | `db252d1` | Implements Candidate B -- Minimal Generatable Validation with focused Validator tests and preserved parser / generator boundaries. |
 | P2-12 | Blueprint validator Candidate B verification and closeout | COMPLETE / verification and closeout | `docs/design/P2-12_BlueprintValidatorCandidateBVerificationAndCloseout.md` | Records P2-11 verification PASS, generated artifact cleanup, boundary confirmation, and P2 COMPLETE. |
 | P3-07 | Validator integration completion review | COMPLETE / completion review | `docs/spec/ValidatorIntegrationCompletionReview.md` | Records Validator integration behavior PASS, Build PASS warnings 0 / errors 0, existing Build regression 18 runners PASS, focused integration and Validator test PASS, `git diff --check` PASS, generated artifact cleanup, no code-level blocker, and P3-07 COMPLETE. |
+| P3-08 | Next candidate selection | COMPLETE / docs-only selection | `docs/spec/P3NextCandidateSelection.md` | Selects P4-01 -- Manifest Derivation Scope Planning as the next docs-only candidate and records NO-GO for direct Manifest derivation implementation in P3-08. |
+| P4-01 | Manifest derivation scope planning | COMPLETE / docs-only planning | `docs/spec/P4-01_ManifestDerivationScopePlanning.md` | Fixes the Validated Blueprint -> Manifest derivation responsibility boundary, transformation rules, hard-stop conditions, existing-flow relationship, and minimum future implementation slice without implementation GO. |
 
 ## Boundary
 
@@ -45,6 +47,11 @@ Frozen specification changes.
   implementation in commit `db252d1`; verification passed before commit.
 - P2-12 is complete as verification and closeout.
 - P3-07 is complete as Validator integration completion review.
+- P3-08 is complete as next candidate selection; selected next candidate is
+  P4-01 -- Manifest Derivation Scope Planning.
+- P4-01 is complete as docs-only Manifest derivation scope planning. It fixes
+  the Validated Blueprint -> Manifest boundary and does not authorize
+  implementation.
 - P2 is COMPLETE.
 - No implementation, VBA, Parser, Validator, Generator, tests, package / `dist`,
   external service, release, or Frozen specification change is authorized by
