@@ -24,6 +24,7 @@ Frozen specification changes.
 | P2-10 | Blueprint validator entry point and model design | COMPLETE / docs-only implementation design | `docs/design/P2-10_BlueprintValidatorEntryPointAndModelDesign.md` | Defines future Validator entry point and model design while preserving docs-only boundaries. |
 | P2-11 | Blueprint validator Candidate B minimal implementation | COMPLETE / implementation verified | `db252d1` | Implements Candidate B -- Minimal Generatable Validation with focused Validator tests and preserved parser / generator boundaries. |
 | P2-12 | Blueprint validator Candidate B verification and closeout | COMPLETE / verification and closeout | `docs/design/P2-12_BlueprintValidatorCandidateBVerificationAndCloseout.md` | Records P2-11 verification PASS, generated artifact cleanup, boundary confirmation, and P2 COMPLETE. |
+| P3-07 | Validator integration completion review | COMPLETE / completion review | `docs/spec/ValidatorIntegrationCompletionReview.md` | Records Validator integration behavior PASS, Build PASS warnings 0 / errors 0, existing Build regression 18 runners PASS, focused integration and Validator test PASS, `git diff --check` PASS, generated artifact cleanup, no code-level blocker, and P3-07 COMPLETE. |
 
 ## Boundary
 
@@ -43,6 +44,7 @@ Frozen specification changes.
 - P2-11 is complete as Candidate B -- Minimal Generatable Validation
   implementation in commit `db252d1`; verification passed before commit.
 - P2-12 is complete as verification and closeout.
+- P3-07 is complete as Validator integration completion review.
 - P2 is COMPLETE.
 - No implementation, VBA, Parser, Validator, Generator, tests, package / `dist`,
   external service, release, or Frozen specification change is authorized by
