@@ -22,6 +22,8 @@ Public Sub AppRunBlueprintValidatorTests()
     VerifyModuleAndProcedureErrorsAreInvalid
     VerifyReturnValueErrorsAreInvalid
     VerifyGenerationPolicyErrorsAreInvalid
+    VerifyMultipleDiagnosticsKeepDeterministicOrder
+    VerifyOptionalDiagnosticMessageMayBeEmpty
 End Sub
 
 Private Sub VerifyMinimalApprovedBlueprintIsGeneratable()
@@ -210,6 +212,39 @@ Private Sub VerifyGenerationPolicyErrorsAreInvalid()
     AssertInvalidWithCode Result, BP602()
     AssertDiagnosticCode Result, BP604()
     AssertDiagnosticCode Result, BP606()
+End Sub
+
+Private Sub VerifyMultipleDiagnosticsKeepDeterministicOrder()
+    Dim Blueprint As Object
+    Dim Policy As Object
+    Dim Result As BlueprintValidationResult
+
+    Set Blueprint = CreateValidBlueprint()
+    Set Policy = Blueprint("generationPolicy")
+    Policy("allowOverwrite") = False
+    Policy("encoding") = "shift_jis"
+    Policy("missingDirectoryPolicy") = "create"
+
+    Set Result = ValidateBlueprint(Blueprint)
+
+    AssertInvalidWithCode Result, BP602()
+    AssertEquals BP602(), Result.Diagnostics.Item(1).Code, "First diagnostic should preserve Validator order."
+    AssertEquals BP604(), Result.Diagnostics.Item(2).Code, "Second diagnostic should preserve Validator order."
+    AssertEquals BP606(), Result.Diagnostics.Item(3).Code, "Third diagnostic should preserve Validator order."
+End Sub
+
+Private Sub VerifyOptionalDiagnosticMessageMayBeEmpty()
+    Dim Blueprint As Object
+    Dim Result As BlueprintValidationResult
+
+    Set Blueprint = CreateValidBlueprint()
+    Blueprint("version") = "9.9"
+
+    Set Result = ValidateBlueprint(Blueprint)
+
+    AssertInvalidWithCode Result, BP101()
+    AssertEquals "version", Result.Diagnostics.Item(1).FieldPath, "Diagnostic should preserve field path."
+    AssertEquals vbNullString, Result.Diagnostics.Item(1).Message, "Empty optional diagnostic message should be preserved."
 End Sub
 
 Private Function ValidateBlueprint(ByVal Blueprint As Object) As BlueprintValidationResult

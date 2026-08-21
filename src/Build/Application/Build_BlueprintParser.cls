@@ -124,9 +124,59 @@ Private Sub ValidateForManifestGeneration()
     Set Result = Validator.Validate(CreateValidationBlueprint())
 
     If Not Result.Generatable Then
-        Err.Raise ComErrInvalidState, "Build_BlueprintParser", "Blueprint validation failed before Manifest generation."
+        Err.Raise ComErrInvalidState, "Build_BlueprintParser", BuildValidationFailureMessage(Result)
     End If
 End Sub
+
+Private Function BuildValidationFailureMessage(ByVal Result As BlueprintValidationResult) As String
+    Dim MessageText As String
+
+    MessageText = "Blueprint validation failed before Manifest generation." & _
+        " ResultKind=" & Result.ResultKind & _
+        "; Generatable=" & CStr(Result.Generatable) & _
+        "; Diagnostics="
+
+    BuildValidationFailureMessage = MessageText & FormatValidationDiagnostics(Result.Diagnostics)
+End Function
+
+Private Function FormatValidationDiagnostics(ByVal Diagnostics As Collection) As String
+    Dim Diagnostic As BlueprintValidationDiagnostic
+    Dim Content As String
+
+    If Diagnostics Is Nothing Then
+        FormatValidationDiagnostics = "[]"
+        Exit Function
+    End If
+
+    For Each Diagnostic In Diagnostics
+        If Len(Content) > 0 Then Content = Content & "; "
+        Content = Content & FormatValidationDiagnostic(Diagnostic)
+    Next Diagnostic
+
+    FormatValidationDiagnostics = "[" & Content & "]"
+End Function
+
+Private Function FormatValidationDiagnostic(ByVal Diagnostic As BlueprintValidationDiagnostic) As String
+    FormatValidationDiagnostic = _
+        "Code=" & SanitizeValidationDiagnosticValue(Diagnostic.Code) & _
+        ",Category=" & SanitizeValidationDiagnosticValue(Diagnostic.Category) & _
+        ",Severity=" & SanitizeValidationDiagnosticValue(Diagnostic.Severity) & _
+        ",FieldPath=" & SanitizeValidationDiagnosticValue(Diagnostic.FieldPath) & _
+        ",Message=" & SanitizeValidationDiagnosticValue(Diagnostic.Message)
+End Function
+
+Private Function SanitizeValidationDiagnosticValue(ByVal TextValue As String) As String
+    Dim Sanitized As String
+
+    Sanitized = Replace(TextValue, vbCrLf, " ")
+    Sanitized = Replace(Sanitized, vbCr, " ")
+    Sanitized = Replace(Sanitized, vbLf, " ")
+    Sanitized = Replace(Sanitized, ";", ",")
+    Sanitized = Replace(Sanitized, "[", "(")
+    Sanitized = Replace(Sanitized, "]", ")")
+
+    SanitizeValidationDiagnosticValue = Sanitized
+End Function
 
 Private Function CreateValidationBlueprint() As Object
     Dim Blueprint As Object

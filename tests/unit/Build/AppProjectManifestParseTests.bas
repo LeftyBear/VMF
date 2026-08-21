@@ -130,6 +130,13 @@ Private Sub VerifyBlueprintValidationFailureStopsManifestGeneration()
 
     AssertEquals vbNullString, ManifestContent, "Validation failure should not produce manifest content."
     AssertTrue InStr(1, ErrorText, "Blueprint validation failed before Manifest generation.", vbTextCompare) > 0, "Validation failure should hard stop before manifest generation."
+    AssertTrue InStr(1, ErrorText, "ResultKind=invalid", vbTextCompare) > 0, "Validation failure should preserve ResultKind."
+    AssertTrue InStr(1, ErrorText, "Generatable=False", vbTextCompare) > 0, "Validation failure should preserve Generatable."
+    AssertTrue InStr(1, ErrorText, "Code=BP101", vbTextCompare) > 0, "Validation failure should preserve diagnostic code."
+    AssertTrue InStr(1, ErrorText, "Category=UnsupportedEnumValue", vbTextCompare) > 0, "Validation failure should preserve diagnostic category."
+    AssertTrue InStr(1, ErrorText, "Severity=error", vbTextCompare) > 0, "Validation failure should preserve diagnostic severity."
+    AssertTrue InStr(1, ErrorText, "FieldPath=version", vbTextCompare) > 0, "Validation failure should preserve diagnostic field path."
+    AssertTrue InStr(1, ErrorText, "Message=", vbTextCompare) > 0, "Validation failure should report an empty optional message safely."
 End Sub
 
 Private Sub VerifyParserFailureDoesNotRunBlueprintValidation()
