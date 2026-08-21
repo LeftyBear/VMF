@@ -14,6 +14,8 @@ Public Sub AppRunProjectManifestParseTests()
     VerifyCurrentManifestParses
     VerifyBlueprintParserCreatesGenerationMetadata
     VerifyBlueprintParserGeneratesManifestContent
+    VerifyBlueprintValidationFailureStopsManifestGeneration
+    VerifyParserFailureDoesNotRunBlueprintValidation
     VerifyBlueprintParserRejectsEmptyLayerManifest
 End Sub
 
@@ -52,7 +54,7 @@ Private Sub VerifyBlueprintParserCreatesGenerationMetadata()
 
     AssertTrue Result.IsSuccess, "Blueprint parser should parse valid blueprint content."
     AssertEquals "SchoolTimetable", Parser.BuildGetBlueprintValue("name"), "Blueprint name should parse."
-    AssertEquals "1.1", Parser.BuildGetBlueprintValue("version"), "Blueprint version should parse."
+    AssertEquals "0.1", Parser.BuildGetBlueprintValue("version"), "Blueprint version should parse."
     AssertTrue Parser.BuildHasLayer("Core"), "Blueprint parser should register custom Core layer."
     AssertTrue Parser.BuildHasLayer("Domain"), "Blueprint parser should register Domain layer."
 
@@ -114,6 +116,39 @@ Private Sub VerifyBlueprintParserGeneratesManifestContent()
     AssertTrue FileSystem.FileExists(Item.InfGetTemplatePath()), "Generated manifest should preserve an existing template path."
 End Sub
 
+Private Sub VerifyBlueprintValidationFailureStopsManifestGeneration()
+    Dim Parser As Build_BlueprintParser
+    Dim Result As ComResult
+    Dim ManifestContent As String
+    Dim ErrorText As String
+
+    Set Parser = New Build_BlueprintParser
+    Set Result = Parser.BuildInitializeFromContent(CreateBlueprintContentWithInvalidValidationVersion())
+
+    AssertTrue Result.IsSuccess, "Parser should succeed before validation integration runs."
+    ManifestContent = TryGenerateManifestContent(Parser, "Domain", ErrorText)
+
+    AssertEquals vbNullString, ManifestContent, "Validation failure should not produce manifest content."
+    AssertTrue InStr(1, ErrorText, "Blueprint validation failed before Manifest generation.", vbTextCompare) > 0, "Validation failure should hard stop before manifest generation."
+End Sub
+
+Private Sub VerifyParserFailureDoesNotRunBlueprintValidation()
+    Dim Parser As Build_BlueprintParser
+    Dim Result As ComResult
+    Dim ManifestContent As String
+    Dim ErrorText As String
+
+    Set Parser = New Build_BlueprintParser
+    Set Result = Parser.BuildInitializeFromContent(CreateBlueprintContentWithParseError())
+
+    AssertTrue Result.IsFailure, "Parser failure should stop before validation."
+    ManifestContent = TryGenerateManifestContent(Parser, "Domain", ErrorText)
+
+    AssertEquals vbNullString, ManifestContent, "Parser failure should not produce manifest content."
+    AssertTrue InStr(1, ErrorText, "not initialized", vbTextCompare) > 0, "Parser failure should remain a parser initialization stop instead of validation failure."
+    AssertTrue InStr(1, ErrorText, "Blueprint validation failed", vbTextCompare) = 0, "Parser failure should not be converted to validation failure."
+End Sub
+
 Private Sub VerifyBlueprintParserRejectsEmptyLayerManifest()
     Dim Parser As Build_BlueprintParser
     Dim Result As ComResult
@@ -128,7 +163,7 @@ Private Function CreateBlueprintContent() As String
     CreateBlueprintContent = _
         "blueprint:" & vbCrLf & _
         "  name: SchoolTimetable" & vbCrLf & _
-        "  version: 1.1" & vbCrLf & _
+        "  version: 0.1" & vbCrLf & _
         "layers:" & vbCrLf & _
         "  - Core" & vbCrLf & _
         "  - Domain" & vbCrLf & _
@@ -140,6 +175,28 @@ Private Function CreateBlueprintContent() As String
         "    Classes:" & vbCrLf & _
         "      - Subject" & vbCrLf & _
         "      - Teacher"
+End Function
+
+Private Function CreateBlueprintContentWithInvalidValidationVersion() As String
+    CreateBlueprintContentWithInvalidValidationVersion = _
+        "blueprint:" & vbCrLf & _
+        "  name: SchoolTimetable" & vbCrLf & _
+        "  version: 9.9" & vbCrLf & _
+        "layers:" & vbCrLf & _
+        "  - Domain" & vbCrLf & _
+        "modules:" & vbCrLf & _
+        "  Domain:" & vbCrLf & _
+        "    Classes:" & vbCrLf & _
+        "      - Subject"
+End Function
+
+Private Function CreateBlueprintContentWithParseError() As String
+    CreateBlueprintContentWithParseError = _
+        "blueprint:" & vbCrLf & _
+        "  name: SchoolTimetable" & vbCrLf & _
+        "  version: 0.1" & vbCrLf & _
+        "layers:" & vbCrLf & _
+        "  - Domain"
 End Function
 
 Private Function CreateBlueprintContentWithEmptyLayer() As String
@@ -171,6 +228,23 @@ End Function
 
 Private Function GetTestFolderPath() As String
     GetTestFolderPath = Environ$("TEMP") & "\VMF_AppProjectManifestParseTests"
+End Function
+
+Private Function TryGenerateManifestContent( _
+    ByVal Parser As Build_BlueprintParser, _
+    ByVal LayerName As String, _
+    ByRef ErrorText As String) As String
+
+    On Error GoTo ErrHandler
+
+    TryGenerateManifestContent = Parser.BuildGenerateManifestContent(LayerName)
+    ErrorText = vbNullString
+    Exit Function
+
+ErrHandler:
+    ErrorText = Err.Description
+    TryGenerateManifestContent = vbNullString
+    Err.Clear
 End Function
 
 Private Sub AssertTrue(ByVal Condition As Boolean, ByVal Message As String)

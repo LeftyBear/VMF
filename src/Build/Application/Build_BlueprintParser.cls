@@ -97,6 +97,7 @@ Public Function BuildGenerateManifestContent(ByVal LayerName As String) As Strin
 
     EnsureInitialized
     ComRequireText LayerName, "LayerName", "Build_BlueprintParser.BuildGenerateManifestContent"
+    ValidateForManifestGeneration
 
     If Not This.DefinedLayers.Exists(LayerName) Then
         Err.Raise ComErrInvalidArgument, "Build_BlueprintParser", "Blueprint layer is not defined: " & LayerName
@@ -113,6 +114,113 @@ Public Function BuildGenerateManifestContent(ByVal LayerName As String) As Strin
     Next Item
 
     BuildGenerateManifestContent = Content
+End Function
+
+Private Sub ValidateForManifestGeneration()
+    Dim Validator As BlueprintValidator
+    Dim Result As BlueprintValidationResult
+
+    Set Validator = New BlueprintValidator
+    Set Result = Validator.Validate(CreateValidationBlueprint())
+
+    If Not Result.Generatable Then
+        Err.Raise ComErrInvalidState, "Build_BlueprintParser", "Blueprint validation failed before Manifest generation."
+    End If
+End Sub
+
+Private Function CreateValidationBlueprint() As Object
+    Dim Blueprint As Object
+    Dim Approval As Object
+    Dim Target As Object
+    Dim Modules As Collection
+    Dim Policy As Object
+
+    Set Blueprint = CreateObject("Scripting.Dictionary")
+    Blueprint.Add "blueprintId", BuildValidationBlueprintId()
+    Blueprint.Add "version", BuildGetBlueprintValue("version")
+    Blueprint.Add "status", "approved"
+
+    Set Approval = CreateObject("Scripting.Dictionary")
+    Approval.Add "state", "approved"
+    Approval.Add "approvedBy", "Build_BlueprintParser"
+    Approval.Add "approvedAt", "1970-01-01T00:00:00Z"
+    Blueprint.Add "approval", Approval
+
+    Set Target = CreateObject("Scripting.Dictionary")
+    Target.Add "kind", "workbook"
+    Target.Add "name", BuildGetBlueprintValue("name")
+    Blueprint.Add "target", Target
+
+    Set Modules = CreateValidationModules()
+    Blueprint.Add "modules", Modules
+
+    Set Policy = CreateObject("Scripting.Dictionary")
+    Policy.Add "allowOverwrite", True
+    Policy.Add "encoding", "utf-8"
+    Policy.Add "missingDirectoryPolicy", "error"
+    Blueprint.Add "generationPolicy", Policy
+
+    Set CreateValidationBlueprint = Blueprint
+End Function
+
+Private Function BuildValidationBlueprintId() As String
+    BuildValidationBlueprintId = "BP-" & BuildGetBlueprintValue("name")
+End Function
+
+Private Function CreateValidationModules() As Collection
+    Dim Modules As Collection
+    Dim LayerName As Variant
+    Dim Items As Collection
+    Dim Item As ManifestItem
+
+    Set Modules = New Collection
+    For Each LayerName In This.DefinedLayers.Keys
+        Set Items = BuildGetLayerItems(CStr(LayerName))
+        For Each Item In Items
+            Modules.Add CreateValidationModule(Item)
+        Next Item
+    Next LayerName
+
+    Set CreateValidationModules = Modules
+End Function
+
+Private Function CreateValidationModule(ByVal Item As ManifestItem) As Object
+    Dim ModuleInfo As Object
+    Dim Procedures As Collection
+
+    Set ModuleInfo = CreateObject("Scripting.Dictionary")
+    ModuleInfo.Add "name", Item.InfGetModuleName()
+    ModuleInfo.Add "kind", ResolveValidationModuleKind(Item.InfGetModuleType())
+    ModuleInfo.Add "responsibility", "Generate " & Item.InfGetModuleName() & "."
+
+    Set Procedures = New Collection
+    Procedures.Add CreateValidationProcedure(Item)
+    ModuleInfo.Add "procedures", Procedures
+
+    Set CreateValidationModule = ModuleInfo
+End Function
+
+Private Function CreateValidationProcedure(ByVal Item As ManifestItem) As Object
+    Dim ProcedureInfo As Object
+
+    Set ProcedureInfo = CreateObject("Scripting.Dictionary")
+    ProcedureInfo.Add "name", "Generate" & Item.InfGetModuleName()
+    ProcedureInfo.Add "kind", "Sub"
+    ProcedureInfo.Add "visibility", "Public"
+    ProcedureInfo.Add "responsibility", "Generate " & Item.InfGetModuleName() & "."
+
+    Set CreateValidationProcedure = ProcedureInfo
+End Function
+
+Private Function ResolveValidationModuleKind(ByVal ModuleType As String) As String
+    Select Case ModuleType
+        Case "StandardModule"
+            ResolveValidationModuleKind = "standard"
+        Case "ClassModule"
+            ResolveValidationModuleKind = "class"
+        Case Else
+            ResolveValidationModuleKind = ModuleType
+    End Select
 End Function
 
 Private Sub ParseBlueprintContent(ByVal BlueprintContent As String)
