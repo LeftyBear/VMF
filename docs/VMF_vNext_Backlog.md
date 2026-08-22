@@ -34,6 +34,7 @@ specification changes.
 | P4-05 | Template Mapping contract freeze | COMPLETE / docs-only contract freeze | `docs/spec/P4-05_TemplateMappingContractFreeze.md` | Freezes Template Mapping as the deterministic Manifest -> Template binding contract before GenerateContext, records what Template Mapping decides and does not decide, and defines hard-stops for unresolved, ambiguous, unsupported, or unapproved mapping state without implementation GO. |
 | P4-06 | GenerateContext responsibility boundary freeze | COMPLETE / docs-only responsibility boundary freeze | `docs/spec/P4-06_GenerateContextResponsibilityBoundaryFreeze.md` | Freezes GenerateContext as the deterministic Template Mapping output + Manifest-derived data -> Generator-ready context boundary, records what GenerateContext owns and does not own, and defines hard-stops for unresolved, inconsistent, unsupported, or incomplete context state before Generator without implementation GO. |
 | P4-07 | Generator Input Contract scope planning | COMPLETE / docs-only scope planning | `docs/spec/P4-07_GeneratorInputContractScopePlanning.md` | Fixes Generator input to a complete and successful GenerateContext result only, records required input items, responsibility and failure boundaries, and preserves upstream Parser / Validator / Manifest Derivation / Template Mapping / GenerateContext hard stops without implementation GO. |
+| P4-08 | Generator focused test design | COMPLETE / docs-only test design | `docs/spec/P4-08_GeneratorFocusedTestDesign.md` | Fixes the future focused local test design for the Generator boundary, identifies docs-only target files and future candidate test areas, defines acceptance criteria and prohibited operations, and preserves Parser / Validator / Manifest Derivation / Template Mapping / GenerateContext / Generator separation without implementation GO. |
 
 ## Boundary
 
@@ -90,6 +91,12 @@ specification changes.
   only, records the required input items, Generator responsibility boundary,
   failure boundary, and upstream connection, and keeps implementation,
   Generator code changes, and runtime behavior changes as NO-GO.
+- P4-08 is complete as docs-only Generator focused test design. It fixes the
+  future focused local test design for the Generator boundary, identifies the
+  current docs-only target files and future candidate test areas, records
+  acceptance criteria and execution prohibitions, and keeps implementation,
+  test code changes, Generator code changes, and runtime behavior changes as
+  NO-GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
