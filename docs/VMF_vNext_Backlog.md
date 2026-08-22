@@ -36,6 +36,7 @@ specification changes.
 | P4-07 | Generator Input Contract scope planning | COMPLETE / docs-only scope planning | `docs/spec/P4-07_GeneratorInputContractScopePlanning.md` | Fixes Generator input to a complete and successful GenerateContext result only, records required input items, responsibility and failure boundaries, and preserves upstream Parser / Validator / Manifest Derivation / Template Mapping / GenerateContext hard stops without implementation GO. |
 | P4-08 | Generator focused test design | COMPLETE / docs-only test design | `docs/spec/P4-08_GeneratorFocusedTestDesign.md` | Fixes the future focused local test design for the Generator boundary, identifies docs-only target files and future candidate test areas, defines acceptance criteria and prohibited operations, and preserves Parser / Validator / Manifest Derivation / Template Mapping / GenerateContext / Generator separation without implementation GO. |
 | P4-09 | Generator Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P4-09_GeneratorFocusedTestImplementationScopePlanning.md` | Fixes the future implementation decision boundary for P4-08 focused Generator tests, records candidate implementation and non-scope areas, acceptance criteria, and safety stops, and keeps production code, test code, Generator behavior, and runtime behavior changes as NO-GO. |
+| P5-01 | Template Derivation Scope Planning | COMPLETE / docs-only planning | `docs/spec/P5-01_TemplateDerivationScopePlanning.md` | Fixes the Manifest-only Template Derivation boundary, output and GenerateContext handoff, failure boundaries for missing information / unsupported elements / non-unique conversion / unsatisfied Generator preconditions, existing implementation relationship, and minimum future implementation slice without implementation GO. |
 
 ## Boundary
 
@@ -105,6 +106,13 @@ specification changes.
   while keeping production code, test code, Generator behavior, runtime
   behavior, package, `dist`, release, external service, staging, commit, and
   push operations as NO-GO.
+- P5-01 is complete as docs-only Template Derivation scope planning. It fixes
+  the Manifest-only input boundary, Template binding output boundary,
+  GenerateContext handoff, and hard-stop conditions for missing required
+  information, unsupported elements, non-unique conversion, and unsatisfied
+  Generator preconditions, while keeping implementation, tests, Template file
+  changes, GenerateContext changes, Generator changes, package, `dist`,
+  release, external service, staging, commit, and push operations as NO-GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
