@@ -37,6 +37,7 @@ specification changes.
 | P4-08 | Generator focused test design | COMPLETE / docs-only test design | `docs/spec/P4-08_GeneratorFocusedTestDesign.md` | Fixes the future focused local test design for the Generator boundary, identifies docs-only target files and future candidate test areas, defines acceptance criteria and prohibited operations, and preserves Parser / Validator / Manifest Derivation / Template Mapping / GenerateContext / Generator separation without implementation GO. |
 | P4-09 | Generator Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P4-09_GeneratorFocusedTestImplementationScopePlanning.md` | Fixes the future implementation decision boundary for P4-08 focused Generator tests, records candidate implementation and non-scope areas, acceptance criteria, and safety stops, and keeps production code, test code, Generator behavior, and runtime behavior changes as NO-GO. |
 | P5-01 | Template Derivation Scope Planning | COMPLETE / docs-only planning | `docs/spec/P5-01_TemplateDerivationScopePlanning.md` | Fixes the Manifest-only Template Derivation boundary, output and GenerateContext handoff, failure boundaries for missing information / unsupported elements / non-unique conversion / unsatisfied Generator preconditions, existing implementation relationship, and minimum future implementation slice without implementation GO. |
+| P5-02 | Template Inventory Review / Concrete Template Derivation Table | COMPLETE / docs-only inventory and derivation table | `docs/spec/P5-02_TemplateInventoryAndDerivationTable.md` | Reviews the existing Template inventory, records the concrete Manifest fact to Template binding table, classifies deterministic, unsupported, ambiguous, and deferred mapping cases, confirms P5-01 information-source and hard-stop boundaries, and keeps implementation, tests, Template, GenerateContext, Generator, package, `dist`, release, external service, staging, commit, and push operations as NO-GO. |
 
 ## Boundary
 
@@ -113,6 +114,16 @@ specification changes.
   Generator preconditions, while keeping implementation, tests, Template file
   changes, GenerateContext changes, Generator changes, package, `dist`,
   release, external service, staging, commit, and push operations as NO-GO.
+- P5-02 is complete as docs-only Template inventory review and concrete
+  derivation table. It records the current Template inventory, fixes the
+  current deterministic mapping set as `StandardModule -> ModuleTemplate.txt`,
+  `ClassModule + Domain -> DomainClassTemplate.txt`, and
+  `ClassModule + non-Domain supported layer -> ClassTemplate.txt`, classifies
+  `DomainModuleTemplate.txt` and procedure / parameter / return value /
+  dependency / generation-policy binding from the current Manifest surface as
+  unsupported or deferred, confirms TemplatePath consistency hard stops, and
+  preserves the P5-01 Manifest-only input and GenerateContext / Generator
+  downstream boundaries without authorizing implementation.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
