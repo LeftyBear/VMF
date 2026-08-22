@@ -30,6 +30,7 @@ AppTemplateValidationIssue,ClassModule,Application,..\..\templates\ClassTemplate
 AppValidationService,ClassModule,Application,..\..\templates\ClassTemplate.txt,BodySource\Application\AppValidationService.body.txt
 AttributeWriter,ClassModule,Application,..\..\templates\ClassTemplate.txt
 Build_BlueprintParser,ClassModule,Application,..\..\templates\ClassTemplate.txt
+BlueprintManifestDeriver,ClassModule,Application,..\..\templates\ClassTemplate.txt
 BlueprintValidationDiagnostic,ClassModule,Application,..\..\templates\ClassTemplate.txt
 BlueprintValidationResult,ClassModule,Application,..\..\templates\ClassTemplate.txt
 BlueprintValidator,ClassModule,Application,..\..\templates\ClassTemplate.txt

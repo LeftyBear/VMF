@@ -91,42 +91,28 @@ Public Function BuildGetBlueprintValue(ByVal KeyName As String) As String
 End Function
 
 Public Function BuildGenerateManifestContent(ByVal LayerName As String) As String
-    Dim Items As Collection
-    Dim Item As ManifestItem
-    Dim Content As String
+    Dim Deriver As BlueprintManifestDeriver
 
     EnsureInitialized
     ComRequireText LayerName, "LayerName", "Build_BlueprintParser.BuildGenerateManifestContent"
-    ValidateForManifestGeneration
 
-    If Not This.DefinedLayers.Exists(LayerName) Then
-        Err.Raise ComErrInvalidArgument, "Build_BlueprintParser", "Blueprint layer is not defined: " & LayerName
-    End If
-
-    Content = "# ModuleName,ModuleType,LayerName,TemplatePath"
-    Set Items = BuildGetLayerItems(LayerName)
-    If Items.Count = 0 Then
-        Err.Raise ComErrInvalidArgument, "Build_BlueprintParser", "Blueprint layer contains no generation modules: " & LayerName
-    End If
-
-    For Each Item In Items
-        Content = Content & vbCrLf & FormatManifestItem(Item)
-    Next Item
-
-    BuildGenerateManifestContent = Content
+    Set Deriver = New BlueprintManifestDeriver
+    BuildGenerateManifestContent = Deriver.AppDeriveManifestContent(CreateValidationBlueprint(LayerName), ValidateForManifestGeneration(LayerName))
 End Function
 
-Private Sub ValidateForManifestGeneration()
+Private Function ValidateForManifestGeneration(ByVal LayerName As String) As BlueprintValidationResult
     Dim Validator As BlueprintValidator
     Dim Result As BlueprintValidationResult
 
     Set Validator = New BlueprintValidator
-    Set Result = Validator.Validate(CreateValidationBlueprint())
+    Set Result = Validator.Validate(CreateValidationBlueprint(LayerName))
 
     If Not Result.Generatable Then
         Err.Raise ComErrInvalidState, "Build_BlueprintParser", BuildValidationFailureMessage(Result)
     End If
-End Sub
+
+    Set ValidateForManifestGeneration = Result
+End Function
 
 Private Function BuildValidationFailureMessage(ByVal Result As BlueprintValidationResult) As String
     Dim MessageText As String
@@ -178,7 +164,7 @@ Private Function SanitizeValidationDiagnosticValue(ByVal TextValue As String) As
     SanitizeValidationDiagnosticValue = Sanitized
 End Function
 
-Private Function CreateValidationBlueprint() As Object
+Private Function CreateValidationBlueprint(ByVal LayerName As String) As Object
     Dim Blueprint As Object
     Dim Approval As Object
     Dim Target As Object
@@ -201,7 +187,7 @@ Private Function CreateValidationBlueprint() As Object
     Target.Add "name", BuildGetBlueprintValue("name")
     Blueprint.Add "target", Target
 
-    Set Modules = CreateValidationModules()
+    Set Modules = CreateValidationModules(LayerName)
     Blueprint.Add "modules", Modules
 
     Set Policy = CreateObject("Scripting.Dictionary")
@@ -217,19 +203,24 @@ Private Function BuildValidationBlueprintId() As String
     BuildValidationBlueprintId = "BP-" & BuildGetBlueprintValue("name")
 End Function
 
-Private Function CreateValidationModules() As Collection
+Private Function CreateValidationModules(ByVal LayerName As String) As Collection
     Dim Modules As Collection
-    Dim LayerName As Variant
     Dim Items As Collection
     Dim Item As ManifestItem
 
     Set Modules = New Collection
-    For Each LayerName In This.DefinedLayers.Keys
-        Set Items = BuildGetLayerItems(CStr(LayerName))
-        For Each Item In Items
-            Modules.Add CreateValidationModule(Item)
-        Next Item
-    Next LayerName
+    If Not This.DefinedLayers.Exists(LayerName) Then
+        Err.Raise ComErrInvalidArgument, "Build_BlueprintParser", "Blueprint layer is not defined: " & LayerName
+    End If
+
+    Set Items = BuildGetLayerItems(LayerName)
+    If Items.Count = 0 Then
+        Err.Raise ComErrInvalidArgument, "Build_BlueprintParser", "Blueprint layer contains no generation modules: " & LayerName
+    End If
+
+    For Each Item In Items
+        Modules.Add CreateValidationModule(Item)
+    Next Item
 
     Set CreateValidationModules = Modules
 End Function
@@ -241,6 +232,7 @@ Private Function CreateValidationModule(ByVal Item As ManifestItem) As Object
     Set ModuleInfo = CreateObject("Scripting.Dictionary")
     ModuleInfo.Add "name", Item.InfGetModuleName()
     ModuleInfo.Add "kind", ResolveValidationModuleKind(Item.InfGetModuleType())
+    ModuleInfo.Add "layer", Item.InfGetLayerName()
     ModuleInfo.Add "responsibility", "Generate " & Item.InfGetModuleName() & "."
 
     Set Procedures = New Collection
@@ -474,22 +466,6 @@ Private Sub EnsureLayerItems(ByVal LayerName As String)
         This.ItemsByLayer.Add LayerName, New Collection
     End If
 End Sub
-
-Private Function FormatManifestItem(ByVal Item As ManifestItem) As String
-    If Item Is Nothing Then
-        Err.Raise ComErrInvalidArgument, "Build_BlueprintParser", "ManifestItem is required."
-    End If
-
-    If Not Item.InfValidate() Then
-        Err.Raise ComErrInvalidArgument, "Build_BlueprintParser", "ManifestItem is invalid."
-    End If
-
-    FormatManifestItem = _
-        Item.InfGetModuleName() & "," & _
-        Item.InfGetModuleType() & "," & _
-        Item.InfGetLayerName() & "," & _
-        Item.InfGetTemplatePath()
-End Function
 
 Private Function ResolveModuleType(ByVal GroupName As String) As String
     Select Case GroupName

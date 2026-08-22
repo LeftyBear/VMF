@@ -1,12 +1,13 @@
 # VMF vNext Backlog
 
-Status  : Active planning record
-Scope   : VMF Build vNext documentation-only planning and closeout state
+Status  : Active Build vNext record
+Scope   : VMF Build vNext planning, implementation closeout, and verification state
 
-This backlog records VMF Build vNext planning status only. It does not authorize
-implementation, VBA changes, Parser changes, Generator changes, test execution,
-package or `dist` updates, external service operations, release operations, or
-Frozen specification changes.
+This backlog records VMF Build vNext planning, implementation closeout, and
+verification status. It does not authorize work beyond each explicitly recorded
+GO scope, and it does not authorize package or `dist` updates, external service
+operations, release operations, publication, push, tag creation, or Frozen
+specification changes.
 
 ## Current Items
 
@@ -27,6 +28,7 @@ Frozen specification changes.
 | P3-07 | Validator integration completion review | COMPLETE / completion review | `docs/spec/ValidatorIntegrationCompletionReview.md` | Records Validator integration behavior PASS, Build PASS warnings 0 / errors 0, existing Build regression 18 runners PASS, focused integration and Validator test PASS, `git diff --check` PASS, generated artifact cleanup, no code-level blocker, and P3-07 COMPLETE. |
 | P3-08 | Next candidate selection | COMPLETE / docs-only selection | `docs/spec/P3NextCandidateSelection.md` | Selects P4-01 -- Manifest Derivation Scope Planning as the next docs-only candidate and records NO-GO for direct Manifest derivation implementation in P3-08. |
 | P4-01 | Manifest derivation scope planning | COMPLETE / docs-only planning | `docs/spec/P4-01_ManifestDerivationScopePlanning.md` | Fixes the Validated Blueprint -> Manifest derivation responsibility boundary, transformation rules, hard-stop conditions, existing-flow relationship, and minimum future implementation slice without implementation GO. |
+| P4-02 | Manifest derivation minimum local implementation slice | COMPLETE / IMPLEMENTED / VERIFIED | `docs/spec/P4-02_ManifestDerivationImplementationRecord.md` | Adds `BlueprintManifestDeriver`, derives Manifest content deterministically from Validator-passed Validated Blueprint input, preserves the compatibility parser entry point by delegating formatting to the deriver, hard-stops incomplete / ambiguous / unsupported / unapproved / non-generatable input, does not infer missing `LayerName`, and preserves Parser / Validator / Template / GenerateContext / Generator boundaries. |
 
 ## Boundary
 
@@ -52,7 +54,11 @@ Frozen specification changes.
 - P4-01 is complete as docs-only Manifest derivation scope planning. It fixes
   the Validated Blueprint -> Manifest boundary and does not authorize
   implementation.
+- P4-02 is complete as the Manifest Derivation minimum local implementation
+  slice. It implements and verifies `BlueprintManifestDeriver`, keeps
+  `Build_BlueprintParser.BuildGenerateManifestContent` as a compatibility entry
+  point, delegates Manifest formatting to the deriver, hard-stops before
+  Generator input on derivation failure, and maintains the P4-01 boundary.
 - P2 is COMPLETE.
-- No implementation, VBA, Parser, Validator, Generator, tests, package / `dist`,
-  external service, release, or Frozen specification change is authorized by
-  this record.
+- No package / `dist`, external service, release, publication, push, tag, or
+  Frozen specification change is authorized by this record.
