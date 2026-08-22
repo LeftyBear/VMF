@@ -32,6 +32,7 @@ specification changes.
 | P4-03 | Manifest derivation focused test completion | COMPLETE / TESTED / VERIFIED | `docs/spec/P4-03_ManifestDerivationFocusedTestCompletion.md` | Extends focused Manifest Derivation tests for Validator PASS input, validation-error hard-stop, Parser / Validator non-conversion, and Template / GenerateContext / Generator pre-boundary while preserving local-only and no-`dist` boundaries. |
 | P4-04 | Template Mapping scope planning | COMPLETE / docs-only planning | `docs/spec/P4-04_TemplateMappingScopePlanning.md` | Fixes the post-Manifest-Derivation Template Mapping boundary, input / output rules, hard-stop conditions before GenerateContext and Generator, and minimum future implementation slice without implementation GO. |
 | P4-05 | Template Mapping contract freeze | COMPLETE / docs-only contract freeze | `docs/spec/P4-05_TemplateMappingContractFreeze.md` | Freezes Template Mapping as the deterministic Manifest -> Template binding contract before GenerateContext, records what Template Mapping decides and does not decide, and defines hard-stops for unresolved, ambiguous, unsupported, or unapproved mapping state without implementation GO. |
+| P4-06 | GenerateContext responsibility boundary freeze | COMPLETE / docs-only responsibility boundary freeze | `docs/spec/P4-06_GenerateContextResponsibilityBoundaryFreeze.md` | Freezes GenerateContext as the deterministic Template Mapping output + Manifest-derived data -> Generator-ready context boundary, records what GenerateContext owns and does not own, and defines hard-stops for unresolved, inconsistent, unsupported, or incomplete context state before Generator without implementation GO. |
 
 ## Boundary
 
@@ -77,6 +78,12 @@ specification changes.
   not own, and requires unresolved, ambiguous, unsupported, or unapproved
   mapping state to hard-stop before GenerateContext and Generator without
   authorizing implementation.
+- P4-06 is complete as docs-only GenerateContext responsibility boundary
+  freeze. It fixes GenerateContext as the deterministic boundary that consumes
+  only successful Template Mapping output and approved Manifest-derived data,
+  packages that data into Generator-ready context, and requires unresolved,
+  inconsistent, unsupported, or incomplete context state to hard-stop before
+  Generator without authorizing implementation.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
