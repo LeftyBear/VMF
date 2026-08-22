@@ -30,6 +30,7 @@ specification changes.
 | P4-01 | Manifest derivation scope planning | COMPLETE / docs-only planning | `docs/spec/P4-01_ManifestDerivationScopePlanning.md` | Fixes the Validated Blueprint -> Manifest derivation responsibility boundary, transformation rules, hard-stop conditions, existing-flow relationship, and minimum future implementation slice without implementation GO. |
 | P4-02 | Manifest derivation minimum local implementation slice | COMPLETE / IMPLEMENTED / VERIFIED | `docs/spec/P4-02_ManifestDerivationImplementationRecord.md` | Adds `BlueprintManifestDeriver`, derives Manifest content deterministically from Validator-passed Validated Blueprint input, preserves the compatibility parser entry point by delegating formatting to the deriver, hard-stops incomplete / ambiguous / unsupported / unapproved / non-generatable input, does not infer missing `LayerName`, and preserves Parser / Validator / Template / GenerateContext / Generator boundaries. |
 | P4-03 | Manifest derivation focused test completion | COMPLETE / TESTED / VERIFIED | `docs/spec/P4-03_ManifestDerivationFocusedTestCompletion.md` | Extends focused Manifest Derivation tests for Validator PASS input, validation-error hard-stop, Parser / Validator non-conversion, and Template / GenerateContext / Generator pre-boundary while preserving local-only and no-`dist` boundaries. |
+| P4-04 | Template Mapping scope planning | COMPLETE / docs-only planning | `docs/spec/P4-04_TemplateMappingScopePlanning.md` | Fixes the post-Manifest-Derivation Template Mapping boundary, input / output rules, hard-stop conditions before GenerateContext and Generator, and minimum future implementation slice without implementation GO. |
 
 ## Boundary
 
@@ -64,6 +65,11 @@ specification changes.
   extends `AppBlueprintManifestTests`, keeps Parser and Validator out of
   Manifest conversion, and verifies local-only using a temporary Build.xlam
   without updating package or `dist` artifacts.
+- P4-04 is complete as docs-only Template Mapping scope planning. It fixes the
+  post-Manifest-Derivation Template Mapping boundary, keeps Parser, Validator,
+  and Manifest Derivation responsibilities unchanged, and records hard-stop
+  conditions before GenerateContext and Generator without authorizing
+  implementation.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
