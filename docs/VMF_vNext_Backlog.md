@@ -33,6 +33,7 @@ specification changes.
 | P4-04 | Template Mapping scope planning | COMPLETE / docs-only planning | `docs/spec/P4-04_TemplateMappingScopePlanning.md` | Fixes the post-Manifest-Derivation Template Mapping boundary, input / output rules, hard-stop conditions before GenerateContext and Generator, and minimum future implementation slice without implementation GO. |
 | P4-05 | Template Mapping contract freeze | COMPLETE / docs-only contract freeze | `docs/spec/P4-05_TemplateMappingContractFreeze.md` | Freezes Template Mapping as the deterministic Manifest -> Template binding contract before GenerateContext, records what Template Mapping decides and does not decide, and defines hard-stops for unresolved, ambiguous, unsupported, or unapproved mapping state without implementation GO. |
 | P4-06 | GenerateContext responsibility boundary freeze | COMPLETE / docs-only responsibility boundary freeze | `docs/spec/P4-06_GenerateContextResponsibilityBoundaryFreeze.md` | Freezes GenerateContext as the deterministic Template Mapping output + Manifest-derived data -> Generator-ready context boundary, records what GenerateContext owns and does not own, and defines hard-stops for unresolved, inconsistent, unsupported, or incomplete context state before Generator without implementation GO. |
+| P4-07 | Generator Input Contract scope planning | COMPLETE / docs-only scope planning | `docs/spec/P4-07_GeneratorInputContractScopePlanning.md` | Fixes Generator input to a complete and successful GenerateContext result only, records required input items, responsibility and failure boundaries, and preserves upstream Parser / Validator / Manifest Derivation / Template Mapping / GenerateContext hard stops without implementation GO. |
 
 ## Boundary
 
@@ -84,6 +85,11 @@ specification changes.
   packages that data into Generator-ready context, and requires unresolved,
   inconsistent, unsupported, or incomplete context state to hard-stop before
   Generator without authorizing implementation.
+- P4-07 is complete as docs-only Generator Input Contract scope planning. It
+  fixes Generator input to a complete and successful GenerateContext result
+  only, records the required input items, Generator responsibility boundary,
+  failure boundary, and upstream connection, and keeps implementation,
+  Generator code changes, and runtime behavior changes as NO-GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
