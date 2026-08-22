@@ -1,8 +1,8 @@
 Option Explicit
-Attribute VB_Name = "AppBlueprintManifestDeriverTests"
+Attribute VB_Name = "AppBlueprintManifestTests"
 
 '=========================================================================
-' Module: AppBlueprintManifestDeriverTests
+' Module: AppBlueprintManifestTests
 ' Layer: Application
 ' Responsibility: Focused tests for Manifest Derivation from Validated Blueprint.
 ' Dependencies: Application
@@ -10,10 +10,13 @@ Attribute VB_Name = "AppBlueprintManifestDeriverTests"
 
 Private Const AppTestAssertErrorNumber As Long = vbObjectError + 9330
 
-Public Sub AppRunBlueprintManifestDeriverTests()
+Public Sub AppRunBlueprintManifestTests()
     VerifyValidatedBlueprintDerivesManifest
+    VerifyValidationResultIsRequired
+    VerifyValidationErrorResultIsRejected
     VerifyDerivationIsDeterministic
     VerifyDerivationDoesNotAddDesignIntent
+    VerifyDerivationBoundaryIsBeforeTemplateAndGenerator
     VerifyIncompleteBlueprintIsRejected
     VerifyAmbiguousBlueprintIsRejected
     VerifyUnsupportedBlueprintIsRejected
@@ -30,6 +33,21 @@ Private Sub VerifyValidatedBlueprintDerivesManifest()
     AssertTrue InStr(1, ManifestContent, "# ModuleName,ModuleType,LayerName,TemplatePath", vbBinaryCompare) > 0, "Manifest header should be derived."
     AssertTrue InStr(1, ManifestContent, "Subject,ClassModule,Domain,", vbBinaryCompare) > 0, "Manifest module entry should be derived."
     AssertTrue InStr(1, ManifestContent, "DomainClassTemplate.txt", vbBinaryCompare) > 0, "Manifest template path should be deterministic."
+End Sub
+
+Private Sub VerifyValidationResultIsRequired()
+    Dim ErrorText As String
+    Dim Result As BlueprintValidationResult
+
+    AssertEquals vbNullString, TryDeriveManifest(CreateValidBlueprint(), Result, ErrorText), "Unvalidated Blueprint should not derive Manifest."
+    AssertContains ErrorText, "validation result is required", "Manifest derivation should require Validator output."
+End Sub
+
+Private Sub VerifyValidationErrorResultIsRejected()
+    Dim ErrorText As String
+
+    AssertEquals vbNullString, TryDeriveManifest(CreateValidBlueprint(), CreateGeneratableResultWithError(), ErrorText), "Validation diagnostics with errors should not derive Manifest."
+    AssertContains ErrorText, "validation diagnostics contain errors", "Manifest derivation should hard-stop on Validator error diagnostics."
 End Sub
 
 Private Sub VerifyDerivationIsDeterministic()
@@ -52,6 +70,16 @@ Private Sub VerifyDerivationDoesNotAddDesignIntent()
     AssertTrue InStr(1, ManifestContent, "Teach domain scheduling intent", vbBinaryCompare) = 0, "Responsibility prose should not become Manifest behavior."
     AssertTrue InStr(1, ManifestContent, "SayHello", vbBinaryCompare) = 0, "Procedure intent should not add Manifest entries."
     AssertTrue InStr(1, ManifestContent, "UnlistedModule", vbBinaryCompare) = 0, "Unlisted modules should not be invented."
+End Sub
+
+Private Sub VerifyDerivationBoundaryIsBeforeTemplateAndGenerator()
+    Dim ManifestContent As String
+
+    ManifestContent = DeriveManifest(CreateValidBlueprint(), CreateGeneratableResult())
+
+    AssertTrue InStr(1, ManifestContent, "TemplatePath", vbBinaryCompare) > 0, "Manifest derivation should produce Manifest content only."
+    AssertTrue InStr(1, ManifestContent, "GenerateContext", vbBinaryCompare) = 0, "Manifest derivation should not create GenerateContext."
+    AssertTrue InStr(1, ManifestContent, "Generator", vbBinaryCompare) = 0, "Manifest derivation should not invoke Generator."
 End Sub
 
 Private Sub VerifyIncompleteBlueprintIsRejected()
@@ -220,6 +248,18 @@ Private Function CreateInvalidResult() As BlueprintValidationResult
     Diagnostics.Add Diagnostic
 
     Set CreateInvalidResult = CreateResult(BlueprintValidationResultInvalid(), False, Diagnostics)
+End Function
+
+Private Function CreateGeneratableResultWithError() As BlueprintValidationResult
+    Dim Diagnostics As Collection
+    Dim Diagnostic As BlueprintValidationDiagnostic
+
+    Set Diagnostics = New Collection
+    Set Diagnostic = New BlueprintValidationDiagnostic
+    Diagnostic.AppInitialize BP101(), BlueprintCategoryUnsupportedEnumValue(), BlueprintValidationSeverityError(), "version"
+    Diagnostics.Add Diagnostic
+
+    Set CreateGeneratableResultWithError = CreateResult(BlueprintValidationResultValidGeneratable(), True, Diagnostics)
 End Function
 
 Private Function CreateResult(ByVal ResultKind As String, ByVal Generatable As Boolean, ByVal Diagnostics As Collection) As BlueprintValidationResult

@@ -1,5 +1,9 @@
 # Creates the persistent VMF test runner add-in.
 
+param(
+    [string]$BuildPath
+)
+
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 function Resolve-VmfRepositoryRoot {
@@ -85,7 +89,12 @@ $root = Resolve-VmfRepositoryRoot -StartPath $scriptDir
 $runnerDir = Join-Path $root "tools\test\runner"
 $runnerSourcePath = Join-Path $runnerDir "VMFTestRunner.bas"
 $runnerWorkbookPath = Join-Path $runnerDir "VMFTestRunner.xlam"
-$buildPath = Join-Path $root "dist\release\Build\v1.1\Build.xlam"
+if ([string]::IsNullOrWhiteSpace($BuildPath)) {
+    $buildPath = Join-Path $root "dist\release\Build\v1.1\Build.xlam"
+}
+else {
+    $buildPath = [IO.Path]::GetFullPath($BuildPath)
+}
 $testRoot = Join-Path $root "tests"
 
 if (-not (Test-Path $runnerSourcePath)) {

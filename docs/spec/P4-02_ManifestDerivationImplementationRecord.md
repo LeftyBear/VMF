@@ -84,3 +84,14 @@ was performed.
 This record authorizes no push, tag, release, publication, package operation,
 or `dist` update. P4-02 remains a local implementation and verification
 closeout until a separate operation explicitly authorizes any downstream work.
+
+## P4-03 Follow-up
+
+P4-03 completed focused test coverage for this P4-02 implementation slice in
+`docs/spec/P4-03_ManifestDerivationFocusedTestCompletion.md`.
+
+The current focused runner is `AppRunBlueprintManifestTests`. The test source
+continues to verify that Manifest Derivation consumes only Validator-output
+Validated Blueprint input, rejects Validator error diagnostics, hard-stops
+incomplete / ambiguous / unsupported / unapproved / non-generatable input, and
+does not cross into Template, GenerateContext, or Generator responsibility.
