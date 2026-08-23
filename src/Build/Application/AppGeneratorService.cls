@@ -176,6 +176,11 @@ Public Function AppGenerateProject() As ComResult
     Set AppGenerateProject = GenerateProject()
 End Function
 
+' Generates modules from a complete successful GenerateContext result.
+Public Function AppGenerateFromContext(ByVal GenerateContext As Object) As ComResult
+    Set AppGenerateFromContext = GenerateContextUnits(GenerateContext)
+End Function
+
 ' Previews one Build layer without mutating the target workbook.
 Public Function AppPreviewBuildLayer(ByVal LayerName As String, ByRef PreviewText As String) As ComResult
     Set AppPreviewBuildLayer = PreviewBuildLayerManifest(LayerName, PreviewText)
@@ -408,6 +413,173 @@ ErrHandler:
     End If
 
     Set GenerateBuildLayerManifest = ComCreateFailureFromErr("AppGeneratorService." & OperationName, Desc, "Error", False)
+End Function
+
+Private Function GenerateContextUnits(ByVal GenerateContext As Object) As ComResult
+    Dim Units As Collection
+    Dim Unit As Variant
+    Dim Item As ManifestItem
+    Dim CodeText As String
+    Dim Result As ComResult
+
+    On Error GoTo ErrHandler
+
+    Set Result = ValidateGenerateContextInput(GenerateContext)
+    If Result.IsFailure Then
+        Set GenerateContextUnits = Result
+        Exit Function
+    End If
+
+    Set Units = GenerateContext("GenerationUnits")
+    For Each Unit In Units
+        Set Item = CreateManifestItemFromGenerateContextUnit(Unit)
+        CodeText = Generator.InfGenerateManifestItem(Item)
+        Set Result = AddGeneratedManifestItem(Item, CodeText)
+        If Result.IsFailure Then
+            Set GenerateContextUnits = Result
+            Exit Function
+        End If
+    Next Unit
+
+    Set GenerateContextUnits = ComCreateSuccess("GenerateContext generated.")
+    Exit Function
+
+ErrHandler:
+    Set GenerateContextUnits = ComCreateFailureFromErr("AppGeneratorService.AppGenerateFromContext", Err.Description, "Error", False)
+End Function
+
+Private Function ValidateGenerateContextInput(ByVal GenerateContext As Object) As ComResult
+    Dim Units As Collection
+    Dim Unit As Variant
+
+    On Error GoTo ErrHandler
+
+    If GenerateContext Is Nothing Then
+        Set ValidateGenerateContextInput = CreateGenerateContextHardStop("GenerateContext input is required.")
+        Exit Function
+    End If
+
+    If Not DictionaryHasBooleanValue(GenerateContext, "Success", True) Then
+        Set ValidateGenerateContextInput = CreateGenerateContextHardStop("GenerateContext must be successful.")
+        Exit Function
+    End If
+
+    If Not DictionaryHasCollection(GenerateContext, "GenerationUnits") Then
+        Set ValidateGenerateContextInput = CreateGenerateContextHardStop("GenerateContext generation units are required.")
+        Exit Function
+    End If
+
+    Set Units = GenerateContext("GenerationUnits")
+    If Units.Count = 0 Then
+        Set ValidateGenerateContextInput = CreateGenerateContextHardStop("GenerateContext generation units are absent.")
+        Exit Function
+    End If
+
+    For Each Unit In Units
+        ValidateGenerateContextUnit Unit
+    Next Unit
+
+    Set ValidateGenerateContextInput = ComCreateSuccess("GenerateContext input accepted.")
+    Exit Function
+
+ErrHandler:
+    Set ValidateGenerateContextInput = ComCreateFailureFromErr("AppGeneratorService.ValidateGenerateContextInput", Err.Description, "HardStop", False)
+End Function
+
+Private Function CreateGenerateContextHardStop(ByVal Message As String) As ComResult
+    Set CreateGenerateContextHardStop = ComCreateFailure( _
+        ComCreateErrorInfo(ComErrInvalidArgument, "AppGeneratorService.AppGenerateFromContext", Message, "HardStop", False))
+End Function
+
+Private Sub ValidateGenerateContextUnit(ByVal Unit As Variant)
+    If Not IsObject(Unit) Then
+        Err.Raise ComErrInvalidArgument, "ValidateGenerateContextUnit", "GenerateContext unit is invalid."
+    End If
+
+    RequiredContextText Unit, "moduleName"
+    RequiredContextText Unit, "moduleType"
+    RequiredContextText Unit, "layerName"
+    RequiredContextText Unit, "templatePath"
+
+    If Not DictionaryHasNumericValue(Unit, "order") Then
+        Err.Raise ComErrInvalidArgument, "ValidateGenerateContextUnit", "GenerateContext unit order is required."
+    End If
+End Sub
+
+Private Function CreateManifestItemFromGenerateContextUnit(ByVal Unit As Object) As ManifestItem
+    Dim Item As ManifestItem
+
+    Set Item = New ManifestItem
+    Item.InfInitialize _
+        RequiredContextText(Unit, "moduleName"), _
+        RequiredContextText(Unit, "moduleType"), _
+        RequiredContextText(Unit, "layerName"), _
+        RequiredContextText(Unit, "templatePath")
+
+    Set CreateManifestItemFromGenerateContextUnit = Item
+End Function
+
+Private Function RequiredContextText(ByVal Source As Object, ByVal FieldName As String) As String
+    If Source Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "RequiredContextText", "GenerateContext unit is required."
+    End If
+
+    If Not Source.Exists(FieldName) Then
+        Err.Raise ComErrInvalidArgument, "RequiredContextText", "Required GenerateContext field is missing: " & FieldName
+    End If
+
+    If ComIsBlankText(CStr(Source.Item(FieldName))) Then
+        Err.Raise ComErrInvalidArgument, "RequiredContextText", "Required GenerateContext field is blank: " & FieldName
+    End If
+
+    RequiredContextText = Trim$(CStr(Source.Item(FieldName)))
+End Function
+
+Private Function DictionaryHasBooleanValue(ByVal Source As Object, ByVal FieldName As String, ByVal ExpectedValue As Boolean) As Boolean
+    If Source Is Nothing Then
+        DictionaryHasBooleanValue = False
+        Exit Function
+    End If
+
+    If Not Source.Exists(FieldName) Then
+        DictionaryHasBooleanValue = False
+        Exit Function
+    End If
+
+    If VarType(Source.Item(FieldName)) <> vbBoolean Then
+        DictionaryHasBooleanValue = False
+        Exit Function
+    End If
+
+    DictionaryHasBooleanValue = (CBool(Source.Item(FieldName)) = ExpectedValue)
+End Function
+
+Private Function DictionaryHasCollection(ByVal Source As Object, ByVal FieldName As String) As Boolean
+    If Source Is Nothing Then
+        DictionaryHasCollection = False
+        Exit Function
+    End If
+
+    If Not Source.Exists(FieldName) Then
+        DictionaryHasCollection = False
+        Exit Function
+    End If
+
+    DictionaryHasCollection = TypeName(Source.Item(FieldName)) = "Collection"
+End Function
+
+Private Function DictionaryHasNumericValue(ByVal Source As Object, ByVal FieldName As String) As Boolean
+    If Source Is Nothing Then
+        DictionaryHasNumericValue = False
+        Exit Function
+    End If
+
+    If Not Source.Exists(FieldName) Then
+        DictionaryHasNumericValue = False
+        Exit Function
+    End If
+
+    DictionaryHasNumericValue = IsNumeric(Source.Item(FieldName))
 End Function
 
 Private Function ValidateBuildManifestFile(ByVal ManifestPath As String, ByVal OperationName As String) As ComResult
