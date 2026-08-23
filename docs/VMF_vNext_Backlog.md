@@ -51,6 +51,7 @@ specification changes.
 | P5-13 | Post-Generator Boundary Next Candidate Selection | COMPLETE / docs-only candidate selection | `docs/spec/P5-13_PostGeneratorBoundaryNextCandidateSelection.md` | Records that P5-13 is docs-only, confirms no production or test implementation GO, preserves the P5-04 through P5-12 fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions, and requires a separate GO / NO-GO decision for any named downstream Build vNext candidate. |
 | P5-14 | Named Downstream Candidate GO / NO-GO Boundary | COMPLETE / docs-only GO / NO-GO boundary record | `docs/spec/P5-14_NamedDownstreamCandidateGoNoGoBoundary.md` | Confirms that no formal named downstream candidate is recorded after P5-13, keeps implementation NO-GO, and preserves the P5-04 through P5-13 fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
 | P5-15 | Named Downstream Candidate Selection | COMPLETE / docs-only candidate selection | `docs/spec/P5-15_NamedDownstreamCandidateSelection.md` | Selects `P6-01 - Generator Output Write Boundary Planning` as the next named downstream Build vNext candidate, keeps local-only implementation NO-GO, and preserves the P5-04 through P5-14 fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
+| P6-01 | Generator Output Write Boundary Planning | COMPLETE / docs-only boundary planning | `docs/spec/P6-01_GeneratorOutputWriteBoundaryPlanning.md` | Fixes Generator output write as a post-Generator boundary, separates generated output construction from target VBA project mutation, keeps local-only implementation NO-GO, and preserves the P5-04 through P5-15 fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
 
 ## Boundary
 
@@ -222,6 +223,12 @@ specification changes.
   downstream Build vNext candidate, keeps local-only implementation NO-GO, and
   preserves the P5-04 through P5-14 boundaries before any future output-write
   planning or implementation decision.
+- P6-01 is complete as docs-only Generator output write boundary planning. It
+  fixes output write as a post-Generator boundary, separates successful
+  Generator output construction from target VBA project mutation, keeps
+  local-only implementation NO-GO, and preserves the P5-04 through P5-15
+  boundaries before any future output write or mutation implementation
+  decision.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
