@@ -46,7 +46,8 @@ specification changes.
 | P5-08 | GenerateContext Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P5-08_GenerateContextFocusedTestImplementationScopePlanning.md` | Connects the P5-07 GenerateContext focused test design to a future implementation decision by fixing candidate implementation scope, non-scope, acceptance criteria, safety stops, and preserved P5-04 through P5-07 boundaries while keeping local-only implementation, production code, test code, fallback, implicit Template selection, Template content inference, GenerateContext / Generator compensation, package, `dist`, release, external service, and Frozen specification changes as NO-GO. |
 | P5-09 | GenerateContext Focused Test Implementation Start | COMPLETE / local-only implementation verified | `d67549cfb0285b7eff1292695da3cfc740f7a56f` | Implements the narrow GenerateContext builder and focused tests from the P5-08 boundary while preserving P5-04 through P5-08 hard stops: no fallback, implicit Template selection, Template content inference, GenerateContext / Generator compensation, Template file changes, Generator behavior changes, package, `dist`, release, external service, or Frozen specification changes. |
 | P5-10 | GenerateContext Focused Test Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P5-10_GenerateContextFocusedTestImplementationCloseout.md` | Closes out P5-09 after commit `d67549cfb0285b7eff1292695da3cfc740f7a56f`, records the GenerateContext entry boundary, focused test target, preserved P5-04 through P5-09 boundaries, and confirms no additional P5-10 implementation is required. |
-| P5-11 | Generator Focused Test Implementation Start | STARTED / docs-only scope confirmation | `docs/spec/P5-11_GeneratorFocusedTestImplementationStart.md` | Starts the downstream Generator focused test implementation decision boundary after P5-10, confirms no prior P5-11 row existed, and preserves P5-04 through P5-10 hard stops. No local-only implementation, production code, test code, Generator behavior, package, `dist`, release, external service, or Frozen specification change is authorized by this start record. |
+| P5-11 | Generator Focused Test Implementation Start | COMPLETE / local-only implementation verified | `ba84d6e7af3825a617ed0426d75de1e38593579c` | Implements the narrow Generator GenerateContext input boundary and focused tests while preserving P5-04 through P5-10 hard stops: no fallback, implicit Template selection, Template content inference, GenerateContext / Generator compensation, Template file changes, package, `dist`, release, external service, or Frozen specification changes. |
+| P5-12 | Generator Focused Test Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P5-12_GeneratorFocusedTestImplementationCloseout.md` | Closes out P5-11 after commit `ba84d6e7af3825a617ed0426d75de1e38593579c`, records the Generator GenerateContext input entry boundary, focused test target, preserved P5-04 through P5-11 boundaries, and confirms no additional P5-12 implementation is required. |
 
 ## Boundary
 
@@ -193,14 +194,17 @@ specification changes.
   P5-09 closeout state, confirms no additional P5-10 implementation is
   required, and preserves the P5-04 through P5-09 boundaries before any future
   downstream candidate.
-- P5-11 is started as docs-only scope confirmation. It records the downstream
-  Generator focused test implementation decision boundary after P5-10,
-  confirms no prior P5-11 backlog row existed, and preserves P5-04 through
-  P5-10 hard stops before any separate local-only implementation GO. Fallback
-  Template selection, implicit Template selection, Template content inference,
-  GenerateContext / Generator compensation, Generator-side repair,
-  normalization, inference, or completion, package, `dist`, release, external
-  service, and Frozen specification changes remain NO-GO.
+- P5-11 is complete as local-only Generator focused test implementation in
+  commit `ba84d6e7af3825a617ed0426d75de1e38593579c`. It adds the narrow
+  `AppGeneratorService.AppGenerateFromContext` entry boundary and
+  `AppGeneratorContextBoundaryTests` focused tests while preserving fallback,
+  implicit Template selection, Template content inference, GenerateContext /
+  Generator compensation, Template file changes, package, `dist`, release,
+  external service, and Frozen specification boundaries as NO-GO.
+- P5-12 is complete as docs-only and local-only status sync. It records the
+  P5-11 closeout state, confirms no additional P5-12 implementation is
+  required, and preserves the P5-04 through P5-11 boundaries before any future
+  downstream candidate.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
