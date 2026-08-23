@@ -48,6 +48,7 @@ specification changes.
 | P5-10 | GenerateContext Focused Test Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P5-10_GenerateContextFocusedTestImplementationCloseout.md` | Closes out P5-09 after commit `d67549cfb0285b7eff1292695da3cfc740f7a56f`, records the GenerateContext entry boundary, focused test target, preserved P5-04 through P5-09 boundaries, and confirms no additional P5-10 implementation is required. |
 | P5-11 | Generator Focused Test Implementation Start | COMPLETE / local-only implementation verified | `ba84d6e7af3825a617ed0426d75de1e38593579c` | Implements the narrow Generator GenerateContext input boundary and focused tests while preserving P5-04 through P5-10 hard stops: no fallback, implicit Template selection, Template content inference, GenerateContext / Generator compensation, Template file changes, package, `dist`, release, external service, or Frozen specification changes. |
 | P5-12 | Generator Focused Test Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P5-12_GeneratorFocusedTestImplementationCloseout.md` | Closes out P5-11 after commit `ba84d6e7af3825a617ed0426d75de1e38593579c`, records the Generator GenerateContext input entry boundary, focused test target, preserved P5-04 through P5-11 boundaries, and confirms no additional P5-12 implementation is required. |
+| P5-13 | Post-Generator Boundary Next Candidate Selection | COMPLETE / docs-only candidate selection | `docs/spec/P5-13_PostGeneratorBoundaryNextCandidateSelection.md` | Records that P5-13 is docs-only, confirms no production or test implementation GO, preserves the P5-04 through P5-12 fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions, and requires a separate GO / NO-GO decision for any named downstream Build vNext candidate. |
 
 ## Boundary
 
@@ -205,6 +206,11 @@ specification changes.
   P5-11 closeout state, confirms no additional P5-12 implementation is
   required, and preserves the P5-04 through P5-11 boundaries before any future
   downstream candidate.
+- P5-13 is complete as docs-only candidate selection. It records the
+  post-Generator boundary next-action decision, confirms no production or test
+  implementation is authorized, preserves the P5-04 through P5-12 boundaries,
+  and requires a separate GO / NO-GO decision for any named downstream
+  Build vNext candidate.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
