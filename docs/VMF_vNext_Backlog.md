@@ -38,6 +38,7 @@ specification changes.
 | P4-09 | Generator Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P4-09_GeneratorFocusedTestImplementationScopePlanning.md` | Fixes the future implementation decision boundary for P4-08 focused Generator tests, records candidate implementation and non-scope areas, acceptance criteria, and safety stops, and keeps production code, test code, Generator behavior, and runtime behavior changes as NO-GO. |
 | P5-01 | Template Derivation Scope Planning | COMPLETE / docs-only planning | `docs/spec/P5-01_TemplateDerivationScopePlanning.md` | Fixes the Manifest-only Template Derivation boundary, output and GenerateContext handoff, failure boundaries for missing information / unsupported elements / non-unique conversion / unsatisfied Generator preconditions, existing implementation relationship, and minimum future implementation slice without implementation GO. |
 | P5-02 | Template Inventory Review / Concrete Template Derivation Table | COMPLETE / docs-only inventory and derivation table | `docs/spec/P5-02_TemplateInventoryAndDerivationTable.md` | Reviews the existing Template inventory, records the concrete Manifest fact to Template binding table, classifies deterministic, unsupported, ambiguous, and deferred mapping cases, confirms P5-01 information-source and hard-stop boundaries, and keeps implementation, tests, Template, GenerateContext, Generator, package, `dist`, release, external service, staging, commit, and push operations as NO-GO. |
+| P5-03 | Template Derivation Output Model Planning | COMPLETE / docs-only output model planning | `docs/spec/P5-03_TemplateDerivationOutputModelPlanning.md` | Defines the Template Derivation Model output fields from Validator PASS / approved Manifest input, normalizes approved P5-02 Template selection results for downstream GenerateContext, records unsupported / non-generatable hard stops, and keeps implementation, tests, Template generation, GenerateContext, Generator, package, `dist`, release, external service, and Frozen specification changes as NO-GO. |
 
 ## Boundary
 
@@ -124,6 +125,15 @@ specification changes.
   unsupported or deferred, confirms TemplatePath consistency hard stops, and
   preserves the P5-01 Manifest-only input and GenerateContext / Generator
   downstream boundaries without authorizing implementation.
+- P5-03 is complete as docs-only Template Derivation output model planning. It
+  defines the Template Derivation Model fields `templateKey`, `templatePath`,
+  `templateRole`, `selectionRuleId`, `derivationReason`, `isGeneratable`, and
+  `unsupportedReason`; limits input to Validator PASS / approved Manifest
+  state; normalizes only the approved P5-02 Template selection results; and
+  requires unapproved Manifest state, non-unique Template selection, missing
+  Template inventory, Manifest-only Template misuse, unsupported state, or
+  non-generatable state to stop before GenerateContext and Generator without
+  authorizing implementation.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
