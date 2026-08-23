@@ -41,6 +41,7 @@ specification changes.
 | P5-03 | Template Derivation Output Model Planning | COMPLETE / docs-only output model planning | `docs/spec/P5-03_TemplateDerivationOutputModelPlanning.md` | Defines the Template Derivation Model output fields from Validator PASS / approved Manifest input, normalizes approved P5-02 Template selection results for downstream GenerateContext, records unsupported / non-generatable hard stops, and keeps implementation, tests, Template generation, GenerateContext, Generator, package, `dist`, release, external service, and Frozen specification changes as NO-GO. |
 | P5-04 | Template Derivation Failure Boundary Planning | COMPLETE / docs-only failure boundary planning | `docs/spec/P5-04_TemplateDerivationFailureBoundaryPlanning.md` | Fixes the Template Derivation failure boundary: only complete, approved, generatable P5-03 output model items from approved P5-02 rules may proceed toward GenerateContext; unsupported, non-generatable, ambiguous, incomplete, unapproved, fallback, or implicit Template selections must stop before GenerateContext and Generator without implementation GO. |
 | P5-05 | Template Derivation Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P5-05_TemplateDerivationFocusedTestDesign.md` | Fixes the future focused local test design for supported and blocking Template Derivation states while preserving the P5-04 failure boundary; fallback, implicit Template selection, Template content inference, and GenerateContext / Generator compensation remain prohibited without implementation GO. |
+| P5-06 | GenerateContext Data Model Planning | COMPLETE / docs-only data model planning | `docs/spec/P5-06_GenerateContextDataModelPlanning.md` | Defines the future GenerateContext data model boundary from complete, approved, generatable Template Derivation output, records required and deferred data groups, preserves P5-04 / P5-05 hard stops before Generator, and keeps local-only implementation, fallback, implicit Template selection, Template content inference, GenerateContext / Generator compensation, package, `dist`, release, external service, and Frozen specification changes as NO-GO. |
 
 ## Boundary
 
@@ -152,6 +153,14 @@ specification changes.
   compensation, implementation, test code changes, runtime behavior changes,
   package, `dist`, release, external service, and Frozen specification changes
   as NO-GO.
+- P5-06 is complete as docs-only GenerateContext data model planning. It
+  defines the future GenerateContext data model boundary from complete,
+  approved, generatable Template Derivation output, records required and
+  deferred data groups, preserves P5-04 / P5-05 hard stops before Generator,
+  and keeps fallback, implicit Template selection, Template content inference,
+  downstream compensation, implementation, test code changes, runtime behavior
+  changes, package, `dist`, release, external service, and Frozen
+  specification changes as NO-GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
