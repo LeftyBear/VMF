@@ -52,6 +52,7 @@ specification changes.
 | P5-14 | Named Downstream Candidate GO / NO-GO Boundary | COMPLETE / docs-only GO / NO-GO boundary record | `docs/spec/P5-14_NamedDownstreamCandidateGoNoGoBoundary.md` | Confirms that no formal named downstream candidate is recorded after P5-13, keeps implementation NO-GO, and preserves the P5-04 through P5-13 fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
 | P5-15 | Named Downstream Candidate Selection | COMPLETE / docs-only candidate selection | `docs/spec/P5-15_NamedDownstreamCandidateSelection.md` | Selects `P6-01 - Generator Output Write Boundary Planning` as the next named downstream Build vNext candidate, keeps local-only implementation NO-GO, and preserves the P5-04 through P5-14 fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
 | P6-01 | Generator Output Write Boundary Planning | COMPLETE / docs-only boundary planning | `docs/spec/P6-01_GeneratorOutputWriteBoundaryPlanning.md` | Fixes Generator output write as a post-Generator boundary, separates generated output construction from target VBA project mutation, keeps local-only implementation NO-GO, and preserves the P5-04 through P5-15 fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
+| P6-02 | Output Write Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P6-02_OutputWriteFocusedTestDesign.md` | Fixes the future focused local test design for successful and blocking output-write boundary states, keeps target VBA project mutation as a separate downstream boundary, and preserves the P5-04 through P6-01 fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions without implementation GO. |
 
 ## Boundary
 
@@ -229,6 +230,14 @@ specification changes.
   local-only implementation NO-GO, and preserves the P5-04 through P5-15
   boundaries before any future output write or mutation implementation
   decision.
+- P6-02 is complete as docs-only Output Write focused test design. It fixes
+  future focused local test cases for successful output-write handling and
+  output-write hard-stop classifications, keeps output write post-Generator,
+  keeps target VBA project mutation as a separate downstream boundary, and
+  preserves the P5-04 through P6-01 fallback / implicit Template selection /
+  Template content inference / GenerateContext and Generator compensation
+  prohibitions without authorizing implementation, generated output write, or
+  target project mutation.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
