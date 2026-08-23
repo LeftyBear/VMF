@@ -40,6 +40,7 @@ specification changes.
 | P5-02 | Template Inventory Review / Concrete Template Derivation Table | COMPLETE / docs-only inventory and derivation table | `docs/spec/P5-02_TemplateInventoryAndDerivationTable.md` | Reviews the existing Template inventory, records the concrete Manifest fact to Template binding table, classifies deterministic, unsupported, ambiguous, and deferred mapping cases, confirms P5-01 information-source and hard-stop boundaries, and keeps implementation, tests, Template, GenerateContext, Generator, package, `dist`, release, external service, staging, commit, and push operations as NO-GO. |
 | P5-03 | Template Derivation Output Model Planning | COMPLETE / docs-only output model planning | `docs/spec/P5-03_TemplateDerivationOutputModelPlanning.md` | Defines the Template Derivation Model output fields from Validator PASS / approved Manifest input, normalizes approved P5-02 Template selection results for downstream GenerateContext, records unsupported / non-generatable hard stops, and keeps implementation, tests, Template generation, GenerateContext, Generator, package, `dist`, release, external service, and Frozen specification changes as NO-GO. |
 | P5-04 | Template Derivation Failure Boundary Planning | COMPLETE / docs-only failure boundary planning | `docs/spec/P5-04_TemplateDerivationFailureBoundaryPlanning.md` | Fixes the Template Derivation failure boundary: only complete, approved, generatable P5-03 output model items from approved P5-02 rules may proceed toward GenerateContext; unsupported, non-generatable, ambiguous, incomplete, unapproved, fallback, or implicit Template selections must stop before GenerateContext and Generator without implementation GO. |
+| P5-05 | Template Derivation Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P5-05_TemplateDerivationFocusedTestDesign.md` | Fixes the future focused local test design for supported and blocking Template Derivation states while preserving the P5-04 failure boundary; fallback, implicit Template selection, Template content inference, and GenerateContext / Generator compensation remain prohibited without implementation GO. |
 
 ## Boundary
 
@@ -143,6 +144,14 @@ specification changes.
   Template candidates must stop before GenerateContext and Generator, and
   downstream repair, inference, normalization, or compensation remains
   prohibited without authorizing implementation.
+- P5-05 is complete as docs-only Template Derivation focused test design. It
+  fixes future focused local test cases for approved supported Template
+  selections and blocking Template Derivation classifications, preserves the
+  P5-04 failure boundary before GenerateContext and Generator, and keeps
+  fallback, implicit Template selection, Template content inference, downstream
+  compensation, implementation, test code changes, runtime behavior changes,
+  package, `dist`, release, external service, and Frozen specification changes
+  as NO-GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
