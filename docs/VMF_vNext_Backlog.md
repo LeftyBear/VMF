@@ -39,6 +39,7 @@ specification changes.
 | P5-01 | Template Derivation Scope Planning | COMPLETE / docs-only planning | `docs/spec/P5-01_TemplateDerivationScopePlanning.md` | Fixes the Manifest-only Template Derivation boundary, output and GenerateContext handoff, failure boundaries for missing information / unsupported elements / non-unique conversion / unsatisfied Generator preconditions, existing implementation relationship, and minimum future implementation slice without implementation GO. |
 | P5-02 | Template Inventory Review / Concrete Template Derivation Table | COMPLETE / docs-only inventory and derivation table | `docs/spec/P5-02_TemplateInventoryAndDerivationTable.md` | Reviews the existing Template inventory, records the concrete Manifest fact to Template binding table, classifies deterministic, unsupported, ambiguous, and deferred mapping cases, confirms P5-01 information-source and hard-stop boundaries, and keeps implementation, tests, Template, GenerateContext, Generator, package, `dist`, release, external service, staging, commit, and push operations as NO-GO. |
 | P5-03 | Template Derivation Output Model Planning | COMPLETE / docs-only output model planning | `docs/spec/P5-03_TemplateDerivationOutputModelPlanning.md` | Defines the Template Derivation Model output fields from Validator PASS / approved Manifest input, normalizes approved P5-02 Template selection results for downstream GenerateContext, records unsupported / non-generatable hard stops, and keeps implementation, tests, Template generation, GenerateContext, Generator, package, `dist`, release, external service, and Frozen specification changes as NO-GO. |
+| P5-04 | Template Derivation Failure Boundary Planning | COMPLETE / docs-only failure boundary planning | `docs/spec/P5-04_TemplateDerivationFailureBoundaryPlanning.md` | Fixes the Template Derivation failure boundary: only complete, approved, generatable P5-03 output model items from approved P5-02 rules may proceed toward GenerateContext; unsupported, non-generatable, ambiguous, incomplete, unapproved, fallback, or implicit Template selections must stop before GenerateContext and Generator without implementation GO. |
 
 ## Boundary
 
@@ -134,6 +135,14 @@ specification changes.
   Template inventory, Manifest-only Template misuse, unsupported state, or
   non-generatable state to stop before GenerateContext and Generator without
   authorizing implementation.
+- P5-04 is complete as docs-only Template Derivation failure boundary
+  planning. It fixes that only complete, approved, generatable P5-03 Template
+  Derivation Model items selected by exactly one approved P5-02 rule may
+  proceed toward GenerateContext planning. Unsupported, non-generatable,
+  ambiguous, incomplete, unapproved, fallback-derived, or implicitly selected
+  Template candidates must stop before GenerateContext and Generator, and
+  downstream repair, inference, normalization, or compensation remains
+  prohibited without authorizing implementation.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
