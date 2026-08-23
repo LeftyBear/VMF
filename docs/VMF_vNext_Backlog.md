@@ -44,6 +44,7 @@ specification changes.
 | P5-06 | GenerateContext Data Model Planning | COMPLETE / docs-only data model planning | `docs/spec/P5-06_GenerateContextDataModelPlanning.md` | Defines the future GenerateContext data model boundary from complete, approved, generatable Template Derivation output, records required and deferred data groups, preserves P5-04 / P5-05 hard stops before Generator, and keeps local-only implementation, fallback, implicit Template selection, Template content inference, GenerateContext / Generator compensation, package, `dist`, release, external service, and Frozen specification changes as NO-GO. |
 | P5-07 | GenerateContext Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P5-07_GenerateContextFocusedTestDesign.md` | Fixes the future focused local test design for successful GenerateContext construction and GenerateContext hard-stop classifications while preserving the P5-04 through P5-06 boundary; fallback, implicit Template selection, Template content inference, GenerateContext / Generator compensation, local-only implementation, code, test, package, `dist`, release, external service, and Frozen specification changes remain NO-GO. |
 | P5-08 | GenerateContext Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P5-08_GenerateContextFocusedTestImplementationScopePlanning.md` | Connects the P5-07 GenerateContext focused test design to a future implementation decision by fixing candidate implementation scope, non-scope, acceptance criteria, safety stops, and preserved P5-04 through P5-07 boundaries while keeping local-only implementation, production code, test code, fallback, implicit Template selection, Template content inference, GenerateContext / Generator compensation, package, `dist`, release, external service, and Frozen specification changes as NO-GO. |
+| P5-09 | GenerateContext Focused Test Implementation Start | STARTED / local-only implementation scope | `docs/spec/P5-09_GenerateContextFocusedTestImplementationStart.md` | Starts the local-only focused test implementation phase from the P5-08 decision boundary, records that P5-09 is not docs-only, and preserves P5-04 through P5-08 hard stops: no fallback, implicit Template selection, Template content inference, GenerateContext / Generator compensation, Template file changes, Generator behavior changes, package, `dist`, release, external service, or Frozen specification changes. |
 
 ## Boundary
 
@@ -179,6 +180,13 @@ specification changes.
   inference, downstream compensation, implementation, test code changes,
   runtime behavior changes, package, `dist`, release, external service, and
   Frozen specification changes as NO-GO.
+- P5-09 is started as local-only GenerateContext focused test implementation
+  scope. It is not docs-only. It must first identify the exact GenerateContext
+  entry boundary and focused test target from the current codebase, then keep
+  any focused implementation inside the P5-08 boundary. Fallback, implicit
+  Template selection, Template content inference, downstream compensation,
+  Template file changes, Generator behavior changes, package, `dist`, release,
+  external service, and Frozen specification changes remain NO-GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
