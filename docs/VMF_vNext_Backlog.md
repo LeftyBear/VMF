@@ -42,6 +42,7 @@ specification changes.
 | P5-04 | Template Derivation Failure Boundary Planning | COMPLETE / docs-only failure boundary planning | `docs/spec/P5-04_TemplateDerivationFailureBoundaryPlanning.md` | Fixes the Template Derivation failure boundary: only complete, approved, generatable P5-03 output model items from approved P5-02 rules may proceed toward GenerateContext; unsupported, non-generatable, ambiguous, incomplete, unapproved, fallback, or implicit Template selections must stop before GenerateContext and Generator without implementation GO. |
 | P5-05 | Template Derivation Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P5-05_TemplateDerivationFocusedTestDesign.md` | Fixes the future focused local test design for supported and blocking Template Derivation states while preserving the P5-04 failure boundary; fallback, implicit Template selection, Template content inference, and GenerateContext / Generator compensation remain prohibited without implementation GO. |
 | P5-06 | GenerateContext Data Model Planning | COMPLETE / docs-only data model planning | `docs/spec/P5-06_GenerateContextDataModelPlanning.md` | Defines the future GenerateContext data model boundary from complete, approved, generatable Template Derivation output, records required and deferred data groups, preserves P5-04 / P5-05 hard stops before Generator, and keeps local-only implementation, fallback, implicit Template selection, Template content inference, GenerateContext / Generator compensation, package, `dist`, release, external service, and Frozen specification changes as NO-GO. |
+| P5-07 | GenerateContext Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P5-07_GenerateContextFocusedTestDesign.md` | Fixes the future focused local test design for successful GenerateContext construction and GenerateContext hard-stop classifications while preserving the P5-04 through P5-06 boundary; fallback, implicit Template selection, Template content inference, GenerateContext / Generator compensation, local-only implementation, code, test, package, `dist`, release, external service, and Frozen specification changes remain NO-GO. |
 
 ## Boundary
 
@@ -161,6 +162,14 @@ specification changes.
   downstream compensation, implementation, test code changes, runtime behavior
   changes, package, `dist`, release, external service, and Frozen
   specification changes as NO-GO.
+- P5-07 is complete as docs-only GenerateContext focused test design. It fixes
+  future focused local test cases for successful GenerateContext construction
+  and GenerateContext hard-stop classifications from P5-06, preserves the
+  P5-04 through P5-06 boundary before Generator, and keeps fallback, implicit
+  Template selection, Template content inference, downstream compensation,
+  implementation, test code changes, runtime behavior changes, package,
+  `dist`, release, external service, and Frozen specification changes as
+  NO-GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
