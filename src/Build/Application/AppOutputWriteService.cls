@@ -50,6 +50,55 @@ ErrHandler:
     Set AppBuildOutputWritePlan = CreateResult(False, ResultHardStop, "Output write hard-stop: " & Err.Description)
 End Function
 
+' Writes approved output-write plan units to a deterministic local folder.
+Public Function AppWriteGeneratedOutput(ByVal OutputWritePlan As Object, ByVal OutputFolderPath As String) As Object
+    Dim WriteUnits As Collection
+    Dim FileSystem As Object
+    Dim WrittenFiles As Collection
+
+    On Error GoTo ErrHandler
+
+    If OutputWritePlan Is Nothing Then
+        Set AppWriteGeneratedOutput = CreateWriteResult(False, ResultHardStop, "Output write plan is required.")
+        Exit Function
+    End If
+
+    If Not HasBooleanValue(OutputWritePlan, "Success", True) Then
+        Set AppWriteGeneratedOutput = CreateWriteResult(False, ResultHardStop, "Output write plan must be successful.")
+        Exit Function
+    End If
+
+    If Not HasCollection(OutputWritePlan, "WriteUnits") Then
+        Set AppWriteGeneratedOutput = CreateWriteResult(False, ResultHardStop, "Output write units are required.")
+        Exit Function
+    End If
+
+    If ComIsBlankText(OutputFolderPath) Then
+        Set AppWriteGeneratedOutput = CreateWriteResult(False, ResultHardStop, "Output folder path is required.")
+        Exit Function
+    End If
+
+    Set WriteUnits = OutputWritePlan("WriteUnits")
+    If WriteUnits.Count = 0 Then
+        Set AppWriteGeneratedOutput = CreateWriteResult(False, ResultHardStop, "Output write units are absent.")
+        Exit Function
+    End If
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    PreflightWriteUnits WriteUnits, FileSystem, OutputFolderPath
+
+    If Not FileSystem.FolderExists(OutputFolderPath) Then
+        FileSystem.CreateFolder OutputFolderPath
+    End If
+
+    Set WrittenFiles = WriteAllUnits(WriteUnits, FileSystem, OutputFolderPath)
+    Set AppWriteGeneratedOutput = CreateSuccessfulWriteResult(WrittenFiles)
+    Exit Function
+
+ErrHandler:
+    Set AppWriteGeneratedOutput = CreateWriteResult(False, ResultHardStop, "Generated output write hard-stop: " & Err.Description)
+End Function
+
 Private Function BuildSuccessfulPlan(ByVal GeneratedUnits As Collection) As Object
     Dim Result As Object
     Dim WriteUnits As Collection
@@ -99,6 +148,47 @@ Private Function CreateWriteUnit(ByVal Unit As Variant) As Object
     WriteUnit("writeStatus") = "Planned"
 
     Set CreateWriteUnit = WriteUnit
+End Function
+
+Private Sub PreflightWriteUnits(ByVal WriteUnits As Collection, ByVal FileSystem As Object, ByVal OutputFolderPath As String)
+    Dim Unit As Variant
+    Dim FileName As String
+    Dim FilePath As String
+
+    For Each Unit In WriteUnits
+        If Not IsObject(Unit) Then
+            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightWriteUnits", "Output write unit is invalid."
+        End If
+
+        FileName = RequiredText(Unit, "fileName")
+        If InStr(1, FileName, "\", vbBinaryCompare) > 0 Or InStr(1, FileName, "/", vbBinaryCompare) > 0 Then
+            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightWriteUnits", "Output write fileName must not include a path."
+        End If
+
+        RequiredText Unit, "generatedSource"
+        FilePath = FileSystem.BuildPath(OutputFolderPath, FileName)
+        If FileSystem.FileExists(FilePath) Then
+            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightWriteUnits", "Output file already exists: " & FileName
+        End If
+    Next Unit
+End Sub
+
+Private Function WriteAllUnits(ByVal WriteUnits As Collection, ByVal FileSystem As Object, ByVal OutputFolderPath As String) As Collection
+    Dim Unit As Variant
+    Dim TextFile As Object
+    Dim WrittenFiles As Collection
+    Dim FilePath As String
+
+    Set WrittenFiles = New Collection
+    For Each Unit In WriteUnits
+        FilePath = FileSystem.BuildPath(OutputFolderPath, RequiredText(Unit, "fileName"))
+        Set TextFile = FileSystem.CreateTextFile(FilePath, False, False)
+        TextFile.Write RequiredText(Unit, "generatedSource")
+        TextFile.Close
+        WrittenFiles.Add FilePath
+    Next Unit
+
+    Set WriteAllUnits = WrittenFiles
 End Function
 
 Private Sub RequireCompleteGeneratedUnit(ByVal Unit As Object)
@@ -205,4 +295,24 @@ Private Function CreateResult(ByVal IsSuccess As Boolean, ByVal Classification A
     Set Result("WriteUnits") = New Collection
 
     Set CreateResult = Result
+End Function
+
+Private Function CreateWriteResult(ByVal IsSuccess As Boolean, ByVal Classification As String, ByVal Message As String) As Object
+    Dim Result As Object
+
+    Set Result = CreateObject("Scripting.Dictionary")
+    Result("Success") = IsSuccess
+    Result("Classification") = Classification
+    Result("Message") = Message
+    Set Result("WrittenFiles") = New Collection
+
+    Set CreateWriteResult = Result
+End Function
+
+Private Function CreateSuccessfulWriteResult(ByVal WrittenFiles As Collection) As Object
+    Dim Result As Object
+
+    Set Result = CreateWriteResult(True, ResultSuccess, "Generated output written.")
+    Set Result("WrittenFiles") = WrittenFiles
+    Set CreateSuccessfulWriteResult = Result
 End Function

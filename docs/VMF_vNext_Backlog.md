@@ -57,6 +57,7 @@ specification changes.
 | P6-04 | Output Write Focused Test Implementation Start | COMPLETE / local-only implementation verified | `docs/spec/P6-04_OutputWriteFocusedTestImplementationRecord.md` | Adds the narrow `AppOutputWriteService.AppBuildOutputWritePlan` boundary and focused tests for successful write-plan construction and hard stops before output write while preserving post-Generator scope, target VBA project mutation separation, and package / `dist` / release NO-GO. |
 | P6-05 | Output Write Focused Test Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P6-05_OutputWriteFocusedTestImplementationCloseout.md` | Closes out P6-04 after commit `3e4e9901070a3f71db1e7549191914e021ba9a38`, records the Output Write plan entry boundary, focused test target, preserved P5-04 through P6-04 boundaries, and confirms no additional P6-05 implementation is required. |
 | P6-06 | Output Write Mutation Boundary Planning | COMPLETE / docs-only boundary planning | `docs/spec/P6-06_OutputWriteMutationBoundaryPlanning.md` | Defines actual generated output write from approved `AppBuildOutputWritePlan` units as the next downstream boundary, keeps target VBA project mutation as a separate later boundary, records GO / NO-GO requirements, and preserves fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
+| P6-07 | Actual Generated Output Write Implementation Start | COMPLETE / local-only implementation verified | `docs/spec/P6-07_ActualGeneratedOutputWriteImplementationRecord.md` | Implements `AppOutputWriteService.AppWriteGeneratedOutput` to write approved output-write plan units to a deterministic local folder only, adds focused tests for successful write and no-write hard stops, keeps target VBA project mutation as a separate later boundary, and preserves package / `dist` / release / external service NO-GO. |
 
 ## Boundary
 
@@ -266,6 +267,12 @@ specification changes.
   output write from approved write-plan units as the next downstream boundary,
   keeps target VBA project mutation as a separate later boundary, and records
   GO / NO-GO requirements before any implementation.
+- P6-07 is complete as local-only actual generated output write implementation.
+  It adds `AppOutputWriteService.AppWriteGeneratedOutput` to materialize
+  approved write-plan units to a deterministic local folder only, adds focused
+  tests for successful write, failed-plan no-write, and existing-file
+  hard-stop, and keeps target VBA project mutation as a separate later boundary
+  requiring explicit GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.

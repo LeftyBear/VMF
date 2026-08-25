@@ -17,6 +17,9 @@ Public Sub AppRunOutputWriteBoundaryTests()
     VerifyFallbackTemplateSelectionHardStopsBeforeWrite
     VerifyImplicitTemplateSelectionHardStopsBeforeWrite
     VerifyHardStopProducesNoWriteUnits
+    VerifyApprovedPlanWritesGeneratedOutputToLocalFolder
+    VerifyFailedPlanDoesNotWriteGeneratedOutput
+    VerifyExistingOutputFileHardStopsBeforeWrite
 End Sub
 
 Private Sub VerifyOutputWriteAcceptsSuccessfulGeneratorOutput()
@@ -117,6 +120,93 @@ Private Sub VerifyHardStopProducesNoWriteUnits()
     AssertContains CStr(Result("Message")), "Output write hard-stop", "Hard-stop should remain at output-write boundary."
 End Sub
 
+Private Sub VerifyApprovedPlanWritesGeneratedOutputToLocalFolder()
+    Dim Service As AppOutputWriteService
+    Dim FileSystem As Object
+    Dim FolderPath As String
+    Dim Plan As Object
+    Dim Result As Object
+    Dim FirstFilePath As String
+
+    Set Service = New AppOutputWriteService
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    FolderPath = CreateTempOutputFolderPath(FileSystem)
+
+    On Error GoTo Cleanup
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set Result = Service.AppWriteGeneratedOutput(Plan, FolderPath)
+    FirstFilePath = FileSystem.BuildPath(FolderPath, "GeneratedSubject.cls")
+
+    AssertTrue CBool(Result("Success")), "Approved write plan should write generated output."
+    AssertEquals "Success", CStr(Result("Classification")), "Successful write classification should be Success."
+    AssertEquals 2, Result("WrittenFiles").Count, "One file should be written for each write unit."
+    AssertTrue FileSystem.FileExists(FirstFilePath), "Generated class file should be written."
+    AssertContains ReadTextFile(FileSystem, FirstFilePath), "Option Explicit", "Written file should contain generated source."
+
+Cleanup:
+    DeleteFolderIfExists FileSystem, FolderPath
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyFailedPlanDoesNotWriteGeneratedOutput()
+    Dim Service As AppOutputWriteService
+    Dim FileSystem As Object
+    Dim FolderPath As String
+    Dim Plan As Object
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    FolderPath = CreateTempOutputFolderPath(FileSystem)
+
+    On Error GoTo Cleanup
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Plan("Success") = False
+    Set Result = Service.AppWriteGeneratedOutput(Plan, FolderPath)
+
+    AssertFalse CBool(Result("Success")), "Failed write plan should hard-stop."
+    AssertContains CStr(Result("Message")), "successful", "Hard-stop should identify failed write plan."
+    AssertFalse FileSystem.FolderExists(FolderPath), "Failed write plan should not create output folder."
+    AssertEquals 0, Result("WrittenFiles").Count, "Failed write plan should report no written files."
+
+Cleanup:
+    DeleteFolderIfExists FileSystem, FolderPath
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyExistingOutputFileHardStopsBeforeWrite()
+    Dim Service As AppOutputWriteService
+    Dim FileSystem As Object
+    Dim FolderPath As String
+    Dim ExistingFilePath As String
+    Dim TextFile As Object
+    Dim Plan As Object
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    FolderPath = CreateTempOutputFolderPath(FileSystem)
+
+    On Error GoTo Cleanup
+    FileSystem.CreateFolder FolderPath
+    ExistingFilePath = FileSystem.BuildPath(FolderPath, "GeneratedSubject.cls")
+    Set TextFile = FileSystem.CreateTextFile(ExistingFilePath, True, False)
+    TextFile.Write "existing"
+    TextFile.Close
+
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set Result = Service.AppWriteGeneratedOutput(Plan, FolderPath)
+
+    AssertFalse CBool(Result("Success")), "Existing output file should hard-stop before write."
+    AssertContains CStr(Result("Message")), "already exists", "Hard-stop should identify existing output file."
+    AssertEquals "existing", ReadTextFile(FileSystem, ExistingFilePath), "Existing output file should remain unchanged."
+    AssertFalse FileSystem.FileExists(FileSystem.BuildPath(FolderPath, "GeneratedSchedule.bas")), "Preflight failure should not write later files."
+
+Cleanup:
+    DeleteFolderIfExists FileSystem, FolderPath
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
 Private Function BuildPlan(ByVal GeneratorOutput As Object) As Object
     Dim Service As AppOutputWriteService
 
@@ -161,6 +251,28 @@ Private Function CreateGeneratedUnit( _
 
     Set CreateGeneratedUnit = Unit
 End Function
+
+Private Function CreateTempOutputFolderPath(ByVal FileSystem As Object) As String
+    CreateTempOutputFolderPath = FileSystem.BuildPath(Environ$("TEMP"), "vmf-p6-07-" & Replace(CStr(Timer), ".", ""))
+End Function
+
+Private Function ReadTextFile(ByVal FileSystem As Object, ByVal FilePath As String) As String
+    Dim TextFile As Object
+
+    Set TextFile = FileSystem.OpenTextFile(FilePath, 1, False)
+    ReadTextFile = TextFile.ReadAll
+    TextFile.Close
+End Function
+
+Private Sub DeleteFolderIfExists(ByVal FileSystem As Object, ByVal FolderPath As String)
+    If Len(FolderPath) = 0 Then
+        Exit Sub
+    End If
+
+    If FileSystem.FolderExists(FolderPath) Then
+        FileSystem.DeleteFolder FolderPath, True
+    End If
+End Sub
 
 Private Sub AssertContains(ByVal TextValue As String, ByVal ExpectedText As String, ByVal Message As String)
     AssertTrue InStr(1, TextValue, ExpectedText, vbTextCompare) > 0, Message & " Text=" & TextValue
