@@ -7,7 +7,7 @@ COMPLETE / docs-only and local-only status sync
 ## Purpose
 
 Close out the P6-04 local-only Output Write focused test implementation after
-commit `872fdca6853fea9ed245d4b2f41874985bbe72a7`.
+commit `3e4e9901070a3f71db1e7549191914e021ba9a38`.
 
 P6-05 is docs-only. It records the implemented P6-04 state, preserved
 boundaries, and next-action boundary. It does not add production code, test
@@ -19,8 +19,8 @@ specification changes.
 
 P6-05 records:
 
-- P6-04 implementation commit:
-  `872fdca6853fea9ed245d4b2f41874985bbe72a7`
+- P6-05 closeout commit:
+  `3e4e9901070a3f71db1e7549191914e021ba9a38`
 - Output Write entry boundary:
   `AppOutputWriteService.AppBuildOutputWritePlan`
 - focused test target:
