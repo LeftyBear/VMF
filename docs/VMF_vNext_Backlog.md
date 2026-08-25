@@ -67,6 +67,7 @@ specification changes.
 | P6-14 | Real Workbook / Real VBProject Mutation Boundary Planning | COMPLETE / docs-only and local-only boundary planning | `docs/spec/P6-14_RealWorkbookAndVbProjectMutationBoundaryPlanning.md` | Defines real workbook and real VBProject mutation as the next separate downstream boundary after fake/local target create-only mutation, records future GO / NO-GO requirements, and keeps real workbook mutation, real VBProject mutation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 | P6-15 | Real Workbook / Real VBProject Mutation Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P6-15_RealWorkbookAndVbProjectMutationFocusedTestDesign.md` | Fixes future focused local test design for real workbook / real VBProject mutation, including explicit test workbook ownership, trust/access preflight, allowed VBProject surface, mutation operation set, no-partial-mutation and restore expectations, while keeping real workbook mutation, real VBProject mutation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 | P6-16 | Real Workbook / Real VBProject Mutation Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P6-16_RealWorkbookAndVbProjectMutationFocusedTestImplementationScopePlanning.md` | Connects the P6-15 focused test design to a future implementation decision by fixing candidate scope, GO / NO-GO requirements, acceptance criteria, and safety stops while keeping real workbook mutation, real VBProject mutation, workbook open / save / close, VBProject import / export / overwrite / delete / rename / creation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
+| P6-17 | Real Workbook / Real VBProject Mutation Implementation GO / NO-GO Decision | COMPLETE / docs-only GO / NO-GO decision | `docs/spec/P6-17_RealWorkbookAndVbProjectMutationImplementationGoNoGoDecision.md` | Records implementation NO-GO because workbook open / save / close / restore and real VBProject mutation operations remain unauthorized; preserves fake/local target `Modules` dictionary create-only mutation as the completed boundary and keeps package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 
 ## Boundary
 
@@ -348,6 +349,13 @@ specification changes.
   rename / creation, package / `dist`, release, external services, fallback /
   implicit Template selection, Template content inference, and GenerateContext
   / Generator compensation remain NO-GO until a separate implementation GO.
+- P6-17 is complete as docs-only GO / NO-GO decision. It records NO-GO for
+  real workbook / real VBProject mutation implementation because workbook
+  open / save / close / restore and real VBProject mutation operations remain
+  unauthorized. The completed mutation boundary remains fake/local target
+  `Modules` dictionary create-only mutation, and package / `dist`, release,
+  external services, fallback / implicit Template selection, Template content
+  inference, and GenerateContext / Generator compensation remain NO-GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.

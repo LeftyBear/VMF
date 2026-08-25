@@ -293,7 +293,7 @@ Private Function CreateSuccessfulGeneratorOutput() As Object
     Output("Success") = True
     Output("Classification") = "Success"
     Output("Message") = "Generator output constructed."
-    Set Output("GeneratedUnits") = Units
+    Output.Add "GeneratedUnits", Units
 
     Set CreateSuccessfulGeneratorOutput = Output
 End Function
@@ -325,7 +325,7 @@ Private Function CreateLocalTargetProject() As Object
 
     Set TargetProject = CreateObject("Scripting.Dictionary")
     Set Modules = CreateObject("Scripting.Dictionary")
-    Set TargetProject("Modules") = Modules
+    TargetProject.Add "Modules", Modules
 
     Set CreateLocalTargetProject = TargetProject
 End Function

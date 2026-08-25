@@ -165,7 +165,8 @@ Private Function BuildSuccessfulPlan(ByVal GeneratedUnits As Collection) As Obje
     Next Unit
 
     Set Result = CreateResult(True, ResultSuccess, "Output write plan constructed.")
-    Set Result("WriteUnits") = WriteUnits
+    Result.Remove "WriteUnits"
+    Result.Add "WriteUnits", WriteUnits
     Set BuildSuccessfulPlan = Result
 End Function
 
@@ -389,7 +390,7 @@ Private Function CreateResult(ByVal IsSuccess As Boolean, ByVal Classification A
     Result("Success") = IsSuccess
     Result("Classification") = Classification
     Result("Message") = Message
-    Set Result("WriteUnits") = New Collection
+    Result.Add "WriteUnits", New Collection
 
     Set CreateResult = Result
 End Function
@@ -401,7 +402,7 @@ Private Function CreateWriteResult(ByVal IsSuccess As Boolean, ByVal Classificat
     Result("Success") = IsSuccess
     Result("Classification") = Classification
     Result("Message") = Message
-    Set Result("WrittenFiles") = New Collection
+    Result.Add "WrittenFiles", New Collection
 
     Set CreateWriteResult = Result
 End Function
@@ -410,7 +411,8 @@ Private Function CreateSuccessfulWriteResult(ByVal WrittenFiles As Collection) A
     Dim Result As Object
 
     Set Result = CreateWriteResult(True, ResultSuccess, "Generated output written.")
-    Set Result("WrittenFiles") = WrittenFiles
+    Result.Remove "WrittenFiles"
+    Result.Add "WrittenFiles", WrittenFiles
     Set CreateSuccessfulWriteResult = Result
 End Function
 
