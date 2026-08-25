@@ -54,6 +54,7 @@ specification changes.
 | P6-01 | Generator Output Write Boundary Planning | COMPLETE / docs-only boundary planning | `docs/spec/P6-01_GeneratorOutputWriteBoundaryPlanning.md` | Fixes Generator output write as a post-Generator boundary, separates generated output construction from target VBA project mutation, keeps local-only implementation NO-GO, and preserves the P5-04 through P5-15 fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
 | P6-02 | Output Write Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P6-02_OutputWriteFocusedTestDesign.md` | Fixes the future focused local test design for successful and blocking output-write boundary states, keeps target VBA project mutation as a separate downstream boundary, and preserves the P5-04 through P6-01 fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions without implementation GO. |
 | P6-03 | Output Write Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P6-03_OutputWriteFocusedTestImplementationScopePlanning.md` | Connects the P6-02 Output Write focused test design to a future implementation decision by fixing candidate implementation scope, non-scope, acceptance criteria, and safety stops while keeping local-only implementation, generated output write, target VBA project mutation, package, `dist`, release, external service, and Frozen specification changes as NO-GO. |
+| P6-04 | Output Write Focused Test Implementation Start | COMPLETE / local-only implementation verified | `docs/spec/P6-04_OutputWriteFocusedTestImplementationRecord.md` | Adds the narrow `AppOutputWriteService.AppBuildOutputWritePlan` boundary and focused tests for successful write-plan construction and hard stops before output write while preserving post-Generator scope, target VBA project mutation separation, and package / `dist` / release NO-GO. |
 
 ## Boundary
 
@@ -248,6 +249,13 @@ specification changes.
   inference / GenerateContext and Generator compensation prohibitions without
   authorizing implementation, generated output write, or target project
   mutation.
+- P6-04 is complete as local-only Output Write focused test implementation.
+  It adds `AppOutputWriteService.AppBuildOutputWritePlan` and focused
+  `AppOutputWriteBoundaryTests` to construct deterministic write-plan units
+  only from complete successful Generator output. It performs no generated
+  output write, no target VBA project mutation, no package or `dist` update,
+  no release operation, and no Parser / Validator / Manifest Derivation /
+  Template Derivation / GenerateContext / Generator behavior change.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.

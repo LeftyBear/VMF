@@ -13,6 +13,7 @@ AppGeneratorService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppGenerateRequest,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppGenerateResult,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppGenerateContextBuilder,ClassModule,Application,..\..\templates\ClassTemplate.txt
+AppOutputWriteService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppImportService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppManifestEditorService,ClassModule,Application,..\..\templates\ClassTemplate.txt
 AppManifestGenerateService,ClassModule,Application,..\..\templates\ClassTemplate.txt
