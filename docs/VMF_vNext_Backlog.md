@@ -61,6 +61,7 @@ specification changes.
 | P6-08 | Actual Generated Output Write Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P6-08_ActualGeneratedOutputWriteImplementationCloseout.md` | Closes out P6-07 after commit `76278e8d16b77afc8e5572d8e267395a2b068dfe`, records `AppOutputWriteService.AppWriteGeneratedOutput` as the actual generated output write entry boundary, confirms deterministic local folder write only, keeps target VBA project mutation as the next separate NO-GO boundary, and confirms no additional P6-08 implementation is required. |
 | P6-09 | Target VBA Project Mutation Boundary Planning | COMPLETE / docs-only boundary planning | `docs/spec/P6-09_TargetVbaProjectMutationBoundaryPlanning.md` | Defines target VBA project mutation as the next separate downstream boundary after deterministic local generated-output write, records future GO / NO-GO requirements, separates actual generated output write from target project mutation, and preserves fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
 | P6-10 | Target VBA Project Mutation Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P6-10_TargetVbaProjectMutationFocusedTestDesign.md` | Defines future focused local tests for exact target surface, mutation operations, safety stops, and verification while keeping target VBA project mutation, real workbook mutation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
+| P6-11 | Target VBA Project Mutation Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P6-11_TargetVbaProjectMutationFocusedTestImplementationScopePlanning.md` | Connects the P6-10 focused test design to a future implementation decision by fixing candidate implementation scope, non-scope, acceptance criteria, and safety stops while keeping target VBA project mutation, real workbook mutation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 
 ## Boundary
 
@@ -296,6 +297,13 @@ specification changes.
   project mutation, real workbook mutation, package / `dist` / release /
   external service operations, fallback / implicit Template selection, Template
   content inference, and GenerateContext / Generator compensation as NO-GO.
+- P6-11 is complete as docs-only Target VBA Project Mutation focused test
+  implementation scope planning. It connects P6-10 to a future implementation
+  decision by recording candidate focused test implementation scope, non-scope,
+  acceptance criteria, and safety stops. Target VBA project mutation remains
+  NO-GO until a separate implementation GO authorizes exact target surface,
+  mutation operations, editable files, safety stops, conflict and recovery
+  behavior, and verification.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
