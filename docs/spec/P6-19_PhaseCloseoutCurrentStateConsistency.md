@@ -11,6 +11,10 @@ Record the P6 phase closeout after P6-18 commit
 current-status records are consistent for the completed output-write and
 mutation-boundary sequence.
 
+Post-closeout repository state: P6-19 was committed as
+`7fa2362519bdeee967cde8c0716b369d5b310ffa` and pushed to `origin/main`.
+After that push, `HEAD` equaled `origin/main` and the working tree was clean.
+
 P6-19 is documentation only. It does not authorize implementation, tests,
 actual generated output write, target VBA project mutation, real workbook
 mutation, real VBProject mutation, package or `dist` operations, release
@@ -69,6 +73,8 @@ Rationale:
   NO-GO
 - backlog and current-status records preserve the same completed boundaries and
   remaining NO-GO state
+- P6-19 commit `7fa2362519bdeee967cde8c0716b369d5b310ffa` is the pushed
+  repository state for this closeout
 
 ## Verification
 

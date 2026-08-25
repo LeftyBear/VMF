@@ -17,6 +17,12 @@ clearance remains not obtained, Avast safety certification is not claimed, and
 this handoff does not authorize any new package, tag, release, publication,
 Live E2E, Google Docs / Drive mutation, or flagged executable run.
 
+Build vNext update: P6 is COMPLETE. P6-19 Phase Closeout / Current-State
+Consistency was committed and pushed as
+`7fa2362519bdeee967cde8c0716b369d5b310ffa`; after that push, `HEAD` equaled
+`origin/main` and the working tree was clean. Do not proceed to P7 from this
+handoff without a separate named candidate and GO / NO-GO boundary.
+
 ## 1. Starting State
 
 - Publisher v1.0 is COMPLETE under the frozen v1.0 scope and Definition of
@@ -42,6 +48,10 @@ Begin from this state:
   mutation, and Google Drive mutation are historical completed release-path
   records, not authorization for new operations;
 - Frozen specifications, public APIs, and production design remain unchanged.
+- Build vNext P6 is complete: deterministic local folder generated output
+  write and fake/local target `Modules` dictionary create-only mutation are the
+  completed output/mutation boundaries; real workbook and real VBProject
+  mutation remain NO-GO.
 
 Local verification completion is not release readiness.
 
@@ -99,6 +109,8 @@ Recommended next actions are:
 4. If Live E2E is requested, require explicit per-run authorization, credentials
    scope, destination scope, cleanup expectations, and exact command.
 5. Keep vNext hardening work separate as candidate work before adoption.
+6. For Build vNext, perform a separate current-state / candidate-selection step
+   before any P7 work; P6 closeout alone does not authorize P7.
 
 The vNext hardening backlog currently includes:
 

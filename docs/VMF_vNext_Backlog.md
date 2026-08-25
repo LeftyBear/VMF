@@ -69,7 +69,7 @@ specification changes.
 | P6-16 | Real Workbook / Real VBProject Mutation Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P6-16_RealWorkbookAndVbProjectMutationFocusedTestImplementationScopePlanning.md` | Connects the P6-15 focused test design to a future implementation decision by fixing candidate scope, GO / NO-GO requirements, acceptance criteria, and safety stops while keeping real workbook mutation, real VBProject mutation, workbook open / save / close, VBProject import / export / overwrite / delete / rename / creation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 | P6-17 | Real Workbook / Real VBProject Mutation Implementation GO / NO-GO Decision | COMPLETE / docs-only GO / NO-GO decision | `docs/spec/P6-17_RealWorkbookAndVbProjectMutationImplementationGoNoGoDecision.md` | Records implementation NO-GO because workbook open / save / close / restore and real VBProject mutation operations remain unauthorized; preserves fake/local target `Modules` dictionary create-only mutation as the completed boundary and keeps package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 | P6-18 | Real Workbook / Real VBProject Mutation NO-GO Closeout | COMPLETE / docs-only closeout and status sync | `docs/spec/P6-18_RealWorkbookAndVbProjectMutationNoGoCloseout.md` | Closes out P6-17 after commit `290ee9459bfcae68ab537b85becb81197bd6968f`, confirms the implementation NO-GO remains current, records that no additional P6-18 implementation or next candidate selection is required, and keeps real workbook mutation, real VBProject mutation, workbook open / save / close / restore, package / `dist`, release, external services, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
-| P6-19 | Phase Closeout / Current-State Consistency | COMPLETE / docs-only phase closeout and current-state consistency | `docs/spec/P6-19_PhaseCloseoutCurrentStateConsistency.md` | Closes out P6 after P6-18 commit `76ca3bc4457fbf76c1ed63f9b37a4ba267e2cb33`, confirms P6-01 through P6-18 are consistent, records P6 COMPLETE, and keeps real workbook mutation, real VBProject mutation, workbook open / save / close / restore, package / `dist`, release, external services, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
+| P6-19 | Phase Closeout / Current-State Consistency | COMPLETE / docs-only phase closeout and current-state consistency | `docs/spec/P6-19_PhaseCloseoutCurrentStateConsistency.md` | Closes out P6 after P6-18 commit `76ca3bc4457fbf76c1ed63f9b37a4ba267e2cb33`, records pushed P6-19 commit `7fa2362519bdeee967cde8c0716b369d5b310ffa`, confirms P6-01 through P6-18 are consistent, records P6 COMPLETE, and keeps real workbook mutation, real VBProject mutation, workbook open / save / close / restore, package / `dist`, release, external services, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 
 ## Boundary
 
@@ -368,12 +368,13 @@ specification changes.
   remain NO-GO.
 - P6-19 is complete as docs-only phase closeout and current-state consistency
   check after P6-18 commit
-  `76ca3bc4457fbf76c1ed63f9b37a4ba267e2cb33`. It confirms P6-01 through P6-18
-  are consistent, records P6 COMPLETE, and keeps real workbook mutation, real
-  VBProject mutation, workbook open / save / close / restore, package /
+  `76ca3bc4457fbf76c1ed63f9b37a4ba267e2cb33`. P6-19 was pushed as commit
+  `7fa2362519bdeee967cde8c0716b369d5b310ffa`. It confirms P6-01 through
+  P6-18 are consistent, records P6 COMPLETE, and keeps real workbook mutation,
+  real VBProject mutation, workbook open / save / close / restore, package /
   `dist`, release, external services, fallback / implicit Template selection,
   Template content inference, and GenerateContext / Generator compensation
   as NO-GO.
-- P2 is COMPLETE.
+- P6 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
