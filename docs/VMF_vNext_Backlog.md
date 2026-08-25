@@ -58,7 +58,8 @@ specification changes.
 | P6-05 | Output Write Focused Test Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P6-05_OutputWriteFocusedTestImplementationCloseout.md` | Closes out P6-04 after commit `3e4e9901070a3f71db1e7549191914e021ba9a38`, records the Output Write plan entry boundary, focused test target, preserved P5-04 through P6-04 boundaries, and confirms no additional P6-05 implementation is required. |
 | P6-06 | Output Write Mutation Boundary Planning | COMPLETE / docs-only boundary planning | `docs/spec/P6-06_OutputWriteMutationBoundaryPlanning.md` | Defines actual generated output write from approved `AppBuildOutputWritePlan` units as the next downstream boundary, keeps target VBA project mutation as a separate later boundary, records GO / NO-GO requirements, and preserves fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
 | P6-07 | Actual Generated Output Write Implementation Start | COMPLETE / local-only implementation verified | `docs/spec/P6-07_ActualGeneratedOutputWriteImplementationRecord.md` | Implements `AppOutputWriteService.AppWriteGeneratedOutput` to write approved output-write plan units to a deterministic local folder only, adds focused tests for successful write and no-write hard stops, keeps target VBA project mutation as a separate later boundary, and preserves package / `dist` / release / external service NO-GO. |
-| P6-08 | Actual Generated Output Write Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P6-08_ActualGeneratedOutputWriteImplementationCloseout.md` | Closes out P6-07 after commit `ce917dcda154ebd760a275445283767226be9fdf`, records `AppOutputWriteService.AppWriteGeneratedOutput` as the actual generated output write entry boundary, confirms deterministic local folder write only, keeps target VBA project mutation as the next separate NO-GO boundary, and confirms no additional P6-08 implementation is required. |
+| P6-08 | Actual Generated Output Write Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P6-08_ActualGeneratedOutputWriteImplementationCloseout.md` | Closes out P6-07 after commit `76278e8d16b77afc8e5572d8e267395a2b068dfe`, records `AppOutputWriteService.AppWriteGeneratedOutput` as the actual generated output write entry boundary, confirms deterministic local folder write only, keeps target VBA project mutation as the next separate NO-GO boundary, and confirms no additional P6-08 implementation is required. |
+| P6-09 | Target VBA Project Mutation Boundary Planning | COMPLETE / docs-only boundary planning | `docs/spec/P6-09_TargetVbaProjectMutationBoundaryPlanning.md` | Defines target VBA project mutation as the next separate downstream boundary after deterministic local generated-output write, records future GO / NO-GO requirements, separates actual generated output write from target project mutation, and preserves fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
 
 ## Boundary
 
@@ -275,11 +276,18 @@ specification changes.
   hard-stop, and keeps target VBA project mutation as a separate later boundary
   requiring explicit GO.
 - P6-08 is complete as docs-only and local-only status sync after commit
-  `ce917dcda154ebd760a275445283767226be9fdf`. It records
+  `76278e8d16b77afc8e5572d8e267395a2b068dfe`. It records
   `AppOutputWriteService.AppWriteGeneratedOutput` as the actual generated
   output write entry boundary, confirms no additional P6-08 implementation is
   required, and keeps target VBA project mutation as the next separate NO-GO
   boundary requiring explicit GO.
+- P6-09 is complete as docs-only target VBA project mutation boundary
+  planning. It defines target VBA project mutation as the next separate
+  downstream boundary after deterministic local generated-output write,
+  separates actual generated output write from target project mutation, records
+  future GO / NO-GO requirements, and preserves fallback / implicit Template
+  selection / Template content inference / GenerateContext and Generator
+  compensation prohibitions without authorizing implementation.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.

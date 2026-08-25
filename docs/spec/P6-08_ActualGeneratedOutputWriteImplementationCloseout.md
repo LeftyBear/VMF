@@ -7,7 +7,7 @@ COMPLETE / docs-only and local-only status sync
 ## Purpose
 
 Close out the P6-07 local-only actual generated output write implementation
-after commit `ce917dcda154ebd760a275445283767226be9fdf`.
+after commit `76278e8d16b77afc8e5572d8e267395a2b068dfe`.
 
 P6-08 is docs-only. It records the implemented P6-07 state, preserved
 boundaries, and next-action boundary. It does not add production code, test
@@ -20,7 +20,7 @@ specification changes.
 P6-08 records:
 
 - P6-07 implementation commit:
-  `ce917dcda154ebd760a275445283767226be9fdf`
+  `76278e8d16b77afc8e5572d8e267395a2b068dfe`
 - actual generated output write entry boundary:
   `AppOutputWriteService.AppWriteGeneratedOutput`
 - focused test target:
