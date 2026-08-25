@@ -7,7 +7,7 @@ COMPLETE / docs-only and local-only status sync
 ## Purpose
 
 Close out P6-12 after commit
-`844427831ac93a1c3281f22d980f4b93963f62a1` and record the current boundary
+`8d5d2660a0cc83731c16ee5271c078c68e3fb440` and record the current boundary
 before any later real workbook or real VBProject mutation work.
 
 ## Scope
@@ -56,7 +56,7 @@ authorization.
 ## Verification Recorded
 
 P6-12 verification was recorded as PASS before commit
-`844427831ac93a1c3281f22d980f4b93963f62a1`:
+`8d5d2660a0cc83731c16ee5271c078c68e3fb440`:
 
 - temporary local Build.xlam creation PASS
 - temporary test runner creation PASS

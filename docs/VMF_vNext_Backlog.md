@@ -63,7 +63,8 @@ specification changes.
 | P6-10 | Target VBA Project Mutation Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P6-10_TargetVbaProjectMutationFocusedTestDesign.md` | Defines future focused local tests for exact target surface, mutation operations, safety stops, and verification while keeping target VBA project mutation, real workbook mutation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 | P6-11 | Target VBA Project Mutation Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P6-11_TargetVbaProjectMutationFocusedTestImplementationScopePlanning.md` | Connects the P6-10 focused test design to a future implementation decision by fixing candidate implementation scope, non-scope, acceptance criteria, and safety stops while keeping target VBA project mutation, real workbook mutation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 | P6-12 | Target VBA Project Mutation Focused Test Implementation Start | COMPLETE / local-only implementation verified | `docs/spec/P6-12_TargetVbaProjectMutationFocusedTestImplementationRecord.md` | Adds `AppOutputWriteService.AppApplyGeneratedOutputToLocalTarget` and focused tests for a local fake target `Modules` dictionary. The only GO mutation is create-only insertion into the fake target after full preflight. Real target VBA project mutation remains NO-GO. |
-| P6-13 | Target VBA Project Mutation Focused Test Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P6-13_TargetVbaProjectMutationFocusedTestImplementationCloseout.md` | Closes out P6-12 after commit `844427831ac93a1c3281f22d980f4b93963f62a1`, confirms the fake/local target `Modules` dictionary create-only mutation boundary, and keeps real workbook and real VBProject mutation as a later NO-GO boundary requiring separate GO. |
+| P6-13 | Target VBA Project Mutation Focused Test Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P6-13_TargetVbaProjectMutationFocusedTestImplementationCloseout.md` | Closes out P6-12 after commit `8d5d2660a0cc83731c16ee5271c078c68e3fb440`, confirms the fake/local target `Modules` dictionary create-only mutation boundary, and keeps real workbook and real VBProject mutation as a later NO-GO boundary requiring separate GO. |
+| P6-14 | Real Workbook / Real VBProject Mutation Boundary Planning | COMPLETE / docs-only and local-only boundary planning | `docs/spec/P6-14_RealWorkbookAndVbProjectMutationBoundaryPlanning.md` | Defines real workbook and real VBProject mutation as the next separate downstream boundary after fake/local target create-only mutation, records future GO / NO-GO requirements, and keeps real workbook mutation, real VBProject mutation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 
 ## Boundary
 
@@ -316,11 +317,18 @@ specification changes.
   selection, Template content inference, and GenerateContext / Generator
   compensation remain NO-GO.
 - P6-13 is complete as docs-only and local-only status sync after commit
-  `844427831ac93a1c3281f22d980f4b93963f62a1`. It records P6-12 closeout,
+  `8d5d2660a0cc83731c16ee5271c078c68e3fb440`. It records P6-12 closeout,
   confirms no additional P6-13 implementation is required, and keeps real
   workbook mutation and real VBProject mutation as a later separate NO-GO
   boundary requiring a named candidate, exact scope, GO / NO-GO decision,
   safety stops, and verification authorization.
+- P6-14 is complete as docs-only and local-only boundary planning. It defines
+  real workbook / real VBProject mutation as the next separate downstream
+  boundary after fake/local target `Modules` dictionary create-only mutation,
+  records future GO / NO-GO requirements, and keeps real workbook mutation,
+  real VBProject mutation, package / `dist`, release, external services,
+  fallback / implicit Template selection, Template content inference, and
+  GenerateContext / Generator compensation as NO-GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
