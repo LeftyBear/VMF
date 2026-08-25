@@ -99,6 +99,51 @@ ErrHandler:
     Set AppWriteGeneratedOutput = CreateWriteResult(False, ResultHardStop, "Generated output write hard-stop: " & Err.Description)
 End Function
 
+' Applies approved write-plan units to a local test-controlled target only.
+Public Function AppApplyGeneratedOutputToLocalTarget(ByVal OutputWritePlan As Object, ByVal TargetProject As Object) As Object
+    Dim WriteUnits As Collection
+    Dim Result As Object
+
+    On Error GoTo ErrHandler
+
+    If OutputWritePlan Is Nothing Then
+        Set AppApplyGeneratedOutputToLocalTarget = CreateMutationResult(False, ResultHardStop, "Output write plan is required.")
+        Exit Function
+    End If
+
+    If TargetProject Is Nothing Then
+        Set AppApplyGeneratedOutputToLocalTarget = CreateMutationResult(False, ResultHardStop, "Local target project is required.")
+        Exit Function
+    End If
+
+    If Not HasBooleanValue(OutputWritePlan, "Success", True) Then
+        Set AppApplyGeneratedOutputToLocalTarget = CreateMutationResult(False, ResultHardStop, "Output write plan must be successful.")
+        Exit Function
+    End If
+
+    If Not HasCollection(OutputWritePlan, "WriteUnits") Then
+        Set AppApplyGeneratedOutputToLocalTarget = CreateMutationResult(False, ResultHardStop, "Output write units are required.")
+        Exit Function
+    End If
+
+    Set WriteUnits = OutputWritePlan("WriteUnits")
+    If WriteUnits.Count = 0 Then
+        Set AppApplyGeneratedOutputToLocalTarget = CreateMutationResult(False, ResultHardStop, "Output write units are absent.")
+        Exit Function
+    End If
+
+    PreflightLocalTargetMutation WriteUnits, TargetProject
+    ApplyLocalTargetMutation WriteUnits, TargetProject
+
+    Set Result = CreateMutationResult(True, ResultSuccess, "Generated output applied to local target.")
+    Result("MutatedModules") = WriteUnits.Count
+    Set AppApplyGeneratedOutputToLocalTarget = Result
+    Exit Function
+
+ErrHandler:
+    Set AppApplyGeneratedOutputToLocalTarget = CreateMutationResult(False, ResultHardStop, "Target VBA project mutation hard-stop: " & Err.Description)
+End Function
+
 Private Function BuildSuccessfulPlan(ByVal GeneratedUnits As Collection) As Object
     Dim Result As Object
     Dim WriteUnits As Collection
@@ -161,10 +206,7 @@ Private Sub PreflightWriteUnits(ByVal WriteUnits As Collection, ByVal FileSystem
         End If
 
         FileName = RequiredText(Unit, "fileName")
-        If InStr(1, FileName, "\", vbBinaryCompare) > 0 Or InStr(1, FileName, "/", vbBinaryCompare) > 0 Then
-            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightWriteUnits", "Output write fileName must not include a path."
-        End If
-
+        RequireSafeFileName FileName, "AppOutputWriteService.PreflightWriteUnits"
         RequiredText Unit, "generatedSource"
         FilePath = FileSystem.BuildPath(OutputFolderPath, FileName)
         If FileSystem.FileExists(FilePath) Then
@@ -190,6 +232,55 @@ Private Function WriteAllUnits(ByVal WriteUnits As Collection, ByVal FileSystem 
 
     Set WriteAllUnits = WrittenFiles
 End Function
+
+Private Sub PreflightLocalTargetMutation(ByVal WriteUnits As Collection, ByVal TargetProject As Object)
+    Dim Unit As Variant
+    Dim Modules As Object
+    Dim Seen As Object
+    Dim ModuleName As String
+
+    If Not TargetProject.Exists("Modules") Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightLocalTargetMutation", "Local target project Modules collection is required."
+    End If
+
+    If Not IsObject(TargetProject("Modules")) Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightLocalTargetMutation", "Local target project Modules collection is invalid."
+    End If
+
+    Set Modules = TargetProject("Modules")
+    Set Seen = CreateObject("Scripting.Dictionary")
+
+    For Each Unit In WriteUnits
+        If Not IsObject(Unit) Then
+            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightLocalTargetMutation", "Output write unit is invalid."
+        End If
+
+        ModuleName = RequiredText(Unit, "moduleName")
+        RequireSafeFileName RequiredText(Unit, "fileName"), "AppOutputWriteService.PreflightLocalTargetMutation"
+        RequiredText Unit, "generatedSource"
+
+        If Seen.Exists(ModuleName) Then
+            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightLocalTargetMutation", "Duplicate module mutation is prohibited: " & ModuleName
+        End If
+
+        If Modules.Exists(ModuleName) Then
+            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightLocalTargetMutation", "Existing module conflict is not authorized: " & ModuleName
+        End If
+
+        Seen(ModuleName) = True
+    Next Unit
+End Sub
+
+Private Sub ApplyLocalTargetMutation(ByVal WriteUnits As Collection, ByVal TargetProject As Object)
+    Dim Unit As Variant
+    Dim Modules As Object
+
+    Set Modules = TargetProject("Modules")
+
+    For Each Unit In WriteUnits
+        Modules(RequiredText(Unit, "moduleName")) = RequiredText(Unit, "generatedSource")
+    Next Unit
+End Sub
 
 Private Sub RequireCompleteGeneratedUnit(ByVal Unit As Object)
     If Unit Is Nothing Then
@@ -237,6 +328,12 @@ Private Function ModuleExtension(ByVal ModuleType As String) As String
         ModuleExtension = ".bas"
     End If
 End Function
+
+Private Sub RequireSafeFileName(ByVal FileName As String, ByVal SourceName As String)
+    If InStr(1, FileName, "\", vbBinaryCompare) > 0 Or InStr(1, FileName, "/", vbBinaryCompare) > 0 Then
+        Err.Raise ComErrInvalidArgument, SourceName, "Output write fileName must not include a path."
+    End If
+End Sub
 
 Private Function HasBooleanValue(ByVal Source As Object, ByVal FieldName As String, ByVal ExpectedValue As Boolean) As Boolean
     If Source Is Nothing Then
@@ -315,4 +412,16 @@ Private Function CreateSuccessfulWriteResult(ByVal WrittenFiles As Collection) A
     Set Result = CreateWriteResult(True, ResultSuccess, "Generated output written.")
     Set Result("WrittenFiles") = WrittenFiles
     Set CreateSuccessfulWriteResult = Result
+End Function
+
+Private Function CreateMutationResult(ByVal IsSuccess As Boolean, ByVal Classification As String, ByVal Message As String) As Object
+    Dim Result As Object
+
+    Set Result = CreateObject("Scripting.Dictionary")
+    Result("Success") = IsSuccess
+    Result("Classification") = Classification
+    Result("Message") = Message
+    Result("MutatedModules") = 0
+
+    Set CreateMutationResult = Result
 End Function

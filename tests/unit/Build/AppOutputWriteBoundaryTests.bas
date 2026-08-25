@@ -20,6 +20,9 @@ Public Sub AppRunOutputWriteBoundaryTests()
     VerifyApprovedPlanWritesGeneratedOutputToLocalFolder
     VerifyFailedPlanDoesNotWriteGeneratedOutput
     VerifyExistingOutputFileHardStopsBeforeWrite
+    VerifyApprovedPlanAppliesToLocalTarget
+    VerifyExistingLocalTargetModuleHardStopsWithoutMutation
+    VerifyPathBearingMutationFileNameHardStopsWithoutMutation
 End Sub
 
 Private Sub VerifyOutputWriteAcceptsSuccessfulGeneratorOutput()
@@ -207,6 +210,70 @@ Cleanup:
     If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
 End Sub
 
+Private Sub VerifyApprovedPlanAppliesToLocalTarget()
+    Dim Service As AppOutputWriteService
+    Dim TargetProject As Object
+    Dim Modules As Object
+    Dim Plan As Object
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set TargetProject = CreateLocalTargetProject()
+    Set Modules = TargetProject("Modules")
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+
+    Set Result = Service.AppApplyGeneratedOutputToLocalTarget(Plan, TargetProject)
+
+    AssertTrue CBool(Result("Success")), "Approved write plan should apply to local target."
+    AssertEquals "Success", CStr(Result("Classification")), "Local target mutation classification should be Success."
+    AssertEquals 2, CLng(Result("MutatedModules")), "One local target module should be mutated for each write unit."
+    AssertTrue Modules.Exists("GeneratedSubject"), "GeneratedSubject should be created in the local target."
+    AssertContains CStr(Modules("GeneratedSubject")), "Option Explicit", "Generated source should be carried unchanged."
+End Sub
+
+Private Sub VerifyExistingLocalTargetModuleHardStopsWithoutMutation()
+    Dim Service As AppOutputWriteService
+    Dim TargetProject As Object
+    Dim Modules As Object
+    Dim Plan As Object
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set TargetProject = CreateLocalTargetProject()
+    Set Modules = TargetProject("Modules")
+    Modules("GeneratedSubject") = "existing"
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+
+    Set Result = Service.AppApplyGeneratedOutputToLocalTarget(Plan, TargetProject)
+
+    AssertFalse CBool(Result("Success")), "Existing local target module should hard-stop before mutation."
+    AssertContains CStr(Result("Message")), "Existing module conflict", "Hard-stop should identify existing module conflict."
+    AssertEquals "existing", CStr(Modules("GeneratedSubject")), "Existing local target module should remain unchanged."
+    AssertFalse Modules.Exists("GeneratedSchedule"), "Preflight failure should not mutate later modules."
+End Sub
+
+Private Sub VerifyPathBearingMutationFileNameHardStopsWithoutMutation()
+    Dim Service As AppOutputWriteService
+    Dim TargetProject As Object
+    Dim Modules As Object
+    Dim Plan As Object
+    Dim WriteUnits As Collection
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set TargetProject = CreateLocalTargetProject()
+    Set Modules = TargetProject("Modules")
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set WriteUnits = Plan("WriteUnits")
+    WriteUnits.Item(1)("fileName") = "unsafe\GeneratedSubject.cls"
+
+    Set Result = Service.AppApplyGeneratedOutputToLocalTarget(Plan, TargetProject)
+
+    AssertFalse CBool(Result("Success")), "Path-bearing fileName should hard-stop before local target mutation."
+    AssertContains CStr(Result("Message")), "fileName", "Hard-stop should identify unsafe fileName."
+    AssertEquals 0, Modules.Count, "Unsafe fileName should not mutate the local target."
+End Sub
+
 Private Function BuildPlan(ByVal GeneratorOutput As Object) As Object
     Dim Service As AppOutputWriteService
 
@@ -250,6 +317,17 @@ Private Function CreateGeneratedUnit( _
     Unit("isImplicitlySelected") = False
 
     Set CreateGeneratedUnit = Unit
+End Function
+
+Private Function CreateLocalTargetProject() As Object
+    Dim TargetProject As Object
+    Dim Modules As Object
+
+    Set TargetProject = CreateObject("Scripting.Dictionary")
+    Set Modules = CreateObject("Scripting.Dictionary")
+    Set TargetProject("Modules") = Modules
+
+    Set CreateLocalTargetProject = TargetProject
 End Function
 
 Private Function CreateTempOutputFolderPath(ByVal FileSystem As Object) As String

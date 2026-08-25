@@ -62,6 +62,7 @@ specification changes.
 | P6-09 | Target VBA Project Mutation Boundary Planning | COMPLETE / docs-only boundary planning | `docs/spec/P6-09_TargetVbaProjectMutationBoundaryPlanning.md` | Defines target VBA project mutation as the next separate downstream boundary after deterministic local generated-output write, records future GO / NO-GO requirements, separates actual generated output write from target project mutation, and preserves fallback / implicit Template selection / Template content inference / GenerateContext and Generator compensation prohibitions. |
 | P6-10 | Target VBA Project Mutation Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P6-10_TargetVbaProjectMutationFocusedTestDesign.md` | Defines future focused local tests for exact target surface, mutation operations, safety stops, and verification while keeping target VBA project mutation, real workbook mutation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 | P6-11 | Target VBA Project Mutation Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P6-11_TargetVbaProjectMutationFocusedTestImplementationScopePlanning.md` | Connects the P6-10 focused test design to a future implementation decision by fixing candidate implementation scope, non-scope, acceptance criteria, and safety stops while keeping target VBA project mutation, real workbook mutation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
+| P6-12 | Target VBA Project Mutation Focused Test Implementation Start | COMPLETE / local-only implementation verified | `docs/spec/P6-12_TargetVbaProjectMutationFocusedTestImplementationRecord.md` | Adds `AppOutputWriteService.AppApplyGeneratedOutputToLocalTarget` and focused tests for a local fake target `Modules` dictionary. The only GO mutation is create-only insertion into the fake target after full preflight. Real target VBA project mutation remains NO-GO. |
 
 ## Boundary
 
@@ -304,6 +305,15 @@ specification changes.
   NO-GO until a separate implementation GO authorizes exact target surface,
   mutation operations, editable files, safety stops, conflict and recovery
   behavior, and verification.
+- P6-12 is complete as local-only Target VBA Project Mutation focused test
+  implementation start. It adds
+  `AppOutputWriteService.AppApplyGeneratedOutputToLocalTarget` and focused
+  `AppOutputWriteBoundaryTests` for an in-memory fake target `Modules`
+  dictionary. The P6-12 GO is limited to create-only fake-target mutation after
+  full preflight. Real target VBA project mutation, real workbook mutation,
+  package / `dist`, release, external services, fallback / implicit Template
+  selection, Template content inference, and GenerateContext / Generator
+  compensation remain NO-GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
