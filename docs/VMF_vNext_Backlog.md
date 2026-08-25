@@ -66,6 +66,7 @@ specification changes.
 | P6-13 | Target VBA Project Mutation Focused Test Implementation Closeout | COMPLETE / docs-only and local-only status sync | `docs/spec/P6-13_TargetVbaProjectMutationFocusedTestImplementationCloseout.md` | Closes out P6-12 after commit `8d5d2660a0cc83731c16ee5271c078c68e3fb440`, confirms the fake/local target `Modules` dictionary create-only mutation boundary, and keeps real workbook and real VBProject mutation as a later NO-GO boundary requiring separate GO. |
 | P6-14 | Real Workbook / Real VBProject Mutation Boundary Planning | COMPLETE / docs-only and local-only boundary planning | `docs/spec/P6-14_RealWorkbookAndVbProjectMutationBoundaryPlanning.md` | Defines real workbook and real VBProject mutation as the next separate downstream boundary after fake/local target create-only mutation, records future GO / NO-GO requirements, and keeps real workbook mutation, real VBProject mutation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 | P6-15 | Real Workbook / Real VBProject Mutation Focused Test Design | COMPLETE / docs-only focused test design | `docs/spec/P6-15_RealWorkbookAndVbProjectMutationFocusedTestDesign.md` | Fixes future focused local test design for real workbook / real VBProject mutation, including explicit test workbook ownership, trust/access preflight, allowed VBProject surface, mutation operation set, no-partial-mutation and restore expectations, while keeping real workbook mutation, real VBProject mutation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
+| P6-16 | Real Workbook / Real VBProject Mutation Focused Test Implementation Scope Planning | COMPLETE / docs-only implementation scope planning | `docs/spec/P6-16_RealWorkbookAndVbProjectMutationFocusedTestImplementationScopePlanning.md` | Connects the P6-15 focused test design to a future implementation decision by fixing candidate scope, GO / NO-GO requirements, acceptance criteria, and safety stops while keeping real workbook mutation, real VBProject mutation, workbook open / save / close, VBProject import / export / overwrite / delete / rename / creation, package / `dist` / release / external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 
 ## Boundary
 
@@ -339,6 +340,14 @@ specification changes.
   package / `dist`, release, external services, fallback / implicit Template
   selection, Template content inference, and GenerateContext / Generator
   compensation as NO-GO.
+- P6-16 is complete as docs-only implementation scope planning. It connects
+  P6-15 to a future implementation decision by recording candidate focused test
+  implementation scope, required GO conditions, acceptance criteria, and safety
+  stops. Real workbook mutation, real VBProject mutation, workbook open / save
+  / close / SaveAs / restore, VBProject import / export / overwrite / delete /
+  rename / creation, package / `dist`, release, external services, fallback /
+  implicit Template selection, Template content inference, and GenerateContext
+  / Generator compensation remain NO-GO until a separate implementation GO.
 - P2 is COMPLETE.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
