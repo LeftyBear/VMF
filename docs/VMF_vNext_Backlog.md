@@ -73,6 +73,7 @@ specification changes.
 | P7-01 | Candidate Selection / GO-NO-GO | COMPLETE / docs-only candidate selection and GO / NO-GO record | `docs/spec/P7-01_CandidateSelectionAndGoNoGo.md` | Starts P7 as docs-only candidate selection, selects P7-02 -- Real Workbook / Real VBProject Mutation Reauthorization Boundary, records GO only for documentation, and keeps P7 implementation start, real workbook mutation, real VBProject mutation, package / `dist`, release, publication, and external service operations as NO-GO. |
 | P7-02 | Real Workbook / Real VBProject Mutation Reauthorization Boundary | COMPLETE / docs-only implementation scope planning | `docs/spec/P7-02_RealWorkbookAndVbProjectMutationReauthorizationBoundary.md` | Fixes the future reauthorization boundary before any real workbook / real VBProject mutation implementation GO, records required owner authorization items, candidate later implementation scope, non-scope, acceptance criteria, and safety stops, and keeps implementation start, workbook open / save / close / SaveAs / restore, VBProject import / export / overwrite / delete / rename / creation, package / `dist`, release, publication, push, tag creation, external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 | P7-03 | Implementation GO / NO-GO Decision | COMPLETE / docs-only implementation GO / NO-GO decision | `docs/spec/P7-03_ImplementationGoNoGoDecision.md` | Applies the P7-02 reauthorization conditions to the minimum real workbook / real VBProject mutation implementation slice and records implementation start as NO-GO because separate implementation GO, exact editable files, workbook handling, VBProject trust/access preflight, allowed mutation operations, restore / rollback behavior, readback verification, and focused implementation verification are not authorized. |
+| P7-04 | Candidate Selection / Authorization Planning | COMPLETE / docs-only authorization candidate selection and planning | `docs/spec/P7-04_CandidateSelectionAuthorizationPlanning.md` | Selects P7-05 -- Minimum Real Workbook / Real VBProject Mutation Authorization Package as the next docs-only candidate, fixes the authorization package contents and re-evaluation conditions needed to address the P7-03 NO-GO factors, and keeps implementation start, production / test code changes, workbook / VBProject operations, package / `dist`, release / publication, external service operations, and Frozen specification changes as NO-GO. |
 
 ## Boundary
 
@@ -403,5 +404,13 @@ specification changes.
   handling, VBProject trust/access preflight, allowed mutation operations,
   restore / rollback behavior, readback verification, and focused
   implementation verification are not authorized.
+- P7-04 is complete as docs-only authorization candidate selection and
+  planning. It selects P7-05 -- Minimum Real Workbook / Real VBProject
+  Mutation Authorization Package as the next docs-only candidate, fixes the
+  authorization package contents and minimum implementation slice
+  re-evaluation conditions required to address the P7-03 NO-GO factors, and
+  keeps implementation start, production / test code changes, workbook /
+  VBProject operations, package / `dist`, release / publication, external
+  service operations, and Frozen specification changes as NO-GO.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
