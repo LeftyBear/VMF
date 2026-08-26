@@ -71,6 +71,7 @@ specification changes.
 | P6-18 | Real Workbook / Real VBProject Mutation NO-GO Closeout | COMPLETE / docs-only closeout and status sync | `docs/spec/P6-18_RealWorkbookAndVbProjectMutationNoGoCloseout.md` | Closes out P6-17 after commit `290ee9459bfcae68ab537b85becb81197bd6968f`, confirms the implementation NO-GO remains current, records that no additional P6-18 implementation or next candidate selection is required, and keeps real workbook mutation, real VBProject mutation, workbook open / save / close / restore, package / `dist`, release, external services, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 | P6-19 | Phase Closeout / Current-State Consistency | COMPLETE / docs-only phase closeout and current-state consistency | `docs/spec/P6-19_PhaseCloseoutCurrentStateConsistency.md` | Closes out P6 after P6-18 commit `76ca3bc4457fbf76c1ed63f9b37a4ba267e2cb33`, records pushed P6-19 commit `7fa2362519bdeee967cde8c0716b369d5b310ffa`, confirms P6-01 through P6-18 are consistent, records P6 COMPLETE, and keeps real workbook mutation, real VBProject mutation, workbook open / save / close / restore, package / `dist`, release, external services, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 | P7-01 | Candidate Selection / GO-NO-GO | COMPLETE / docs-only candidate selection and GO / NO-GO record | `docs/spec/P7-01_CandidateSelectionAndGoNoGo.md` | Starts P7 as docs-only candidate selection, selects P7-02 -- Real Workbook / Real VBProject Mutation Reauthorization Boundary, records GO only for documentation, and keeps P7 implementation start, real workbook mutation, real VBProject mutation, package / `dist`, release, publication, and external service operations as NO-GO. |
+| P7-02 | Real Workbook / Real VBProject Mutation Reauthorization Boundary | COMPLETE / docs-only implementation scope planning | `docs/spec/P7-02_RealWorkbookAndVbProjectMutationReauthorizationBoundary.md` | Fixes the future reauthorization boundary before any real workbook / real VBProject mutation implementation GO, records required owner authorization items, candidate later implementation scope, non-scope, acceptance criteria, and safety stops, and keeps implementation start, workbook open / save / close / SaveAs / restore, VBProject import / export / overwrite / delete / rename / creation, package / `dist`, release, publication, push, tag creation, external service operations, fallback / implicit Template selection, Template content inference, and GenerateContext / Generator compensation as NO-GO. |
 
 ## Boundary
 
@@ -384,5 +385,15 @@ specification changes.
   real VBProject mutation, package / `dist`, release, publication, external
   services, fallback / implicit Template selection, Template content
   inference, and GenerateContext / Generator compensation as NO-GO.
+- P7-02 is complete as docs-only implementation scope planning. It records the
+  reauthorization boundary for any future real workbook / real VBProject
+  mutation implementation GO, including required owner authorization for exact
+  editable files, workbook handling, VBProject trust/access preflight, allowed
+  module operations, conflict behavior, restore and rollback behavior, and
+  focused verification. Implementation start, workbook open / save / close /
+  SaveAs / restore, VBProject import / export / overwrite / delete / rename /
+  creation, package / `dist`, release, publication, external services,
+  fallback / implicit Template selection, Template content inference, and
+  GenerateContext / Generator compensation remain NO-GO.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
