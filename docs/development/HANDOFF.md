@@ -19,9 +19,11 @@ Live E2E, Google Docs / Drive mutation, or flagged executable run.
 
 Build vNext update: P6 is COMPLETE. P6-19 Phase Closeout / Current-State
 Consistency was committed and pushed as
-`7fa2362519bdeee967cde8c0716b369d5b310ffa`; after that push, `HEAD` equaled
-`origin/main` and the working tree was clean. Do not proceed to P7 from this
-handoff without a separate named candidate and GO / NO-GO boundary.
+`7fa2362519bdeee967cde8c0716b369d5b310ffa`; P7-01 Candidate Selection /
+GO-NO-GO is now recorded docs-only. P7-01 selects P7-02 -- Real Workbook /
+Real VBProject Mutation Reauthorization Boundary as the next candidate, but
+P7 implementation start, real workbook mutation, and real VBProject mutation
+remain NO-GO until a separate implementation GO.
 
 ## 1. Starting State
 
@@ -109,8 +111,10 @@ Recommended next actions are:
 4. If Live E2E is requested, require explicit per-run authorization, credentials
    scope, destination scope, cleanup expectations, and exact command.
 5. Keep vNext hardening work separate as candidate work before adoption.
-6. For Build vNext, perform a separate current-state / candidate-selection step
-   before any P7 work; P6 closeout alone does not authorize P7.
+6. For Build vNext, use docs/spec/P7-01_CandidateSelectionAndGoNoGo.md as
+   the current P7 docs-only candidate-selection record. It authorizes no P7
+   implementation; P7-02 reauthorization must be separately approved before
+   real workbook or real VBProject mutation work starts.
 
 The vNext hardening backlog currently includes:
 
