@@ -24,7 +24,10 @@ GO-NO-GO is recorded docs-only. P7-02 Real Workbook / Real VBProject Mutation
 Reauthorization Boundary is now recorded docs-only. P7-02 fixes the future
 reauthorization requirements, but P7 implementation start, real workbook
 mutation, and real VBProject mutation remain NO-GO until a separate
-implementation GO.
+implementation GO. P7-03 Implementation GO / NO-GO Decision is now recorded
+docs-only and keeps the minimum real workbook / real VBProject mutation
+implementation slice as NO-GO because the P7-02 reauthorization conditions are
+not satisfied.
 
 ## 1. Starting State
 
@@ -113,13 +116,14 @@ Recommended next actions are:
    scope, destination scope, cleanup expectations, and exact command.
 5. Keep vNext hardening work separate as candidate work before adoption.
 6. For Build vNext, use
+   docs/spec/P7-03_ImplementationGoNoGoDecision.md as the current P7
+   docs-only implementation GO / NO-GO record and
    docs/spec/P7-02_RealWorkbookAndVbProjectMutationReauthorizationBoundary.md
-   as the current P7 docs-only implementation scope planning record. It
-   authorizes no P7 implementation; a later implementation GO must separately
-   approve exact editable files, workbook handling, VBProject trust/access
-   preflight, allowed module operations, restore and rollback behavior, and
-   focused verification before real workbook or real VBProject mutation work
-   starts.
+   as the reauthorization basis. P7-03 authorizes no P7 implementation; a
+   later implementation GO must separately approve exact editable files,
+   workbook handling, VBProject trust/access preflight, allowed module
+   operations, restore and rollback behavior, and focused verification before
+   real workbook or real VBProject mutation work starts.
 
 The vNext hardening backlog currently includes:
 
