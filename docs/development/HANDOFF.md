@@ -36,7 +36,15 @@ VBProject Mutation Authorization Package is now recorded docs-only; it fixes
 candidate editable files, test-owned fixture requirements, create-only
 missing-module mutation limits, readback / rollback expectations, and
 verification requirements for later re-evaluation, but it is not
-implementation GO.
+implementation GO. P7-06 Implementation Re-evaluation / GO-NO-GO is now
+recorded docs-only; it applies P7-05 and records GO for a later separate
+minimum implementation-start task limited to
+`src/Build/Application/AppOutputWriteService.cls`,
+`tests/unit/Build/AppOutputWriteBoundaryTests.bas`, and a local test-owned
+workbook fixture with create-only missing-module mutation after trust/access
+preflight. P7-06 itself performs and authorizes no implementation, production
+/ test code change, workbook / VBProject operation, package / `dist`, release
+/ publication, external service operation, or Frozen specification change.
 
 ## 1. Starting State
 
@@ -125,6 +133,8 @@ Recommended next actions are:
    scope, destination scope, cleanup expectations, and exact command.
 5. Keep vNext hardening work separate as candidate work before adoption.
 6. For Build vNext, use
+   docs/spec/P7-06_ImplementationReevaluationGoNoGo.md as the current P7
+   docs-only implementation re-evaluation GO / NO-GO record,
    docs/spec/P7-04_CandidateSelectionAuthorizationPlanning.md as the current
    P7 docs-only authorization candidate selection record,
    docs/spec/P7-05_MinimumRealWorkbookAndVbProjectMutationAuthorizationPackage.md
@@ -134,7 +144,10 @@ Recommended next actions are:
    docs/spec/P7-02_RealWorkbookAndVbProjectMutationReauthorizationBoundary.md
    as the reauthorization basis. P7-04 selects P7-05 as the next docs-only
    authorization package candidate, and P7-05 records that package without
-   granting implementation GO. P7-03, P7-04, and P7-05 authorize no P7
+   granting implementation GO. P7-06 records that a later separate
+   implementation-start task may proceed only inside the P7-05 package and
+   must reconfirm the current repository state before editing production or
+   test files. P7-03, P7-04, P7-05, and P7-06 authorize no P7
    implementation; a later implementation GO must separately approve the
    exact implementation start before any production / test code, workbook, or
    VBProject mutation work starts.

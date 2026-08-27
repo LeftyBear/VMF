@@ -75,6 +75,7 @@ specification changes.
 | P7-03 | Implementation GO / NO-GO Decision | COMPLETE / docs-only implementation GO / NO-GO decision | `docs/spec/P7-03_ImplementationGoNoGoDecision.md` | Applies the P7-02 reauthorization conditions to the minimum real workbook / real VBProject mutation implementation slice and records implementation start as NO-GO because separate implementation GO, exact editable files, workbook handling, VBProject trust/access preflight, allowed mutation operations, restore / rollback behavior, readback verification, and focused implementation verification are not authorized. |
 | P7-04 | Candidate Selection / Authorization Planning | COMPLETE / docs-only authorization candidate selection and planning | `docs/spec/P7-04_CandidateSelectionAuthorizationPlanning.md` | Selects P7-05 -- Minimum Real Workbook / Real VBProject Mutation Authorization Package as the next docs-only candidate, fixes the authorization package contents and re-evaluation conditions needed to address the P7-03 NO-GO factors, and keeps implementation start, production / test code changes, workbook / VBProject operations, package / `dist`, release / publication, external service operations, and Frozen specification changes as NO-GO. |
 | P7-05 | Minimum Real Workbook / Real VBProject Mutation Authorization Package | COMPLETE / docs-only authorization package | `docs/spec/P7-05_MinimumRealWorkbookAndVbProjectMutationAuthorizationPackage.md` | Records the docs-only authorization package for later re-evaluation of the minimum implementation slice, fixes candidate editable files as `src/Build/Application/AppOutputWriteService.cls` and `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, fixes test-owned fixture and create-only missing-module mutation conditions, keeps SaveAs / overwrite / delete / rename prohibited for the minimum slice, and keeps implementation start, production / test code changes, workbook / VBProject operations, package / `dist`, release / publication, external service operations, and Frozen specification changes as NO-GO. |
+| P7-06 | Implementation Re-evaluation / GO-NO-GO | COMPLETE / docs-only implementation re-evaluation GO / NO-GO decision | `docs/spec/P7-06_ImplementationReevaluationGoNoGo.md` | Applies the P7-05 authorization package and records GO for a later separate minimum implementation-start task limited to `src/Build/Application/AppOutputWriteService.cls`, `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, and a local test-owned workbook fixture with create-only missing-module mutation after trust/access preflight. P7-06 itself performs no implementation, production / test code change, workbook / VBProject operation, package / `dist`, release / publication, external service operation, or Frozen specification change. |
 
 ## Boundary
 
@@ -422,5 +423,14 @@ specification changes.
   and keeps implementation start, production / test code changes, workbook /
   VBProject operations, package / `dist`, release / publication, external
   service operations, and Frozen specification changes as NO-GO.
+- P7-06 is complete as docs-only implementation re-evaluation GO / NO-GO
+  decision. It applies the P7-05 authorization package and records GO for a
+  later separate minimum implementation-start task limited to
+  `src/Build/Application/AppOutputWriteService.cls`,
+  `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, and a local test-owned
+  workbook fixture with create-only missing-module mutation after trust/access
+  preflight. P7-06 itself performs no implementation, production / test code
+  change, workbook / VBProject operation, package / `dist`, release /
+  publication, external service operation, or Frozen specification change.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
