@@ -80,7 +80,14 @@ results, failure / rollback / readback / verification conditions, and
 candidate implementation scope while preserving the P7-07 create-only
 missing-module mutation boundary, and keeps implementation, workbook /
 VBProject mutation, package / `dist`, release, publication, external services,
-and Frozen specification changes as NO-GO.
+and Frozen specification changes as NO-GO. P7-12 Create-Only Missing-Module
+Implementation Slice Selection is now recorded docs-only in
+`docs/spec/P7-12_CreateOnlyMissingModuleImplementationSliceSelection.md`; it
+evaluates P7-11-A through P7-11-L, selects P7-11-A/B/C/D/L as the minimum
+later implementation slice, defers P7-11-E through P7-11-K, preserves the
+P7-07 create-only missing-module mutation boundary, and keeps implementation,
+workbook / VBProject mutation, package / `dist`, release, publication,
+external services, and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -193,9 +200,12 @@ Recommended next actions are:
    boundary and keeps implementation and workbook / VBProject mutation as
    NO-GO. P7-11 records the docs-only focused coverage expansion scope for
    P7-10 Candidate A and keeps implementation and workbook / VBProject
-   mutation as NO-GO. Any further implementation, workbook / VBProject
-   expansion, package / `dist`, release, publication, or external service work
-   requires a new named scope and separate GO / NO-GO decision.
+   mutation as NO-GO. P7-12 records the docs-only implementation slice
+   selection for P7-11-A through P7-11-L, selects P7-11-A/B/C/D/L as the
+   minimum later implementation slice, and keeps implementation and workbook /
+   VBProject mutation as NO-GO. Any further implementation, workbook /
+   VBProject expansion, package / `dist`, release, publication, or external
+   service work requires a new named scope and separate GO / NO-GO decision.
 
 The vNext hardening backlog currently includes:
 

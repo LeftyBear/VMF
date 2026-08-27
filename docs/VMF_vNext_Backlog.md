@@ -81,6 +81,7 @@ specification changes.
 | P7-09 | Post-Minimum Real Workbook Mutation Next Candidate Selection | COMPLETE / docs-only next candidate selection and GO / NO-GO record | `docs/spec/P7-09_PostMinimumRealWorkbookMutationNextCandidateSelection.md` | Selects P7-10 -- Real Workbook / Real VBProject Mutation Expansion Scope Planning as the next docs-only candidate after P7-07 / P7-08, records GO only for documentation and candidate selection, and keeps additional implementation, workbook / VBProject mutation, package / `dist`, release, publication, external services, and Frozen specification changes as NO-GO. |
 | P7-10 | Real Workbook / Real VBProject Mutation Expansion Scope Planning | COMPLETE / docs-only expansion scope planning and GO / NO-GO record | `docs/spec/P7-10_RealWorkbookAndVbProjectMutationExpansionScopePlanning.md` | Organizes future expansion candidates from the P7-07 minimum boundary, records Candidate A as the lowest-risk future candidate because it preserves create-only missing-module mutation and expands only focused coverage, requires renewed authorization for workbook open / close or save / restore, rejects overwrite / delete / rename / import / export / production workbook operations, and keeps implementation, workbook / VBProject mutation, package / `dist`, release, publication, external services, and Frozen specification changes as NO-GO. |
 | P7-11 | Create-Only Missing-Module Focused Coverage Expansion Scope | COMPLETE / docs-only focused coverage expansion scope | `docs/spec/P7-11_CreateOnlyMissingModuleFocusedCoverageExpansionScope.md` | Concretes P7-10 Candidate A into focused coverage target cases, expected results, failure / rollback / readback / verification conditions, and candidate implementation scope while preserving the P7-07 create-only missing-module mutation boundary. P7-11 grants no implementation GO and performs no code, test, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
+| P7-12 | Create-Only Missing-Module Implementation Slice Selection | COMPLETE / docs-only implementation slice selection and GO / NO-GO record | `docs/spec/P7-12_CreateOnlyMissingModuleImplementationSliceSelection.md` | Evaluates P7-11-A through P7-11-L, selects P7-11-A/B/C/D/L as the minimum later implementation slice, defers P7-11-E through P7-11-K, and preserves the P7-07 create-only missing-module mutation boundary. P7-12 grants no implementation GO and performs no code, test, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
 
 ## Boundary
 
@@ -475,5 +476,12 @@ specification changes.
   implementation, code changes, test changes, workbook / VBProject mutation,
   package / `dist`, release, publication, external services, and Frozen
   specification changes as NO-GO.
+- P7-12 is complete as docs-only implementation slice selection and GO /
+  NO-GO record. It evaluates P7-11-A through P7-11-L, selects P7-11-A,
+  P7-11-B, P7-11-C, P7-11-D, and P7-11-L as the minimum later implementation
+  slice, defers P7-11-E through P7-11-K, and preserves the P7-07 create-only
+  missing-module mutation boundary. P7-12 keeps implementation, code changes,
+  test changes, workbook / VBProject mutation, package / `dist`, release,
+  publication, external services, and Frozen specification changes as NO-GO.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
