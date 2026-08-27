@@ -18,6 +18,8 @@ Option Explicit
 
 Private Const ResultSuccess As String = "Success"
 Private Const ResultHardStop As String = "HardStop"
+Private Const ComponentTypeStandardModule As Long = 1
+Private Const ComponentTypeClassModule As Long = 2
 
 ' Builds a deterministic local write plan from complete successful Generator output.
 Public Function AppBuildOutputWritePlan(ByVal GeneratorOutput As Object) As Object
@@ -142,6 +144,56 @@ Public Function AppApplyGeneratedOutputToLocalTarget(ByVal OutputWritePlan As Ob
 
 ErrHandler:
     Set AppApplyGeneratedOutputToLocalTarget = CreateMutationResult(False, ResultHardStop, "Target VBA project mutation hard-stop: " & Err.Description)
+End Function
+
+' Applies approved write-plan units to an explicitly authorized real VBProject target.
+Public Function AppApplyGeneratedOutputToRealVBProject(ByVal OutputWritePlan As Object, ByVal TargetVBProject As Object) As Object
+    Dim WriteUnits As Collection
+    Dim CreatedComponents As Collection
+    Dim Result As Object
+
+    On Error GoTo ErrHandler
+
+    If OutputWritePlan Is Nothing Then
+        Set AppApplyGeneratedOutputToRealVBProject = CreateMutationResult(False, ResultHardStop, "Output write plan is required.")
+        Exit Function
+    End If
+
+    If TargetVBProject Is Nothing Then
+        Set AppApplyGeneratedOutputToRealVBProject = CreateMutationResult(False, ResultHardStop, "Target VBProject is required.")
+        Exit Function
+    End If
+
+    If Not HasBooleanValue(OutputWritePlan, "Success", True) Then
+        Set AppApplyGeneratedOutputToRealVBProject = CreateMutationResult(False, ResultHardStop, "Output write plan must be successful.")
+        Exit Function
+    End If
+
+    If Not HasCollection(OutputWritePlan, "WriteUnits") Then
+        Set AppApplyGeneratedOutputToRealVBProject = CreateMutationResult(False, ResultHardStop, "Output write units are required.")
+        Exit Function
+    End If
+
+    Set WriteUnits = OutputWritePlan("WriteUnits")
+    If WriteUnits.Count = 0 Then
+        Set AppApplyGeneratedOutputToRealVBProject = CreateMutationResult(False, ResultHardStop, "Output write units are absent.")
+        Exit Function
+    End If
+
+    PreflightRealVBProjectMutation WriteUnits, TargetVBProject
+    Set CreatedComponents = ApplyRealVBProjectMutation(WriteUnits, TargetVBProject)
+    VerifyRealVBProjectReadback WriteUnits, TargetVBProject
+
+    Set Result = CreateMutationResult(True, ResultSuccess, "Generated output applied to real VBProject.")
+    Result("MutatedModules") = CreatedComponents.Count
+    Set AppApplyGeneratedOutputToRealVBProject = Result
+    Exit Function
+
+ErrHandler:
+    If Not CreatedComponents Is Nothing Then
+        RollbackCreatedComponents TargetVBProject, CreatedComponents
+    End If
+    Set AppApplyGeneratedOutputToRealVBProject = CreateMutationResult(False, ResultHardStop, "Real VBProject mutation hard-stop: " & Err.Description)
 End Function
 
 Private Function BuildSuccessfulPlan(ByVal GeneratedUnits As Collection) As Object
@@ -282,6 +334,130 @@ Private Sub ApplyLocalTargetMutation(ByVal WriteUnits As Collection, ByVal Targe
         Modules(RequiredText(Unit, "moduleName")) = RequiredText(Unit, "generatedSource")
     Next Unit
 End Sub
+
+Private Sub PreflightRealVBProjectMutation(ByVal WriteUnits As Collection, ByVal TargetVBProject As Object)
+    Dim Components As Object
+    Dim Unit As Variant
+    Dim Seen As Object
+    Dim ModuleName As String
+
+    Set Components = RequireVBComponents(TargetVBProject, "AppOutputWriteService.PreflightRealVBProjectMutation")
+    Set Seen = CreateObject("Scripting.Dictionary")
+
+    For Each Unit In WriteUnits
+        If Not IsObject(Unit) Then
+            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightRealVBProjectMutation", "Output write unit is invalid."
+        End If
+
+        ModuleName = RequiredText(Unit, "moduleName")
+        RequireSafeFileName RequiredText(Unit, "fileName"), "AppOutputWriteService.PreflightRealVBProjectMutation"
+        RequiredText Unit, "generatedSource"
+        RequireSupportedModuleType RequiredText(Unit, "moduleType"), "AppOutputWriteService.PreflightRealVBProjectMutation"
+
+        If Seen.Exists(ModuleName) Then
+            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightRealVBProjectMutation", "Duplicate module mutation is prohibited: " & ModuleName
+        End If
+
+        If RealVBProjectModuleExists(Components, ModuleName) Then
+            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.PreflightRealVBProjectMutation", "Existing module conflict is not authorized: " & ModuleName
+        End If
+
+        Seen(ModuleName) = True
+    Next Unit
+End Sub
+
+Private Function ApplyRealVBProjectMutation(ByVal WriteUnits As Collection, ByVal TargetVBProject As Object) As Collection
+    Dim Components As Object
+    Dim CreatedComponents As Collection
+    Dim Unit As Variant
+    Dim Component As Object
+
+    Set Components = RequireVBComponents(TargetVBProject, "AppOutputWriteService.ApplyRealVBProjectMutation")
+    Set CreatedComponents = New Collection
+
+    For Each Unit In WriteUnits
+        Set Component = Components.Add(ComponentTypeForModuleType(RequiredText(Unit, "moduleType")))
+        Component.Name = RequiredText(Unit, "moduleName")
+        Component.CodeModule.AddFromString RequiredText(Unit, "generatedSource")
+        CreatedComponents.Add Component
+    Next Unit
+
+    Set ApplyRealVBProjectMutation = CreatedComponents
+End Function
+
+Private Sub VerifyRealVBProjectReadback(ByVal WriteUnits As Collection, ByVal TargetVBProject As Object)
+    Dim Components As Object
+    Dim Unit As Variant
+    Dim Component As Object
+    Dim CodeText As String
+
+    Set Components = RequireVBComponents(TargetVBProject, "AppOutputWriteService.VerifyRealVBProjectReadback")
+
+    For Each Unit In WriteUnits
+        Set Component = Components.Item(RequiredText(Unit, "moduleName"))
+        CodeText = Component.CodeModule.Lines(1, Component.CodeModule.CountOfLines)
+        If InStr(1, CodeText, RequiredText(Unit, "generatedSource"), vbBinaryCompare) = 0 Then
+            Err.Raise ComErrInvalidState, "AppOutputWriteService.VerifyRealVBProjectReadback", "Readback verification failed: " & RequiredText(Unit, "moduleName")
+        End If
+    Next Unit
+End Sub
+
+Private Function RequireVBComponents(ByVal TargetVBProject As Object, ByVal SourceName As String) As Object
+    Dim Components As Object
+    Dim ComponentCount As Long
+
+    If TargetVBProject Is Nothing Then
+        Err.Raise ComErrInvalidArgument, SourceName, "Target VBProject is required."
+    End If
+
+    Set Components = TargetVBProject.VBComponents
+    ComponentCount = Components.Count
+    Set RequireVBComponents = Components
+End Function
+
+Private Function RealVBProjectModuleExists(ByVal Components As Object, ByVal ModuleName As String) As Boolean
+    Dim Component As Object
+
+    For Each Component In Components
+        If StrComp(CStr(Component.Name), ModuleName, vbBinaryCompare) = 0 Then
+            RealVBProjectModuleExists = True
+            Exit Function
+        End If
+    Next Component
+
+    RealVBProjectModuleExists = False
+End Function
+
+Private Sub RollbackCreatedComponents(ByVal TargetVBProject As Object, ByVal CreatedComponents As Collection)
+    Dim Components As Object
+    Dim Component As Variant
+
+    On Error Resume Next
+    Set Components = TargetVBProject.VBComponents
+    For Each Component In CreatedComponents
+        Components.Remove Component
+    Next Component
+    On Error GoTo 0
+End Sub
+
+Private Sub RequireSupportedModuleType(ByVal ModuleType As String, ByVal SourceName As String)
+    Select Case ModuleType
+        Case "StandardModule", "ClassModule"
+        Case Else
+            Err.Raise ComErrInvalidArgument, SourceName, "ModuleType is not supported."
+    End Select
+End Sub
+
+Private Function ComponentTypeForModuleType(ByVal ModuleType As String) As Long
+    Select Case ModuleType
+        Case "StandardModule"
+            ComponentTypeForModuleType = ComponentTypeStandardModule
+        Case "ClassModule"
+            ComponentTypeForModuleType = ComponentTypeClassModule
+        Case Else
+            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ComponentTypeForModuleType", "ModuleType is not supported."
+    End Select
+End Function
 
 Private Sub RequireCompleteGeneratedUnit(ByVal Unit As Object)
     If Unit Is Nothing Then

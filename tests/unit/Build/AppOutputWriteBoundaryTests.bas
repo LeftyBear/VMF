@@ -9,6 +9,7 @@ Attribute VB_Name = "AppOutputWriteBoundaryTests"
 '=========================================================================
 
 Private Const AppTestAssertErrorNumber As Long = vbObjectError + 9360
+Private Const ComponentTypeStandardModule As Long = 1
 
 Public Sub AppRunOutputWriteBoundaryTests()
     VerifyOutputWriteAcceptsSuccessfulGeneratorOutput
@@ -23,6 +24,8 @@ Public Sub AppRunOutputWriteBoundaryTests()
     VerifyApprovedPlanAppliesToLocalTarget
     VerifyExistingLocalTargetModuleHardStopsWithoutMutation
     VerifyPathBearingMutationFileNameHardStopsWithoutMutation
+    VerifyApprovedPlanAppliesToRealVBProjectFixture
+    VerifyExistingRealVBProjectModuleHardStopsWithoutMutation
 End Sub
 
 Private Sub VerifyOutputWriteAcceptsSuccessfulGeneratorOutput()
@@ -274,6 +277,62 @@ Private Sub VerifyPathBearingMutationFileNameHardStopsWithoutMutation()
     AssertEquals 0, Modules.Count, "Unsafe fileName should not mutate the local target."
 End Sub
 
+Private Sub VerifyApprovedPlanAppliesToRealVBProjectFixture()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim Plan As Object
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertTrue CBool(Result("Success")), "Approved write plan should apply to a real test-owned VBProject."
+    AssertEquals "Success", CStr(Result("Classification")), "Real VBProject mutation classification should be Success."
+    AssertEquals 2, CLng(Result("MutatedModules")), "One real VBProject module should be mutated for each write unit."
+    AssertTrue RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "GeneratedSubject should be created in the real fixture."
+    AssertContains RealVBProjectModuleText(TargetVBProject, "GeneratedSubject"), "Option Explicit", "Generated source should be readable from the real fixture."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyExistingRealVBProjectModuleHardStopsWithoutMutation()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim ExistingComponent As Object
+    Dim Plan As Object
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set ExistingComponent = TargetVBProject.VBComponents.Add(ComponentTypeStandardModule)
+    ExistingComponent.Name = "GeneratedSubject"
+    ExistingComponent.CodeModule.AddFromString "Option Explicit" & vbCrLf & "' existing"
+
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertFalse CBool(Result("Success")), "Existing real VBProject module should hard-stop before mutation."
+    AssertContains CStr(Result("Message")), "Existing module conflict", "Hard-stop should identify existing real module conflict."
+    AssertContains RealVBProjectModuleText(TargetVBProject, "GeneratedSubject"), "existing", "Existing real fixture module should remain unchanged."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Preflight failure should not mutate later real fixture modules."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
 Private Function BuildPlan(ByVal GeneratorOutput As Object) As Object
     Dim Service As AppOutputWriteService
 
@@ -333,6 +392,34 @@ End Function
 Private Function CreateTempOutputFolderPath(ByVal FileSystem As Object) As String
     CreateTempOutputFolderPath = FileSystem.BuildPath(Environ$("TEMP"), "vmf-p6-07-" & Replace(CStr(Timer), ".", ""))
 End Function
+
+Private Function RealVBProjectModuleExists(ByVal TargetVBProject As Object, ByVal ModuleName As String) As Boolean
+    Dim Component As Object
+
+    For Each Component In TargetVBProject.VBComponents
+        If StrComp(CStr(Component.Name), ModuleName, vbBinaryCompare) = 0 Then
+            RealVBProjectModuleExists = True
+            Exit Function
+        End If
+    Next Component
+
+    RealVBProjectModuleExists = False
+End Function
+
+Private Function RealVBProjectModuleText(ByVal TargetVBProject As Object, ByVal ModuleName As String) As String
+    Dim Component As Object
+
+    Set Component = TargetVBProject.VBComponents.Item(ModuleName)
+    RealVBProjectModuleText = Component.CodeModule.Lines(1, Component.CodeModule.CountOfLines)
+End Function
+
+Private Sub CloseWorkbookFixture(ByVal WorkbookFixture As Object)
+    On Error Resume Next
+    If Not WorkbookFixture Is Nothing Then
+        WorkbookFixture.Close False
+    End If
+    On Error GoTo 0
+End Sub
 
 Private Function ReadTextFile(ByVal FileSystem As Object, ByVal FilePath As String) As String
     Dim TextFile As Object
