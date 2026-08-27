@@ -31,7 +31,12 @@ not satisfied. P7-04 Candidate Selection / Authorization Planning is now
 recorded docs-only; it selects P7-05 Minimum Real Workbook / Real VBProject
 Mutation Authorization Package as the next docs-only candidate and fixes the
 authorization package contents and re-evaluation conditions needed before any
-later implementation GO can be considered.
+later implementation GO can be considered. P7-05 Minimum Real Workbook / Real
+VBProject Mutation Authorization Package is now recorded docs-only; it fixes
+candidate editable files, test-owned fixture requirements, create-only
+missing-module mutation limits, readback / rollback expectations, and
+verification requirements for later re-evaluation, but it is not
+implementation GO.
 
 ## 1. Starting State
 
@@ -122,15 +127,17 @@ Recommended next actions are:
 6. For Build vNext, use
    docs/spec/P7-04_CandidateSelectionAuthorizationPlanning.md as the current
    P7 docs-only authorization candidate selection record,
+   docs/spec/P7-05_MinimumRealWorkbookAndVbProjectMutationAuthorizationPackage.md
+   as the current P7 docs-only authorization package,
    docs/spec/P7-03_ImplementationGoNoGoDecision.md as the current P7
    implementation NO-GO record, and
    docs/spec/P7-02_RealWorkbookAndVbProjectMutationReauthorizationBoundary.md
    as the reauthorization basis. P7-04 selects P7-05 as the next docs-only
-   authorization package candidate. P7-03 and P7-04 authorize no P7
-   implementation; a later implementation GO must separately approve exact
-   editable files, workbook handling, VBProject trust/access preflight, allowed
-   module operations, restore and rollback behavior, and focused verification
-   before real workbook or real VBProject mutation work starts.
+   authorization package candidate, and P7-05 records that package without
+   granting implementation GO. P7-03, P7-04, and P7-05 authorize no P7
+   implementation; a later implementation GO must separately approve the
+   exact implementation start before any production / test code, workbook, or
+   VBProject mutation work starts.
 
 The vNext hardening backlog currently includes:
 
