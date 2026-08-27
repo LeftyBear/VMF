@@ -390,11 +390,16 @@ Private Sub VerifyRealVBProjectReadback(ByVal WriteUnits As Collection, ByVal Ta
     Dim Unit As Variant
     Dim Component As Object
     Dim CodeText As String
+    Dim ExpectedComponentType As Long
 
     Set Components = RequireVBComponents(TargetVBProject, "AppOutputWriteService.VerifyRealVBProjectReadback")
 
     For Each Unit In WriteUnits
         Set Component = Components.Item(RequiredText(Unit, "moduleName"))
+        ExpectedComponentType = ComponentTypeForModuleType(RequiredText(Unit, "moduleType"))
+        If CLng(Component.Type) <> ExpectedComponentType Then
+            Err.Raise ComErrInvalidState, "AppOutputWriteService.VerifyRealVBProjectReadback", "Readback verification failed: " & RequiredText(Unit, "moduleName")
+        End If
         CodeText = Component.CodeModule.Lines(1, Component.CodeModule.CountOfLines)
         If InStr(1, CodeText, RequiredText(Unit, "generatedSource"), vbBinaryCompare) = 0 Then
             Err.Raise ComErrInvalidState, "AppOutputWriteService.VerifyRealVBProjectReadback", "Readback verification failed: " & RequiredText(Unit, "moduleName")

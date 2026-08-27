@@ -10,6 +10,7 @@ Attribute VB_Name = "AppOutputWriteBoundaryTests"
 
 Private Const AppTestAssertErrorNumber As Long = vbObjectError + 9360
 Private Const ComponentTypeStandardModule As Long = 1
+Private Const ComponentTypeClassModule As Long = 2
 
 Public Sub AppRunOutputWriteBoundaryTests()
     VerifyOutputWriteAcceptsSuccessfulGeneratorOutput
@@ -25,6 +26,10 @@ Public Sub AppRunOutputWriteBoundaryTests()
     VerifyExistingLocalTargetModuleHardStopsWithoutMutation
     VerifyPathBearingMutationFileNameHardStopsWithoutMutation
     VerifyApprovedPlanAppliesToRealVBProjectFixture
+    VerifyNonAlphabeticRealVBProjectPlanAppliesDeterministically
+    VerifyDuplicateRealVBProjectPlanHardStopsBeforeMutation
+    VerifyLaterExistingRealVBProjectModuleHardStopsBeforeMutation
+    VerifyUnrelatedExistingRealVBProjectModuleIsPreserved
     VerifyExistingRealVBProjectModuleHardStopsWithoutMutation
 End Sub
 
@@ -296,7 +301,124 @@ Private Sub VerifyApprovedPlanAppliesToRealVBProjectFixture()
     AssertEquals "Success", CStr(Result("Classification")), "Real VBProject mutation classification should be Success."
     AssertEquals 2, CLng(Result("MutatedModules")), "One real VBProject module should be mutated for each write unit."
     AssertTrue RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "GeneratedSubject should be created in the real fixture."
+    AssertTrue RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "GeneratedSchedule should be created in the real fixture."
+    AssertEquals ComponentTypeClassModule, RealVBProjectModuleType(TargetVBProject, "GeneratedSubject"), "Class module kind should be preserved."
+    AssertEquals ComponentTypeStandardModule, RealVBProjectModuleType(TargetVBProject, "GeneratedSchedule"), "Standard module kind should be preserved."
     AssertContains RealVBProjectModuleText(TargetVBProject, "GeneratedSubject"), "Option Explicit", "Generated source should be readable from the real fixture."
+    AssertContains RealVBProjectModuleText(TargetVBProject, "GeneratedSchedule"), "Option Explicit", "Generated standard module source should be readable from the real fixture."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyNonAlphabeticRealVBProjectPlanAppliesDeterministically()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim Plan As Object
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set Plan = Service.AppBuildOutputWritePlan(CreateNonAlphabeticGeneratorOutput())
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertTrue CBool(Result("Success")), "Non-alphabetic write units should apply successfully."
+    AssertEquals 2, CLng(Result("MutatedModules")), "Non-alphabetic write units should all be counted."
+    AssertTrue RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "First non-alphabetic module should be created."
+    AssertTrue RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Second non-alphabetic module should be created."
+    AssertContains RealVBProjectModuleText(TargetVBProject, "GeneratedSchedule"), "' Module: GeneratedSchedule", "GeneratedSchedule source should match readback."
+    AssertContains RealVBProjectModuleText(TargetVBProject, "GeneratedSubject"), "' Module: GeneratedSubject", "GeneratedSubject source should match readback."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyDuplicateRealVBProjectPlanHardStopsBeforeMutation()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim Plan As Object
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set Plan = Service.AppBuildOutputWritePlan(CreateDuplicateGeneratorOutput())
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertFalse CBool(Result("Success")), "Duplicate real VBProject write units should hard-stop before mutation."
+    AssertContains CStr(Result("Message")), "Duplicate module mutation", "Hard-stop should identify duplicate module mutation."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Duplicate preflight should not create the duplicated module."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Duplicate preflight should not create unrelated requested modules."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyLaterExistingRealVBProjectModuleHardStopsBeforeMutation()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim ExistingComponent As Object
+    Dim Plan As Object
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set ExistingComponent = TargetVBProject.VBComponents.Add(ComponentTypeStandardModule)
+    ExistingComponent.Name = "GeneratedSchedule"
+    ExistingComponent.CodeModule.AddFromString "Option Explicit" & vbCrLf & "' existing schedule"
+
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertFalse CBool(Result("Success")), "Later existing real VBProject module should hard-stop before mutation."
+    AssertContains CStr(Result("Message")), "Existing module conflict", "Hard-stop should identify later existing real module conflict."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Earlier missing module should not be created before complete preflight."
+    AssertContains RealVBProjectModuleText(TargetVBProject, "GeneratedSchedule"), "existing schedule", "Existing later real fixture module should remain unchanged."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyUnrelatedExistingRealVBProjectModuleIsPreserved()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim ExistingComponent As Object
+    Dim Plan As Object
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set ExistingComponent = TargetVBProject.VBComponents.Add(ComponentTypeStandardModule)
+    ExistingComponent.Name = "ExistingUtility"
+    ExistingComponent.CodeModule.AddFromString "Option Explicit" & vbCrLf & "' existing utility"
+
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertTrue CBool(Result("Success")), "Unrelated existing real VBProject modules should not block create-only missing modules."
+    AssertEquals 2, CLng(Result("MutatedModules")), "Only requested missing modules should be counted as mutations."
+    AssertContains RealVBProjectModuleText(TargetVBProject, "ExistingUtility"), "existing utility", "Unrelated existing module should remain unchanged."
+    AssertTrue RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Requested missing class module should be created."
+    AssertTrue RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Requested missing standard module should be created."
 
 Cleanup:
     CloseWorkbookFixture WorkbookFixture
@@ -357,6 +479,40 @@ Private Function CreateSuccessfulGeneratorOutput() As Object
     Set CreateSuccessfulGeneratorOutput = Output
 End Function
 
+Private Function CreateNonAlphabeticGeneratorOutput() As Object
+    Dim Output As Object
+    Dim Units As Collection
+
+    Set Units = New Collection
+    Units.Add CreateGeneratedUnit(1, "GeneratedSchedule", "StandardModule", "ModuleTemplate")
+    Units.Add CreateGeneratedUnit(2, "GeneratedSubject", "ClassModule", "DomainClassTemplate")
+
+    Set Output = CreateObject("Scripting.Dictionary")
+    Output("Success") = True
+    Output("Classification") = "Success"
+    Output("Message") = "Generator output constructed."
+    Output.Add "GeneratedUnits", Units
+
+    Set CreateNonAlphabeticGeneratorOutput = Output
+End Function
+
+Private Function CreateDuplicateGeneratorOutput() As Object
+    Dim Output As Object
+    Dim Units As Collection
+
+    Set Units = New Collection
+    Units.Add CreateGeneratedUnit(1, "GeneratedSubject", "ClassModule", "DomainClassTemplate")
+    Units.Add CreateGeneratedUnit(2, "GeneratedSubject", "ClassModule", "DomainClassTemplate")
+
+    Set Output = CreateObject("Scripting.Dictionary")
+    Output("Success") = True
+    Output("Classification") = "Success"
+    Output("Message") = "Generator output constructed."
+    Output.Add "GeneratedUnits", Units
+
+    Set CreateDuplicateGeneratorOutput = Output
+End Function
+
 Private Function CreateGeneratedUnit( _
     ByVal UnitOrder As Long, _
     ByVal ModuleName As String, _
@@ -411,6 +567,13 @@ Private Function RealVBProjectModuleText(ByVal TargetVBProject As Object, ByVal 
 
     Set Component = TargetVBProject.VBComponents.Item(ModuleName)
     RealVBProjectModuleText = Component.CodeModule.Lines(1, Component.CodeModule.CountOfLines)
+End Function
+
+Private Function RealVBProjectModuleType(ByVal TargetVBProject As Object, ByVal ModuleName As String) As Long
+    Dim Component As Object
+
+    Set Component = TargetVBProject.VBComponents.Item(ModuleName)
+    RealVBProjectModuleType = CLng(Component.Type)
 End Function
 
 Private Sub CloseWorkbookFixture(ByVal WorkbookFixture As Object)
