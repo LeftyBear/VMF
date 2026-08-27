@@ -55,7 +55,14 @@ PASS, and all 22 Build VBA runners PASS. P7-08 Minimum Real Workbook /
 VBProject Mutation Implementation Closeout is now recorded docs-only in
 `docs/spec/P7-08_MinimumRealWorkbookAndVbProjectMutationImplementationCloseout.md`;
 it adds no implementation and keeps package / `dist`, release, publication,
-external services, and Frozen specification changes as NO-GO.
+external services, and Frozen specification changes as NO-GO. P7-09
+Post-Minimum Real Workbook Mutation Next Candidate Selection is now recorded
+docs-only in
+`docs/spec/P7-09_PostMinimumRealWorkbookMutationNextCandidateSelection.md`; it
+selects P7-10 Real Workbook / Real VBProject Mutation Expansion Scope Planning
+as the next docs-only candidate and keeps additional implementation, workbook /
+VBProject mutation, package / `dist`, release, publication, external services,
+and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -147,6 +154,8 @@ Recommended next actions are:
    scope, destination scope, cleanup expectations, and exact command.
 5. Keep vNext hardening work separate as candidate work before adoption.
 6. For Build vNext, use
+   docs/spec/P7-09_PostMinimumRealWorkbookMutationNextCandidateSelection.md as
+   the current P7 next-candidate selection and GO / NO-GO record,
    docs/spec/P7-08_MinimumRealWorkbookAndVbProjectMutationImplementationCloseout.md
    as the current P7 implementation closeout and status-sync record,
    docs/spec/P7-06_ImplementationReevaluationGoNoGo.md as the P7 docs-only
@@ -160,10 +169,11 @@ Recommended next actions are:
    docs/spec/P7-02_RealWorkbookAndVbProjectMutationReauthorizationBoundary.md
    as the reauthorization basis. P7-07 is the completed local-only
    implementation-start task and changed only the two P7-05 / P7-06 files.
-   P7-08 closes out that implementation docs-only. Any further implementation,
-   workbook / VBProject expansion, package / `dist`, release, publication, or
-   external service work requires a new named scope and separate GO / NO-GO
-   decision.
+   P7-08 closes out that implementation docs-only. P7-09 selects P7-10 Real
+   Workbook / Real VBProject Mutation Expansion Scope Planning as the next
+   docs-only candidate. Any further implementation, workbook / VBProject
+   expansion, package / `dist`, release, publication, or external service work
+   requires a new named scope and separate GO / NO-GO decision.
 
 The vNext hardening backlog currently includes:
 
