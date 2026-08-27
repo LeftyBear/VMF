@@ -72,6 +72,15 @@ authorization for workbook open / close or save / restore, rejects overwrite /
 delete / rename / import / export and production workbook operations, and
 keeps implementation, workbook / VBProject mutation, package / `dist`, release,
 publication, external services, and Frozen specification changes as NO-GO.
+P7-11 Create-Only Missing-Module Focused Coverage Expansion Scope is now
+recorded docs-only in
+`docs/spec/P7-11_CreateOnlyMissingModuleFocusedCoverageExpansionScope.md`; it
+concretes P7-10 Candidate A into focused coverage target cases, expected
+results, failure / rollback / readback / verification conditions, and
+candidate implementation scope while preserving the P7-07 create-only
+missing-module mutation boundary, and keeps implementation, workbook /
+VBProject mutation, package / `dist`, release, publication, external services,
+and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -182,9 +191,11 @@ Recommended next actions are:
    Workbook / Real VBProject Mutation Expansion Scope Planning as the next
    docs-only candidate. P7-10 records the docs-only expansion scope planning
    boundary and keeps implementation and workbook / VBProject mutation as
-   NO-GO. Any further implementation, workbook / VBProject expansion, package /
-   `dist`, release, publication, or external service work requires a new named
-   scope and separate GO / NO-GO decision.
+   NO-GO. P7-11 records the docs-only focused coverage expansion scope for
+   P7-10 Candidate A and keeps implementation and workbook / VBProject
+   mutation as NO-GO. Any further implementation, workbook / VBProject
+   expansion, package / `dist`, release, publication, or external service work
+   requires a new named scope and separate GO / NO-GO decision.
 
 The vNext hardening backlog currently includes:
 

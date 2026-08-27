@@ -80,6 +80,7 @@ specification changes.
 | P7-08 | Minimum Real Workbook / VBProject Mutation Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-08_MinimumRealWorkbookAndVbProjectMutationImplementationCloseout.md` | Closes out P7-07 after commit `78d1ab2b456ffa9fd923d79aa481bac0c51ba065`, records the two-file implementation scope and PASS verification evidence, confirms P7-05 / P7-06 authorization-boundary compliance, and keeps additional implementation, package / `dist`, release, publication, external services, and Frozen specification changes as NO-GO. |
 | P7-09 | Post-Minimum Real Workbook Mutation Next Candidate Selection | COMPLETE / docs-only next candidate selection and GO / NO-GO record | `docs/spec/P7-09_PostMinimumRealWorkbookMutationNextCandidateSelection.md` | Selects P7-10 -- Real Workbook / Real VBProject Mutation Expansion Scope Planning as the next docs-only candidate after P7-07 / P7-08, records GO only for documentation and candidate selection, and keeps additional implementation, workbook / VBProject mutation, package / `dist`, release, publication, external services, and Frozen specification changes as NO-GO. |
 | P7-10 | Real Workbook / Real VBProject Mutation Expansion Scope Planning | COMPLETE / docs-only expansion scope planning and GO / NO-GO record | `docs/spec/P7-10_RealWorkbookAndVbProjectMutationExpansionScopePlanning.md` | Organizes future expansion candidates from the P7-07 minimum boundary, records Candidate A as the lowest-risk future candidate because it preserves create-only missing-module mutation and expands only focused coverage, requires renewed authorization for workbook open / close or save / restore, rejects overwrite / delete / rename / import / export / production workbook operations, and keeps implementation, workbook / VBProject mutation, package / `dist`, release, publication, external services, and Frozen specification changes as NO-GO. |
+| P7-11 | Create-Only Missing-Module Focused Coverage Expansion Scope | COMPLETE / docs-only focused coverage expansion scope | `docs/spec/P7-11_CreateOnlyMissingModuleFocusedCoverageExpansionScope.md` | Concretes P7-10 Candidate A into focused coverage target cases, expected results, failure / rollback / readback / verification conditions, and candidate implementation scope while preserving the P7-07 create-only missing-module mutation boundary. P7-11 grants no implementation GO and performs no code, test, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
 
 ## Boundary
 
@@ -466,5 +467,13 @@ specification changes.
   production workbook operations, and keeps implementation, workbook /
   VBProject mutation, package / `dist`, release, publication, external
   services, and Frozen specification changes as NO-GO.
+- P7-11 is complete as docs-only focused coverage expansion scope. It
+  concretes P7-10 Candidate A into focused coverage target cases, expected
+  results, failure / rollback / readback / verification conditions, and a
+  candidate implementation scope for a later GO decision while preserving the
+  P7-07 create-only missing-module mutation boundary. P7-11 keeps
+  implementation, code changes, test changes, workbook / VBProject mutation,
+  package / `dist`, release, publication, external services, and Frozen
+  specification changes as NO-GO.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
