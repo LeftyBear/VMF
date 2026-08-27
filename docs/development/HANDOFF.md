@@ -62,7 +62,16 @@ docs-only in
 selects P7-10 Real Workbook / Real VBProject Mutation Expansion Scope Planning
 as the next docs-only candidate and keeps additional implementation, workbook /
 VBProject mutation, package / `dist`, release, publication, external services,
-and Frozen specification changes as NO-GO.
+and Frozen specification changes as NO-GO. P7-10 Real Workbook / Real
+VBProject Mutation Expansion Scope Planning is now recorded docs-only in
+`docs/spec/P7-10_RealWorkbookAndVbProjectMutationExpansionScopePlanning.md`;
+it organizes future expansion candidates from the P7-07 minimum mutation
+boundary, identifies preserve-create-only focused coverage expansion as the
+lowest-risk future candidate if separately authorized, requires renewed
+authorization for workbook open / close or save / restore, rejects overwrite /
+delete / rename / import / export and production workbook operations, and
+keeps implementation, workbook / VBProject mutation, package / `dist`, release,
+publication, external services, and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -171,9 +180,11 @@ Recommended next actions are:
    implementation-start task and changed only the two P7-05 / P7-06 files.
    P7-08 closes out that implementation docs-only. P7-09 selects P7-10 Real
    Workbook / Real VBProject Mutation Expansion Scope Planning as the next
-   docs-only candidate. Any further implementation, workbook / VBProject
-   expansion, package / `dist`, release, publication, or external service work
-   requires a new named scope and separate GO / NO-GO decision.
+   docs-only candidate. P7-10 records the docs-only expansion scope planning
+   boundary and keeps implementation and workbook / VBProject mutation as
+   NO-GO. Any further implementation, workbook / VBProject expansion, package /
+   `dist`, release, publication, or external service work requires a new named
+   scope and separate GO / NO-GO decision.
 
 The vNext hardening backlog currently includes:
 

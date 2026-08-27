@@ -79,6 +79,7 @@ specification changes.
 | P7-07 | Minimum Real Workbook / VBProject Mutation Implementation Start | COMPLETE / local-only implementation verified | `78d1ab2b456ffa9fd923d79aa481bac0c51ba065` | Implements the P7-05 / P7-06 minimum slice in `src/Build/Application/AppOutputWriteService.cls` and `tests/unit/Build/AppOutputWriteBoundaryTests.bas`: preflight hard-stop, create-only missing-module real VBProject mutation in a test-owned fixture, readback verification, and rollback for created components. Verification recorded Build PASS, setup PASS, and all 22 Build VBA runners PASS. |
 | P7-08 | Minimum Real Workbook / VBProject Mutation Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-08_MinimumRealWorkbookAndVbProjectMutationImplementationCloseout.md` | Closes out P7-07 after commit `78d1ab2b456ffa9fd923d79aa481bac0c51ba065`, records the two-file implementation scope and PASS verification evidence, confirms P7-05 / P7-06 authorization-boundary compliance, and keeps additional implementation, package / `dist`, release, publication, external services, and Frozen specification changes as NO-GO. |
 | P7-09 | Post-Minimum Real Workbook Mutation Next Candidate Selection | COMPLETE / docs-only next candidate selection and GO / NO-GO record | `docs/spec/P7-09_PostMinimumRealWorkbookMutationNextCandidateSelection.md` | Selects P7-10 -- Real Workbook / Real VBProject Mutation Expansion Scope Planning as the next docs-only candidate after P7-07 / P7-08, records GO only for documentation and candidate selection, and keeps additional implementation, workbook / VBProject mutation, package / `dist`, release, publication, external services, and Frozen specification changes as NO-GO. |
+| P7-10 | Real Workbook / Real VBProject Mutation Expansion Scope Planning | COMPLETE / docs-only expansion scope planning and GO / NO-GO record | `docs/spec/P7-10_RealWorkbookAndVbProjectMutationExpansionScopePlanning.md` | Organizes future expansion candidates from the P7-07 minimum boundary, records Candidate A as the lowest-risk future candidate because it preserves create-only missing-module mutation and expands only focused coverage, requires renewed authorization for workbook open / close or save / restore, rejects overwrite / delete / rename / import / export / production workbook operations, and keeps implementation, workbook / VBProject mutation, package / `dist`, release, publication, external services, and Frozen specification changes as NO-GO. |
 
 ## Boundary
 
@@ -456,5 +457,14 @@ specification changes.
   additional implementation, workbook / VBProject mutation, package / `dist`,
   release, publication, external services, and Frozen specification changes as
   NO-GO.
+- P7-10 is complete as docs-only expansion scope planning and GO / NO-GO
+  record. It organizes future expansion candidates from the P7-07 minimum
+  mutation boundary, identifies preserve-create-only focused coverage
+  expansion as the lowest-risk future candidate if separately authorized,
+  requires a new authorization package for workbook open / close or save /
+  restore, rejects overwrite / delete / rename / import / export and
+  production workbook operations, and keeps implementation, workbook /
+  VBProject mutation, package / `dist`, release, publication, external
+  services, and Frozen specification changes as NO-GO.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
