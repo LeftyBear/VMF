@@ -76,6 +76,8 @@ specification changes.
 | P7-04 | Candidate Selection / Authorization Planning | COMPLETE / docs-only authorization candidate selection and planning | `docs/spec/P7-04_CandidateSelectionAuthorizationPlanning.md` | Selects P7-05 -- Minimum Real Workbook / Real VBProject Mutation Authorization Package as the next docs-only candidate, fixes the authorization package contents and re-evaluation conditions needed to address the P7-03 NO-GO factors, and keeps implementation start, production / test code changes, workbook / VBProject operations, package / `dist`, release / publication, external service operations, and Frozen specification changes as NO-GO. |
 | P7-05 | Minimum Real Workbook / Real VBProject Mutation Authorization Package | COMPLETE / docs-only authorization package | `docs/spec/P7-05_MinimumRealWorkbookAndVbProjectMutationAuthorizationPackage.md` | Records the docs-only authorization package for later re-evaluation of the minimum implementation slice, fixes candidate editable files as `src/Build/Application/AppOutputWriteService.cls` and `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, fixes test-owned fixture and create-only missing-module mutation conditions, keeps SaveAs / overwrite / delete / rename prohibited for the minimum slice, and keeps implementation start, production / test code changes, workbook / VBProject operations, package / `dist`, release / publication, external service operations, and Frozen specification changes as NO-GO. |
 | P7-06 | Implementation Re-evaluation / GO-NO-GO | COMPLETE / docs-only implementation re-evaluation GO / NO-GO decision | `docs/spec/P7-06_ImplementationReevaluationGoNoGo.md` | Applies the P7-05 authorization package and records GO for a later separate minimum implementation-start task limited to `src/Build/Application/AppOutputWriteService.cls`, `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, and a local test-owned workbook fixture with create-only missing-module mutation after trust/access preflight. P7-06 itself performs no implementation, production / test code change, workbook / VBProject operation, package / `dist`, release / publication, external service operation, or Frozen specification change. |
+| P7-07 | Minimum Real Workbook / VBProject Mutation Implementation Start | COMPLETE / local-only implementation verified | `78d1ab2b456ffa9fd923d79aa481bac0c51ba065` | Implements the P7-05 / P7-06 minimum slice in `src/Build/Application/AppOutputWriteService.cls` and `tests/unit/Build/AppOutputWriteBoundaryTests.bas`: preflight hard-stop, create-only missing-module real VBProject mutation in a test-owned fixture, readback verification, and rollback for created components. Verification recorded Build PASS, setup PASS, and all 22 Build VBA runners PASS. |
+| P7-08 | Minimum Real Workbook / VBProject Mutation Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-08_MinimumRealWorkbookAndVbProjectMutationImplementationCloseout.md` | Closes out P7-07 after commit `78d1ab2b456ffa9fd923d79aa481bac0c51ba065`, records the two-file implementation scope and PASS verification evidence, confirms P7-05 / P7-06 authorization-boundary compliance, and keeps additional implementation, package / `dist`, release, publication, external services, and Frozen specification changes as NO-GO. |
 
 ## Boundary
 
@@ -432,5 +434,19 @@ specification changes.
   preflight. P7-06 itself performs no implementation, production / test code
   change, workbook / VBProject operation, package / `dist`, release /
   publication, external service operation, or Frozen specification change.
+- P7-07 is complete as local-only minimum real workbook / real VBProject
+  mutation implementation in commit
+  `78d1ab2b456ffa9fd923d79aa481bac0c51ba065`. It changes only
+  `src/Build/Application/AppOutputWriteService.cls` and
+  `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, adds preflight
+  hard-stop, create-only missing-module mutation against an explicitly
+  supplied real VBProject target, readback verification, rollback for created
+  components, and focused real fixture coverage. Build, setup, and all 22
+  Build VBA runners are recorded PASS.
+- P7-08 is complete as docs-only implementation closeout and status sync. It
+  records the P7-07 implementation and verification evidence, confirms P7-05 /
+  P7-06 authorization-boundary compliance, performs no additional
+  implementation, and keeps package / `dist`, release, publication, external
+  services, and Frozen specification changes as NO-GO.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.

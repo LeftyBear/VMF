@@ -45,6 +45,17 @@ workbook fixture with create-only missing-module mutation after trust/access
 preflight. P7-06 itself performs and authorizes no implementation, production
 / test code change, workbook / VBProject operation, package / `dist`, release
 / publication, external service operation, or Frozen specification change.
+P7-07 Minimum Real Workbook / VBProject Mutation Implementation Start is
+complete and committed as `78d1ab2b456ffa9fd923d79aa481bac0c51ba065`; it
+changed only `src/Build/Application/AppOutputWriteService.cls` and
+`tests/unit/Build/AppOutputWriteBoundaryTests.bas`, implemented preflight
+hard-stop, create-only missing-module mutation, readback verification, and
+rollback inside the P7-05 / P7-06 boundary, and recorded Build PASS, setup
+PASS, and all 22 Build VBA runners PASS. P7-08 Minimum Real Workbook /
+VBProject Mutation Implementation Closeout is now recorded docs-only in
+`docs/spec/P7-08_MinimumRealWorkbookAndVbProjectMutationImplementationCloseout.md`;
+it adds no implementation and keeps package / `dist`, release, publication,
+external services, and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -73,8 +84,11 @@ Begin from this state:
 - Frozen specifications, public APIs, and production design remain unchanged.
 - Build vNext P6 is complete: deterministic local folder generated output
   write and fake/local target `Modules` dictionary create-only mutation are the
-  completed output/mutation boundaries; real workbook and real VBProject
-  mutation remain NO-GO.
+  completed output/mutation boundaries. Build vNext P7-07 completes the
+  minimum local-only real workbook / real VBProject mutation slice inside the
+  P7-05 / P7-06 authorization boundary. Additional implementation, package /
+  `dist`, release, publication, external service operations, and Frozen
+  specification changes remain NO-GO.
 
 Local verification completion is not release readiness.
 
@@ -133,8 +147,10 @@ Recommended next actions are:
    scope, destination scope, cleanup expectations, and exact command.
 5. Keep vNext hardening work separate as candidate work before adoption.
 6. For Build vNext, use
-   docs/spec/P7-06_ImplementationReevaluationGoNoGo.md as the current P7
-   docs-only implementation re-evaluation GO / NO-GO record,
+   docs/spec/P7-08_MinimumRealWorkbookAndVbProjectMutationImplementationCloseout.md
+   as the current P7 implementation closeout and status-sync record,
+   docs/spec/P7-06_ImplementationReevaluationGoNoGo.md as the P7 docs-only
+   implementation re-evaluation GO / NO-GO record,
    docs/spec/P7-04_CandidateSelectionAuthorizationPlanning.md as the current
    P7 docs-only authorization candidate selection record,
    docs/spec/P7-05_MinimumRealWorkbookAndVbProjectMutationAuthorizationPackage.md
@@ -142,15 +158,12 @@ Recommended next actions are:
    docs/spec/P7-03_ImplementationGoNoGoDecision.md as the current P7
    implementation NO-GO record, and
    docs/spec/P7-02_RealWorkbookAndVbProjectMutationReauthorizationBoundary.md
-   as the reauthorization basis. P7-04 selects P7-05 as the next docs-only
-   authorization package candidate, and P7-05 records that package without
-   granting implementation GO. P7-06 records that a later separate
-   implementation-start task may proceed only inside the P7-05 package and
-   must reconfirm the current repository state before editing production or
-   test files. P7-03, P7-04, P7-05, and P7-06 authorize no P7
-   implementation; a later implementation GO must separately approve the
-   exact implementation start before any production / test code, workbook, or
-   VBProject mutation work starts.
+   as the reauthorization basis. P7-07 is the completed local-only
+   implementation-start task and changed only the two P7-05 / P7-06 files.
+   P7-08 closes out that implementation docs-only. Any further implementation,
+   workbook / VBProject expansion, package / `dist`, release, publication, or
+   external service work requires a new named scope and separate GO / NO-GO
+   decision.
 
 The vNext hardening backlog currently includes:
 
