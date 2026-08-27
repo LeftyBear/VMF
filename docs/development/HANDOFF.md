@@ -88,6 +88,19 @@ later implementation slice, defers P7-11-E through P7-11-K, preserves the
 P7-07 create-only missing-module mutation boundary, and keeps implementation,
 workbook / VBProject mutation, package / `dist`, release, publication,
 external services, and Frozen specification changes as NO-GO.
+P7-13 Create-Only Missing-Module Focused Coverage Implementation is complete
+and committed as `62ebb8ebaf0c0deb591cc6a5f571cc8859ea21d0`; it changed only
+`src/Build/Application/AppOutputWriteService.cls` and
+`tests/unit/Build/AppOutputWriteBoundaryTests.bas`, implemented the P7-12
+selected P7-11-A/B/C/D/L minimum slice, added module-kind readback
+verification, and kept P7-11-E through P7-11-K deferred. Verification recorded
+focused `AppRunOutputWriteBoundaryTests` PASS, all 22 Build VBA runners PASS,
+`git diff --check` PASS, commit / push complete, `HEAD == origin/main`, and
+working tree clean. P7-14 Create-Only Missing-Module Focused Coverage
+Implementation Closeout is now recorded docs-only in
+`docs/spec/P7-14_CreateOnlyMissingModuleFocusedCoverageImplementationCloseout.md`;
+it adds no implementation and keeps package / `dist`, release, publication,
+external services, and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -203,9 +216,11 @@ Recommended next actions are:
    mutation as NO-GO. P7-12 records the docs-only implementation slice
    selection for P7-11-A through P7-11-L, selects P7-11-A/B/C/D/L as the
    minimum later implementation slice, and keeps implementation and workbook /
-   VBProject mutation as NO-GO. Any further implementation, workbook /
-   VBProject expansion, package / `dist`, release, publication, or external
-   service work requires a new named scope and separate GO / NO-GO decision.
+   VBProject mutation as NO-GO. P7-13 implements only that selected
+   P7-11-A/B/C/D/L slice and is closed out by P7-14 with P7-11-E through
+   P7-11-K still deferred. Any further implementation, workbook / VBProject
+   expansion, package / `dist`, release, publication, or external service work
+   requires a new named scope and separate GO / NO-GO decision.
 
 The vNext hardening backlog currently includes:
 
