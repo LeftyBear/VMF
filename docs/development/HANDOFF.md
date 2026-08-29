@@ -239,7 +239,17 @@ Real Workbook / VBProject Mutation Scope Planning as the minimum next-phase
 docs-only candidate, and keeps implementation, test changes, workbook /
 VBProject mutation, package / `dist`, release, publication, external services,
 public API changes, persisted schema changes, canonical format changes, and
-Frozen specification changes as NO-GO.
+Frozen specification changes as NO-GO. P8-01 Post-P7 Real Workbook /
+VBProject Mutation Scope Planning is now recorded docs-only in
+`docs/spec/P8-01_PostP7RealWorkbookAndVbProjectMutationScopePlanning.md`; it
+starts from P7 COMPLETE, fixes the post-P7 target scope, separates workbook
+lifecycle responsibility from real VBProject mutation and component rollback,
+preserves P7 failure / rollback / readback boundaries, selects P8-02 Workbook
+Lifecycle Authorization Boundary as the next minimum docs-only candidate, and
+keeps implementation start, test changes, workbook / VBProject mutation,
+package / `dist`, release, publication, external services, public API changes,
+persisted schema changes, canonical format changes, and Frozen specification
+changes as NO-GO.
 
 ## 1. Starting State
 
@@ -420,10 +430,13 @@ Recommended next actions are:
    unrelated pre-existing components. P7-34 closes out P7-33 docs-only and
    records no remaining P7-11 deferred focused coverage item. P7-35 records
    P7 COMPLETE and selects P8-01 Post-P7 Real Workbook / VBProject Mutation
-   Scope Planning as the minimum next-phase docs-only candidate.
-   Any further workbook / VBProject expansion beyond the completed P7-33
-   scope, package / `dist`, release, publication, or external service work
-   requires a new named scope and separate GO / NO-GO decision.
+   Scope Planning as the minimum next-phase docs-only candidate. P8-01 is
+   complete as docs-only scope planning and selects P8-02 Workbook Lifecycle
+   Authorization Boundary as the next minimum docs-only candidate.
+   Implementation authorization, test changes, workbook / VBProject expansion
+   beyond the completed P7-33 scope, package / `dist`, release, publication,
+   or external service work requires a new named scope and separate GO /
+   NO-GO decision.
 
 The vNext hardening backlog currently includes:
 
