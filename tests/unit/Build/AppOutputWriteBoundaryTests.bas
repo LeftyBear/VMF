@@ -33,6 +33,7 @@ Public Sub AppRunOutputWriteBoundaryTests()
     VerifyBlankRealVBProjectGeneratedSourceHardStopsBeforeMutation
     VerifyRealVBProjectComponentAccessFailureHardStopsBeforeMutation
     VerifyRealVBProjectCreationFailureAfterFirstCreateRollsBack
+    VerifyRealVBProjectRollbackRemovalFailureRequiresOperatorReview
     VerifyRealVBProjectReadbackMissingComponentRollsBack
     VerifyRealVBProjectReadbackMismatchedSourceRollsBack
     VerifyLaterExistingRealVBProjectModuleHardStopsBeforeMutation
@@ -503,6 +504,46 @@ Private Sub VerifyRealVBProjectCreationFailureAfterFirstCreateRollsBack()
     AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Rollback should remove the first current-operation component."
     AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Failed later component should not remain created."
     AssertContains RealVBProjectModuleText(TargetVBProject, "ExistingUtility"), "existing utility", "Rollback should preserve unrelated pre-existing components."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyRealVBProjectRollbackRemovalFailureRequiresOperatorReview()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim ExistingComponent As Object
+    Dim Plan As Object
+    Dim WriteUnits As Collection
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set ExistingComponent = TargetVBProject.VBComponents.Add(ComponentTypeStandardModule)
+    ExistingComponent.Name = "ExistingUtility"
+    ExistingComponent.CodeModule.AddFromString "Option Explicit" & vbCrLf & "' existing utility"
+
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set WriteUnits = Plan("WriteUnits")
+    WriteUnits.Item(1)("controlledRollbackRemovalFault") = "RemoveComponentFailure"
+    WriteUnits.Item(2)("controlledCreationFault") = "AddComponentFailure"
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertFalse CBool(Result("Success")), "Incomplete rollback should fail."
+    AssertEquals "HardStop", CStr(Result("Classification")), "Incomplete rollback should remain a hard-stop."
+    AssertContains CStr(Result("Message")), "Controlled component creation failure", "Hard-stop should preserve the rollback trigger evidence."
+    AssertContains CStr(Result("Message")), "Incomplete rollback evidence", "Hard-stop should report incomplete rollback evidence."
+    AssertContains CStr(Result("Message")), "operator-review-required", "Incomplete rollback should require operator review."
+    AssertContains CStr(Result("Message")), "Controlled rollback removal failure", "Removal error should not be swallowed."
+    AssertEquals 0, CLng(Result("MutatedModules")), "Incomplete rollback should not report partial mutation."
+    AssertTrue RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Failed rollback removal should leave the current-operation component as evidence."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Failed later component should not remain created."
+    AssertContains RealVBProjectModuleText(TargetVBProject, "ExistingUtility"), "existing utility", "Rollback failure should preserve unrelated pre-existing components."
 
 Cleanup:
     CloseWorkbookFixture WorkbookFixture

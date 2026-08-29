@@ -151,6 +151,7 @@ Public Function AppApplyGeneratedOutputToRealVBProject(ByVal OutputWritePlan As 
     Dim WriteUnits As Collection
     Dim CreatedComponents As Collection
     Dim Result As Object
+    Dim MutationError As String
 
     On Error GoTo ErrHandler
 
@@ -191,10 +192,17 @@ Public Function AppApplyGeneratedOutputToRealVBProject(ByVal OutputWritePlan As 
     Exit Function
 
 ErrHandler:
+    MutationError = Err.Description
     If Not CreatedComponents Is Nothing Then
-        RollbackCreatedComponents TargetVBProject, CreatedComponents
+        On Error GoTo RollbackErr
+        RollbackCreatedComponents TargetVBProject, CreatedComponents, WriteUnits
+        On Error GoTo 0
     End If
-    Set AppApplyGeneratedOutputToRealVBProject = CreateMutationResult(False, ResultHardStop, "Real VBProject mutation hard-stop: " & Err.Description)
+    Set AppApplyGeneratedOutputToRealVBProject = CreateMutationResult(False, ResultHardStop, "Real VBProject mutation hard-stop: " & MutationError)
+    Exit Function
+
+RollbackErr:
+    Set AppApplyGeneratedOutputToRealVBProject = CreateMutationResult(False, ResultHardStop, "Real VBProject mutation hard-stop: " & MutationError & " Incomplete rollback evidence: operator-review-required: " & Err.Description)
 End Function
 
 Private Function BuildSuccessfulPlan(ByVal GeneratedUnits As Collection) As Object
@@ -487,16 +495,42 @@ Private Function RealVBProjectModuleExists(ByVal Components As Object, ByVal Mod
     RealVBProjectModuleExists = False
 End Function
 
-Private Sub RollbackCreatedComponents(ByVal TargetVBProject As Object, ByVal CreatedComponents As Collection)
+Private Sub RollbackCreatedComponents(ByVal TargetVBProject As Object, ByVal CreatedComponents As Collection, ByVal WriteUnits As Collection)
     Dim Components As Object
     Dim Component As Variant
 
-    On Error Resume Next
     Set Components = TargetVBProject.VBComponents
     For Each Component In CreatedComponents
+        ApplyControlledRollbackRemovalFault Component, WriteUnits
         Components.Remove Component
     Next Component
-    On Error GoTo 0
+End Sub
+
+Private Sub ApplyControlledRollbackRemovalFault(ByVal Component As Variant, ByVal WriteUnits As Collection)
+    Dim Unit As Variant
+    Dim FaultKind As String
+
+    If WriteUnits Is Nothing Then
+        Exit Sub
+    End If
+
+    For Each Unit In WriteUnits
+        If IsObject(Unit) Then
+            If StrComp(RequiredText(Unit, "moduleName"), CStr(Component.Name), vbBinaryCompare) = 0 Then
+                If Unit.Exists("controlledRollbackRemovalFault") Then
+                    FaultKind = Trim$(CStr(Unit("controlledRollbackRemovalFault")))
+                    Select Case FaultKind
+                        Case "RemoveComponentFailure"
+                            Err.Raise ComErrInvalidState, "AppOutputWriteService.ApplyControlledRollbackRemovalFault", "Controlled rollback removal failure: " & CStr(Component.Name)
+                        Case ""
+                        Case Else
+                            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ApplyControlledRollbackRemovalFault", "Controlled rollback removal fault is not supported."
+                    End Select
+                End If
+                Exit Sub
+            End If
+        End If
+    Next Unit
 End Sub
 
 Private Sub RequireSupportedModuleType(ByVal ModuleType As String, ByVal SourceName As String)
