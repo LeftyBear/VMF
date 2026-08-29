@@ -212,7 +212,26 @@ existing `CreatedComponents` rollback path, controlled rollback-removal failure
 injection need, failure-state confirmation, and safe-stop / readback boundary,
 and keeps implementation, workbook / VBProject mutation, package / `dist`,
 release, publication, external services, and Frozen specification changes as
-NO-GO.
+NO-GO. P7-32 Rollback Removal Failure Implementation GO / NO-GO is now
+recorded docs-only in
+`docs/spec/P7-32_RollbackRemovalFailureImplementationGoNoGo.md`; it records GO
+for a later separate implementation-start task limited to controlled
+rollback-removal failure injection and incomplete rollback evidence reporting
+after rollback is already required, while P7-32 itself keeps implementation
+and workbook / VBProject mutation as NO-GO. P7-33 Rollback Removal Failure
+Implementation is complete and committed as
+`0dc75fe1773eaff8a4697c30d0094b4a6aceeae1`; it changed only
+`src/Build/Application/AppOutputWriteService.cls` and
+`tests/unit/Build/AppOutputWriteBoundaryTests.bas`, added controlled
+rollback-removal failure coverage after rollback is required, denies success,
+reports incomplete rollback evidence / `operator-review-required`, leaves the
+failed-removal current-operation component as evidence, and preserves unrelated
+pre-existing components. P7-34 Rollback Removal Failure Implementation
+Closeout is now recorded docs-only in
+`docs/spec/P7-34_RollbackRemovalFailureImplementationCloseout.md`; it adds no
+implementation, confirms no remaining P7-11 deferred focused coverage item,
+and keeps package / `dist`, release, publication, external services, and
+Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -383,8 +402,16 @@ Recommended next actions are:
    limited to controlled rollback-removal failure injection and incomplete
    rollback evidence reporting after rollback is already required, while
    P7-32 itself keeps implementation and workbook / VBProject mutation as
-   NO-GO.
-   Any further workbook / VBProject expansion beyond the completed P7-29
+   NO-GO. P7-33 implements that named P7-11-K scope in
+   `src/Build/Application/AppOutputWriteService.cls` and
+   `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, using controlled
+   rollback-removal failure after rollback is required, then denying success,
+   reporting no partial mutation, preserving original mutation failure
+   evidence, reporting incomplete rollback evidence / operator review, leaving
+   the failed-removal current-operation component as evidence, and preserving
+   unrelated pre-existing components. P7-34 closes out P7-33 docs-only and
+   records no remaining P7-11 deferred focused coverage item.
+   Any further workbook / VBProject expansion beyond the completed P7-33
    scope, package / `dist`, release, publication, or external service work
    requires a new named scope and separate GO / NO-GO decision.
 
