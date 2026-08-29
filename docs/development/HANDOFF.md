@@ -193,7 +193,18 @@ the P7-27 selection and records GO for a later separate implementation-start
 task limited to P7-11-H mutation sequencing failure rollback coverage after
 post-preflight create-only mutation starts and at least one current-operation
 component is created, while P7-28 itself keeps implementation and workbook /
-VBProject mutation as NO-GO.
+VBProject mutation as NO-GO. P7-29 Mutation Sequencing Failure Implementation
+is complete and committed as `af90fb07669e0100b33a1170a421666185e0141b`; it
+changed only `src/Build/Application/AppOutputWriteService.cls` and
+`tests/unit/Build/AppOutputWriteBoundaryTests.bas`, added controlled later
+component-creation failure coverage after at least one current-operation
+component is created, denies success, reports no partial mutation, rolls back
+current-operation components, preserves unrelated pre-existing components, and
+keeps P7-11-K deferred. P7-30 Mutation Sequencing Failure Implementation
+Closeout is now recorded docs-only in
+`docs/spec/P7-30_MutationSequencingFailureImplementationCloseout.md`; it adds
+no implementation and keeps package / `dist`, release, publication, external
+services, and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -349,10 +360,16 @@ Recommended next actions are:
    sequencing failure rollback coverage after post-preflight create-only
    mutation starts and at least one current-operation component is created,
    while P7-28 itself keeps implementation and workbook / VBProject mutation
-   as NO-GO. Any further workbook / VBProject expansion beyond that named
-   implementation-start scope, package / `dist`, release, publication, or
-   external service work requires a new named scope and separate GO / NO-GO
-   decision.
+   as NO-GO. P7-29 implements that named P7-11-H scope in
+   `src/Build/Application/AppOutputWriteService.cls` and
+   `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, using controlled later
+   component-creation failure after at least one current-operation component is
+   created, then denying success, reporting no partial mutation, rolling back
+   current-operation components, and preserving unrelated pre-existing
+   components. P7-30 closes out P7-29 docs-only and keeps P7-11-K deferred.
+   Any further workbook / VBProject expansion beyond the completed P7-29
+   scope, package / `dist`, release, publication, or external service work
+   requires a new named scope and separate GO / NO-GO decision.
 
 The vNext hardening backlog currently includes:
 

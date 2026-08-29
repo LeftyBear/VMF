@@ -98,6 +98,8 @@ specification changes.
 | P7-26 | Readback Failure Coverage Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-26_ReadbackFailureCoverageImplementationCloseout.md` | Closes out P7-25 after commit `c91376f855638b655a2b9025d8fd2472f04b90df`, records the two-file implementation scope, P7-11-I/J readback failure rollback behavior, P7-11-H/K deferred, and preserved package / `dist`, release, publication, external service, and Frozen specification NO-GO boundaries. |
 | P7-27 | Remaining Mutation Sequencing / Rollback Candidate Selection | COMPLETE / docs-only remaining deferred candidate selection | `docs/spec/P7-27_RemainingMutationSequencingRollbackCandidateSelection.md` | Re-evaluates residual P7-11-H/K after P7-25 / P7-26, compares dependency order, fault-injection needs, and mutation / rollback risk, selects P7-11-H mutation sequencing failure rollback coverage as the next smallest later candidate, keeps P7-11-K rollback failure deferred, and authorizes no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
 | P7-28 | Mutation Sequencing Failure Implementation GO / NO-GO | COMPLETE / docs-only implementation GO / NO-GO decision | `docs/spec/P7-28_MutationSequencingFailureImplementationGoNoGo.md` | Applies the P7-27 selection and records GO for a later separate implementation-start task limited to P7-11-H mutation sequencing failure rollback coverage after post-preflight create-only mutation starts and at least one current-operation component is created. P7-28 itself performs no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
+| P7-29 | Mutation Sequencing Failure Implementation | COMPLETE / local-only implementation verified | `af90fb07669e0100b33a1170a421666185e0141b` | Implements P7-11-H coverage in `src/Build/Application/AppOutputWriteService.cls` and `tests/unit/Build/AppOutputWriteBoundaryTests.bas`: controlled later component-creation failure after at least one current-operation component is created denies success, remains `HardStop`, reports `MutatedModules = 0`, rolls back current-operation components, and preserves unrelated pre-existing components. |
+| P7-30 | Mutation Sequencing Failure Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-30_MutationSequencingFailureImplementationCloseout.md` | Closes out P7-29 after commit `af90fb07669e0100b33a1170a421666185e0141b`, records the two-file implementation scope, P7-11-H mutation sequencing failure rollback behavior, P7-11-K deferred, and preserved package / `dist`, release, publication, external service, and Frozen specification NO-GO boundaries. |
 
 ## Boundary
 
@@ -604,6 +606,19 @@ specification changes.
   least one current-operation component is created. P7-28 itself preserves
   implementation, production / test code change, workbook / VBProject
   mutation, package / `dist`, release, publication, external service, and
+  Frozen specification NO-GO boundaries.
+- P7-29 is complete as local-only mutation sequencing failure implementation
+  in commit `af90fb07669e0100b33a1170a421666185e0141b`. It changes only
+  `src/Build/Application/AppOutputWriteService.cls` and
+  `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, adds controlled later
+  component-creation failure coverage after at least one current-operation
+  component is created, denies success, reports no partial mutation, rolls
+  back current-operation components, and preserves unrelated pre-existing
+  components.
+- P7-30 is complete as docs-only implementation closeout and status sync. It
+  records the P7-29 implementation and repository evidence, confirms no
+  additional P7-30 implementation is required, keeps P7-11-K deferred, and
+  preserves package / `dist`, release, publication, external service, and
   Frozen specification NO-GO boundaries.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
