@@ -151,7 +151,15 @@ docs-only in
 `docs/spec/P7-22_TargetComponentAccessFailureImplementationCloseout.md`; it
 adds no implementation, keeps P7-11-H/I/J/K deferred, and keeps package /
 `dist`, release, publication, external services, and Frozen specification
-changes as NO-GO.
+changes as NO-GO. P7-23 Readback Failure / Rollback Dependency Candidate
+Selection is now recorded docs-only in
+`docs/spec/P7-23_ReadbackFailureRollbackDependencyCandidateSelection.md`; it
+re-evaluates P7-11-H/I/J/K after P7-21 / P7-22, applies the mutation ->
+readback failure -> rollback -> rollback failure dependency order and risk,
+selects P7-11-I/J readback failure coverage as the next smallest later
+candidate, keeps P7-11-H/K deferred, and keeps implementation, workbook /
+VBProject mutation, package / `dist`, release, publication, external services,
+and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -287,10 +295,13 @@ Recommended next actions are:
    records GO for a later separate implementation-start task limited to
    P7-11-G target VBProject component access failure pre-mutation hard-stop
    coverage, while P7-20 itself keeps implementation and workbook / VBProject
-   mutation as NO-GO. Any further workbook / VBProject expansion beyond that
-   named implementation-start scope, package / `dist`, release, publication,
-   or external service work requires a new named scope and separate GO /
-   NO-GO decision.
+   mutation as NO-GO. P7-23 re-evaluates P7-11-H/I/J/K after P7-21 / P7-22,
+   selects P7-11-I/J readback failure coverage as the next smallest later
+   candidate, keeps P7-11-H/K deferred, and keeps implementation and workbook /
+   VBProject mutation as NO-GO. Any further workbook / VBProject expansion
+   beyond that named implementation-start scope, package / `dist`, release,
+   publication, or external service work requires a new named scope and
+   separate GO / NO-GO decision.
 
 The vNext hardening backlog currently includes:
 
