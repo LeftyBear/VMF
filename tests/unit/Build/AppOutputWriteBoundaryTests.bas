@@ -26,6 +26,10 @@ Public Sub AppRunOutputWriteBoundaryTests()
     VerifyExistingLocalTargetModuleHardStopsWithoutMutation
     VerifyPathBearingMutationFileNameHardStopsWithoutMutation
     VerifyApprovedPlanAppliesToRealVBProjectFixture
+    VerifyAuthorizedWorkbookLifecycleHandsOffToRealVBProject
+    VerifyWorkbookLifecycleIdentityMismatchHardStopsBeforeMutation
+    VerifyMissingWorkbookLifecycleAuthorizationHardStopsBeforeMutation
+    VerifyUnauthorizedWorkbookLifecycleSaveHardStopsBeforeMutation
     VerifyNonAlphabeticRealVBProjectPlanAppliesDeterministically
     VerifyDuplicateRealVBProjectPlanHardStopsBeforeMutation
     VerifyUnsupportedRealVBProjectModuleKindHardStopsBeforeMutation
@@ -314,6 +318,137 @@ Private Sub VerifyApprovedPlanAppliesToRealVBProjectFixture()
     AssertEquals ComponentTypeStandardModule, RealVBProjectModuleType(TargetVBProject, "GeneratedSchedule"), "Standard module kind should be preserved."
     AssertContains RealVBProjectModuleText(TargetVBProject, "GeneratedSubject"), "Option Explicit", "Generated source should be readable from the real fixture."
     AssertContains RealVBProjectModuleText(TargetVBProject, "GeneratedSchedule"), "Option Explicit", "Generated standard module source should be readable from the real fixture."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyAuthorizedWorkbookLifecycleHandsOffToRealVBProject()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim Plan As Object
+    Dim Authorization As Object
+    Dim Result As Object
+    Dim Evidence As Object
+    Dim TargetVBProject As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set Authorization = CreateWorkbookLifecycleAuthorization(WorkbookFixture)
+    Set Result = Service.AppApplyGeneratedOutputToAuthorizedWorkbook(Plan, WorkbookFixture, Authorization)
+    Set Evidence = Result("WorkbookLifecycleEvidence")
+
+    AssertTrue CBool(Result("Success")), "Authorized workbook lifecycle should hand off to real VBProject mutation."
+    AssertEquals "Success", CStr(Result("Classification")), "Authorized workbook lifecycle classification should be Success."
+    AssertTrue CBool(Evidence("WorkbookIdentityConfirmed")), "Lifecycle evidence should confirm exact workbook identity."
+    AssertEquals "TestOwned", CStr(Evidence("WorkbookOwnership")), "Lifecycle evidence should report test-owned fixture ownership."
+    AssertTrue CBool(Evidence("WorkbookNewlyCreated")), "Lifecycle evidence should report newly-created fixture state."
+    AssertTrue CBool(Evidence("WorkbookEditable")), "Lifecycle evidence should report editable fixture state."
+    AssertTrue CBool(Evidence("WorkbookVBProjectAccessible")), "Lifecycle evidence should report VBProject access posture."
+    AssertEquals 2, Evidence("OperationHistory").Count, "Lifecycle operation history should record identity and VBProject handoff."
+    AssertEquals "ConfirmWorkbookIdentity", CStr(Evidence("OperationHistory").Item(1)), "Lifecycle should confirm identity before VBProject handoff."
+    AssertEquals "ObtainVBProject", CStr(Evidence("OperationHistory").Item(2)), "Lifecycle should record VBProject handoff."
+    AssertEquals 1, Evidence("RemainingAuthorizedLifecycleOperations").Count, "Lifecycle evidence should retain only no-save close authorization."
+    AssertEquals "CloseNoSave", CStr(Evidence("RemainingAuthorizedLifecycleOperations").Item(1)), "Lifecycle evidence should authorize only fixture no-save close."
+    AssertTrue RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Authorized lifecycle handoff should create requested class module."
+    AssertTrue RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Authorized lifecycle handoff should create requested standard module."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyWorkbookLifecycleIdentityMismatchHardStopsBeforeMutation()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim OtherWorkbookFixture As Object
+    Dim Plan As Object
+    Dim Authorization As Object
+    Dim Result As Object
+    Dim TargetVBProject As Object
+    Dim Evidence As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+    Set OtherWorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set Authorization = CreateWorkbookLifecycleAuthorization(OtherWorkbookFixture)
+    Set Result = Service.AppApplyGeneratedOutputToAuthorizedWorkbook(Plan, WorkbookFixture, Authorization)
+    Set Evidence = Result("WorkbookLifecycleEvidence")
+
+    AssertFalse CBool(Result("Success")), "Mismatched workbook identity should hard-stop."
+    AssertEquals "HardStop", CStr(Result("Classification")), "Mismatched workbook identity should remain a hard-stop."
+    AssertContains CStr(Result("Message")), "Workbook identity mismatch", "Hard-stop should identify workbook identity mismatch."
+    AssertFalse CBool(Evidence("WorkbookIdentityConfirmed")), "Failure evidence should not confirm mismatched workbook identity."
+    AssertEquals 0, Evidence("OperationHistory").Count, "Identity mismatch should stop before lifecycle operations."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Identity mismatch should not mutate the fixture VBProject."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Identity mismatch should not mutate later modules."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    CloseWorkbookFixture OtherWorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyMissingWorkbookLifecycleAuthorizationHardStopsBeforeMutation()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim Plan As Object
+    Dim Result As Object
+    Dim TargetVBProject As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set Result = Service.AppApplyGeneratedOutputToAuthorizedWorkbook(Plan, WorkbookFixture, Nothing)
+
+    AssertFalse CBool(Result("Success")), "Missing lifecycle authorization should hard-stop."
+    AssertEquals "HardStop", CStr(Result("Classification")), "Missing lifecycle authorization should remain a hard-stop."
+    AssertContains CStr(Result("Message")), "authorization is required", "Hard-stop should identify missing lifecycle authorization."
+    AssertEquals 0, Result("WorkbookLifecycleEvidence")("OperationHistory").Count, "Missing authorization should stop before lifecycle operations."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Missing authorization should not mutate the fixture VBProject."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Missing authorization should not mutate later modules."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyUnauthorizedWorkbookLifecycleSaveHardStopsBeforeMutation()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim Plan As Object
+    Dim Authorization As Object
+    Dim Result As Object
+    Dim TargetVBProject As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set Authorization = CreateWorkbookLifecycleAuthorization(WorkbookFixture)
+    Authorization("AllowSave") = True
+    Set Result = Service.AppApplyGeneratedOutputToAuthorizedWorkbook(Plan, WorkbookFixture, Authorization)
+
+    AssertFalse CBool(Result("Success")), "Unauthorized Save should hard-stop."
+    AssertEquals "HardStop", CStr(Result("Classification")), "Unauthorized Save should remain a hard-stop."
+    AssertContains CStr(Result("Message")), "Save is not authorized", "Hard-stop should identify unauthorized Save."
+    AssertEquals 0, Result("WorkbookLifecycleEvidence")("OperationHistory").Count, "Unauthorized Save should stop before lifecycle operations."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Unauthorized Save should not mutate the fixture VBProject."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Unauthorized Save should not mutate later modules."
 
 Cleanup:
     CloseWorkbookFixture WorkbookFixture
@@ -769,6 +904,21 @@ Private Function CreateDuplicateGeneratorOutput() As Object
     Output.Add "GeneratedUnits", Units
 
     Set CreateDuplicateGeneratorOutput = Output
+End Function
+
+Private Function CreateWorkbookLifecycleAuthorization(ByVal WorkbookFixture As Object) As Object
+    Dim Authorization As Object
+
+    Set Authorization = CreateObject("Scripting.Dictionary")
+    Authorization.Add "Workbook", WorkbookFixture
+    Authorization("IsTestOwned") = True
+    Authorization("IsNewlyCreated") = True
+    Authorization("AllowObtainVBProject") = True
+    Authorization("AllowCloseNoSave") = True
+    Authorization("AllowSave") = False
+    Authorization("AllowSaveAs") = False
+
+    Set CreateWorkbookLifecycleAuthorization = Authorization
 End Function
 
 Private Function CreateGeneratedUnit( _

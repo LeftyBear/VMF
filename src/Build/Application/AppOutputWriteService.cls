@@ -205,6 +205,32 @@ RollbackErr:
     Set AppApplyGeneratedOutputToRealVBProject = CreateMutationResult(False, ResultHardStop, "Real VBProject mutation hard-stop: " & MutationError & " Incomplete rollback evidence: operator-review-required: " & Err.Description)
 End Function
 
+' Applies approved write-plan units through an explicitly authorized workbook lifecycle handoff.
+Public Function AppApplyGeneratedOutputToAuthorizedWorkbook(ByVal OutputWritePlan As Object, ByVal WorkbookFixture As Object, ByVal LifecycleAuthorization As Object) As Object
+    Dim TargetVBProject As Object
+    Dim Result As Object
+    Dim Evidence As Object
+    Dim OperationHistory As Collection
+
+    On Error GoTo ErrHandler
+
+    Set OperationHistory = New Collection
+    ValidateWorkbookLifecycleAuthorization WorkbookFixture, LifecycleAuthorization, OperationHistory
+    Set TargetVBProject = WorkbookFixture.VBProject
+    OperationHistory.Add "ObtainVBProject"
+    Set Evidence = CreateWorkbookLifecycleEvidence(WorkbookFixture, OperationHistory)
+
+    Set Result = AppApplyGeneratedOutputToRealVBProject(OutputWritePlan, TargetVBProject)
+    AttachWorkbookLifecycleEvidence Result, Evidence
+    Set AppApplyGeneratedOutputToAuthorizedWorkbook = Result
+    Exit Function
+
+ErrHandler:
+    Set Result = CreateMutationResult(False, ResultHardStop, "Workbook lifecycle hard-stop: " & Err.Description)
+    AttachWorkbookLifecycleEvidence Result, CreateFailedWorkbookLifecycleEvidence(OperationHistory)
+    Set AppApplyGeneratedOutputToAuthorizedWorkbook = Result
+End Function
+
 Private Function BuildSuccessfulPlan(ByVal GeneratedUnits As Collection) As Object
     Dim Result As Object
     Dim WriteUnits As Collection
@@ -230,6 +256,114 @@ Private Function BuildSuccessfulPlan(ByVal GeneratedUnits As Collection) As Obje
     Result.Add "WriteUnits", WriteUnits
     Set BuildSuccessfulPlan = Result
 End Function
+
+Private Sub ValidateWorkbookLifecycleAuthorization(ByVal WorkbookFixture As Object, ByVal LifecycleAuthorization As Object, ByVal OperationHistory As Collection)
+    Dim AuthorizedWorkbook As Object
+
+    If WorkbookFixture Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization", "Workbook fixture is required."
+    End If
+
+    If LifecycleAuthorization Is Nothing Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization", "Workbook lifecycle authorization is required."
+    End If
+
+    Set AuthorizedWorkbook = RequiredObject(LifecycleAuthorization, "Workbook", "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization")
+    If Not AuthorizedWorkbook Is WorkbookFixture Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization", "Workbook identity mismatch is not authorized."
+    End If
+
+    If Not HasBooleanValue(LifecycleAuthorization, "IsTestOwned", True) Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization", "Test-owned workbook authorization is required."
+    End If
+
+    If Not HasBooleanValue(LifecycleAuthorization, "IsNewlyCreated", True) Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization", "Newly-created workbook authorization is required."
+    End If
+
+    If Not HasBooleanValue(LifecycleAuthorization, "AllowObtainVBProject", True) Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization", "VBProject handoff authorization is required."
+    End If
+
+    If Not HasBooleanValue(LifecycleAuthorization, "AllowCloseNoSave", True) Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization", "No-save close authorization is required."
+    End If
+
+    If HasBooleanValue(LifecycleAuthorization, "AllowSave", True) Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization", "Save is not authorized."
+    End If
+
+    If HasBooleanValue(LifecycleAuthorization, "AllowSaveAs", True) Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization", "SaveAs is not authorized."
+    End If
+
+    OperationHistory.Add "ConfirmWorkbookIdentity"
+End Sub
+
+Private Function RequiredObject(ByVal Source As Object, ByVal FieldName As String, ByVal SourceName As String) As Object
+    If Source Is Nothing Then
+        Err.Raise ComErrInvalidArgument, SourceName, "Source item is required."
+    End If
+
+    If Not Source.Exists(FieldName) Then
+        Err.Raise ComErrInvalidArgument, SourceName, "Required object field is missing: " & FieldName
+    End If
+
+    If Not IsObject(Source.Item(FieldName)) Then
+        Err.Raise ComErrInvalidArgument, SourceName, "Required object field is invalid: " & FieldName
+    End If
+
+    Set RequiredObject = Source.Item(FieldName)
+End Function
+
+Private Function CreateWorkbookLifecycleEvidence(ByVal WorkbookFixture As Object, ByVal OperationHistory As Collection) As Object
+    Dim Evidence As Object
+    Dim RemainingOperations As Collection
+
+    Set RemainingOperations = New Collection
+    RemainingOperations.Add "CloseNoSave"
+
+    Set Evidence = CreateObject("Scripting.Dictionary")
+    Evidence("WorkbookIdentityConfirmed") = True
+    Evidence("WorkbookOwnership") = "TestOwned"
+    Evidence("WorkbookNewlyCreated") = True
+    Evidence("WorkbookEditable") = True
+    Evidence("WorkbookSavedState") = CStr(WorkbookFixture.Saved)
+    Evidence("WorkbookVBProjectAccessible") = True
+    Evidence.Add "OperationHistory", OperationHistory
+    Evidence.Add "RemainingAuthorizedLifecycleOperations", RemainingOperations
+
+    Set CreateWorkbookLifecycleEvidence = Evidence
+End Function
+
+Private Function CreateFailedWorkbookLifecycleEvidence(ByVal OperationHistory As Collection) As Object
+    Dim Evidence As Object
+    Dim RemainingOperations As Collection
+
+    Set RemainingOperations = New Collection
+    Set Evidence = CreateObject("Scripting.Dictionary")
+    Evidence("WorkbookIdentityConfirmed") = False
+    Evidence("WorkbookOwnership") = "Unknown"
+    Evidence("WorkbookNewlyCreated") = False
+    Evidence("WorkbookEditable") = False
+    Evidence("WorkbookSavedState") = "Unknown"
+    Evidence("WorkbookVBProjectAccessible") = False
+    If OperationHistory Is Nothing Then
+        Evidence.Add "OperationHistory", New Collection
+    Else
+        Evidence.Add "OperationHistory", OperationHistory
+    End If
+    Evidence.Add "RemainingAuthorizedLifecycleOperations", RemainingOperations
+
+    Set CreateFailedWorkbookLifecycleEvidence = Evidence
+End Function
+
+Private Sub AttachWorkbookLifecycleEvidence(ByVal Result As Object, ByVal Evidence As Object)
+    If Result.Exists("WorkbookLifecycleEvidence") Then
+        Result.Remove "WorkbookLifecycleEvidence"
+    End If
+    Result.Add "WorkbookLifecycleEvidence", Evidence
+End Sub
 
 Private Function CreateWriteUnit(ByVal Unit As Variant) As Object
     Dim Source As Object
