@@ -186,7 +186,14 @@ mutation / rollback risk, selects P7-11-H mutation sequencing failure rollback
 coverage as the next smallest later candidate, keeps P7-11-K rollback failure
 deferred, and keeps implementation, workbook / VBProject mutation, package /
 `dist`, release, publication, external services, and Frozen specification
-changes as NO-GO.
+changes as NO-GO. P7-28 Mutation Sequencing Failure Implementation GO /
+NO-GO is now recorded docs-only in
+`docs/spec/P7-28_MutationSequencingFailureImplementationGoNoGo.md`; it applies
+the P7-27 selection and records GO for a later separate implementation-start
+task limited to P7-11-H mutation sequencing failure rollback coverage after
+post-preflight create-only mutation starts and at least one current-operation
+component is created, while P7-28 itself keeps implementation and workbook /
+VBProject mutation as NO-GO.
 
 ## 1. Starting State
 
@@ -337,8 +344,12 @@ Recommended next actions are:
    P7-25 docs-only and keeps P7-11-H/K deferred. P7-27 re-evaluates residual
    P7-11-H/K and selects P7-11-H mutation sequencing failure rollback coverage
    as the next smallest later candidate while keeping P7-11-K deferred and
-   implementation as NO-GO. Any further workbook /
-   VBProject expansion beyond that named
+   implementation as NO-GO. P7-28 applies that selection and records GO for a
+   later separate implementation-start task limited to P7-11-H mutation
+   sequencing failure rollback coverage after post-preflight create-only
+   mutation starts and at least one current-operation component is created,
+   while P7-28 itself keeps implementation and workbook / VBProject mutation
+   as NO-GO. Any further workbook / VBProject expansion beyond that named
    implementation-start scope, package / `dist`, release, publication, or
    external service work requires a new named scope and separate GO / NO-GO
    decision.
