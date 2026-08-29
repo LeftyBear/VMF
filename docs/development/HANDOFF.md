@@ -249,7 +249,19 @@ Lifecycle Authorization Boundary as the next minimum docs-only candidate, and
 keeps implementation start, test changes, workbook / VBProject mutation,
 package / `dist`, release, publication, external services, public API changes,
 persisted schema changes, canonical format changes, and Frozen specification
-changes as NO-GO.
+changes as NO-GO. P8-02 Workbook Lifecycle Authorization Boundary is now
+recorded docs-only in
+`docs/spec/P8-02_WorkbookLifecycleAuthorizationBoundary.md`; it fixes explicit
+authorization rules for workbook identity, open, create, save, SaveAs, close,
+discard / no-save, macro-enabled handling, mutation-adjacent state
+confirmation, lifecycle rollback limits, and readback / verification handoff.
+P8-02 separates workbook lifecycle from VBProject mutation and component
+rollback, prohibits fallback / implicit workbook selection and unauthorized
+lifecycle operations, selects P8-03 Workbook Lifecycle Focused Test Design as
+the next minimum docs-only candidate, and keeps implementation start, test
+changes, workbook / VBProject operations, package / `dist`, release,
+publication, external services, public API changes, persisted schema changes,
+canonical format changes, and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -432,7 +444,9 @@ Recommended next actions are:
    P7 COMPLETE and selects P8-01 Post-P7 Real Workbook / VBProject Mutation
    Scope Planning as the minimum next-phase docs-only candidate. P8-01 is
    complete as docs-only scope planning and selects P8-02 Workbook Lifecycle
-   Authorization Boundary as the next minimum docs-only candidate.
+   Authorization Boundary as the next minimum docs-only candidate. P8-02 is
+   complete as docs-only authorization boundary and selects P8-03 Workbook
+   Lifecycle Focused Test Design as the next minimum docs-only candidate.
    Implementation authorization, test changes, workbook / VBProject expansion
    beyond the completed P7-33 scope, package / `dist`, release, publication,
    or external service work requires a new named scope and separate GO /
