@@ -96,6 +96,7 @@ specification changes.
 | P7-24 | Readback Failure Coverage Implementation GO / NO-GO | COMPLETE / docs-only implementation GO / NO-GO decision | `docs/spec/P7-24_ReadbackFailureCoverageImplementationGoNoGo.md` | Applies the P7-23 selection and records GO for a later separate implementation-start task limited to P7-11-I/J readback failure rollback coverage after successful create-only mutation. P7-24 itself performs no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
 | P7-25 | Readback Failure Coverage Implementation | COMPLETE / local-only implementation verified | `c91376f855638b655a2b9025d8fd2472f04b90df` | Implements P7-11-I/J coverage in `src/Build/Application/AppOutputWriteService.cls` and `tests/unit/Build/AppOutputWriteBoundaryTests.bas`: controlled post-mutation readback missing-component and mismatched-source failures deny success, remain `HardStop`, report `MutatedModules = 0`, roll back current-operation components, and preserve unrelated pre-existing components. |
 | P7-26 | Readback Failure Coverage Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-26_ReadbackFailureCoverageImplementationCloseout.md` | Closes out P7-25 after commit `c91376f855638b655a2b9025d8fd2472f04b90df`, records the two-file implementation scope, P7-11-I/J readback failure rollback behavior, P7-11-H/K deferred, and preserved package / `dist`, release, publication, external service, and Frozen specification NO-GO boundaries. |
+| P7-27 | Remaining Mutation Sequencing / Rollback Candidate Selection | COMPLETE / docs-only remaining deferred candidate selection | `docs/spec/P7-27_RemainingMutationSequencingRollbackCandidateSelection.md` | Re-evaluates residual P7-11-H/K after P7-25 / P7-26, compares dependency order, fault-injection needs, and mutation / rollback risk, selects P7-11-H mutation sequencing failure rollback coverage as the next smallest later candidate, keeps P7-11-K rollback failure deferred, and authorizes no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
 
 ## Boundary
 
@@ -588,5 +589,12 @@ specification changes.
   additional P7-26 implementation is required, keeps P7-11-H/K deferred, and
   preserves package / `dist`, release, publication, external service, and
   Frozen specification NO-GO boundaries.
+- P7-27 is complete as docs-only remaining deferred candidate selection. It
+  re-evaluates P7-11-H/K after P7-25 / P7-26, compares dependency order,
+  fault-injection needs, and mutation / rollback risk, selects P7-11-H
+  mutation sequencing failure rollback coverage as the next smallest later
+  candidate, keeps P7-11-K rollback failure deferred, and preserves
+  implementation, workbook / VBProject mutation, package / `dist`, release,
+  publication, external service, and Frozen specification NO-GO boundaries.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.

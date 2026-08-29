@@ -178,7 +178,15 @@ keeps P7-11-H/K deferred. P7-26 Readback Failure Coverage Implementation
 Closeout is now recorded docs-only in
 `docs/spec/P7-26_ReadbackFailureCoverageImplementationCloseout.md`; it adds no
 implementation and keeps package / `dist`, release, publication, external
-services, and Frozen specification changes as NO-GO.
+services, and Frozen specification changes as NO-GO. P7-27 Remaining Mutation
+Sequencing / Rollback Candidate Selection is now recorded docs-only in
+`docs/spec/P7-27_RemainingMutationSequencingRollbackCandidateSelection.md`; it
+compares residual P7-11-H/K by dependency order, fault-injection need, and
+mutation / rollback risk, selects P7-11-H mutation sequencing failure rollback
+coverage as the next smallest later candidate, keeps P7-11-K rollback failure
+deferred, and keeps implementation, workbook / VBProject mutation, package /
+`dist`, release, publication, external services, and Frozen specification
+changes as NO-GO.
 
 ## 1. Starting State
 
@@ -326,7 +334,10 @@ Recommended next actions are:
    `src/Build/Application/AppOutputWriteService.cls` and
    `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, preserving unrelated
    pre-existing components and reporting no partial mutation. P7-26 closes out
-   P7-25 docs-only and keeps P7-11-H/K deferred. Any further workbook /
+   P7-25 docs-only and keeps P7-11-H/K deferred. P7-27 re-evaluates residual
+   P7-11-H/K and selects P7-11-H mutation sequencing failure rollback coverage
+   as the next smallest later candidate while keeping P7-11-K deferred and
+   implementation as NO-GO. Any further workbook /
    VBProject expansion beyond that named
    implementation-start scope, package / `dist`, release, publication, or
    external service work requires a new named scope and separate GO / NO-GO
