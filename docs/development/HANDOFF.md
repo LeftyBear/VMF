@@ -231,6 +231,14 @@ Closeout is now recorded docs-only in
 `docs/spec/P7-34_RollbackRemovalFailureImplementationCloseout.md`; it adds no
 implementation, confirms no remaining P7-11 deferred focused coverage item,
 and keeps package / `dist`, release, publication, external services, and
+Frozen specification changes as NO-GO. P7-35 Phase Completion / Next Phase
+Candidate Selection is now recorded docs-only in
+`docs/spec/P7-35_PhaseCompletionAndNextPhaseCandidateSelection.md`; it confirms
+P7-01 through P7-34 are complete, records P7 COMPLETE, selects P8-01 Post-P7
+Real Workbook / VBProject Mutation Scope Planning as the minimum next-phase
+docs-only candidate, and keeps implementation, test changes, workbook /
+VBProject mutation, package / `dist`, release, publication, external services,
+public API changes, persisted schema changes, canonical format changes, and
 Frozen specification changes as NO-GO.
 
 ## 1. Starting State
@@ -410,7 +418,9 @@ Recommended next actions are:
    evidence, reporting incomplete rollback evidence / operator review, leaving
    the failed-removal current-operation component as evidence, and preserving
    unrelated pre-existing components. P7-34 closes out P7-33 docs-only and
-   records no remaining P7-11 deferred focused coverage item.
+   records no remaining P7-11 deferred focused coverage item. P7-35 records
+   P7 COMPLETE and selects P8-01 Post-P7 Real Workbook / VBProject Mutation
+   Scope Planning as the minimum next-phase docs-only candidate.
    Any further workbook / VBProject expansion beyond the completed P7-33
    scope, package / `dist`, release, publication, or external service work
    requires a new named scope and separate GO / NO-GO decision.
