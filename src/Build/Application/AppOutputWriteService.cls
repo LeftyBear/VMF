@@ -377,6 +377,7 @@ Private Function ApplyRealVBProjectMutation(ByVal WriteUnits As Collection, ByVa
     Set CreatedComponents = New Collection
 
     For Each Unit In WriteUnits
+        ApplyControlledCreationFault Unit
         Set Component = Components.Add(ComponentTypeForModuleType(RequiredText(Unit, "moduleType")))
         Component.Name = RequiredText(Unit, "moduleName")
         Component.CodeModule.AddFromString RequiredText(Unit, "generatedSource")
@@ -385,6 +386,27 @@ Private Function ApplyRealVBProjectMutation(ByVal WriteUnits As Collection, ByVa
 
     Set ApplyRealVBProjectMutation = CreatedComponents
 End Function
+
+Private Sub ApplyControlledCreationFault(ByVal Unit As Variant)
+    Dim FaultKind As String
+
+    If Not IsObject(Unit) Then
+        Exit Sub
+    End If
+
+    If Not Unit.Exists("controlledCreationFault") Then
+        Exit Sub
+    End If
+
+    FaultKind = Trim$(CStr(Unit("controlledCreationFault")))
+    Select Case FaultKind
+        Case "AddComponentFailure"
+            Err.Raise ComErrInvalidState, "AppOutputWriteService.ApplyControlledCreationFault", "Controlled component creation failure."
+        Case ""
+        Case Else
+            Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ApplyControlledCreationFault", "Controlled creation fault is not supported."
+    End Select
+End Sub
 
 Private Sub ApplyControlledReadbackFault(ByVal WriteUnits As Collection, ByVal TargetVBProject As Object)
     Dim Components As Object

@@ -32,6 +32,7 @@ Public Sub AppRunOutputWriteBoundaryTests()
     VerifyMissingRealVBProjectGeneratedSourceHardStopsBeforeMutation
     VerifyBlankRealVBProjectGeneratedSourceHardStopsBeforeMutation
     VerifyRealVBProjectComponentAccessFailureHardStopsBeforeMutation
+    VerifyRealVBProjectCreationFailureAfterFirstCreateRollsBack
     VerifyRealVBProjectReadbackMissingComponentRollsBack
     VerifyRealVBProjectReadbackMismatchedSourceRollsBack
     VerifyLaterExistingRealVBProjectModuleHardStopsBeforeMutation
@@ -470,6 +471,42 @@ Private Sub VerifyRealVBProjectComponentAccessFailureHardStopsBeforeMutation()
     AssertEquals "HardStop", CStr(Result("Classification")), "VBComponents access failure should remain a hard-stop."
     AssertContains CStr(Result("Message")), "Real VBProject mutation hard-stop", "Hard-stop should remain at the real VBProject mutation boundary."
     AssertEquals 0, CLng(Result("MutatedModules")), "Preflight component access failure should create no modules."
+End Sub
+
+Private Sub VerifyRealVBProjectCreationFailureAfterFirstCreateRollsBack()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim ExistingComponent As Object
+    Dim Plan As Object
+    Dim WriteUnits As Collection
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set ExistingComponent = TargetVBProject.VBComponents.Add(ComponentTypeStandardModule)
+    ExistingComponent.Name = "ExistingUtility"
+    ExistingComponent.CodeModule.AddFromString "Option Explicit" & vbCrLf & "' existing utility"
+
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set WriteUnits = Plan("WriteUnits")
+    WriteUnits.Item(2)("controlledCreationFault") = "AddComponentFailure"
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertFalse CBool(Result("Success")), "Later component creation failure should fail after mutation starts."
+    AssertEquals "HardStop", CStr(Result("Classification")), "Creation failure should remain a hard-stop."
+    AssertContains CStr(Result("Message")), "Controlled component creation failure", "Hard-stop should identify controlled creation failure."
+    AssertEquals 0, CLng(Result("MutatedModules")), "Creation failure should not report partial mutation."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Rollback should remove the first current-operation component."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Failed later component should not remain created."
+    AssertContains RealVBProjectModuleText(TargetVBProject, "ExistingUtility"), "existing utility", "Rollback should preserve unrelated pre-existing components."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
 End Sub
 
 Private Sub VerifyRealVBProjectReadbackMissingComponentRollsBack()
