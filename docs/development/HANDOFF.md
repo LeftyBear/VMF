@@ -261,6 +261,17 @@ lifecycle operations, selects P8-03 Workbook Lifecycle Focused Test Design as
 the next minimum docs-only candidate, and keeps implementation start, test
 changes, workbook / VBProject operations, package / `dist`, release,
 publication, external services, public API changes, persisted schema changes,
+canonical format changes, and Frozen specification changes as NO-GO. P8-03
+Workbook Lifecycle Focused Test Design is now recorded docs-only in
+`docs/spec/P8-03_WorkbookLifecycleFocusedTestDesign.md`; it fixes future
+focused local test design for explicit workbook identity, allowed lifecycle
+operations, denied fallback / implicit selection, macro-enabled and dirty-state
+boundaries, lifecycle state handoff to VBProject mutation and readback /
+verification, failure evidence, and operator-review requirements. P8-03
+selects P8-04 Workbook Lifecycle Focused Test Implementation Scope Planning as
+the next minimum docs-only candidate and keeps implementation start, test
+changes, workbook / VBProject operations, package / `dist`, release,
+publication, external services, public API changes, persisted schema changes,
 canonical format changes, and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
@@ -447,6 +458,9 @@ Recommended next actions are:
    Authorization Boundary as the next minimum docs-only candidate. P8-02 is
    complete as docs-only authorization boundary and selects P8-03 Workbook
    Lifecycle Focused Test Design as the next minimum docs-only candidate.
+   P8-03 is complete as docs-only focused test design and selects P8-04
+   Workbook Lifecycle Focused Test Implementation Scope Planning as the next
+   minimum docs-only candidate.
    Implementation authorization, test changes, workbook / VBProject expansion
    beyond the completed P7-33 scope, package / `dist`, release, publication,
    or external service work requires a new named scope and separate GO /
