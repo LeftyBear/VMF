@@ -93,6 +93,7 @@ specification changes.
 | P7-21 | Target Component Access Failure Implementation | COMPLETE / local-only implementation verified | `14192c6723036b4af6d892679aac1dde44dcc991` | Implements P7-11-G coverage in `tests/unit/Build/AppOutputWriteBoundaryTests.bas` only: controlled target VBProject `VBComponents` access failure hard-stops before mutation, classification remains `HardStop`, `MutatedModules = 0`, production code remains unchanged, and the P7-07 / P7-13 / P7-17 create-only missing-module boundary is preserved. |
 | P7-22 | Target Component Access Failure Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-22_TargetComponentAccessFailureImplementationCloseout.md` | Closes out P7-21 after commit `14192c6723036b4af6d892679aac1dde44dcc991`, records the one-test-file implementation scope, no production code changes, P7-11-G pre-mutation hard-stop behavior, no target module creation, P7-11-H/I/J/K deferred, and preserved package / `dist`, release, publication, external service, and Frozen specification NO-GO boundaries. |
 | P7-23 | Readback Failure / Rollback Dependency Candidate Selection | COMPLETE / docs-only remaining deferred candidate selection | `docs/spec/P7-23_ReadbackFailureRollbackDependencyCandidateSelection.md` | Re-evaluates P7-11-H/I/J/K after P7-21 / P7-22, considers mutation -> readback failure -> rollback -> rollback failure dependency order and risk, selects P7-11-I/J readback failure coverage as the next smallest later candidate, keeps P7-11-H/K deferred, and authorizes no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
+| P7-24 | Readback Failure Coverage Implementation GO / NO-GO | COMPLETE / docs-only implementation GO / NO-GO decision | `docs/spec/P7-24_ReadbackFailureCoverageImplementationGoNoGo.md` | Applies the P7-23 selection and records GO for a later separate implementation-start task limited to P7-11-I/J readback failure rollback coverage after successful create-only mutation. P7-24 itself performs no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
 
 ## Boundary
 
@@ -563,6 +564,13 @@ specification changes.
   readback failure -> rollback -> rollback failure dependency order, selects
   P7-11-I/J readback failure coverage as the next smallest later candidate,
   keeps P7-11-H/K deferred, and preserves implementation, workbook /
+  VBProject mutation, package / `dist`, release, publication, external
+  service, and Frozen specification NO-GO boundaries.
+- P7-24 is complete as docs-only implementation GO / NO-GO decision. It
+  applies the P7-23 selection and records GO for a later separate
+  implementation-start task limited to P7-11-I/J readback failure rollback
+  coverage after successful create-only missing-module mutation. P7-24 itself
+  preserves implementation, production / test code change, workbook /
   VBProject mutation, package / `dist`, release, publication, external
   service, and Frozen specification NO-GO boundaries.
 - No package / `dist`, external service, release, publication, push, tag, or
