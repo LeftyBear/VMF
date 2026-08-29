@@ -28,6 +28,9 @@ Public Sub AppRunOutputWriteBoundaryTests()
     VerifyApprovedPlanAppliesToRealVBProjectFixture
     VerifyNonAlphabeticRealVBProjectPlanAppliesDeterministically
     VerifyDuplicateRealVBProjectPlanHardStopsBeforeMutation
+    VerifyUnsupportedRealVBProjectModuleKindHardStopsBeforeMutation
+    VerifyMissingRealVBProjectGeneratedSourceHardStopsBeforeMutation
+    VerifyBlankRealVBProjectGeneratedSourceHardStopsBeforeMutation
     VerifyLaterExistingRealVBProjectModuleHardStopsBeforeMutation
     VerifyUnrelatedExistingRealVBProjectModuleIsPreserved
     VerifyExistingRealVBProjectModuleHardStopsWithoutMutation
@@ -358,6 +361,90 @@ Private Sub VerifyDuplicateRealVBProjectPlanHardStopsBeforeMutation()
     AssertContains CStr(Result("Message")), "Duplicate module mutation", "Hard-stop should identify duplicate module mutation."
     AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Duplicate preflight should not create the duplicated module."
     AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Duplicate preflight should not create unrelated requested modules."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyUnsupportedRealVBProjectModuleKindHardStopsBeforeMutation()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim Plan As Object
+    Dim WriteUnits As Collection
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set WriteUnits = Plan("WriteUnits")
+    WriteUnits.Item(1)("moduleType") = "DocumentModule"
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertFalse CBool(Result("Success")), "Unsupported real VBProject module kind should hard-stop before mutation."
+    AssertContains CStr(Result("Message")), "ModuleType is not supported", "Hard-stop should identify unsupported module kind."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Unsupported kind preflight should not create the invalid module."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Unsupported kind preflight should not create later requested modules."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyMissingRealVBProjectGeneratedSourceHardStopsBeforeMutation()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim Plan As Object
+    Dim WriteUnits As Collection
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set WriteUnits = Plan("WriteUnits")
+    WriteUnits.Item(1).Remove "generatedSource"
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertFalse CBool(Result("Success")), "Missing real VBProject generatedSource should hard-stop before mutation."
+    AssertContains CStr(Result("Message")), "generatedSource", "Hard-stop should identify missing generatedSource."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Missing source preflight should not create the invalid module."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Missing source preflight should not create later requested modules."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyBlankRealVBProjectGeneratedSourceHardStopsBeforeMutation()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim Plan As Object
+    Dim WriteUnits As Collection
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set WriteUnits = Plan("WriteUnits")
+    WriteUnits.Item(1)("generatedSource") = " "
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertFalse CBool(Result("Success")), "Blank real VBProject generatedSource should hard-stop before mutation."
+    AssertContains CStr(Result("Message")), "generatedSource", "Hard-stop should identify blank generatedSource."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Blank source preflight should not create the invalid module."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Blank source preflight should not create later requested modules."
 
 Cleanup:
     CloseWorkbookFixture WorkbookFixture
