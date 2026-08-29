@@ -283,7 +283,23 @@ stops. P8-04 selects P8-05 Workbook Lifecycle Focused Test Implementation GO /
 NO-GO as the next minimum docs-only candidate and keeps implementation start,
 test changes, workbook / VBProject operations, package / `dist`, release,
 publication, external services, public API changes, persisted schema changes,
-canonical format changes, and Frozen specification changes as NO-GO.
+canonical format changes, and Frozen specification changes as NO-GO. P8-05
+Workbook Lifecycle Focused Test Implementation GO / NO-GO is now recorded
+docs-only in
+`docs/spec/P8-05_WorkbookLifecycleFocusedTestImplementationGoNoGo.md`; it
+applies the P8-04 scope plan and records GO for a later separate
+implementation-start task limited to focused local workbook lifecycle tests and
+a narrow lifecycle authorization / handoff helper in
+`src/Build/Application/AppOutputWriteService.cls` plus
+`tests/unit/Build/AppOutputWriteBoundaryTests.bas`. The later slice is limited
+to a temporary test-owned `Application.Workbooks.Add` fixture, exact returned
+workbook identity, `VBProject` handoff evidence, and no-save close of that
+exact fixture in cleanup. P8-05 itself keeps implementation start, production
+/ test code changes, implementation test execution, workbook / VBProject
+operations, package / `dist`, release, publication, external services, public
+API changes, persisted schema changes, canonical format changes, and Frozen
+specification changes as NO-GO. P8-05 selects P8-06 Workbook Lifecycle Focused
+Test Implementation Start as the next minimum candidate.
 
 ## 1. Starting State
 
@@ -473,7 +489,12 @@ Recommended next actions are:
    Workbook Lifecycle Focused Test Implementation Scope Planning as the next
    minimum docs-only candidate. P8-04 is complete as docs-only implementation
    scope planning and selects P8-05 Workbook Lifecycle Focused Test
-   Implementation GO / NO-GO as the next minimum docs-only candidate.
+   Implementation GO / NO-GO as the next minimum docs-only candidate. P8-05
+   is complete as docs-only implementation GO / NO-GO decision and records GO
+   for a later separate implementation-start task limited to focused local
+   workbook lifecycle tests and a narrow lifecycle authorization / handoff
+   helper in the two named files. P8-05 selects P8-06 Workbook Lifecycle
+   Focused Test Implementation Start as the next minimum candidate.
    Implementation authorization, test changes, workbook / VBProject expansion
    beyond the completed P7-33 scope, package / `dist`, release, publication,
    or external service work requires a new named scope and separate GO /
