@@ -112,7 +112,19 @@ NO-GO is now recorded docs-only in
 GO for a later separate implementation-start task limited to P7-11-E/F
 unsupported module kind and empty / missing generated source pre-mutation
 failure coverage, while P7-16 itself keeps implementation and workbook /
-VBProject mutation as NO-GO.
+VBProject mutation as NO-GO. P7-17 Pre-Mutation Failure Coverage
+Implementation is complete and committed as `a09b526`; it changed only
+`tests/unit/Build/AppOutputWriteBoundaryTests.bas`, added P7-11-E/F coverage
+for unsupported `moduleType` and missing / blank `generatedSource`
+pre-mutation hard-stops, confirms target modules are not created for invalid
+write units, changed no production code, preserves the create-only
+missing-module boundary, and recorded focused `AppRunOutputWriteBoundaryTests`
+PASS plus all 22 Build VBA runners PASS. P7-18 Pre-Mutation Failure Coverage
+Implementation Closeout is now recorded docs-only in
+`docs/spec/P7-18_PreMutationFailureCoverageImplementationCloseout.md`; it adds
+no implementation, keeps P7-11-G through P7-11-K deferred, and keeps package /
+`dist`, release, publication, external services, and Frozen specification
+changes as NO-GO.
 
 ## 1. Starting State
 
@@ -236,10 +248,15 @@ Recommended next actions are:
    as NO-GO. P7-16 applies that selection and records GO for a later separate
    implementation-start task limited to P7-11-E/F unsupported module kind and
    empty / missing generated source pre-mutation failure coverage, while P7-16
-   itself keeps implementation and workbook / VBProject mutation as NO-GO. Any
-   further implementation, workbook / VBProject expansion, package / `dist`,
-   release, publication, or external service work requires a new named scope
-   and separate GO / NO-GO decision.
+   itself keeps implementation and workbook / VBProject mutation as NO-GO.
+   P7-17 implements P7-11-E/F in `tests/unit/Build/AppOutputWriteBoundaryTests.bas`
+   only, with unsupported `moduleType` and missing / blank `generatedSource`
+   hard-stopping before mutation and no target module creation. P7-18 closes
+   out P7-17 docs-only, records focused and full Build VBA runner PASS
+   evidence, and keeps P7-11-G through P7-11-K deferred. Any further
+   implementation, workbook / VBProject expansion, package / `dist`, release,
+   publication, or external service work requires a new named scope and
+   separate GO / NO-GO decision.
 
 The vNext hardening backlog currently includes:
 

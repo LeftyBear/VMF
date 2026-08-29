@@ -86,6 +86,8 @@ specification changes.
 | P7-14 | Create-Only Missing-Module Focused Coverage Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-14_CreateOnlyMissingModuleFocusedCoverageImplementationCloseout.md` | Closes out P7-13 after commit `62ebb8ebaf0c0deb591cc6a5f571cc8859ea21d0`, records focused verification PASS, all 22 Build VBA runners PASS, `HEAD == origin/main`, working tree clean, P7-11-E through P7-11-K deferred, and preserved package / `dist`, release, publication, external service, and Frozen specification NO-GO boundaries. |
 | P7-15 | Deferred Failure / Rollback / Readback Candidate Selection | COMPLETE / docs-only deferred candidate selection | `docs/spec/P7-15_DeferredFailureRollbackReadbackCandidateSelection.md` | Evaluates P7-11-E through P7-11-K after P7-14, records failure before mutation, readback after mutation, and rollback after post-preflight failure as the priority order, selects P7-11-E/F pre-mutation invalid write-unit coverage as the next smallest later candidate, and keeps implementation, production / test code changes, workbook / VBProject mutation, package / `dist`, release, publication, external service, and Frozen specification changes as NO-GO. |
 | P7-16 | Pre-Mutation Failure Coverage Implementation GO / NO-GO | COMPLETE / docs-only implementation GO / NO-GO decision | `docs/spec/P7-16_PreMutationFailureCoverageImplementationGoNoGo.md` | Applies the P7-15 selection and records GO for a later separate implementation-start task limited to P7-11-E/F unsupported module kind and empty / missing generated source pre-mutation failure coverage. P7-16 itself performs no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
+| P7-17 | Pre-Mutation Failure Coverage Implementation | COMPLETE / local-only implementation verified | `a09b526` | Implements P7-11-E/F coverage in `tests/unit/Build/AppOutputWriteBoundaryTests.bas` only: unsupported `moduleType` and missing / blank `generatedSource` hard-stop before mutation, target modules are not created, production code remains unchanged, and the P7-07 / P7-13 create-only missing-module boundary is preserved. Verification recorded focused `AppRunOutputWriteBoundaryTests` PASS and all 22 Build VBA runners PASS. P7-11-G through P7-11-K remain deferred. |
+| P7-18 | Pre-Mutation Failure Coverage Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-18_PreMutationFailureCoverageImplementationCloseout.md` | Closes out P7-17, records the one-test-file implementation scope, no production code changes, P7-11-E/F pre-mutation hard-stop behavior, no target module creation on invalid write units, focused verification PASS, all 22 Build VBA runners PASS, P7-11-G through P7-11-K deferred, and preserved package / `dist`, release, publication, external service, and Frozen specification NO-GO boundaries. |
 
 ## Boundary
 
@@ -513,5 +515,18 @@ specification changes.
   production / test code changes, workbook / VBProject mutation, package /
   `dist`, release, publication, external services, and Frozen specification
   changes as NO-GO.
+- P7-17 is complete as local-only pre-mutation failure coverage
+  implementation in commit `a09b526`. It changes only
+  `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, adds focused coverage
+  for unsupported `moduleType` and missing / blank `generatedSource`
+  hard-stops before mutation, confirms target modules are not created for
+  invalid write units, preserves the P7-07 / P7-13 create-only missing-module
+  boundary, and changes no production code. Verification recorded focused
+  `AppRunOutputWriteBoundaryTests` PASS and all 22 Build VBA runners PASS.
+- P7-18 is complete as docs-only implementation closeout and status sync. It
+  records the P7-17 implementation and verification evidence, confirms no
+  additional P7-18 implementation or test rerun is required, keeps P7-11-G
+  through P7-11-K deferred, and preserves package / `dist`, release,
+  publication, external service, and Frozen specification NO-GO boundaries.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
