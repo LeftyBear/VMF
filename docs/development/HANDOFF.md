@@ -166,7 +166,19 @@ the P7-23 selection and records GO for a later separate implementation-start
 task limited to P7-11-I/J readback failure rollback coverage after successful
 create-only mutation, while P7-24 itself keeps implementation, workbook /
 VBProject mutation, package / `dist`, release, publication, external services,
-and Frozen specification changes as NO-GO.
+and Frozen specification changes as NO-GO. P7-25 Readback Failure Coverage
+Implementation is complete and committed as
+`c91376f855638b655a2b9025d8fd2472f04b90df`; it changed only
+`src/Build/Application/AppOutputWriteService.cls` and
+`tests/unit/Build/AppOutputWriteBoundaryTests.bas`, added controlled
+post-mutation readback missing-component and mismatched-source failure
+coverage, denies success, reports no partial mutation, rolls back
+current-operation components, preserves unrelated pre-existing components, and
+keeps P7-11-H/K deferred. P7-26 Readback Failure Coverage Implementation
+Closeout is now recorded docs-only in
+`docs/spec/P7-26_ReadbackFailureCoverageImplementationCloseout.md`; it adds no
+implementation and keeps package / `dist`, release, publication, external
+services, and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -309,7 +321,13 @@ Recommended next actions are:
    for a later separate implementation-start task limited to P7-11-I/J
    readback failure rollback coverage after successful create-only mutation,
    while P7-24 itself keeps implementation and workbook / VBProject mutation
-   as NO-GO. Any further workbook / VBProject expansion beyond that named
+   as NO-GO. P7-25 implements P7-11-I/J controlled readback missing-component
+   and mismatched-source rollback coverage in
+   `src/Build/Application/AppOutputWriteService.cls` and
+   `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, preserving unrelated
+   pre-existing components and reporting no partial mutation. P7-26 closes out
+   P7-25 docs-only and keeps P7-11-H/K deferred. Any further workbook /
+   VBProject expansion beyond that named
    implementation-start scope, package / `dist`, release, publication, or
    external service work requires a new named scope and separate GO / NO-GO
    decision.
