@@ -85,6 +85,7 @@ specification changes.
 | P7-13 | Create-Only Missing-Module Focused Coverage Implementation | COMPLETE / local-only implementation verified | `62ebb8ebaf0c0deb591cc6a5f571cc8859ea21d0` | Implements the P7-12 selected P7-11-A/B/C/D/L minimum slice in `src/Build/Application/AppOutputWriteService.cls` and `tests/unit/Build/AppOutputWriteBoundaryTests.bas`: multi-module create-only apply, non-alphabetic order coverage, duplicate requested-module preflight hard stop, later existing-target conflict hard stop, unrelated existing-component preservation, and module-kind readback verification. P7-11-E through P7-11-K remain deferred. |
 | P7-14 | Create-Only Missing-Module Focused Coverage Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-14_CreateOnlyMissingModuleFocusedCoverageImplementationCloseout.md` | Closes out P7-13 after commit `62ebb8ebaf0c0deb591cc6a5f571cc8859ea21d0`, records focused verification PASS, all 22 Build VBA runners PASS, `HEAD == origin/main`, working tree clean, P7-11-E through P7-11-K deferred, and preserved package / `dist`, release, publication, external service, and Frozen specification NO-GO boundaries. |
 | P7-15 | Deferred Failure / Rollback / Readback Candidate Selection | COMPLETE / docs-only deferred candidate selection | `docs/spec/P7-15_DeferredFailureRollbackReadbackCandidateSelection.md` | Evaluates P7-11-E through P7-11-K after P7-14, records failure before mutation, readback after mutation, and rollback after post-preflight failure as the priority order, selects P7-11-E/F pre-mutation invalid write-unit coverage as the next smallest later candidate, and keeps implementation, production / test code changes, workbook / VBProject mutation, package / `dist`, release, publication, external service, and Frozen specification changes as NO-GO. |
+| P7-16 | Pre-Mutation Failure Coverage Implementation GO / NO-GO | COMPLETE / docs-only implementation GO / NO-GO decision | `docs/spec/P7-16_PreMutationFailureCoverageImplementationGoNoGo.md` | Applies the P7-15 selection and records GO for a later separate implementation-start task limited to P7-11-E/F unsupported module kind and empty / missing generated source pre-mutation failure coverage. P7-16 itself performs no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
 
 ## Boundary
 
@@ -501,5 +502,16 @@ specification changes.
   the P7-07 create-only missing-module boundary plus package / `dist`,
   release, publication, external service, and Frozen specification NO-GO
   boundaries.
+- P7-15 is complete as docs-only deferred candidate selection. It evaluates
+  P7-11-E through P7-11-K, selects P7-11-E/F pre-mutation invalid write-unit
+  coverage as the next smallest later candidate, and keeps implementation and
+  workbook / VBProject mutation as NO-GO.
+- P7-16 is complete as docs-only implementation GO / NO-GO decision. It
+  records GO for a later separate implementation-start task limited to
+  P7-11-E/F unsupported module kind and empty / missing generated source
+  pre-mutation failure coverage, while P7-16 itself keeps implementation,
+  production / test code changes, workbook / VBProject mutation, package /
+  `dist`, release, publication, external services, and Frozen specification
+  changes as NO-GO.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.

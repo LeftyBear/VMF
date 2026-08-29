@@ -106,7 +106,13 @@ Failure / Rollback / Readback Candidate Selection is now recorded docs-only in
 evaluates P7-11-E through P7-11-K, prioritizes pre-mutation failure coverage
 before readback and rollback fault coverage, selects P7-11-E/F as the next
 smallest later candidate, and keeps implementation and workbook / VBProject
-mutation as NO-GO.
+mutation as NO-GO. P7-16 Pre-Mutation Failure Coverage Implementation GO /
+NO-GO is now recorded docs-only in
+`docs/spec/P7-16_PreMutationFailureCoverageImplementationGoNoGo.md`; it records
+GO for a later separate implementation-start task limited to P7-11-E/F
+unsupported module kind and empty / missing generated source pre-mutation
+failure coverage, while P7-16 itself keeps implementation and workbook /
+VBProject mutation as NO-GO.
 
 ## 1. Starting State
 
@@ -227,9 +233,13 @@ Recommended next actions are:
    P7-11-K still deferred. P7-15 evaluates those deferred items, selects
    P7-11-E/F pre-mutation invalid write-unit coverage as the next smallest
    later candidate, and keeps implementation and workbook / VBProject mutation
-   as NO-GO. Any further implementation, workbook / VBProject expansion,
-   package / `dist`, release, publication, or external service work requires a
-   new named scope and separate GO / NO-GO decision.
+   as NO-GO. P7-16 applies that selection and records GO for a later separate
+   implementation-start task limited to P7-11-E/F unsupported module kind and
+   empty / missing generated source pre-mutation failure coverage, while P7-16
+   itself keeps implementation and workbook / VBProject mutation as NO-GO. Any
+   further implementation, workbook / VBProject expansion, package / `dist`,
+   release, publication, or external service work requires a new named scope
+   and separate GO / NO-GO decision.
 
 The vNext hardening backlog currently includes:
 
