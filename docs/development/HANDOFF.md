@@ -299,7 +299,23 @@ exact fixture in cleanup. P8-05 itself keeps implementation start, production
 operations, package / `dist`, release, publication, external services, public
 API changes, persisted schema changes, canonical format changes, and Frozen
 specification changes as NO-GO. P8-05 selects P8-06 Workbook Lifecycle Focused
-Test Implementation Start as the next minimum candidate.
+Test Implementation Start as the next minimum candidate. P8-06 Workbook
+Lifecycle Focused Test Implementation Start is complete and committed as
+`fe3edf29774b8f73e419759ca1ea411eda57181c`; it changed only
+`src/Build/Application/AppOutputWriteService.cls` and
+`tests/unit/Build/AppOutputWriteBoundaryTests.bas`, adding the narrow
+workbook lifecycle authorization / handoff helper and focused tests for exact
+test-owned workbook identity, explicit lifecycle authorization, `VBProject`
+handoff evidence, no-save close as the only remaining lifecycle operation,
+and hard-stops for mismatched, missing, or Save-authorized lifecycle inputs
+before mutation. P8-07 Workbook Lifecycle Focused Test Implementation
+Closeout is now recorded in
+`docs/spec/P8-07_WorkbookLifecycleFocusedTestImplementationCloseout.md`; it
+closes out P8-06, records local verification with a temporary current-source
+Build.xlam and all 22 Build VBA runners passing, and keeps workbook lifecycle
+expansion, production workbook handling, package / `dist`, release,
+publication, external services, public API changes, persisted schema changes,
+canonical format changes, and Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -494,11 +510,18 @@ Recommended next actions are:
    for a later separate implementation-start task limited to focused local
    workbook lifecycle tests and a narrow lifecycle authorization / handoff
    helper in the two named files. P8-05 selects P8-06 Workbook Lifecycle
-   Focused Test Implementation Start as the next minimum candidate.
-   Implementation authorization, test changes, workbook / VBProject expansion
-   beyond the completed P7-33 scope, package / `dist`, release, publication,
-   or external service work requires a new named scope and separate GO /
-   NO-GO decision.
+   Focused Test Implementation Start as the next minimum candidate. P8-06 is
+   complete as local-only implementation in commit
+   `fe3edf29774b8f73e419759ca1ea411eda57181c`; it adds
+   `AppApplyGeneratedOutputToAuthorizedWorkbook` plus focused workbook
+   lifecycle tests in the two named files. P8-07 is complete as implementation
+   closeout and status sync in
+   `docs/spec/P8-07_WorkbookLifecycleFocusedTestImplementationCloseout.md`;
+   it records temporary current-source Build.xlam verification and all 22
+   Build VBA runners passing. Further implementation authorization, test
+   changes, workbook / VBProject expansion beyond the completed P8-07 scope,
+   package / `dist`, release, publication, or external service work requires a
+   new named scope and separate GO / NO-GO decision.
 
 The vNext hardening backlog currently includes:
 

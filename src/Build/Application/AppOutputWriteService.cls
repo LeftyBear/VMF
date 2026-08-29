@@ -269,7 +269,9 @@ Private Sub ValidateWorkbookLifecycleAuthorization(ByVal WorkbookFixture As Obje
     End If
 
     Set AuthorizedWorkbook = RequiredObject(LifecycleAuthorization, "Workbook", "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization")
-    If Not AuthorizedWorkbook Is WorkbookFixture Then
+    If AuthorizedWorkbook Is WorkbookFixture Then
+        ' Exact object identity is the only authorized lifecycle target.
+    Else
         Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ValidateWorkbookLifecycleAuthorization", "Workbook identity mismatch is not authorized."
     End If
 
