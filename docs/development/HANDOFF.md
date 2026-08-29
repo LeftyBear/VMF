@@ -204,7 +204,15 @@ keeps P7-11-K deferred. P7-30 Mutation Sequencing Failure Implementation
 Closeout is now recorded docs-only in
 `docs/spec/P7-30_MutationSequencingFailureImplementationCloseout.md`; it adds
 no implementation and keeps package / `dist`, release, publication, external
-services, and Frozen specification changes as NO-GO.
+services, and Frozen specification changes as NO-GO. P7-31 Rollback Removal
+Failure Candidate Fix is now recorded docs-only in
+`docs/spec/P7-31_RollbackRemovalFailureCandidateFix.md`; it fixes residual
+P7-11-K as the next minimum later implementation candidate, records the
+existing `CreatedComponents` rollback path, controlled rollback-removal failure
+injection need, failure-state confirmation, and safe-stop / readback boundary,
+and keeps implementation, workbook / VBProject mutation, package / `dist`,
+release, publication, external services, and Frozen specification changes as
+NO-GO.
 
 ## 1. Starting State
 
@@ -367,6 +375,10 @@ Recommended next actions are:
    created, then denying success, reporting no partial mutation, rolling back
    current-operation components, and preserving unrelated pre-existing
    components. P7-30 closes out P7-29 docs-only and keeps P7-11-K deferred.
+   P7-31 fixes P7-11-K rollback-removal failure as the next minimum later
+   implementation candidate, records the existing rollback path and required
+   controlled rollback-removal failure injection, and keeps implementation as
+   NO-GO until a later separate GO / NO-GO task.
    Any further workbook / VBProject expansion beyond the completed P7-29
    scope, package / `dist`, release, publication, or external service work
    requires a new named scope and separate GO / NO-GO decision.
