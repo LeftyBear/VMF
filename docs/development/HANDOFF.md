@@ -315,7 +315,19 @@ closes out P8-06, records local verification with a temporary current-source
 Build.xlam and all 22 Build VBA runners passing, and keeps workbook lifecycle
 expansion, production workbook handling, package / `dist`, release,
 publication, external services, public API changes, persisted schema changes,
-canonical format changes, and Frozen specification changes as NO-GO.
+canonical format changes, and Frozen specification changes as NO-GO. P8-08
+Post-Workbook Lifecycle Next Boundary Candidate Selection is now recorded
+docs-only in
+`docs/spec/P8-08_PostWorkbookLifecycleNextBoundaryCandidateSelection.md`; it
+selects P8-09 Real Workbook / VBProject Mutation Flow Completion Criteria
+Planning as the next minimum docs-only candidate, inventories remaining
+lifecycle authorization, VBProject mutation, component operation, component
+rollback, workbook lifecycle rollback separation, readback / verification,
+final success / failure, actual workbook mutation GO-gate, and P8 completion
+criteria boundaries, and keeps implementation, actual Workbook / VBProject
+mutation expansion, package / `dist`, release, publication, external services,
+public API changes, persisted schema changes, canonical format changes, and
+Frozen specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -518,10 +530,13 @@ Recommended next actions are:
    closeout and status sync in
    `docs/spec/P8-07_WorkbookLifecycleFocusedTestImplementationCloseout.md`;
    it records temporary current-source Build.xlam verification and all 22
-   Build VBA runners passing. Further implementation authorization, test
-   changes, workbook / VBProject expansion beyond the completed P8-07 scope,
-   package / `dist`, release, publication, or external service work requires a
-   new named scope and separate GO / NO-GO decision.
+   Build VBA runners passing. P8-08 is complete as docs-only next boundary
+   candidate selection and selects P8-09 Real Workbook / VBProject Mutation
+   Flow Completion Criteria Planning as the next minimum docs-only candidate.
+   Further implementation authorization, test changes, workbook / VBProject
+   expansion beyond the completed P8-07 scope, package / `dist`, release,
+   publication, or external service work requires a new named scope and
+   separate GO / NO-GO decision.
 
 The vNext hardening backlog currently includes:
 
