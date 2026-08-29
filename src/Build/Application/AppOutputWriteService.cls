@@ -182,6 +182,7 @@ Public Function AppApplyGeneratedOutputToRealVBProject(ByVal OutputWritePlan As 
 
     PreflightRealVBProjectMutation WriteUnits, TargetVBProject
     Set CreatedComponents = ApplyRealVBProjectMutation(WriteUnits, TargetVBProject)
+    ApplyControlledReadbackFault WriteUnits, TargetVBProject
     VerifyRealVBProjectReadback WriteUnits, TargetVBProject
 
     Set Result = CreateMutationResult(True, ResultSuccess, "Generated output applied to real VBProject.")
@@ -384,6 +385,37 @@ Private Function ApplyRealVBProjectMutation(ByVal WriteUnits As Collection, ByVa
 
     Set ApplyRealVBProjectMutation = CreatedComponents
 End Function
+
+Private Sub ApplyControlledReadbackFault(ByVal WriteUnits As Collection, ByVal TargetVBProject As Object)
+    Dim Components As Object
+    Dim Unit As Variant
+    Dim Component As Object
+    Dim FaultKind As String
+
+    Set Components = RequireVBComponents(TargetVBProject, "AppOutputWriteService.ApplyControlledReadbackFault")
+
+    For Each Unit In WriteUnits
+        If IsObject(Unit) Then
+            If Unit.Exists("controlledReadbackFault") Then
+                FaultKind = Trim$(CStr(Unit("controlledReadbackFault")))
+                Select Case FaultKind
+                    Case "MissingComponent"
+                        Set Component = Components.Item(RequiredText(Unit, "moduleName"))
+                        Components.Remove Component
+                    Case "MismatchedSource"
+                        Set Component = Components.Item(RequiredText(Unit, "moduleName"))
+                        If Component.CodeModule.CountOfLines > 0 Then
+                            Component.CodeModule.DeleteLines 1, Component.CodeModule.CountOfLines
+                        End If
+                        Component.CodeModule.AddFromString "Option Explicit" & vbCrLf & "' controlled readback mismatch"
+                    Case ""
+                    Case Else
+                        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ApplyControlledReadbackFault", "Controlled readback fault is not supported."
+                End Select
+            End If
+        End If
+    Next Unit
+End Sub
 
 Private Sub VerifyRealVBProjectReadback(ByVal WriteUnits As Collection, ByVal TargetVBProject As Object)
     Dim Components As Object

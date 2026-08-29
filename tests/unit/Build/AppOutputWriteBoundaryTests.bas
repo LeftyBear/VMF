@@ -32,6 +32,8 @@ Public Sub AppRunOutputWriteBoundaryTests()
     VerifyMissingRealVBProjectGeneratedSourceHardStopsBeforeMutation
     VerifyBlankRealVBProjectGeneratedSourceHardStopsBeforeMutation
     VerifyRealVBProjectComponentAccessFailureHardStopsBeforeMutation
+    VerifyRealVBProjectReadbackMissingComponentRollsBack
+    VerifyRealVBProjectReadbackMismatchedSourceRollsBack
     VerifyLaterExistingRealVBProjectModuleHardStopsBeforeMutation
     VerifyUnrelatedExistingRealVBProjectModuleIsPreserved
     VerifyExistingRealVBProjectModuleHardStopsWithoutMutation
@@ -468,6 +470,78 @@ Private Sub VerifyRealVBProjectComponentAccessFailureHardStopsBeforeMutation()
     AssertEquals "HardStop", CStr(Result("Classification")), "VBComponents access failure should remain a hard-stop."
     AssertContains CStr(Result("Message")), "Real VBProject mutation hard-stop", "Hard-stop should remain at the real VBProject mutation boundary."
     AssertEquals 0, CLng(Result("MutatedModules")), "Preflight component access failure should create no modules."
+End Sub
+
+Private Sub VerifyRealVBProjectReadbackMissingComponentRollsBack()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim ExistingComponent As Object
+    Dim Plan As Object
+    Dim WriteUnits As Collection
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set ExistingComponent = TargetVBProject.VBComponents.Add(ComponentTypeStandardModule)
+    ExistingComponent.Name = "ExistingUtility"
+    ExistingComponent.CodeModule.AddFromString "Option Explicit" & vbCrLf & "' existing utility"
+
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set WriteUnits = Plan("WriteUnits")
+    WriteUnits.Item(1)("controlledReadbackFault") = "MissingComponent"
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertFalse CBool(Result("Success")), "Missing created component during readback should fail."
+    AssertEquals "HardStop", CStr(Result("Classification")), "Readback failure should remain a hard-stop."
+    AssertContains CStr(Result("Message")), "Real VBProject mutation hard-stop", "Readback failure should remain at the mutation boundary."
+    AssertEquals 0, CLng(Result("MutatedModules")), "Readback failure should not report partial mutation."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Missing readback fault target should not remain created."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Rollback should remove other current-operation components."
+    AssertContains RealVBProjectModuleText(TargetVBProject, "ExistingUtility"), "existing utility", "Rollback should preserve unrelated pre-existing components."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyRealVBProjectReadbackMismatchedSourceRollsBack()
+    Dim Service As AppOutputWriteService
+    Dim WorkbookFixture As Object
+    Dim TargetVBProject As Object
+    Dim ExistingComponent As Object
+    Dim Plan As Object
+    Dim WriteUnits As Collection
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set WorkbookFixture = Application.Workbooks.Add
+
+    On Error GoTo Cleanup
+    Set TargetVBProject = WorkbookFixture.VBProject
+    Set ExistingComponent = TargetVBProject.VBComponents.Add(ComponentTypeStandardModule)
+    ExistingComponent.Name = "ExistingUtility"
+    ExistingComponent.CodeModule.AddFromString "Option Explicit" & vbCrLf & "' existing utility"
+
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+    Set WriteUnits = Plan("WriteUnits")
+    WriteUnits.Item(1)("controlledReadbackFault") = "MismatchedSource"
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertFalse CBool(Result("Success")), "Mismatched created component readback should fail."
+    AssertEquals "HardStop", CStr(Result("Classification")), "Readback mismatch should remain a hard-stop."
+    AssertContains CStr(Result("Message")), "Readback verification failed", "Hard-stop should identify readback verification failure."
+    AssertEquals 0, CLng(Result("MutatedModules")), "Readback mismatch should not report partial mutation."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSubject"), "Rollback should remove mismatched current-operation component."
+    AssertFalse RealVBProjectModuleExists(TargetVBProject, "GeneratedSchedule"), "Rollback should remove other current-operation components."
+    AssertContains RealVBProjectModuleText(TargetVBProject, "ExistingUtility"), "existing utility", "Rollback should preserve unrelated pre-existing components."
+
+Cleanup:
+    CloseWorkbookFixture WorkbookFixture
+    If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
 End Sub
 
 Private Sub VerifyLaterExistingRealVBProjectModuleHardStopsBeforeMutation()
