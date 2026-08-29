@@ -139,7 +139,19 @@ implementation-start task limited to P7-11-G target VBProject component access
 failure pre-mutation hard-stop coverage, while P7-20 itself keeps
 implementation, production / test code change, workbook / VBProject mutation,
 package / `dist`, release, publication, external services, and Frozen
-specification changes as NO-GO.
+specification changes as NO-GO. P7-21 Target Component Access Failure
+Implementation is complete and committed as
+`14192c6723036b4af6d892679aac1dde44dcc991`; it changed only
+`tests/unit/Build/AppOutputWriteBoundaryTests.bas`, added focused P7-11-G
+coverage for controlled target VBProject `VBComponents` access failure,
+confirmed hard-stop before mutation with `MutatedModules = 0`, changed no
+production code, and preserved the create-only missing-module boundary. P7-22
+Target Component Access Failure Implementation Closeout is now recorded
+docs-only in
+`docs/spec/P7-22_TargetComponentAccessFailureImplementationCloseout.md`; it
+adds no implementation, keeps P7-11-H/I/J/K deferred, and keeps package /
+`dist`, release, publication, external services, and Frozen specification
+changes as NO-GO.
 
 ## 1. Starting State
 
