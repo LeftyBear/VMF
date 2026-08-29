@@ -101,6 +101,7 @@ specification changes.
 | P7-29 | Mutation Sequencing Failure Implementation | COMPLETE / local-only implementation verified | `af90fb07669e0100b33a1170a421666185e0141b` | Implements P7-11-H coverage in `src/Build/Application/AppOutputWriteService.cls` and `tests/unit/Build/AppOutputWriteBoundaryTests.bas`: controlled later component-creation failure after at least one current-operation component is created denies success, remains `HardStop`, reports `MutatedModules = 0`, rolls back current-operation components, and preserves unrelated pre-existing components. |
 | P7-30 | Mutation Sequencing Failure Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-30_MutationSequencingFailureImplementationCloseout.md` | Closes out P7-29 after commit `af90fb07669e0100b33a1170a421666185e0141b`, records the two-file implementation scope, P7-11-H mutation sequencing failure rollback behavior, P7-11-K deferred, and preserved package / `dist`, release, publication, external service, and Frozen specification NO-GO boundaries. |
 | P7-31 | Rollback Removal Failure Candidate Fix | COMPLETE / docs-only rollback-removal failure candidate fix | `docs/spec/P7-31_RollbackRemovalFailureCandidateFix.md` | Fixes residual P7-11-K rollback-removal failure as the next minimum later implementation candidate, organizes the existing `CreatedComponents` rollback path, controlled rollback failure injection need, failure-state confirmation, and safe-stop / readback boundary, and authorizes no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
+| P7-32 | Rollback Removal Failure Implementation GO / NO-GO | COMPLETE / docs-only implementation GO / NO-GO decision | `docs/spec/P7-32_RollbackRemovalFailureImplementationGoNoGo.md` | Applies the P7-31 fixed P7-11-K candidate and records GO for a later separate implementation-start task limited to controlled rollback-removal failure injection and incomplete rollback evidence reporting after rollback is already required. P7-32 itself performs no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
 
 ## Boundary
 
@@ -627,5 +628,13 @@ specification changes.
   failure injection need, failure-state confirmation, and safe-stop /
   readback boundary, and keeps implementation as NO-GO until a later separate
   GO / NO-GO task.
+- P7-32 is complete as docs-only rollback-removal failure implementation
+  GO / NO-GO. It applies the P7-31 fixed P7-11-K candidate and records GO for
+  a later separate implementation-start task limited to controlled
+  rollback-removal failure injection and incomplete rollback evidence
+  reporting after rollback is already required. P7-32 itself keeps
+  implementation, production / test code changes, workbook / VBProject
+  mutation, package / `dist`, release, publication, external service, and
+  Frozen specification changes as NO-GO.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.

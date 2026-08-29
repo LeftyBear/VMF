@@ -378,7 +378,12 @@ Recommended next actions are:
    P7-31 fixes P7-11-K rollback-removal failure as the next minimum later
    implementation candidate, records the existing rollback path and required
    controlled rollback-removal failure injection, and keeps implementation as
-   NO-GO until a later separate GO / NO-GO task.
+   NO-GO until a later separate GO / NO-GO task. P7-32 applies that fixed
+   candidate and records GO for a later separate implementation-start task
+   limited to controlled rollback-removal failure injection and incomplete
+   rollback evidence reporting after rollback is already required, while
+   P7-32 itself keeps implementation and workbook / VBProject mutation as
+   NO-GO.
    Any further workbook / VBProject expansion beyond the completed P7-29
    scope, package / `dist`, release, publication, or external service work
    requires a new named scope and separate GO / NO-GO decision.
