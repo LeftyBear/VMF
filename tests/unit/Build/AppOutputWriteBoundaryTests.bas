@@ -31,6 +31,7 @@ Public Sub AppRunOutputWriteBoundaryTests()
     VerifyUnsupportedRealVBProjectModuleKindHardStopsBeforeMutation
     VerifyMissingRealVBProjectGeneratedSourceHardStopsBeforeMutation
     VerifyBlankRealVBProjectGeneratedSourceHardStopsBeforeMutation
+    VerifyRealVBProjectComponentAccessFailureHardStopsBeforeMutation
     VerifyLaterExistingRealVBProjectModuleHardStopsBeforeMutation
     VerifyUnrelatedExistingRealVBProjectModuleIsPreserved
     VerifyExistingRealVBProjectModuleHardStopsWithoutMutation
@@ -449,6 +450,24 @@ Private Sub VerifyBlankRealVBProjectGeneratedSourceHardStopsBeforeMutation()
 Cleanup:
     CloseWorkbookFixture WorkbookFixture
     If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
+End Sub
+
+Private Sub VerifyRealVBProjectComponentAccessFailureHardStopsBeforeMutation()
+    Dim Service As AppOutputWriteService
+    Dim TargetVBProject As Object
+    Dim Plan As Object
+    Dim Result As Object
+
+    Set Service = New AppOutputWriteService
+    Set TargetVBProject = CreateObject("Scripting.Dictionary")
+    Set Plan = Service.AppBuildOutputWritePlan(CreateSuccessfulGeneratorOutput())
+
+    Set Result = Service.AppApplyGeneratedOutputToRealVBProject(Plan, TargetVBProject)
+
+    AssertFalse CBool(Result("Success")), "VBComponents access failure should hard-stop before mutation."
+    AssertEquals "HardStop", CStr(Result("Classification")), "VBComponents access failure should remain a hard-stop."
+    AssertContains CStr(Result("Message")), "Real VBProject mutation hard-stop", "Hard-stop should remain at the real VBProject mutation boundary."
+    AssertEquals 0, CLng(Result("MutatedModules")), "Preflight component access failure should create no modules."
 End Sub
 
 Private Sub VerifyLaterExistingRealVBProjectModuleHardStopsBeforeMutation()
