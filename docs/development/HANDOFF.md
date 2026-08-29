@@ -533,7 +533,14 @@ Recommended next actions are:
    Build VBA runners passing. P8-08 is complete as docs-only next boundary
    candidate selection and selects P8-09 Real Workbook / VBProject Mutation
    Flow Completion Criteria Planning as the next minimum docs-only candidate.
-   Further implementation authorization, test changes, workbook / VBProject
+   P8-09 is complete as docs-only completion criteria planning in
+   `docs/spec/P8-09_RealWorkbookAndVbProjectMutationFlowCompletionCriteriaPlanning.md`;
+   it records the narrow local-only test-owned workbook / create-only
+   VBProject mutation flow as sufficient for P8, keeps broader workbook
+   lifecycle, component operation, and actual workbook mutation expansion
+   deferred, and selects P8-10 Phase Completion / Next Phase Candidate
+   Selection as the next minimum docs-only candidate. Further implementation
+   authorization, test changes, workbook / VBProject
    expansion beyond the completed P8-07 scope, package / `dist`, release,
    publication, or external service work requires a new named scope and
    separate GO / NO-GO decision.
