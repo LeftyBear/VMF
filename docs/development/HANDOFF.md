@@ -131,7 +131,15 @@ it re-evaluates P7-11-G through P7-11-K after P7-17 / P7-18, selects P7-11-G
 target VBProject component access failure as the next smallest later candidate,
 keeps P7-11-H/I/J/K deferred, and keeps implementation, workbook / VBProject
 mutation, package / `dist`, release, publication, external services, and
-Frozen specification changes as NO-GO.
+Frozen specification changes as NO-GO. P7-20 Target Component Access Failure
+Implementation GO / NO-GO is now recorded docs-only in
+`docs/spec/P7-20_TargetComponentAccessFailureImplementationGoNoGo.md`; it
+applies the P7-19 selection and records GO for a later separate
+implementation-start task limited to P7-11-G target VBProject component access
+failure pre-mutation hard-stop coverage, while P7-20 itself keeps
+implementation, production / test code change, workbook / VBProject mutation,
+package / `dist`, release, publication, external services, and Frozen
+specification changes as NO-GO.
 
 ## 1. Starting State
 
@@ -263,10 +271,14 @@ Recommended next actions are:
    evidence, and keeps P7-11-G through P7-11-K deferred. P7-19 re-evaluates
    P7-11-G through P7-11-K and selects P7-11-G target VBProject component
    access failure as the next smallest later candidate while keeping P7-11-H/I/J/K
-   deferred and implementation as NO-GO. Any further
-   implementation, workbook / VBProject expansion, package / `dist`, release,
-   publication, or external service work requires a new named scope and
-   separate GO / NO-GO decision.
+   deferred and implementation as NO-GO. P7-20 applies that selection and
+   records GO for a later separate implementation-start task limited to
+   P7-11-G target VBProject component access failure pre-mutation hard-stop
+   coverage, while P7-20 itself keeps implementation and workbook / VBProject
+   mutation as NO-GO. Any further workbook / VBProject expansion beyond that
+   named implementation-start scope, package / `dist`, release, publication,
+   or external service work requires a new named scope and separate GO /
+   NO-GO decision.
 
 The vNext hardening backlog currently includes:
 

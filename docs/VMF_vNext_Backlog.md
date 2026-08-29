@@ -89,6 +89,7 @@ specification changes.
 | P7-17 | Pre-Mutation Failure Coverage Implementation | COMPLETE / local-only implementation verified | `a09b526` | Implements P7-11-E/F coverage in `tests/unit/Build/AppOutputWriteBoundaryTests.bas` only: unsupported `moduleType` and missing / blank `generatedSource` hard-stop before mutation, target modules are not created, production code remains unchanged, and the P7-07 / P7-13 create-only missing-module boundary is preserved. Verification recorded focused `AppRunOutputWriteBoundaryTests` PASS and all 22 Build VBA runners PASS. P7-11-G through P7-11-K remain deferred. |
 | P7-18 | Pre-Mutation Failure Coverage Implementation Closeout | COMPLETE / docs-only implementation closeout and status sync | `docs/spec/P7-18_PreMutationFailureCoverageImplementationCloseout.md` | Closes out P7-17, records the one-test-file implementation scope, no production code changes, P7-11-E/F pre-mutation hard-stop behavior, no target module creation on invalid write units, focused verification PASS, all 22 Build VBA runners PASS, P7-11-G through P7-11-K deferred, and preserved package / `dist`, release, publication, external service, and Frozen specification NO-GO boundaries. |
 | P7-19 | Remaining Deferred Failure / Readback / Rollback Candidate Selection | COMPLETE / docs-only remaining deferred candidate selection | `docs/spec/P7-19_RemainingDeferredFailureReadbackRollbackCandidateSelection.md` | Re-evaluates P7-11-G through P7-11-K after P7-17 / P7-18, considers failure / readback / rollback dependency order and risk, selects P7-11-G target VBProject component access failure as the next smallest later candidate, keeps P7-11-H/I/J/K deferred, and authorizes no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
+| P7-20 | Target Component Access Failure Implementation GO / NO-GO | COMPLETE / docs-only implementation GO / NO-GO decision | `docs/spec/P7-20_TargetComponentAccessFailureImplementationGoNoGo.md` | Applies the P7-19 selection and records GO for a later separate implementation-start task limited to P7-11-G target VBProject component access failure pre-mutation hard-stop coverage. P7-20 itself performs no implementation, production / test code change, workbook / VBProject mutation, package / `dist`, release, publication, external service, or Frozen specification change. |
 
 ## Boundary
 
@@ -535,5 +536,12 @@ specification changes.
   candidate because it remains pre-mutation and does not require readback
   fault injection or rollback proof, keeps P7-11-H/I/J/K deferred, and keeps
   implementation and workbook / VBProject mutation as NO-GO.
+- P7-20 is complete as docs-only implementation GO / NO-GO decision. It
+  applies the P7-19 selection and records GO for a later separate
+  implementation-start task limited to P7-11-G target VBProject component
+  access failure pre-mutation hard-stop coverage. P7-20 itself keeps
+  implementation, production / test code change, workbook / VBProject
+  mutation, package / `dist`, release, publication, external services, and
+  Frozen specification changes as NO-GO.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
