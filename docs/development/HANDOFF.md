@@ -573,7 +573,20 @@ Recommended next actions are:
    close / discard / restore operations, package / `dist`, release /
    publication, external services, public API changes, persisted schema
    changes, canonical format changes, and Frozen specification changes as
-   NO-GO.
+   NO-GO. P9-03 is complete as docs-only existing workbook focused test
+   design in `docs/spec/P9-03_ExistingWorkbookFocusedTestDesign.md`; it fixes
+   future focused local test design for an explicitly named local test-owned
+   existing workbook, denied fallback workbook selection, workbook identity
+   reconfirmation, VBProject trust/access preflight, create-only missing
+   supported module mutation handoff, readback, rollback, cleanup evidence,
+   and operator-review expectations. P9-03 selects P9-04 Existing Workbook
+   Focused Test Implementation Scope Planning as the next minimum docs-only
+   candidate and keeps implementation, production / test code changes,
+   implementation test execution, workbook / VBProject mutation expansion,
+   workbook open / create / save / SaveAs / close / discard / restore
+   operations, package / `dist`, release / publication, external services,
+   public API changes, persisted schema changes, canonical format changes, and
+   Frozen specification changes as NO-GO.
 
 The vNext hardening backlog currently includes:
 
