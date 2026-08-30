@@ -872,6 +872,27 @@ Recommended next actions are:
    operations, fixture mutation, package / `dist`, release / publication,
    external services, public API changes, persisted schema changes, canonical
    format changes, and Frozen specification changes as NO-GO.
+   P9-20 Existing Workbook Authorization Owner Decision Re-Evaluation is now
+   recorded docs-only in
+   `docs/spec/P9-20_ExistingWorkbookAuthorizationOwnerDecisionReEvaluation.md`;
+   it re-evaluates the P9-19 owner decision completion request and confirms
+   focused existing-workbook implementation start is NO-GO because this task
+   input supplies no completed owner decision values, exact local test-owned
+   existing workbook identity, path-open mode, operation-level lifecycle
+   authorization, no-save close / cleanup policy, dirty-state policy, target
+   component-state policy, fixture retention / operator-review expectations,
+   readback / rollback / focused verification authorization, or separate
+   implementation-start authorization. P9-20 selects `WAIT - Owner Workbook
+   Authorization Inputs` rather than P9-21; no further same-reason P9
+   docs-only follow-up / re-evaluation / completion-request document should be
+   added until owner input is explicitly supplied and a separate
+   implementation-start GO / NO-GO decision is requested. P9-20 keeps
+   implementation, production / test code changes, implementation test
+   execution, workbook / VBProject mutation, workbook open / create / save /
+   SaveAs / close / discard / restore operations, fixture mutation, package /
+   `dist`, release / publication, external services, public API changes,
+   persisted schema changes, canonical format changes, and Frozen
+   specification changes as NO-GO.
 
 The vNext hardening backlog currently includes:
 
