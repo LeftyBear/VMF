@@ -958,6 +958,24 @@ Recommended next actions are:
    implementation test execution, package / `dist`, release / publication,
    external services, public API changes, persisted schema changes, canonical
    format changes, and Frozen specification changes as NO-GO.
+   P9-25 Test-Owned Workbook Fixture Creation Execution is now recorded in
+   `docs/spec/P9-25_TestOwnedWorkbookFixtureCreationExecution.md`; it creates
+   only `tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm` as the P9-24
+   approved test-owned fixture. Excel COM creation failed before any workbook
+   file was created because Excel could not start in the current Windows logon
+   session; P9-25 then created the exact fixture as a minimal OOXML
+   macro-enabled workbook package with one visible `P9_Fixture` marker
+   worksheet and document properties. Verification confirms the fixture exists
+   at the exact path, `CreatedCount : 1`, file length `3532` bytes, and no
+   other workbook fixture was created. P9-25 selects P9-26 Test-Owned Workbook
+   Fixture Creation Closeout as the next minimum candidate and keeps P9
+   focused existing-workbook implementation start, auto-discovery, fallback
+   workbook selection, business workbook / production workbook operation,
+   VBProject mutation, code injection, module import / export, implementation
+   changes, production / test code changes, implementation test execution,
+   package / `dist`, release / publication, external services, public API
+   changes, persisted schema changes, canonical format changes, and Frozen
+   specification changes as NO-GO.
 
 The vNext hardening backlog currently includes:
 
