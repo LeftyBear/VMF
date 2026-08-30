@@ -632,6 +632,22 @@ Recommended next actions are:
    mutation, package / `dist`, release / publication, external services,
    public API changes, persisted schema changes, canonical format changes,
    and Frozen specification changes as NO-GO.
+   P9-07 is complete as docs-only authorization package GO / NO-GO decision in
+   `docs/spec/P9-07_ExistingWorkbookAuthorizationPackageGoNoGo.md`; it applies
+   P9-06 and records focused existing-workbook implementation start as NO-GO
+   because the exact local test-owned existing workbook identity, path-open
+   mode, operation-level lifecycle authorization, no-save close cleanup
+   authorization, pre-existing dirty-state policy, target component-state
+   policy, fixture retention / operator-review expectations, and focused
+   implementation verification authorization remain missing. P9-07 selects
+   P9-08 Existing Workbook Identity Authorization Input Package as the next
+   minimum docs-only candidate and keeps implementation, production / test code
+   changes, implementation test execution, workbook / VBProject mutation
+   expansion, workbook open / create / save / SaveAs / close / discard /
+   restore operations, fixture mutation, package / `dist`, release /
+   publication, external services, public API changes, persisted schema
+   changes, canonical format changes, and Frozen specification changes as
+   NO-GO.
 
 The vNext hardening backlog currently includes:
 
