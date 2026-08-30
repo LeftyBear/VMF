@@ -551,7 +551,16 @@ Recommended next actions are:
    authorization, test changes, workbook / VBProject
    expansion beyond the completed P8-07 scope, package / `dist`, release,
    publication, or external service work requires a new named scope and
-   separate GO / NO-GO decision.
+   separate GO / NO-GO decision. P9-01 is complete as docs-only actual
+   workbook mutation expansion scope planning in
+   `docs/spec/P9-01_PostP8ActualWorkbookMutationExpansionScopePlanning.md`;
+   it starts from P8 COMPLETE, inventories actual workbook mutation expansion
+   areas, keeps existing-workbook handling, Save / SaveAs / restore,
+   destructive component operations, production workbook handling, package /
+   `dist`, release / publication, external services, public API changes,
+   persisted schema changes, canonical format changes, and Frozen
+   specification changes as NO-GO, and selects P9-02 Actual Workbook Identity
+   Authorization Boundary as the next minimum docs-only candidate.
 
 The vNext hardening backlog currently includes:
 
