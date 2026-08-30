@@ -539,7 +539,15 @@ Recommended next actions are:
    VBProject mutation flow as sufficient for P8, keeps broader workbook
    lifecycle, component operation, and actual workbook mutation expansion
    deferred, and selects P8-10 Phase Completion / Next Phase Candidate
-   Selection as the next minimum docs-only candidate. Further implementation
+   Selection as the next minimum docs-only candidate. P8-10 is complete as
+   docs-only phase completion and next phase candidate selection in
+   `docs/spec/P8-10_PhaseCompletionAndNextPhaseCandidateSelection.md`; it
+   confirms P8-01 through P8-09 are complete, records P8 COMPLETE for the
+   narrow local-only test-owned workbook / create-only VBProject mutation
+   flow, keeps broader workbook lifecycle, component operation, production
+   workbook handling, and actual workbook mutation expansion deferred, and
+   selects P9-01 Post-P8 Actual Workbook Mutation Expansion Scope Planning as
+   the next minimum docs-only candidate. Further implementation
    authorization, test changes, workbook / VBProject
    expansion beyond the completed P8-07 scope, package / `dist`, release,
    publication, or external service work requires a new named scope and
