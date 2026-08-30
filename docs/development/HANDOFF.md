@@ -976,6 +976,21 @@ Recommended next actions are:
    package / `dist`, release / publication, external services, public API
    changes, persisted schema changes, canonical format changes, and Frozen
    specification changes as NO-GO.
+   P9-26 Test-Owned Workbook Fixture Post-Creation Verification is now
+   recorded in
+   `docs/spec/P9-26_TestOwnedWorkbookFixturePostCreationVerification.md`; it
+   verifies the P9-25 pushed fixture at
+   `tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm` without Excel COM,
+   workbook open / save / close, fixture mutation, VBProject mutation, code
+   injection, module import / export, implementation change, or test code
+   change. Verification confirms the fixture exists at the exact authorized
+   path, fixture count under `tests\fixtures\workbooks` is exactly `1`, file
+   length is `3532` bytes, SHA-256 is
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   OOXML entries match the P9-25 record, and no unauthorized workbook files
+   are present. P9-26 selects P9-27 Existing Workbook Read-Only Lifecycle
+   Focused Test Implementation GO / NO-GO as the next minimum candidate and
+   keeps P9 focused existing-workbook implementation start as NO-GO.
 
 The vNext hardening backlog currently includes:
 
