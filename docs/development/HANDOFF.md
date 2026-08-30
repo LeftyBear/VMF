@@ -991,6 +991,23 @@ Recommended next actions are:
    are present. P9-26 selects P9-27 Existing Workbook Read-Only Lifecycle
    Focused Test Implementation GO / NO-GO as the next minimum candidate and
    keeps P9 focused existing-workbook implementation start as NO-GO.
+   P9-27 Existing Workbook Read-Only Lifecycle Focused Test Implementation
+   GO / NO-GO is now recorded in
+   `docs/spec/P9-27_ExistingWorkbookReadOnlyLifecycleFocusedTestImplementationGoNoGo.md`;
+   it applies the P9-21 through P9-26 fixture identity and verification chain
+   and records GO for a later separate implementation-start task limited to
+   focused local read-only existing-workbook lifecycle tests for exactly
+   `tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm`. The approved later
+   slice is exact path required, read-only open only, identity reconfirmation,
+   lifecycle evidence, close without saving, and hard-stops for missing /
+   mismatched fixture identity, writable mode, Save, SaveAs, mutation, or
+   fallback workbook selection. P9-27 itself performs no implementation, test
+   execution, workbook operation, fixture mutation, VBProject mutation,
+   package / `dist`, release / publication, external service, public API,
+   persisted schema, canonical format, or Frozen specification change. P9-27
+   selects P9-28 Existing Workbook Read-Only Lifecycle Focused Test
+   Implementation Start as the next minimum candidate and keeps P9 focused
+   existing-workbook mutation implementation start as NO-GO.
 
 The vNext hardening backlog currently includes:
 
