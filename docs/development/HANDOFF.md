@@ -924,6 +924,23 @@ Recommended next actions are:
    publication, external services, public API changes, persisted schema
    changes, canonical format changes, and Frozen specification changes as
    NO-GO.
+   P9-23 Test-Owned Workbook Fixture Creation Execution Authorization is now
+   recorded docs-only in
+   `docs/spec/P9-23_TestOwnedWorkbookFixtureCreationExecutionAuthorization.md`;
+   it records owner authorization for future creation execution of only
+   `tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm`, verifies the fixture
+   is currently absent by `Test-Path ...` returning `False`, and keeps fixture
+   creation execution as NO-GO until the next explicit GO / NO-GO decision.
+   P9-23 itself performs no fixture creation and separates the next candidate
+   as P9-24 Test-Owned Workbook Fixture Creation Execution GO / NO-GO. P9-23
+   keeps P9 focused existing-workbook implementation start, auto-discovery,
+   fallback workbook selection, business workbook / production workbook
+   operation, workbook open / create / save / SaveAs / close / discard /
+   restore operations, Excel automation, VBProject mutation, code injection,
+   module import / export, implementation, production / test code changes,
+   implementation test execution, package / `dist`, release / publication,
+   external services, public API changes, persisted schema changes, canonical
+   format changes, and Frozen specification changes as NO-GO.
 
 The vNext hardening backlog currently includes:
 
