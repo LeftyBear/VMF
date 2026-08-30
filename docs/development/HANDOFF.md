@@ -758,6 +758,23 @@ Recommended next actions are:
    release / publication, external services, public API changes, persisted
    schema changes, canonical format changes, and Frozen specification changes
    as NO-GO.
+   P9-14 Existing Workbook Authorization Input Deferral is now recorded
+   docs-only in
+   `docs/spec/P9-14_ExistingWorkbookAuthorizationInputDeferral.md`; it inherits
+   the P9-13 NO-GO decision and confirms focused existing-workbook
+   implementation start remains NO-GO because this task input supplies no
+   exact local test-owned existing workbook identity, path-open mode,
+   operation-level lifecycle authorization, no-save close / cleanup policy,
+   dirty-state policy, target component-state policy, fixture retention /
+   operator-review expectations, or readback / rollback / focused verification
+   authorization. P9-14 selects P9-15 Existing Workbook Authorization Owner
+   Decision Request as the next minimum docs-only candidate and keeps
+   implementation, production / test code changes, implementation test
+   execution, workbook / VBProject mutation expansion, workbook open / create
+   / save / SaveAs / close / discard / restore operations, fixture mutation,
+   package / `dist`, release / publication, external services, public API
+   changes, persisted schema changes, canonical format changes, and Frozen
+   specification changes as NO-GO.
 
 The vNext hardening backlog currently includes:
 
