@@ -1023,6 +1023,22 @@ Recommended next actions are:
    external service, public API, persisted schema, canonical format, or Frozen
    specification change. P9 focused existing-workbook mutation implementation
    start remains NO-GO.
+   P9-30 Read-Only Lifecycle Runner Root Injection GO / NO-GO is now recorded
+   in `docs/spec/P9-30_ReadOnlyLifecycleRunnerRootInjectionGoNoGo.md`; it
+   applies the P9-29 root-injection design and records GO for a later separate
+   implementation-start task limited to a root-injected read-only lifecycle
+   runner using an explicit absolute repository root, the fixed fixture
+   relative path `tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm`, P9-26
+   fixture identity evidence, read-only open only, identity reconfirmation,
+   lifecycle evidence, and close without saving. P9-30 records that no
+   `docs/spec/P9-28_*` record exists in this checkout and does not claim P9-28
+   completion. P9-30 selects P9-31 Read-Only Lifecycle Runner Root Injection
+   Implementation Start as the next minimum candidate. P9-30 performs no
+   implementation, test execution, workbook operation, fixture mutation,
+   workbook / VBProject mutation, package / `dist`, release / publication,
+   external service, public API, persisted schema, canonical format, or Frozen
+   specification change. P9 focused existing-workbook mutation implementation
+   start remains NO-GO.
 
 The vNext hardening backlog currently includes:
 
