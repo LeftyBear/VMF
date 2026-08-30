@@ -893,6 +893,22 @@ Recommended next actions are:
    `dist`, release / publication, external services, public API changes,
    persisted schema changes, canonical format changes, and Frozen
    specification changes as NO-GO.
+   P9-21 Test-Owned Workbook Fixture Creation Authorization is now recorded
+   docs-only in
+   `docs/spec/P9-21_TestOwnedWorkbookFixtureCreationAuthorization.md`; it
+   records owner authorization to later create only
+   `tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm` as a test-owned
+   repository `.xlsm` fixture for P9 existing-workbook identity / lifecycle
+   focused verification. P9-21 does not create the fixture and does not
+   authorize P9 focused existing-workbook implementation start. P9-21 selects
+   P9-22 Test-Owned Workbook Fixture Creation GO / NO-GO as the next minimum
+   docs-only candidate and keeps implementation, production / test code
+   changes, implementation test execution, workbook / VBProject mutation,
+   workbook open / create / save / SaveAs / close / discard / restore
+   operations during P9-21, workbook auto-discovery, fallback workbook
+   selection, package / `dist`, release / publication, external services,
+   public API changes, persisted schema changes, canonical format changes, and
+   Frozen specification changes as NO-GO.
 
 The vNext hardening backlog currently includes:
 
