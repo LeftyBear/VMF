@@ -775,6 +775,25 @@ Recommended next actions are:
    package / `dist`, release / publication, external services, public API
    changes, persisted schema changes, canonical format changes, and Frozen
    specification changes as NO-GO.
+   P9-15 Existing Workbook Authorization Owner Decision Request is now
+   recorded docs-only in
+   `docs/spec/P9-15_ExistingWorkbookAuthorizationOwnerDecisionRequest.md`; it
+   records the exact owner decision points required before a later focused
+   existing-workbook implementation GO / NO-GO can be meaningful, including
+   accepted predecessor records, candidate editable files, path-open lifecycle
+   boundary, exact workbook identity, ownership / isolation, selection method,
+   open mode, identity reconfirmation, VBProject preflight, dirty-state
+   policy, target component-state policy, no-save close cleanup, fixture
+   retention / operator review, readback / rollback expectations, focused
+   verification authorization, and separate implementation authorization
+   boundary. P9-15 selects P9-16 Existing Workbook Authorization Owner
+   Decision GO / NO-GO as the next minimum docs-only candidate and keeps
+   implementation, production / test code changes, implementation test
+   execution, workbook / VBProject mutation expansion, workbook open / create
+   / save / SaveAs / close / discard / restore operations, fixture mutation,
+   package / `dist`, release / publication, external services, public API
+   changes, persisted schema changes, canonical format changes, and Frozen
+   specification changes as NO-GO.
 
 The vNext hardening backlog currently includes:
 
