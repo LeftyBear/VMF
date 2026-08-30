@@ -560,7 +560,20 @@ Recommended next actions are:
    `dist`, release / publication, external services, public API changes,
    persisted schema changes, canonical format changes, and Frozen
    specification changes as NO-GO, and selects P9-02 Actual Workbook Identity
-   Authorization Boundary as the next minimum docs-only candidate.
+   Authorization Boundary as the next minimum docs-only candidate. P9-02 is
+   complete as docs-only actual workbook identity authorization boundary in
+   `docs/spec/P9-02_ActualWorkbookIdentityAuthorizationBoundary.md`; it fixes
+   the required authorization inputs for later local-only actual workbook
+   mutation expansion, including exact test-owned workbook identity,
+   ownership, denied fallback selection, allowed lifecycle operation boundary,
+   pre-mutation safety stops, evidence, and verification expectations. P9-02
+   selects P9-03 Existing Workbook Focused Test Design as the next minimum
+   docs-only candidate and keeps implementation, test changes, workbook /
+   VBProject mutation expansion, workbook open / create / save / SaveAs /
+   close / discard / restore operations, package / `dist`, release /
+   publication, external services, public API changes, persisted schema
+   changes, canonical format changes, and Frozen specification changes as
+   NO-GO.
 
 The vNext hardening backlog currently includes:
 
