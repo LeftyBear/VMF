@@ -722,6 +722,25 @@ Recommended next actions are:
    publication, external services, public API changes, persisted schema
    changes, canonical format changes, and Frozen specification changes as
    NO-GO.
+   P9-12 is complete as docs-only existing workbook authorization input
+   completion request in
+   `docs/spec/P9-12_ExistingWorkbookAuthorizationInputCompletionRequest.md`;
+   it records the exact owner-supplied authorization inputs still required
+   before a later focused existing-workbook implementation GO / NO-GO can be
+   meaningful, including workbook identity, ownership / isolation, exact
+   selection method, open mode, identity reconfirmation, VBProject preflight,
+   dirty-state policy, target component-state policy, no-save close cleanup,
+   fixture retention / operator review, readback / rollback expectations, and
+   focused verification authorization. This task input supplies no such
+   completed values, so focused existing-workbook implementation start remains
+   NO-GO. P9-12 selects P9-13 Existing Workbook Authorization Input GO /
+   NO-GO as the next minimum docs-only candidate and keeps implementation,
+   production / test code changes, implementation test execution, workbook /
+   VBProject mutation expansion, workbook open / create / save / SaveAs /
+   close / discard / restore operations, fixture mutation, package / `dist`,
+   release / publication, external services, public API changes, persisted
+   schema changes, canonical format changes, and Frozen specification changes
+   as NO-GO.
 
 The vNext hardening backlog currently includes:
 
