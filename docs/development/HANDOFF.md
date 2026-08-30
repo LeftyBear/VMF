@@ -615,6 +615,23 @@ Recommended next actions are:
    operations, package / `dist`, release / publication, external services,
    public API changes, persisted schema changes, canonical format changes,
    and Frozen specification changes as NO-GO.
+   P9-06 is complete as docs-only existing workbook authorization package in
+   `docs/spec/P9-06_ExistingWorkbookAuthorizationPackage.md`; it fixes the
+   package structure and candidate editable files as
+   `src/Build/Application/AppOutputWriteService.cls` and
+   `tests/unit/Build/AppOutputWriteBoundaryTests.bas`, preserves the existing
+   `AppApplyGeneratedOutputToAuthorizedWorkbook` and
+   `AppApplyGeneratedOutputToRealVBProject` boundaries as evidence only, and
+   records implementation NO-GO because no exact local test-owned existing
+   workbook identity or operation-level lifecycle authorization is available
+   in the task input or repository. P9-06 selects P9-07 Existing Workbook
+   Authorization Package GO / NO-GO as the next minimum docs-only candidate
+   and keeps implementation, production / test code changes, implementation
+   test execution, workbook / VBProject mutation expansion, workbook open /
+   create / save / SaveAs / close / discard / restore operations, fixture
+   mutation, package / `dist`, release / publication, external services,
+   public API changes, persisted schema changes, canonical format changes,
+   and Frozen specification changes as NO-GO.
 
 The vNext hardening backlog currently includes:
 
