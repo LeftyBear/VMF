@@ -1210,6 +1210,24 @@ Recommended next actions are:
    service, no public API, persisted schema, canonical format, or Frozen
    specification change. P9-40 selects P9-41 Read-Only Lifecycle Success-Path
    Runner Artifact Preparation GO / NO-GO as the next candidate.
+   P9-41 Read-Only Lifecycle Success-Path Runner Artifact Preparation GO /
+   NO-GO is now recorded in
+   `docs/spec/P9-41_ReadOnlyLifecycleSuccessPathRunnerArtifactPreparationGoNoGo.md`;
+   it applies the P9-40 missing-artifact precondition result and records GO
+   for a later separate runner artifact preparation task limited to creating
+   `tmp\p9-success\Build.xlam` from current repository Build source through
+   `tools\build\build.ps1 -OutputPath tmp\p9-success\Build.xlam -BuildVersion p9-success-local -ReleaseType LocalVerification`.
+   P9-41 rechecks the fixture as length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, and
+   exactly one workbook fixture under `tests\fixtures\workbooks`, confirms
+   `tmp\p9-success\Build.xlam` is absent, and keeps P9-41 itself as
+   docs-only. P9-41 performs no `Build.xlam` creation or copy, no P9-39
+   command retry, no Excel automation, no fixture open, no fixture mutation /
+   repair / replacement, no workbook / VBProject mutation, no full regression,
+   no package / `dist`, no release / publication, no external service, no
+   public API, persisted schema, canonical format, or Frozen specification
+   change. P9-41 selects P9-42 Read-Only Lifecycle Success-Path Runner
+   Artifact Preparation as the next candidate.
 
 The vNext hardening backlog currently includes:
 
