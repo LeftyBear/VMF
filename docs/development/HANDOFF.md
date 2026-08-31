@@ -1247,6 +1247,27 @@ Recommended next actions are:
    push, change public APIs, change persisted schemas, change canonical
    formats, or change Frozen specifications. P9-42 selects P9-43 Read-Only
    Lifecycle Success-Path Evidence Retry GO / NO-GO as the next candidate.
+   P9-43 Read-Only Lifecycle Success-Path Evidence Retry GO / NO-GO is now
+   recorded in
+   `docs/spec/P9-43_ReadOnlyLifecycleSuccessPathEvidenceRetryGoNoGo.md`; it
+   applies the P9-42 prepared-artifact result and records GO for a later
+   separate focused retry task limited to
+   `tools\test\run-tests.ps1 -BuildPath tmp\p9-success\Build.xlam`, focused
+   scope `AppRunOutputWriteBoundaryTests`, the exact P9 fixture
+   `tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm`, and the P9-38 /
+   P9-39 read-only lifecycle boundaries. P9-43 rechecks the fixture as length
+   `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, and
+   exactly one workbook fixture under `tests\fixtures\workbooks`; it confirms
+   `tmp\p9-success\Build.xlam` exists with length `515199` bytes and SHA-256
+   `71C4D9C3AD5D6F65607301468BE68B2676024A74640E5E759BA9DFE53C8195A4`.
+   P9-43 performs no retry execution, Excel automation, P9 fixture open,
+   fixture mutation / repair / replacement, workbook / VBProject mutation,
+   full regression, package / `dist`, release / publication, external service
+   operation, staging, commit, push, public API change, persisted schema
+   change, canonical format change, or Frozen specification change. P9-43
+   selects P9-44 Read-Only Lifecycle Success-Path Evidence Retry Execution as
+   the next candidate.
 
 The vNext hardening backlog currently includes:
 
