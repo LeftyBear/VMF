@@ -1076,6 +1076,22 @@ Recommended next actions are:
    mutation, writable lifecycle operations, package / `dist`, release /
    publication, external service, public API, persisted schema, canonical
    format, and Frozen specification changes remain NO-GO.
+   P9-34 Read-Only Lifecycle Success-Path Evidence Planning is now recorded in
+   `docs/spec/P9-34_ReadOnlyLifecycleSuccessPathEvidencePlanning.md`; it plans
+   the minimum future evidence needed to prove successful read-only open,
+   identity reconfirmation, close without saving, and post-close
+   unchanged-fixture confirmation for the exact P9 fixture or an explicitly
+   authorized replacement fixture. P9-34 rechecks the current fixture identity
+   as length `3532` bytes and SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   records that current P9-31 / P9-32 / P9-33 evidence is still not
+   success-path proof, and selects P9-35 Read-Only Lifecycle Success-Path
+   Evidence GO / NO-GO as the next candidate. P9-34 performs no Excel
+   automation, workbook operation, fixture mutation / repair / replacement,
+   implementation, test execution, workbook / VBProject mutation, writable
+   lifecycle operations, package / `dist`, release / publication, external
+   service, public API, persisted schema, canonical format, or Frozen
+   specification change.
 
 The vNext hardening backlog currently includes:
 
