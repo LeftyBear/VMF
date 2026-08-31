@@ -20,6 +20,9 @@ Private Const ResultSuccess As String = "Success"
 Private Const ResultHardStop As String = "HardStop"
 Private Const ComponentTypeStandardModule As Long = 1
 Private Const ComponentTypeClassModule As Long = 2
+Private Const P9FixtureRelativePath As String = "tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm"
+Private Const P9FixtureExpectedLength As Long = 3532
+Private Const P9FixtureExpectedSha256 As String = "BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E"
 
 ' Builds a deterministic local write plan from complete successful Generator output.
 Public Function AppBuildOutputWritePlan(ByVal GeneratorOutput As Object) As Object
@@ -231,6 +234,59 @@ ErrHandler:
     Set AppApplyGeneratedOutputToAuthorizedWorkbook = Result
 End Function
 
+' Runs the P9 read-only existing-workbook lifecycle against the fixed repository fixture.
+Public Function AppRunReadOnlyWorkbookLifecycle(ByVal RepositoryRootPath As String) As Object
+    Dim FileSystem As Object
+    Dim Evidence As Object
+    Dim FixturePath As String
+    Dim WorkbookFixture As Object
+    Dim OpenAttempted As Boolean
+
+    On Error GoTo ErrHandler
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    Set Evidence = CreateReadOnlyLifecycleEvidence()
+    Evidence("RepositoryRoot") = ComTrimText(RepositoryRootPath)
+
+    FixturePath = ResolveP9FixturePath(FileSystem, RepositoryRootPath)
+    Evidence("ResolvedFixturePath") = FixturePath
+    VerifyP9FixtureIdentity FileSystem, FixturePath, Evidence, "PreOpen"
+    Evidence("OpenMode") = "ReadOnly"
+
+    OpenAttempted = True
+    Set WorkbookFixture = Application.Workbooks.Open(Filename:=FixturePath, UpdateLinks:=0, ReadOnly:=True, AddToMru:=False)
+    Evidence("WorkbookIdentityConfirmed") = (StrComp(CStr(WorkbookFixture.FullName), FixturePath, vbTextCompare) = 0)
+    If Not CBool(Evidence("WorkbookIdentityConfirmed")) Then
+        Err.Raise ComErrInvalidState, "AppOutputWriteService.AppRunReadOnlyWorkbookLifecycle", "Workbook identity reconfirmation failed."
+    End If
+    If Not CBool(WorkbookFixture.ReadOnly) Then
+        Err.Raise ComErrInvalidState, "AppOutputWriteService.AppRunReadOnlyWorkbookLifecycle", "Writable workbook open is not authorized."
+    End If
+    Evidence("WorkbookReadOnly") = True
+    AddReadOnlyLifecycleOperation Evidence, "OpenReadOnly"
+
+    WorkbookFixture.Close False
+    Set WorkbookFixture = Nothing
+    Evidence("ClosedWithoutSaving") = True
+    AddReadOnlyLifecycleOperation Evidence, "CloseNoSave"
+    VerifyP9FixtureIdentity FileSystem, FixturePath, Evidence, "PostClose"
+
+    Set AppRunReadOnlyWorkbookLifecycle = CreateLifecycleResult(True, ResultSuccess, "Read-only workbook lifecycle completed.", Evidence)
+    Exit Function
+
+ErrHandler:
+    If Not WorkbookFixture Is Nothing Then
+        On Error Resume Next
+        WorkbookFixture.Close False
+        On Error GoTo 0
+    End If
+    If OpenAttempted Then
+        Evidence("OpenFailure") = Err.Description
+        AddReadOnlyLifecycleOperation Evidence, "OpenReadOnlyFailed"
+    End If
+    Set AppRunReadOnlyWorkbookLifecycle = CreateLifecycleResult(False, ResultHardStop, "Read-only workbook lifecycle hard-stop: " & Err.Description, Evidence)
+End Function
+
 Private Function BuildSuccessfulPlan(ByVal GeneratedUnits As Collection) As Object
     Dim Result As Object
     Dim WriteUnits As Collection
@@ -256,6 +312,143 @@ Private Function BuildSuccessfulPlan(ByVal GeneratedUnits As Collection) As Obje
     Result.Add "WriteUnits", WriteUnits
     Set BuildSuccessfulPlan = Result
 End Function
+
+Private Function ResolveP9FixturePath(ByVal FileSystem As Object, ByVal RepositoryRootPath As String) As String
+    Dim RootPath As String
+    Dim FixturePath As String
+
+    RootPath = ComTrimText(RepositoryRootPath)
+    If ComIsBlankText(RootPath) Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ResolveP9FixturePath", "Repository root is required."
+    End If
+
+    If Not FileSystem.FolderExists(RootPath) Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ResolveP9FixturePath", "Repository root does not exist."
+    End If
+
+    RootPath = FileSystem.GetAbsolutePathName(RootPath)
+    If StrComp(RootPath, RepositoryRootPath, vbBinaryCompare) <> 0 Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ResolveP9FixturePath", "Repository root must be an explicit absolute path."
+    End If
+
+    If Not FileSystem.FileExists(FileSystem.BuildPath(RootPath, "AGENTS.md")) Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ResolveP9FixturePath", "Repository root is not the VMF checkout root."
+    End If
+
+    FixturePath = FileSystem.GetAbsolutePathName(FileSystem.BuildPath(RootPath, P9FixtureRelativePath))
+    If InStr(1, FixturePath, RootPath & Application.PathSeparator, vbTextCompare) <> 1 Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ResolveP9FixturePath", "Resolved fixture path is outside the repository root."
+    End If
+
+    If Not FileSystem.FileExists(FixturePath) Then
+        Err.Raise ComErrInvalidArgument, "AppOutputWriteService.ResolveP9FixturePath", "Authorized P9 workbook fixture is missing."
+    End If
+
+    ResolveP9FixturePath = FixturePath
+End Function
+
+Private Sub VerifyP9FixtureIdentity(ByVal FileSystem As Object, ByVal FixturePath As String, ByVal Evidence As Object, ByVal PhaseName As String)
+    Dim FileItem As Object
+    Dim ActualSha256 As String
+
+    Set FileItem = FileSystem.GetFile(FixturePath)
+    ActualSha256 = ComputeFileSha256(FixturePath)
+
+    Evidence(PhaseName & "Length") = CLng(FileItem.Size)
+    Evidence(PhaseName & "Sha256") = ActualSha256
+
+    If CLng(FileItem.Size) <> P9FixtureExpectedLength Then
+        Err.Raise ComErrInvalidState, "AppOutputWriteService.VerifyP9FixtureIdentity", "Authorized P9 workbook fixture length mismatch."
+    End If
+
+    If StrComp(ActualSha256, P9FixtureExpectedSha256, vbTextCompare) <> 0 Then
+        Err.Raise ComErrInvalidState, "AppOutputWriteService.VerifyP9FixtureIdentity", "Authorized P9 workbook fixture SHA-256 mismatch."
+    End If
+
+    Evidence(PhaseName & "IdentityConfirmed") = True
+    AddReadOnlyLifecycleOperation Evidence, PhaseName & "IdentityCheck"
+End Sub
+
+Private Function ComputeFileSha256(ByVal FilePath As String) As String
+    Dim Shell As Object
+    Dim ExecResult As Object
+    Dim OutputText As String
+    Dim Lines() As String
+    Dim Index As Long
+    Dim Candidate As String
+
+    Set Shell = CreateObject("WScript.Shell")
+    Set ExecResult = Shell.Exec("cmd.exe /c certutil -hashfile " & QuoteShellArgument(FilePath) & " SHA256")
+    OutputText = ExecResult.StdOut.ReadAll
+    If Len(ExecResult.StdErr.ReadAll) > 0 Or ExecResult.ExitCode <> 0 Then
+        Err.Raise ComErrInvalidState, "AppOutputWriteService.ComputeFileSha256", "Fixture SHA-256 check failed."
+    End If
+
+    Lines = Split(OutputText, vbCrLf)
+    For Index = LBound(Lines) To UBound(Lines)
+        Candidate = UCase$(Replace(Trim$(Lines(Index)), " ", vbNullString))
+        If Len(Candidate) = 64 And IsHexText(Candidate) Then
+            ComputeFileSha256 = Candidate
+            Exit Function
+        End If
+    Next Index
+
+    Err.Raise ComErrInvalidState, "AppOutputWriteService.ComputeFileSha256", "Fixture SHA-256 evidence is missing."
+End Function
+
+Private Function QuoteShellArgument(ByVal TextValue As String) As String
+    QuoteShellArgument = Chr$(34) & Replace(TextValue, Chr$(34), Chr$(34) & Chr$(34)) & Chr$(34)
+End Function
+
+Private Function IsHexText(ByVal TextValue As String) As Boolean
+    Dim Index As Long
+    Dim Code As Integer
+
+    For Index = 1 To Len(TextValue)
+        Code = Asc(Mid$(TextValue, Index, 1))
+        If Not ((Code >= 48 And Code <= 57) Or (Code >= 65 And Code <= 70)) Then
+            IsHexText = False
+            Exit Function
+        End If
+    Next Index
+
+    IsHexText = True
+End Function
+
+Private Function CreateReadOnlyLifecycleEvidence() As Object
+    Dim Evidence As Object
+
+    Set Evidence = CreateObject("Scripting.Dictionary")
+    Evidence("RepositoryRoot") = vbNullString
+    Evidence("ResolvedFixturePath") = vbNullString
+    Evidence("OpenMode") = "None"
+    Evidence("WorkbookIdentityConfirmed") = False
+    Evidence("WorkbookReadOnly") = False
+    Evidence("ClosedWithoutSaving") = False
+    Evidence("OpenFailure") = vbNullString
+    Evidence("PreOpenIdentityConfirmed") = False
+    Evidence("PostCloseIdentityConfirmed") = False
+    Evidence.Add "OperationHistory", New Collection
+
+    Set CreateReadOnlyLifecycleEvidence = Evidence
+End Function
+
+Private Function CreateLifecycleResult(ByVal IsSuccess As Boolean, ByVal Classification As String, ByVal Message As String, ByVal Evidence As Object) As Object
+    Dim Result As Object
+
+    Set Result = CreateMutationResult(IsSuccess, Classification, Message)
+    Result("MutatedModules") = 0
+    Result.Add "ReadOnlyLifecycleEvidence", Evidence
+
+    Set CreateLifecycleResult = Result
+End Function
+
+Private Sub AddReadOnlyLifecycleOperation(ByVal Evidence As Object, ByVal OperationName As String)
+    Dim OperationHistory As Collection
+
+    Set OperationHistory = Evidence("OperationHistory")
+    OperationHistory.Add OperationName
+End Sub
 
 Private Sub ValidateWorkbookLifecycleAuthorization(ByVal WorkbookFixture As Object, ByVal LifecycleAuthorization As Object, ByVal OperationHistory As Collection)
     Dim AuthorizedWorkbook As Object

@@ -43,6 +43,10 @@ Public Sub AppRunOutputWriteBoundaryTests()
     VerifyLaterExistingRealVBProjectModuleHardStopsBeforeMutation
     VerifyUnrelatedExistingRealVBProjectModuleIsPreserved
     VerifyExistingRealVBProjectModuleHardStopsWithoutMutation
+    VerifyReadOnlyLifecycleRunnerHardStopsWhenAuthorizedFixtureCannotOpen
+    VerifyReadOnlyLifecycleRunnerRejectsBlankRoot
+    VerifyReadOnlyLifecycleRunnerRejectsRelativeRoot
+    VerifyReadOnlyLifecycleRunnerRejectsMissingRoot
 End Sub
 
 Private Sub VerifyOutputWriteAcceptsSuccessfulGeneratorOutput()
@@ -848,6 +852,89 @@ Cleanup:
     If Err.Number <> 0 Then Err.Raise Err.Number, Err.Source, Err.Description
 End Sub
 
+Private Sub VerifyReadOnlyLifecycleRunnerHardStopsWhenAuthorizedFixtureCannotOpen()
+    Dim Service As AppOutputWriteService
+    Dim FileSystem As Object
+    Dim RepositoryRoot As String
+    Dim FixturePath As String
+    Dim Result As Object
+    Dim Evidence As Object
+
+    Set Service = New AppOutputWriteService
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    RepositoryRoot = ResolveRepositoryRootPath()
+    FixturePath = FileSystem.BuildPath(RepositoryRoot, "tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm")
+
+    Set Result = Service.AppRunReadOnlyWorkbookLifecycle(RepositoryRoot)
+    Set Evidence = Result("ReadOnlyLifecycleEvidence")
+
+    AssertFalse CBool(Result("Success")), "Unreadable authorized fixture should hard-stop."
+    AssertEquals "HardStop", CStr(Result("Classification")), "Unreadable authorized fixture should remain a hard-stop."
+    AssertEquals 0, CLng(Result("MutatedModules")), "Read-only lifecycle should not mutate modules."
+    AssertEquals FixturePath, CStr(Evidence("ResolvedFixturePath")), "Read-only lifecycle should resolve only the fixed P9 fixture path."
+    AssertTrue CBool(Evidence("PreOpenIdentityConfirmed")), "Read-only lifecycle should confirm fixture identity before open."
+    AssertFalse CBool(Evidence("WorkbookIdentityConfirmed")), "Unreadable fixture should not report workbook identity confirmation."
+    AssertFalse CBool(Evidence("WorkbookReadOnly")), "Unreadable fixture should not report read-only workbook open."
+    AssertFalse CBool(Evidence("ClosedWithoutSaving")), "Unreadable fixture should not report close without saving."
+    AssertFalse CBool(Evidence("PostCloseIdentityConfirmed")), "Unreadable fixture should not report post-close identity confirmation."
+    AssertContains CStr(Evidence("OpenFailure")), "Open", "Read-only lifecycle evidence should include the workbook open failure."
+    AssertEquals 2, Evidence("OperationHistory").Count, "Read-only lifecycle should record pre-open identity and read-only open failure."
+    AssertEquals "PreOpenIdentityCheck", CStr(Evidence("OperationHistory").Item(1)), "Read-only lifecycle should start with pre-open identity evidence."
+    AssertEquals "OpenReadOnlyFailed", CStr(Evidence("OperationHistory").Item(2)), "Read-only lifecycle should record read-only open failure."
+End Sub
+
+Private Sub VerifyReadOnlyLifecycleRunnerRejectsBlankRoot()
+    Dim Service As AppOutputWriteService
+    Dim Result As Object
+    Dim Evidence As Object
+
+    Set Service = New AppOutputWriteService
+
+    Set Result = Service.AppRunReadOnlyWorkbookLifecycle(vbNullString)
+    Set Evidence = Result("ReadOnlyLifecycleEvidence")
+
+    AssertFalse CBool(Result("Success")), "Blank repository root should hard-stop."
+    AssertEquals "HardStop", CStr(Result("Classification")), "Blank repository root should remain a hard-stop."
+    AssertContains CStr(Result("Message")), "Repository root is required", "Hard-stop should identify missing root."
+    AssertEquals 0, Evidence("OperationHistory").Count, "Blank root should stop before fixture identity checks."
+End Sub
+
+Private Sub VerifyReadOnlyLifecycleRunnerRejectsRelativeRoot()
+    Dim Service As AppOutputWriteService
+    Dim Result As Object
+    Dim Evidence As Object
+
+    Set Service = New AppOutputWriteService
+
+    Set Result = Service.AppRunReadOnlyWorkbookLifecycle(".")
+    Set Evidence = Result("ReadOnlyLifecycleEvidence")
+
+    AssertFalse CBool(Result("Success")), "Relative repository root should hard-stop."
+    AssertEquals "HardStop", CStr(Result("Classification")), "Relative repository root should remain a hard-stop."
+    AssertContains CStr(Result("Message")), "explicit absolute path", "Hard-stop should reject relative root injection."
+    AssertEquals 0, Evidence("OperationHistory").Count, "Relative root should stop before fixture identity checks."
+End Sub
+
+Private Sub VerifyReadOnlyLifecycleRunnerRejectsMissingRoot()
+    Dim Service As AppOutputWriteService
+    Dim FileSystem As Object
+    Dim MissingRoot As String
+    Dim Result As Object
+    Dim Evidence As Object
+
+    Set Service = New AppOutputWriteService
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    MissingRoot = FileSystem.BuildPath(Environ$("TEMP"), "vmf-p9-31-missing-root")
+
+    Set Result = Service.AppRunReadOnlyWorkbookLifecycle(MissingRoot)
+    Set Evidence = Result("ReadOnlyLifecycleEvidence")
+
+    AssertFalse CBool(Result("Success")), "Missing repository root should hard-stop."
+    AssertEquals "HardStop", CStr(Result("Classification")), "Missing repository root should remain a hard-stop."
+    AssertContains CStr(Result("Message")), "does not exist", "Hard-stop should identify missing root path."
+    AssertEquals 0, Evidence("OperationHistory").Count, "Missing root should stop before fixture identity checks."
+End Sub
+
 Private Function BuildPlan(ByVal GeneratorOutput As Object) As Object
     Dim Service As AppOutputWriteService
 
@@ -955,6 +1042,29 @@ End Function
 
 Private Function CreateTempOutputFolderPath(ByVal FileSystem As Object) As String
     CreateTempOutputFolderPath = FileSystem.BuildPath(Environ$("TEMP"), "vmf-p6-07-" & Replace(CStr(Timer), ".", ""))
+End Function
+
+Private Function ResolveRepositoryRootPath() As String
+    Dim FileSystem As Object
+    Dim CandidatePath As String
+
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    CandidatePath = ThisWorkbook.Path
+
+    Do While Len(CandidatePath) > 0
+        If FileSystem.FileExists(FileSystem.BuildPath(CandidatePath, "AGENTS.md")) _
+            And FileSystem.FileExists(FileSystem.BuildPath(CandidatePath, "VMF_CODEX_PLAYBOOK.md")) Then
+            ResolveRepositoryRootPath = CandidatePath
+            Exit Function
+        End If
+
+        If FileSystem.GetParentFolderName(CandidatePath) = CandidatePath Then
+            Exit Do
+        End If
+        CandidatePath = FileSystem.GetParentFolderName(CandidatePath)
+    Loop
+
+    Err.Raise AppTestAssertErrorNumber, "AppOutputWriteBoundaryTests", "Repository root could not be resolved for P9 read-only lifecycle test."
 End Function
 
 Private Function RealVBProjectModuleExists(ByVal TargetVBProject As Object, ByVal ModuleName As String) As Boolean
