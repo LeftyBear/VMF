@@ -1148,6 +1148,29 @@ Recommended next actions are:
    VBProject mutation, writable lifecycle operations, package / `dist`,
    release / publication, external service, public API, persisted schema,
    canonical format, or Frozen specification change.
+   P9-38 Read-Only Lifecycle Success-Path Evidence Owner Authorization Inputs
+   is now recorded in
+   `docs/spec/P9-38_ReadOnlyLifecycleSuccessPathEvidenceOwnerAuthorizationInputs.md`;
+   it records owner acceptance of the current test-owned fixture
+   `tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm` as the later
+   success-path evidence target with expected length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, and
+   exactly one workbook fixture under `tests\fixtures\workbooks`. P9-38
+   records owner authorization inputs for later focused read-only lifecycle
+   evidence execution only: explicit-path read-only Excel open, update-links
+   disabled, add-to-MRU disabled, identity inspection, close without saving,
+   Excel quit / residual-process confirmation if possible, focused command
+   `tools\test\run-tests.ps1 -BuildPath tmp\p9-success\Build.xlam`, and
+   focused scope `AppRunOutputWriteBoundaryTests`. P9-38 records failed-open
+   hard-stop, replacement fixture NO-GO, textual/log evidence-only retention,
+   and operator review before any writable lifecycle, fixture mutation, or
+   VBProject operation. P9-38 itself performs no Excel automation, workbook
+   operation, fixture mutation / repair / replacement, implementation, test
+   execution, workbook / VBProject mutation, writable lifecycle operations,
+   package / `dist`, release / publication, external service, public API,
+   persisted schema, canonical format, or Frozen specification change. P9-38
+   selects P9-39 Read-Only Lifecycle Success-Path Evidence GO / NO-GO as the
+   next candidate.
 
 The vNext hardening backlog currently includes:
 
