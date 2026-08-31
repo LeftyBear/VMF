@@ -1228,6 +1228,25 @@ Recommended next actions are:
    public API, persisted schema, canonical format, or Frozen specification
    change. P9-41 selects P9-42 Read-Only Lifecycle Success-Path Runner
    Artifact Preparation as the next candidate.
+   P9-42 Read-Only Lifecycle Success-Path Runner Artifact Preparation is now
+   recorded in
+   `docs/spec/P9-42_ReadOnlyLifecycleSuccessPathRunnerArtifactPreparation.md`;
+   it executes only the P9-41 approved artifact preparation command
+   `tools\build\build.ps1 -OutputPath tmp\p9-success\Build.xlam -BuildVersion p9-success-local -ReleaseType LocalVerification`
+   with local PowerShell execution-policy wrapping. The command exited `0`
+   and created `tmp\p9-success\Build.xlam` from current repository Build
+   source; prepared artifact length is `515199` bytes and SHA-256 is
+   `71C4D9C3AD5D6F65607301468BE68B2676024A74640E5E759BA9DFE53C8195A4`.
+   P9-42 rechecked the P9 fixture before and after preparation as length
+   `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, and
+   exactly one workbook fixture under `tests\fixtures\workbooks`. P9-42 does
+   not retry the P9-39 command, open the P9 fixture, mutate or replace any
+   workbook or VBProject, run full regression, update package / `dist`,
+   perform release / publication, access external services, stage, commit,
+   push, change public APIs, change persisted schemas, change canonical
+   formats, or change Frozen specifications. P9-42 selects P9-43 Read-Only
+   Lifecycle Success-Path Evidence Retry GO / NO-GO as the next candidate.
 
 The vNext hardening backlog currently includes:
 
