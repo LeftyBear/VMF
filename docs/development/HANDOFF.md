@@ -1130,6 +1130,24 @@ Recommended next actions are:
    mutation, writable lifecycle operations, package / `dist`, release /
    publication, external service, public API, persisted schema, canonical
    format, or Frozen specification change.
+   P9-37 Read-Only Lifecycle Success-Path Evidence Wait State is now recorded
+   in
+   `docs/spec/P9-37_ReadOnlyLifecycleSuccessPathEvidenceWaitState.md`; it
+   preserves the P9-36 `WAIT - Read-Only Lifecycle Success-Path Evidence
+   Authorization Inputs` state because the current task input supplies only
+   the P9-37 wait-state task name, not explicit current-fixture success-path
+   subject acceptance, Excel automation permission, exact runner / command
+   authorization, failed-open policy, replacement-fixture authorization
+   values, or evidence retention / operator-review expectations. P9-37
+   rechecks the current fixture identity as length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, and
+   exactly one workbook fixture under `tests\fixtures\workbooks`. P9-37
+   selects `WAIT - Read-Only Lifecycle Success-Path Evidence Authorization
+   Inputs` and performs no Excel automation, workbook operation, fixture
+   mutation / repair / replacement, implementation, test execution, workbook /
+   VBProject mutation, writable lifecycle operations, package / `dist`,
+   release / publication, external service, public API, persisted schema,
+   canonical format, or Frozen specification change.
 
 The vNext hardening backlog currently includes:
 
