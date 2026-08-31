@@ -1110,6 +1110,26 @@ Recommended next actions are:
    lifecycle operations, package / `dist`, release / publication, external
    service, public API, persisted schema, canonical format, or Frozen
    specification change.
+   P9-36 Read-Only Lifecycle Success-Path Evidence Authorization Input
+   Completion is now recorded in
+   `docs/spec/P9-36_ReadOnlyLifecycleSuccessPathEvidenceAuthorizationInputCompletion.md`;
+   it applies P9-35 and records that the current task input supplies only the
+   P9-36 task name, not the missing success-path evidence authorization
+   values. P9-36 rechecks the current fixture identity as length `3532` bytes,
+   SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, and
+   exactly one workbook fixture under `tests\fixtures\workbooks`.
+   Success-path evidence execution remains NO-GO because no explicit
+   current-fixture success-path subject acceptance, Excel automation
+   permission, exact runner / command authorization, failed-open policy,
+   replacement-fixture authorization values, or execution evidence retention /
+   operator-review expectations are supplied. P9-36 selects `WAIT -
+   Read-Only Lifecycle Success-Path Evidence Authorization Inputs`. P9-36
+   performs no Excel automation, workbook operation, fixture mutation / repair
+   / replacement, implementation, test execution, workbook / VBProject
+   mutation, writable lifecycle operations, package / `dist`, release /
+   publication, external service, public API, persisted schema, canonical
+   format, or Frozen specification change.
 
 The vNext hardening backlog currently includes:
 
