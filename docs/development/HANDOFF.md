@@ -1039,6 +1039,25 @@ Recommended next actions are:
    external service, public API, persisted schema, canonical format, or Frozen
    specification change. P9 focused existing-workbook mutation implementation
    start remains NO-GO.
+   P9-32 Read-Only Lifecycle Runner Root Injection Implementation Closeout is
+   now recorded in
+   `docs/spec/P9-32_ReadOnlyLifecycleRunnerRootInjectionImplementationCloseout.md`;
+   it closes out P9-31 after commit
+   `da5b0aadcb53d34feb752b52a41b9354a550fc8e`, which changed only
+   `src/Build/Application/AppOutputWriteService.cls` and
+   `tests/unit/Build/AppOutputWriteBoundaryTests.bas`. P9-31 added
+   `AppRunReadOnlyWorkbookLifecycle`, explicit absolute repository-root
+   injection, fixed P9 fixture resolution, P9-26 fixture identity
+   verification, read-only open posture, lifecycle evidence, close without
+   saving, and focused hard-stop coverage for unreadable authorized fixture,
+   blank root, relative root, and missing root. P9-32 rechecks the authorized
+   fixture identity, records `git show --check --oneline da5b0aa` PASS, does
+   not rerun implementation tests or perform workbook operation, and selects
+   P9-33 Existing Workbook Read-Only Lifecycle Result Review as the next
+   candidate. P9 focused existing-workbook mutation implementation start,
+   workbook / VBProject mutation, writable lifecycle operations, package /
+   `dist`, release / publication, external service, public API, persisted
+   schema, canonical format, and Frozen specification changes remain NO-GO.
 
 The vNext hardening backlog currently includes:
 
