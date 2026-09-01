@@ -1445,6 +1445,31 @@ Recommended next actions are:
    push, public API change, persisted schema change, canonical format change,
    or Frozen specification change.
 
+   P9-52 Existing Workbook Writable Lifecycle Evidence GO / NO-GO is now
+   recorded in
+   `docs/spec/P9-52_ExistingWorkbookWritableLifecycleEvidenceGoNoGo.md`; it
+   applies the P9-51 writable lifecycle authorization boundary and records
+   writable lifecycle evidence execution as NO-GO because the current task
+   input supplies no explicit owner authorization for writable open, exact
+   writable-open arguments, dirty-state policy, close-without-saving behavior,
+   unexpected dirty-state / failed-close handling, focused writable lifecycle
+   verification command, writable evidence retention, or operator-review
+   acceptance. P9-52 rechecks the P9 fixture without opening it as length
+   `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, with
+   exactly one workbook fixture under `tests\fixtures\workbooks`. P9-52
+   preserves P9-48 / P9-49 as read-only evidence only, selects P9-53 Existing
+   Workbook Writable Lifecycle Evidence Owner Authorization Inputs as the next
+   docs-only candidate, and records writable lifecycle execution,
+   existing-workbook mutation implementation start, and create-only VBProject
+   mutation expansion as NO-GO. P9-52 performs no Excel automation, workbook
+   operation, fixture mutation / repair / replacement, workbook / VBProject
+   mutation, implementation change, test code change, implementation test
+   execution, package / `dist` release artifact update, release /
+   publication, external service operation, staging, commit, push, public API
+   change, persisted schema change, canonical format change, or Frozen
+   specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
