@@ -1353,6 +1353,34 @@ Recommended next actions are:
    change, canonical format change, or Frozen specification change. P9-47
    selects P9-48 Read-Only Lifecycle Success-Path Evidence Retry Execution as
    the next candidate.
+   P9-48 Read-Only Lifecycle Success-Path Evidence Retry Execution is now
+   recorded in
+   `docs/spec/P9-48_ReadOnlyLifecycleSuccessPathEvidenceRetryExecution.md`; it
+   executes only the P9-47 approved retry command
+   `tools\test\run-tests.ps1 -BuildPath tmp\p9-success\Build.xlam` with local
+   PowerShell execution-policy wrapping after rechecking the exact P9 fixture
+   as length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   exactly one workbook fixture under `tests\fixtures\workbooks`, the
+   prepared P9 Build artifact as length `515199` bytes and SHA-256
+   `71C4D9C3AD5D6F65607301468BE68B2676024A74640E5E759BA9DFE53C8195A4`, and
+   `tools\test\runner\VMFTestRunner.xlam` as length `718210` bytes and
+   SHA-256
+   `7A1D1364601DBAC125EDAB9F825281B8140138C30582C8E1687C9BC1837F538C`.
+   The command exited `0`, `AppRunOutputWriteBoundaryTests` passed, the
+   read-only lifecycle path proves explicit fixture resolution, pre-open
+   identity confirmation, `UpdateLinks:=0`, `ReadOnly:=True`,
+   `AddToMru:=False`, workbook identity reconfirmation, close without saving,
+   post-close unchanged fixture identity, `MutatedModules = 0`, and no
+   residual Excel process was observed. The current runner also executed the
+   other registered Build VBA runners and they passed; this is observed runner
+   behavior, not future broadening authorization. P9-48 performs no fixture
+   mutation / repair / replacement, workbook / VBProject mutation,
+   implementation change, test code change, package / `dist` release artifact
+   update, release / publication, external service operation, staging, commit,
+   push, public API change, persisted schema change, canonical format change,
+   or Frozen specification change. P9-48 selects P9-49 Read-Only Lifecycle
+   Evidence Closeout / Next Boundary Selection as the next candidate.
 
 The vNext hardening backlog currently includes:
 
