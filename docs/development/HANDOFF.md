@@ -1470,6 +1470,29 @@ Recommended next actions are:
    change, persisted schema change, canonical format change, or Frozen
    specification change.
 
+   P9-53 Existing Workbook Writable Lifecycle Evidence Owner Authorization
+   Inputs is now recorded in
+   `docs/spec/P9-53_ExistingWorkbookWritableLifecycleEvidenceOwnerAuthorizationInputs.md`;
+   it records the current P9 writable lifecycle authorization input state and
+   stops until the complete owner input set is explicitly supplied. P9-53
+   rechecks the P9 fixture without opening it as length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, with
+   exactly one workbook fixture under `tests\fixtures\workbooks`. P9-53
+   records the complete owner authorization inputs as PENDING, including
+   writable-open authorization, exact open arguments / lifecycle flags,
+   no-fallback identity confirmation, dirty-state policy, close-without-saving
+   behavior, unexpected dirty-state / failed-close / residual-process
+   handling, focused writable lifecycle verification command, writable evidence
+   retention, operator-review acceptance, and separate execution authorization.
+   P9-53 selects no implementation or execution candidate and records STOP
+   until inputs are supplied. P9-53 performs no Excel automation, workbook
+   operation, fixture mutation / repair / replacement, workbook / VBProject
+   mutation, implementation change, test code change, implementation test
+   execution, package / `dist` release artifact update, release /
+   publication, external service operation, staging, commit, push, public API
+   change, persisted schema change, canonical format change, or Frozen
+   specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
