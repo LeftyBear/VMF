@@ -1287,7 +1287,27 @@ Recommended next actions are:
    service operation, no public API change, no persisted schema change, no
    canonical format change, and no Frozen specification change. P9-44 selects
    P9-45 Read-Only Lifecycle Test Runner Artifact Preparation GO / NO-GO as
-   the next candidate.
+   the next candidate. P9-45 Read-Only Lifecycle Test Runner Artifact
+   Preparation GO / NO-GO is now recorded docs-only in
+   `docs/spec/P9-45_ReadOnlyLifecycleTestRunnerArtifactPreparationGoNoGo.md`;
+   it applies the P9-44 missing `VMFTestRunner.xlam` precondition result and
+   records GO for a later separate test runner artifact preparation task
+   limited to
+   `tools\test\setup-test-runner.ps1 -BuildPath tmp\p9-success\Build.xlam`.
+   P9-45 rechecks the P9 fixture as length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   exactly one workbook fixture under `tests\fixtures\workbooks`, and the
+   prepared Build artifact as length `515199` bytes and SHA-256
+   `71C4D9C3AD5D6F65607301468BE68B2676024A74640E5E759BA9DFE53C8195A4`; it
+   confirms `tools\test\runner\VMFTestRunner.xlam` is absent and keeps P9-45
+   itself docs-only. P9-45 performs no test-runner setup, no retry execution,
+   no Excel automation, no P9 fixture open, no fixture mutation / repair /
+   replacement, no workbook / VBProject mutation, no full regression, no
+   package / `dist`, no release / publication, no external service operation,
+   no staging, no commit, no push, no public API change, no persisted schema
+   change, no canonical format change, and no Frozen specification change.
+   P9-45 selects P9-46 Read-Only Lifecycle Test Runner Artifact Preparation
+   as the next candidate.
 
 The vNext hardening backlog currently includes:
 
