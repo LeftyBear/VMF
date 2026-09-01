@@ -1268,6 +1268,26 @@ Recommended next actions are:
    change, canonical format change, or Frozen specification change. P9-43
    selects P9-44 Read-Only Lifecycle Success-Path Evidence Retry Execution as
    the next candidate.
+   P9-44 Read-Only Lifecycle Success-Path Evidence Retry Execution is now
+   recorded in
+   `docs/spec/P9-44_ReadOnlyLifecycleSuccessPathEvidenceRetryExecution.md`; it
+   executes only the P9-43 approved retry command
+   `tools\test\run-tests.ps1 -BuildPath tmp\p9-success\Build.xlam` after
+   rechecking the exact P9 fixture as length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   exactly one workbook fixture under `tests\fixtures\workbooks`, and the
+   prepared artifact as length `515199` bytes and SHA-256
+   `71C4D9C3AD5D6F65607301468BE68B2676024A74640E5E759BA9DFE53C8195A4`.
+   The command exited `1` before Excel workbook open because
+   `C:\Users\biz\Documents\Project\VMF\tools\test\runner\VMFTestRunner.xlam`
+   was missing. P9-44 records no successful read-only lifecycle proof, no P9
+   fixture open, no fixture mutation, no workbook / VBProject mutation, no
+   fixture repair / conversion / replacement, no test-runner setup, no full
+   regression, no package / `dist`, no release / publication, no external
+   service operation, no public API change, no persisted schema change, no
+   canonical format change, and no Frozen specification change. P9-44 selects
+   P9-45 Read-Only Lifecycle Test Runner Artifact Preparation GO / NO-GO as
+   the next candidate.
 
 The vNext hardening backlog currently includes:
 
