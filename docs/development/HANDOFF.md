@@ -1493,6 +1493,28 @@ Recommended next actions are:
    change, persisted schema change, canonical format change, or Frozen
    specification change.
 
+   P9-54 Writable Lifecycle Authorization Inputs is now recorded in
+   `docs/spec/P9-54_WritableLifecycleAuthorizationInputs.md`; it records the
+   owner authorization inputs supplied after P9-53 for a later writable
+   lifecycle evidence GO / NO-GO decision. P9-54 rechecks the P9 fixture
+   without opening it as length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, with
+   exactly one workbook fixture under `tests\fixtures\workbooks`. P9-54
+   records future candidate inputs for explicit path open, writable open,
+   identity pre-check, post-open identity reconfirmation, dirty-state
+   observation, close without saving, no-save close verification, and textual
+   evidence retention. P9-54 selects P9-55 Existing Workbook Writable
+   Lifecycle Evidence GO / NO-GO as the next docs-only candidate and records
+   writable lifecycle execution, workbook open execution, existing-workbook
+   mutation implementation start, and create-only VBProject mutation expansion
+   as NO-GO from P9-54. P9-54 performs no Excel automation, workbook
+   operation, fixture mutation / repair / replacement, workbook / VBProject
+   mutation, code injection, module import / export, implementation change,
+   test code change, implementation test execution, package / `dist` release
+   artifact update, release / publication, external service operation,
+   staging, commit, push, public API change, persisted schema change,
+   canonical format change, or Frozen specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
