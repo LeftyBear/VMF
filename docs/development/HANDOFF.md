@@ -1422,6 +1422,29 @@ Recommended next actions are:
    persisted schema change, canonical format change, or Frozen specification
    change.
 
+   P9-51 Existing Workbook Writable Lifecycle Authorization Boundary is now
+   recorded in
+   `docs/spec/P9-51_ExistingWorkbookWritableLifecycleAuthorizationBoundary.md`;
+   it defines the owner authorization boundary required before any later
+   writable lifecycle evidence run or existing-workbook create-only VBProject
+   mutation expansion. P9-51 rechecks the P9 fixture without opening it as
+   length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   with exactly one workbook fixture under `tests\fixtures\workbooks`. P9-51
+   preserves P9-48 / P9-49 as read-only evidence only, records explicit-path
+   writable lifecycle inputs, no-fallback selection, identity reconfirmation,
+   dirty-state hard stops, no-save close expectations, evidence limits, and
+   operator-review requirements, selects P9-52 Existing Workbook Writable
+   Lifecycle Evidence GO / NO-GO as the next docs-only candidate, and records
+   writable lifecycle execution, existing-workbook mutation implementation
+   start, and create-only VBProject mutation expansion as NO-GO. P9-51 performs
+   no Excel automation, workbook operation, fixture mutation / repair /
+   replacement, workbook / VBProject mutation, implementation change, test code
+   change, implementation test execution, package / `dist` release artifact
+   update, release / publication, external service operation, staging, commit,
+   push, public API change, persisted schema change, canonical format change,
+   or Frozen specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
