@@ -1381,6 +1381,26 @@ Recommended next actions are:
    push, public API change, persisted schema change, canonical format change,
    or Frozen specification change. P9-48 selects P9-49 Read-Only Lifecycle
    Evidence Closeout / Next Boundary Selection as the next candidate.
+   P9-49 Read-Only Lifecycle Evidence Closeout / Next Boundary Selection is
+   now recorded in
+   `docs/spec/P9-49_ReadOnlyLifecycleEvidenceCloseoutAndNextBoundarySelection.md`;
+   it closes out the P9 read-only lifecycle success-path evidence chain after
+   P9-48. P9-49 reviews the P9-33 through P9-48 evidence sequence and rechecks
+   the P9 fixture without opening it as length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   with exactly one workbook fixture under `tests\fixtures\workbooks`. P9-49
+   records PASS for the P9-48 read-only lifecycle success-path evidence:
+   explicit fixture resolution, pre-open identity confirmation,
+   `UpdateLinks:=0`, `ReadOnly:=True`, `AddToMru:=False`, workbook identity
+   reconfirmation, close without saving, post-close unchanged fixture identity,
+   `MutatedModules = 0`, and no residual Excel process observed. P9-49
+   performs no Excel automation, workbook operation, fixture mutation / repair
+   / replacement, workbook / VBProject mutation, implementation change, test
+   code change, package / `dist` release artifact update, release /
+   publication, external service operation, staging, commit, push, public API
+   change, persisted schema change, canonical format change, or Frozen
+   specification change. P9-49 selects P9-50 Existing Workbook Mutation
+   Boundary Re-Evaluation / GO-NO-GO as the next candidate.
 
 The vNext hardening backlog currently includes:
 
