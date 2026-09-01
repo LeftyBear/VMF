@@ -1308,6 +1308,27 @@ Recommended next actions are:
    change, no canonical format change, and no Frozen specification change.
    P9-45 selects P9-46 Read-Only Lifecycle Test Runner Artifact Preparation
    as the next candidate.
+   P9-46 Read-Only Lifecycle Test Runner Artifact Preparation is now recorded
+   in `docs/spec/P9-46_ReadOnlyLifecycleTestRunnerArtifactPreparation.md`; it
+   executes only the P9-45 approved setup command
+   `tools\test\setup-test-runner.ps1 -BuildPath tmp\p9-success\Build.xlam`
+   with local PowerShell execution-policy wrapping. The command exited `0`
+   and created `tools\test\runner\VMFTestRunner.xlam`; generated runner
+   artifact length is `718210` bytes and SHA-256 is
+   `7A1D1364601DBAC125EDAB9F825281B8140138C30582C8E1687C9BC1837F538C`.
+   P9-46 rechecked the P9 fixture as length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   exactly one workbook fixture under `tests\fixtures\workbooks`, and the
+   prepared P9 Build artifact as length `515199` bytes and SHA-256
+   `71C4D9C3AD5D6F65607301468BE68B2676024A74640E5E759BA9DFE53C8195A4`.
+   P9-46 performs no P9-39 / P9-43 retry execution, no successful read-only
+   lifecycle proof, no P9 fixture open through the evidence runner, no
+   fixture mutation / repair / replacement, no full regression, no package /
+   `dist`, no release / publication, no external service operation, no
+   staging, no commit, no push, no public API change, no persisted schema
+   change, no canonical format change, and no Frozen specification change.
+   P9-46 selects P9-47 Read-Only Lifecycle Success-Path Evidence Retry GO /
+   NO-GO as the next candidate.
 
 The vNext hardening backlog currently includes:
 
