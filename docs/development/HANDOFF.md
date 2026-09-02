@@ -1801,6 +1801,24 @@ Recommended next actions are:
    persisted schema, canonical format, and Frozen specification changes
    remain NO-GO.
 
+20. P9-68 Replacement Writable Lifecycle Evidence Retry Execution is now
+   recorded in
+   `docs/spec/P9-68_ReplacementWritableLifecycleEvidenceRetryExecution.md`.
+   The initial COM invocation failed before workbook open because optional
+   arguments were not accepted. The corrected invocation repeated the same
+   approved operation, opened only the exact replacement fixture writable,
+   confirmed its path, `ReadOnly = False`, and `Saved = True`, performed no
+   mutation, and closed without saving. Both fixture identities and the count
+   remained unchanged, but the initial post-close check observed one residual
+   Excel process, PID `23696`; the corrected command therefore exited `1` and
+   complete success-path evidence remains unproven. The process exited
+   naturally, final residual count was `0`, and both hashes remained unchanged.
+   P9-69 Replacement Writable Lifecycle Evidence Retry Result Review is the
+   next docs-only candidate. Another retry, implementation, fixture mutation,
+   broader workbook / VBProject operations, package / `dist`, release /
+   publication, external services, Git writes, public API, persisted schema,
+   canonical format, and Frozen specification changes remain NO-GO.
+
 The vNext hardening backlog currently includes:
 
 - signing;
