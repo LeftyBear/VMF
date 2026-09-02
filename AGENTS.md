@@ -262,6 +262,78 @@ The AI MUST begin with the declared scope.
 
 Repository-wide exploration or modification is prohibited unless explicitly required.
 
+The AI MUST inspect only files necessary for the declared task, preferring task-specific specifications, affected implementation files, and focused tests.
+
+The AI MUST NOT repeatedly read authoritative files already inspected during the same task unless needed to resolve a concrete uncertainty.
+
+The AI MUST avoid speculative investigation and follow established implementation patterns instead of searching for alternatives without a concrete need.
+
+---
+
+# 10A. Codex Usage and Reasoning Policy
+
+Default Codex settings:
+
+* model: GPT-5.6 Sol
+* reasoning level: Low
+* speed: Standard
+
+The AI MUST start each task with the lowest reasoning level sufficient for the declared scope.
+
+The AI MAY escalate reasoning only when necessary:
+
+```text
+Low -> Medium -> High
+```
+
+The AI MUST NOT start at High reasoning by default.
+
+Low reasoning SHOULD be used for routine and well-scoped work, including:
+
+* docs-only changes
+* status, backlog, and handoff updates
+* small or deterministic implementation changes
+* focused test additions
+* changes following an established implementation pattern
+* minor bug fixes
+* tasks where authoritative specifications and acceptance criteria are already clear
+
+Medium reasoning SHOULD be used when the task requires material judgment, including:
+
+* boundary design or interpretation
+* comparison of multiple authoritative specifications
+* GO / NO-GO decisions
+* public-contract impact analysis
+* implementation spanning multiple components
+* non-trivial debugging
+* ambiguity that cannot be safely resolved at Low reasoning
+
+High reasoning SHOULD be used only for genuinely complex work, including:
+
+* crash consistency
+* persistence consistency
+* retry or re-execution safety
+* move detection
+* complex diff algorithms
+* complex state transitions
+* partial-failure or conflict handling
+* work involving several interacting safety boundaries
+
+Highest or maximum reasoning levels MUST NOT be used routinely.
+
+Reasoning escalation MUST NOT weaken:
+
+* Frozen specification protection
+* public-contract protection
+* architectural boundaries
+* external-service safety
+* test requirements
+* verification requirements
+* safe-stop conditions
+* Git restrictions
+
+The AI MUST avoid unnecessary reasoning escalation when escalation would not materially improve correctness or safety.
+
 ---
 
 # 11. Coding Rules
@@ -396,6 +468,8 @@ The AI MUST report:
 
 The AI MUST NOT claim completion when required verification has not passed.
 
+The AI MUST run focused verification before broader verification when both are applicable.
+
 ---
 
 # 16. Git Policy
@@ -480,6 +554,8 @@ The AI SHALL:
 * preserve repository history
 * avoid speculative changes
 * keep the task narrow
+* avoid repository-wide exploration unless required
+* avoid unnecessary reasoning escalation
 * report uncertainty
 * distinguish facts from assumptions
 * stop when safe implementation is not possible
@@ -516,6 +592,8 @@ If any condition is not satisfied, the AI MUST report the task as incomplete.
 ---
 
 # 21. Final Report
+
+The final report SHOULD be concise while still satisfying required reporting obligations.
 
 The final report SHOULD include:
 
