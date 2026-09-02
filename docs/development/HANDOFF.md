@@ -1764,6 +1764,22 @@ Recommended next actions are:
    persisted schema, canonical format, and Frozen specification changes
    remain NO-GO.
 
+18. P9-66 Replacement Writable Lifecycle Evidence Result Review is now
+   recorded in
+   `docs/spec/P9-66_ReplacementWritableLifecycleEvidenceResultReview.md`. It
+   accepts the P9-65 exact-path writable open, identity and writable-mode
+   confirmation, `Saved = True` observation without mutation, close without
+   saving, unchanged fixture identities and count, and final safe state. It
+   does not promote the initial residual-process hard stop or command exit
+   code `1` to PASS, so complete writable lifecycle success-path evidence
+   remains unproven. P9-66 rechecks both fixture identities unchanged, exactly
+   two workbook fixtures, and current residual Excel process count `0`. P9-67
+   Replacement Writable Lifecycle Evidence Retry GO / NO-GO is the next
+   docs-only candidate. Retry execution, Excel automation, fixture mutation,
+   implementation or test code changes, package / `dist`, release /
+   publication, external services, Git writes, public API, persisted schema,
+   canonical format, and Frozen specification changes remain NO-GO.
+
 The vNext hardening backlog currently includes:
 
 - signing;
