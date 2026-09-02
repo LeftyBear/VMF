@@ -1749,6 +1749,21 @@ Recommended next actions are:
    change, persisted schema change, canonical format change, or Frozen
    specification change.
 
+17. P9-65 Replacement Writable Lifecycle Evidence Execution is now recorded
+   in `docs/spec/P9-65_ReplacementWritableLifecycleEvidenceExecution.md`. It
+   opened only the exact replacement fixture writable with the P9-64
+   arguments, reconfirmed identity and writable mode, observed `Saved = True`
+   without mutation, and closed without saving. Both fixture identities and
+   count remained unchanged. The initial post-close check observed one
+   residual Excel process, so the command exited `1` and complete success-path
+   evidence is not claimed. The process exited naturally before targeted
+   cleanup; final residual count was `0` and both hashes remained unchanged.
+   P9-66 Replacement Writable Lifecycle Evidence Result Review is the next
+   docs-only candidate. Retry, implementation, fixture mutation, package /
+   `dist`, release / publication, external services, Git writes, public API,
+   persisted schema, canonical format, and Frozen specification changes
+   remain NO-GO.
+
 The vNext hardening backlog currently includes:
 
 - signing;
