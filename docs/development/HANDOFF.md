@@ -1726,6 +1726,29 @@ Recommended next actions are:
    commit, push, public API change, persisted schema change, canonical format
    change, or Frozen specification change.
 
+16. P9-64 Replacement Writable Lifecycle Evidence GO / NO-GO is now recorded
+   in `docs/spec/P9-64_ReplacementWritableLifecycleEvidenceGoNoGo.md`; it
+   applies the P9-60 owner-approved future lifecycle scope and P9-63 accepted
+   replacement fixture creation evidence. P9-64 rechecks without opening
+   either workbook that the replacement fixture remains length `8342` bytes,
+   SHA-256
+   `220322FA5416DC7A10CD80BFBCEE0AE277D699175FF7A874E5DE3163D7FC301B`,
+   attributes `Archive`, and the historical fixture remains length `3532`
+   bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   attributes `Archive`, with exactly two workbook fixtures. It records GO
+   only for a later separate focused execution against the exact replacement
+   fixture, keeps execution itself NO-GO from P9-64, preserves explicit-path
+   selection, identity checks, writable open, dirty-state observation without
+   mutation, close without saving, unchanged post-close identity verification,
+   no fallback, and textual / log evidence only, and selects P9-65 Replacement
+   Writable Lifecycle Evidence Execution. P9-64 performs no Excel automation,
+   workbook operation, fixture mutation, workbook / VBProject mutation,
+   implementation or test code change, package / `dist`, release /
+   publication, external service operation, staging, commit, push, public API
+   change, persisted schema change, canonical format change, or Frozen
+   specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
