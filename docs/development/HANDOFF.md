@@ -1632,6 +1632,32 @@ Recommended next actions are:
    operation, staging, commit, push, public API change, persisted schema
    change, canonical format change, or Frozen specification change.
 
+12. P9-60 Replacement Writable Fixture Authorization Input Completion is now
+   recorded in
+   `docs/spec/P9-60_ReplacementWritableFixtureAuthorizationInputCompletion.md`;
+   it records the owner-supplied authorization inputs for the future
+   replacement writable fixture
+   `tests\fixtures\workbooks\P9_WritableLifecycleFixture.xlsm` after P9-59
+   left the inputs PENDING. P9-60 confirms the existing historical fixture
+   `tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm` remains immutable
+   historical / read-only evidence input, rechecks it without opening as length
+   `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   attributes `Archive`, and confirms
+   `tests\fixtures\workbooks\P9_WritableLifecycleFixture.xlsm` does not yet
+   exist. P9-60 records replacement writable fixture owner authorization inputs
+   as SUPPLIED, replacement fixture creation as NO-GO in P9-60, writable
+   lifecycle evidence execution as NO-GO in P9-60, and selects P9-61
+   Replacement Writable Fixture Creation GO / NO-GO as the next candidate.
+   P9-60 performs no Excel automation, workbook open / create / save / SaveAs
+   / close operation, fixture creation / mutation / repair / replacement /
+   recreation / conversion, workbook / VBProject mutation, code injection,
+   module import / export, implementation change, test code change,
+   implementation test execution, package / `dist`, release / publication,
+   external service operation, staging, commit, push, public API change,
+   persisted schema change, canonical format change, or Frozen specification
+   change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
