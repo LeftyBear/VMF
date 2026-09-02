@@ -1590,6 +1590,27 @@ Recommended next actions are:
    staging, commit, push, public API change, persisted schema change,
    canonical format change, or Frozen specification change.
 
+10. P9-58 Writable Lifecycle Fixture Path Decision is now recorded in
+   `docs/spec/P9-58_WritableLifecycleFixturePathDecision.md`; it decides the
+   next minimum fixture path after P9-56 failed at writable `Workbooks.Open`
+   and P9-57 preserved that result as failed-open safety evidence only.
+   P9-58 rechecks the current P9 fixture without opening it as length `3532`
+   bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, with
+   exactly one workbook fixture under `tests\fixtures\workbooks`; records
+   that the current fixture remains immutable historical / read-only evidence
+   input and must not be repaired, resaved, converted, replaced in place, or
+   used for an implicit writable retry; records GO only for a later separate
+   docs-only owner-authorization-input record for a new explicit replacement
+   fixture path; and selects P9-59 Replacement Writable Fixture Authorization
+   Inputs as the next docs-only candidate. P9-58 performs no Excel
+   automation, workbook operation, fixture creation / mutation / repair /
+   replacement / recreation / conversion, workbook / VBProject mutation,
+   implementation change, test code change, implementation test execution,
+   package / `dist`, release / publication, external service operation,
+   staging, commit, push, public API change, persisted schema change,
+   canonical format change, or Frozen specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
