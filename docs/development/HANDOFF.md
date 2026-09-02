@@ -1540,6 +1540,32 @@ Recommended next actions are:
    operation, staging, commit, push, public API change, persisted schema
    change, canonical format change, or Frozen specification change.
 
+8. P9-56 Existing Workbook Writable Lifecycle Evidence Execution is now
+   recorded in
+   `docs/spec/P9-56_ExistingWorkbookWritableLifecycleEvidenceExecution.md`;
+   it executes only the P9-55 approved focused writable lifecycle evidence
+   attempt. P9-56 rechecks the exact P9 fixture before execution as length
+   `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, with
+   exactly one workbook fixture under `tests\fixtures\workbooks` and no
+   residual Excel process observed. P9-56 attempted explicit-path writable
+   open with `UpdateLinks = 0`, `ReadOnly = False`, and `AddToMru = False`;
+   both the initial attempt and corrected COM optional-argument retry failed
+   at `Workbooks.Open`, so post-open identity reconfirmation, dirty-state
+   observation, and close without saving were not reached. Post-attempt
+   fixture identity remained length `3532` bytes and SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, with
+   exactly one workbook fixture and no residual Excel process observed. P9-56
+   records PASS for pre-open and post-attempt fixture identity, NO-GO for
+   writable lifecycle success-path evidence, and selects P9-57 Writable
+   Lifecycle Failed-Open Result Review as the next candidate. P9-56 performs
+   no successful workbook open, Save, SaveAs, fixture mutation / repair /
+   replacement, workbook / VBProject mutation, code injection, module import /
+   export, implementation change, test code change, package / `dist` release
+   artifact update, release / publication, external service operation,
+   staging, commit, push, public API change, persisted schema change,
+   canonical format change, or Frozen specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
