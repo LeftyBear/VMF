@@ -1658,6 +1658,31 @@ Recommended next actions are:
    persisted schema change, canonical format change, or Frozen specification
    change.
 
+13. P9-61 Replacement Writable Fixture Creation GO / NO-GO is now recorded in
+   `docs/spec/P9-61_ReplacementWritableFixtureCreationGoNoGo.md`; it applies
+   the P9-60 owner-supplied replacement writable fixture authorization inputs
+   and records GO for a later separate fixture creation execution task limited
+   to creating only
+   `tests\fixtures\workbooks\P9_WritableLifecycleFixture.xlsm`. P9-61
+   confirms the existing historical fixture
+   `tests\fixtures\workbooks\P9_TestOwnedWorkbook.xlsm` remains immutable
+   historical / read-only evidence input, rechecks it without opening as length
+   `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   attributes `Archive`, and confirms
+   `tests\fixtures\workbooks\P9_WritableLifecycleFixture.xlsm` does not yet
+   exist. P9-61 records replacement fixture creation from P9-61 as NO-GO,
+   writable lifecycle evidence execution as NO-GO in P9-61, and selects P9-62
+   Replacement Writable Fixture Creation Execution as the next candidate.
+   P9-61 performs no Excel automation, workbook open / create / save / SaveAs
+   / close operation, fixture creation / mutation / repair / replacement /
+   recreation / conversion, workbook / VBProject mutation, code injection,
+   module import / export, implementation change, test code change,
+   implementation test execution, package / `dist`, release / publication,
+   external service operation, staging, commit, push, public API change,
+   persisted schema change, canonical format change, or Frozen specification
+   change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
