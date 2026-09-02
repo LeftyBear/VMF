@@ -1566,6 +1566,30 @@ Recommended next actions are:
    staging, commit, push, public API change, persisted schema change,
    canonical format change, or Frozen specification change.
 
+9. P9-57 Writable Lifecycle Failed-Open Result Review is now recorded in
+   `docs/spec/P9-57_WritableLifecycleFailedOpenResultReview.md`; it reviews
+   the P9-56 failed-open evidence and records that P9-56 is useful
+   failed-open safety evidence but not writable lifecycle success-path
+   evidence. P9-57 rechecks the P9 fixture without opening it as length
+   `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, with
+   exactly one workbook fixture under `tests\fixtures\workbooks`; records
+   PASS for unchanged fixture identity and failed-open safety evidence;
+   records NO-GO for claiming writable lifecycle success-path evidence,
+   retrying writable open, repairing / replacing / recreating / converting the
+   fixture, using fallback workbook selection, workbook / VBProject mutation,
+   implementation change, test code change, package / `dist`, release /
+   publication, external service operation, staging, commit, push, public API
+   change, persisted schema change, canonical format change, or Frozen
+   specification change; and selects P9-58 Writable Lifecycle Fixture Path
+   Decision as the next docs-only candidate. P9-57 performs no Excel
+   automation, workbook operation, fixture mutation / repair / replacement /
+   recreation / conversion, workbook / VBProject mutation, implementation
+   change, test code change, implementation test execution, package / `dist`
+   release artifact update, release / publication, external service operation,
+   staging, commit, push, public API change, persisted schema change,
+   canonical format change, or Frozen specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
