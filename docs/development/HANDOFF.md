@@ -1611,6 +1611,27 @@ Recommended next actions are:
    staging, commit, push, public API change, persisted schema change,
    canonical format change, or Frozen specification change.
 
+11. P9-59 Replacement Writable Fixture Authorization Inputs is now recorded in
+   `docs/spec/P9-59_ReplacementWritableFixtureAuthorizationInputs.md`; it
+   records the owner authorization inputs required before any later replacement
+   writable fixture path can be created, selected, opened, or used for writable
+   lifecycle success-path evidence after P9-58. P9-59 rechecks the current P9
+   fixture without opening it as length `3532` bytes, SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`, with
+   exactly one workbook fixture under `tests\fixtures\workbooks`; records the
+   required owner inputs as PENDING because the current task input supplies no
+   replacement fixture path or complete owner input set; preserves the current
+   P9 fixture as immutable historical / read-only evidence input; records
+   replacement fixture creation, selection, open, use, writable lifecycle
+   execution, implementation start, and test code change as NO-GO; and selects
+   no implementation or execution candidate until owner inputs are supplied.
+   P9-59 performs no Excel automation, workbook operation, fixture creation /
+   mutation / repair / replacement / recreation / conversion, workbook /
+   VBProject mutation, implementation change, test code change, implementation
+   test execution, package / `dist`, release / publication, external service
+   operation, staging, commit, push, public API change, persisted schema
+   change, canonical format change, or Frozen specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
