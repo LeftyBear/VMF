@@ -1780,6 +1780,27 @@ Recommended next actions are:
    publication, external services, Git writes, public API, persisted schema,
    canonical format, and Frozen specification changes remain NO-GO.
 
+19. P9-67 Replacement Writable Lifecycle Evidence Retry GO / NO-GO is now
+   recorded in
+   `docs/spec/P9-67_ReplacementWritableLifecycleEvidenceRetryGoNoGo.md`. It
+   applies the P9-66 result review, preserves the P9-65 initial
+   residual-process hard stop and exit code `1`, and records GO only for a
+   later separate focused retry that repeats the P9-64 operation against the
+   exact replacement fixture. P9-67 rechecks the replacement fixture as
+   length `8342` bytes, SHA-256
+   `220322FA5416DC7A10CD80BFBCEE0AE277D699175FF7A874E5DE3163D7FC301B`,
+   attributes `Archive`, and the historical fixture as length `3532` bytes,
+   SHA-256
+   `BB9646DB308BA05A3444CADC577F4A6F09642E576EF1F54456C2D889BA319E8E`,
+   attributes `Archive`, with exactly two workbook fixtures and current
+   residual Excel process count `0`. It keeps retry execution NO-GO from
+   P9-67, keeps complete success-path evidence unproven, and selects P9-68
+   Replacement Writable Lifecycle Evidence Retry Execution. Implementation,
+   fixture mutation, broader workbook / VBProject operations, package /
+   `dist`, release / publication, external services, Git writes, public API,
+   persisted schema, canonical format, and Frozen specification changes
+   remain NO-GO.
+
 The vNext hardening backlog currently includes:
 
 - signing;
