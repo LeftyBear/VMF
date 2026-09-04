@@ -1838,6 +1838,25 @@ Recommended next actions are:
    Git writes, public API, persisted schema, canonical format, and Frozen
    specification changes remain NO-GO.
 
+22. P9-70 Replacement Writable Lifecycle Residual-Process Evidence Planning is
+   now recorded in
+   `docs/spec/P9-70_ReplacementWritableLifecycleResidualProcessEvidencePlanning.md`.
+   It defines the minimum ordered evidence needed to distinguish delayed Excel
+   / COM teardown from an actionable cleanup failure: pre-operation process
+   inventory, correlated PID identity, close / quit / COM-release timestamps,
+   an immediate acceptance-point observation, fixed bounded diagnostic
+   follow-up observations, natural-exit or window-exceeded classification,
+   unchanged fixture identity/count evidence, and explicit exit code. The
+   immediate residual-process rule remains unchanged; delayed natural exit
+   retains HARD-STOP and does not prove the complete writable lifecycle
+   success path. P9-71 Replacement Writable Lifecycle Residual-Process
+   Evidence GO / NO-GO is the next docs-only candidate. Another retry, Excel
+   automation, implementation, fixture or process mutation, process
+   termination, acceptance-criterion change, broader workbook / VBProject
+   operations, package / `dist`, release / publication, external services,
+   Git writes, public API, persisted schema, canonical format, and Frozen
+   specification changes remain NO-GO.
+
 The vNext hardening backlog currently includes:
 
 - signing;
