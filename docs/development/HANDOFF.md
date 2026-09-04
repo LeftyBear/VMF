@@ -1961,6 +1961,23 @@ Recommended next actions are:
    persisted schema, canonical format, and Frozen specification change remain
    NO-GO.
 
+29. P9-77 Residual-Process Evidence Execution Result Review is now recorded in
+   `docs/spec/P9-77_ResidualProcessEvidenceExecutionResultReview.md`. It
+   accepts the P9-76 exit code `1` command-line parsing failure as
+   `HARD-STOP / OPERATION FAILURE`, confirms compliance with the authorized
+   single-invocation and no-correction / no-retry boundaries, and accepts the
+   separate zero-process and authoritative-fixture audit only as final local
+   safe-state evidence. No fixed JSON evidence event was emitted and no Excel
+   or workbook operation was reached, so complete writable lifecycle
+   success-path and residual-process timing evidence remain unproven. The
+   exact parsing cause is not inferred from mojibake host text. P9-78
+   Residual-Process Evidence Command-Line Parsing Failure Correction Planning
+   is the next docs-only candidate. P9-77 performs no correction, retry,
+   command execution, Excel automation, workbook open, fixture or process
+   mutation, process termination, implementation or test change, package /
+   `dist`, release / publication, external service, Git write, public API,
+   persisted schema, canonical format, or Frozen specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
