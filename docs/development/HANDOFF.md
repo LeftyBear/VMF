@@ -1908,6 +1908,24 @@ Recommended next actions are:
    publication, external service, Git write, public API, persisted schema,
    canonical format, or Frozen specification change.
 
+26. P9-74 Residual-Process Evidence Pre-Operation Identity Input Correction is
+   now recorded in
+   `docs/spec/P9-74_ResidualProcessEvidencePreOperationIdentityInputCorrection.md`.
+   It corrects only the P9-72 pre-operation input by fixing the authoritative
+   path, length, SHA-256, attributes, and exact fixture count for the
+   replacement and historical fixtures. The corrected block compares every
+   field before Excel creation or workbook open, emits actual and expected
+   identities and comparison results in `PRE_OPERATION`, and exits `1` on any
+   mismatch. The P9-72 PID correlation, lifecycle operation, post-COM-release
+   acceptance point, diagnostic schedule, maximum window, immediate HARD-STOP,
+   final-state checks, and exit-code semantics remain unchanged. P9-75
+   Residual-Process Evidence Execution GO / NO-GO is the next docs-only
+   candidate. P9-74 performs no command execution, Excel automation, workbook
+   open, fixture identity recheck or mutation, process mutation or termination,
+   implementation or test change, package / `dist`, release / publication,
+   external service, Git write, public API, persisted schema, canonical format,
+   or Frozen specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
