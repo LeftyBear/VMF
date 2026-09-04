@@ -1926,6 +1926,23 @@ Recommended next actions are:
    external service, Git write, public API, persisted schema, canonical format,
    or Frozen specification change.
 
+27. P9-75 Residual-Process Evidence Execution GO / NO-GO is now recorded in
+   `docs/spec/P9-75_ResidualProcessEvidenceExecutionGoNoGo.md`. It reviews the
+   P9-72 fixed input with the exact P9-74 correction and records PASS for
+   internal consistency and safety. The combined input fixes a clean
+   pre-operation process inventory, authoritative fixture identity and count
+   checks before Excel creation, no-fallback HWND-to-PID correlation, the
+   lifecycle and COM-release sequence, immediate acceptance, bounded
+   diagnostics, final-state checks, classifications, and exit code. Exactly
+   one later separate P9-76 Residual-Process Evidence Execution is GO using
+   that input without correction, retry, substitution, fallback, or process
+   termination. P9-75 itself performs no command execution, Excel automation,
+   workbook open, fixture identity recheck or mutation, process mutation or
+   termination, implementation or test change, package / `dist`, release /
+   publication, external service, Git write, public API, persisted schema,
+   canonical format, or Frozen specification change. Complete writable
+   lifecycle success-path evidence remains unproven pending P9-76.
+
 The vNext hardening backlog currently includes:
 
 - signing;
