@@ -1857,6 +1857,25 @@ Recommended next actions are:
    Git writes, public API, persisted schema, canonical format, and Frozen
    specification changes remain NO-GO.
 
+23. P9-71 Replacement Writable Lifecycle Residual-Process Evidence GO /
+   NO-GO is now recorded in
+   `docs/spec/P9-71_ReplacementWritableLifecycleResidualProcessEvidenceGoNoGo.md`.
+   It applies the P9-70 evidence model and records NO-GO for a later focused
+   evidence execution because the exact executable command, unambiguous
+   created-process PID correlation, precise post-COM-release acceptance point,
+   fixed diagnostic follow-up offsets, and maximum observation window are not
+   yet authoritatively fixed. Current read-only rechecks confirm both fixture
+   identities unchanged, exactly two workbook fixtures, and residual Excel
+   process count `0`. The P9-65 and P9-68 immediate hard stops and exit code
+   `1` remain authoritative; delayed natural exit remains diagnostic final-safe-
+   state evidence only. P9-72 Residual-Process Evidence Command and Timing
+   Inputs is the next docs-only candidate. Excel automation, workbook open,
+   another retry, implementation, fixture or process mutation, process
+   termination, acceptance-criterion change, broader workbook / VBProject
+   operations, package / `dist`, release / publication, external services,
+   Git writes, public API, persisted schema, canonical format, and Frozen
+   specification changes remain NO-GO.
+
 The vNext hardening backlog currently includes:
 
 - signing;
