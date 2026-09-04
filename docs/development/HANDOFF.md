@@ -1876,6 +1876,22 @@ Recommended next actions are:
    Git writes, public API, persisted schema, canonical format, and Frozen
    specification changes remain NO-GO.
 
+24. P9-72 Residual-Process Evidence Command and Timing Inputs is now recorded
+   in `docs/spec/P9-72_ResidualProcessEvidenceCommandAndTimingInputs.md`. It
+   fixes one exact Windows PowerShell command, requires zero pre-existing Excel
+   processes, correlates the created application through its HWND and
+   `GetWindowThreadProcessId` without fallback, and defines the acceptance
+   point immediately after close, quit, explicit COM release, and two
+   finalizer-drain cycles. Diagnostic observations are fixed at `250`, `500`,
+   `1000`, and `2000 ms`, with a `2000 ms` maximum window. Any Excel process at
+   the immediate observation retains HARD-STOP and exit code `1`; later natural
+   exit is diagnostic only. P9-73 Residual-Process Evidence Execution GO /
+   NO-GO is the next docs-only candidate. P9-72 performs no Excel automation,
+   workbook open, fixture or process mutation, process termination,
+   implementation or test change, package / `dist`, release / publication,
+   external service, Git write, public API, persisted schema, canonical format,
+   or Frozen specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
