@@ -1978,6 +1978,22 @@ Recommended next actions are:
    `dist`, release / publication, external service, Git write, public API,
    persisted schema, canonical format, or Frozen specification change.
 
+30. P9-78 Residual-Process Evidence Command-Line Parsing Failure Correction
+   Planning is now recorded in
+   `docs/spec/P9-78_ResidualProcessEvidenceCommandLineParsingFailureCorrectionPlanning.md`.
+   It defines the minimum authoritative correction input as one traceable set
+   covering the exact outer invocation and caller, a fully materialized P9-72
+   plus P9-74 script, transport encoding and newline form, every quoting
+   boundary, Windows PowerShell 5.1 parser-only evidence, and semantic-
+   equivalence review. It does not infer the exact P9-76 cause from mojibake
+   text, define or apply a correction, invoke a parser, execute or retry the
+   lifecycle command, or authorize Excel, workbook, fixture, process,
+   implementation, package / `dist`, release / publication, external-service,
+   Git-write, public API, persisted schema, canonical format, or Frozen
+   specification changes. Complete writable lifecycle success-path evidence
+   remains unproven. P9-79 Residual-Process Evidence Command-Line Parsing
+   Correction Input Definition is the next docs-only candidate.
+
 The vNext hardening backlog currently includes:
 
 - signing;
