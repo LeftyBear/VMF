@@ -2011,6 +2011,20 @@ Recommended next actions are:
    unproven. P9-80 Residual-Process Evidence Command-Line Parser Verification
    GO / NO-GO is the next docs-only candidate.
 
+32. P9-80 Residual-Process Evidence Command-Line Parser Verification GO /
+   NO-GO is now recorded in
+   `docs/spec/P9-80_ResidualProcessEvidenceCommandLineParserVerificationGoNoGo.md`.
+   It reviews the complete P9-79 fixed transport, exact script bytes
+   definition, Windows PowerShell 5.1 `ParseFile` method, structured UTF-8
+   evidence, semantic equivalence, and prohibited execution boundary. It
+   records PASS for internal consistency and parser-only safety and authorizes
+   exactly one later separate P9-81 parser verification without correction,
+   retry, substitution, script execution, Excel, workbook, fixture, or process
+   access. P9-80 itself does not materialize or parse the file, and parser PASS
+   cannot establish lifecycle readiness or complete writable lifecycle
+   success-path evidence. P9-81 Residual-Process Evidence Command-Line Parser
+   Verification is the next separately authorized focused candidate.
+
 The vNext hardening backlog currently includes:
 
 - signing;
