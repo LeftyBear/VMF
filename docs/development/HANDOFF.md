@@ -1892,6 +1892,22 @@ Recommended next actions are:
    external service, Git write, public API, persisted schema, canonical format,
    or Frozen specification change.
 
+25. P9-73 Residual-Process Evidence Execution GO / NO-GO is now recorded in
+   `docs/spec/P9-73_ResidualProcessEvidenceExecutionGoNoGo.md`. It records
+   NO-GO for a later focused execution because the P9-72 command captures
+   pre-operation fixture identities but does not compare them with the
+   authoritative expected length, SHA-256, and attributes before Excel
+   creation or workbook open. Pre/post equality alone is not the required
+   exact-identity precondition. The fixed HWND-to-PID correlation,
+   post-COM-release acceptance point, diagnostic schedule, maximum window,
+   and immediate HARD-STOP semantics otherwise pass review. P9-74
+   Residual-Process Evidence Pre-Operation Identity Input Correction is the
+   next docs-only candidate. P9-73 performs no command execution, Excel
+   automation, workbook open, fixture or process mutation, process
+   termination, implementation or test change, package / `dist`, release /
+   publication, external service, Git write, public API, persisted schema,
+   canonical format, or Frozen specification change.
+
 The vNext hardening backlog currently includes:
 
 - signing;
