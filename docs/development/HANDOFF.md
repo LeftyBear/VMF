@@ -1943,6 +1943,24 @@ Recommended next actions are:
    canonical format, or Frozen specification change. Complete writable
    lifecycle success-path evidence remains unproven pending P9-76.
 
+28. P9-76 Residual-Process Evidence Execution is now recorded in
+   `docs/spec/P9-76_ResidualProcessEvidenceExecution.md`. The single
+   P9-75-authorized fixed-command invocation exited `1` at command-line
+   parsing before emitting `PRE_OPERATION` or any other fixed JSON evidence
+   event. Excel creation, workbook open, PID correlation, lifecycle operation,
+   acceptance observation, and bounded diagnostic follow-up were not reached.
+   P9-72 treats a quoting or binding failure as an operation failure and
+   prohibits correction and retry, so no second invocation or process
+   termination occurred. A separate read-only audit confirmed zero Excel
+   processes, both authoritative fixture identities, and exactly two workbook
+   fixtures; this establishes final safe state only and does not prove the
+   writable lifecycle success path. P9-77 Residual-Process Evidence Execution
+   Result Review is the next docs-only candidate. Correction, retry,
+   implementation or test change, workbook / VBProject mutation, package /
+   `dist`, release / publication, external service, Git write, public API,
+   persisted schema, canonical format, and Frozen specification change remain
+   NO-GO.
+
 The vNext hardening backlog currently includes:
 
 - signing;
