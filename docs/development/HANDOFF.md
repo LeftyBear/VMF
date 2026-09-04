@@ -2025,6 +2025,25 @@ Recommended next actions are:
    success-path evidence. P9-81 Residual-Process Evidence Command-Line Parser
    Verification is the next separately authorized focused candidate.
 
+33. P9-81 Command-Line Parser Verification Execution Result Recording is now
+   recorded in
+   `docs/spec/P9-81_CommandLineParserVerificationExecutionResult.md` as
+   `INCOMPLETE / NO-GO`. The already completed single parser-only verification
+   used the fixed path
+   `C:\Users\biz\AppData\Local\Temp\VMF-P9-79-ResidualProcessEvidence.ps1`;
+   recorded materialization checks passed for length `8264`, SHA-256
+   `80749CA24C4CF7A8BF27CF8D55633B526FF64FFBF6CE8216590C609060B1F353`,
+   UTF-8 BOM, CRLF-only lines, and exactly one final CRLF. The Windows
+   PowerShell 5.1 verification process exited `0`, but required structured
+   JSON evidence was not generated. Token count, parse-error count, and
+   `ParseFile` completion remain unproven, so parser PASS is not recognized.
+   The P9-80 invocation is consumed; no retry, second parser invocation, or
+   execution-time correction occurred. No lifecycle script, Excel, workbook,
+   fixture, or process operation occurred, and complete writable lifecycle
+   success-path evidence remains unproven. Any new parser invocation requires
+   a separate explicit GO decision. P9-82 Command-Line Parser Verification
+   Result Review is the next docs-only candidate.
+
 The vNext hardening backlog currently includes:
 
 - signing;
