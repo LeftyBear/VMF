@@ -1994,6 +1994,23 @@ Recommended next actions are:
    remains unproven. P9-79 Residual-Process Evidence Command-Line Parsing
    Correction Input Definition is the next docs-only candidate.
 
+31. P9-79 Residual-Process Evidence Command-Line Parsing Correction Input
+   Definition is now recorded in
+   `docs/spec/P9-79_ResidualProcessEvidenceCommandLineParsingCorrectionInputDefinition.md`.
+   It fixes one direct-process Windows PowerShell 5.1 `-File` transport, exact
+   temporary script path, UTF-8 BOM, CRLF-only lines, one final CRLF, and the
+   fully materialized P9-72 script with only the P9-74 semantic correction.
+   The script no longer crosses a command-line quoting boundary, while the
+   parser-only verification method records byte identity and structured
+   encoding-stable diagnostics. P9-79 does not infer the exact P9-76 cause,
+   materialize the file, invoke a parser, execute or retry the lifecycle
+   command, or authorize Excel, workbook, fixture, process, implementation,
+   package / `dist`, release / publication, external-service, Git-write,
+   public API, persisted schema, canonical format, or Frozen specification
+   changes. Complete writable lifecycle success-path evidence remains
+   unproven. P9-80 Residual-Process Evidence Command-Line Parser Verification
+   GO / NO-GO is the next docs-only candidate.
+
 The vNext hardening backlog currently includes:
 
 - signing;
