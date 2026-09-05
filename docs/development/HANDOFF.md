@@ -2175,6 +2175,23 @@ Recommended next actions are:
    termination, fixture repair, or security-control change. P9-89 performs no
    execution; residual-process timing PASS and complete writable lifecycle
    success-path evidence remain unproven pending P9-90.
+42. P9-90 Corrected Residual-Process Evidence Execution is now recorded in
+   `docs/spec/P9-90_CorrectedResidualProcessEvidenceExecution.md` as
+   `COMPLETE / HARD-STOP / OPERATION FAILURE`. The fixed P9-79 target passed
+   path, length, SHA-256, UTF-8 BOM, CRLF-only, and final-CRLF validation and
+   was invoked exactly once by direct Windows PowerShell 5.1 process creation
+   with the seven fixed ordered arguments. The child exited `1` with empty
+   stdout before `PRE_OPERATION`; retained stderr identifies a `Get-FileHash`
+   `CommandNotFoundException` during the first pre-operation fixture-identity
+   calculation. Excel creation, workbook open, PID correlation, lifecycle
+   operation, immediate acceptance, and diagnostic follow-up were not reached.
+   No correction or retry occurred. A separate read-only audit confirmed zero
+   Excel processes, both authoritative fixture identities, and exactly two
+   workbook fixtures, but proves only the final local safe state. Complete
+   writable lifecycle success-path and residual-process timing evidence remain
+   unproven. P9-91 Corrected Residual-Process Evidence Execution Result Review is
+   the next docs-only candidate; correction, retry, execution, process
+   termination, security-control change, and broader operations remain NO-GO.
 
 The vNext hardening backlog currently includes:
 
