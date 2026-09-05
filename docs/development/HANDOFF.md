@@ -2271,6 +2271,20 @@ Recommended next actions are:
    Evidence and Continuation GO / NO-GO Review is the next docs-only candidate;
    it must not directly authorize parser execution, materialization retry, or
    any Avast-control change or bypass.
+48. P9-96 Security Evidence and Continuation GO / NO-GO Review is now recorded
+   in `docs/spec/P9-96_SecurityEvidenceContinuationGoNoGoReview.md` as a
+   `COMPLETE` docs-only continuation NO-GO review. It preserves P9-95
+   `INCOMPLETE / SAFE-STOP`, parser invocation count `0`, the separately
+   `CONFIRMED` materialization failure and Avast `IDP.HELU.PSE90` detection /
+   block, and `UNPROVEN` causation. The changed security context makes reuse
+   of the unused P9-94 invocation allowance, continuation, re-execution,
+   materialization, parser or PowerShell execution, alternate-path use, and
+   every Avast-control change or bypass `NO-GO`. No further technical
+   execution candidate is selected or authorized from the current evidence.
+   P9 remains safely stopped pending new, separate authoritative security
+   disposition and task-specific continuation authorization that does not
+   weaken or evade the security control. Runtime readiness, writable
+   lifecycle success, and residual-process timing PASS remain `UNPROVEN`.
 
 The vNext hardening backlog currently includes:
 
