@@ -2192,6 +2192,22 @@ Recommended next actions are:
    unproven. P9-91 Corrected Residual-Process Evidence Execution Result Review is
    the next docs-only candidate; correction, retry, execution, process
    termination, security-control change, and broader operations remain NO-GO.
+43. P9-91 Corrected Residual-Process Evidence Execution Result Review is now
+   recorded in
+   `docs/spec/P9-91_CorrectedResidualProcessEvidenceExecutionResultReview.md`
+   as a `COMPLETE` docs-only operation-failure result review. It affirms P9-90
+   compliance with the unchanged fixed-target, direct-process,
+   ordered-argument, single-invocation, retained-observation, no-correction /
+   no-retry, final-safe-state-audit, and prohibited-operation boundaries.
+   P9-90 remains `COMPLETE / HARD-STOP / OPERATION FAILURE`: the child exited
+   `1` before `PRE_OPERATION`, so Excel creation and every lifecycle and timing
+   observation were not reached. The separate audit establishes only final
+   local safe state and unchanged fixture identity. The reason `Get-FileHash`
+   was unavailable, residual-process timing PASS, and complete writable
+   lifecycle success-path evidence remain `UNPROVEN`; the P9-89 authorization
+   is consumed. P9-92 Residual-Process Evidence Runtime-Precondition Correction
+   Planning is the next docs-only candidate and authorizes no correction,
+   retry, execution, process operation, or security-control change.
 
 The vNext hardening backlog currently includes:
 
