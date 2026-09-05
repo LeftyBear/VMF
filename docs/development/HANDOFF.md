@@ -2095,6 +2095,26 @@ Recommended next actions are:
    Verification Evidence-Generation Correction Input Definition is the next
    docs-only candidate; it does not authorize execution or retry.
 
+37. P9-85 Parser Verification Evidence-Generation Correction Input Definition
+   is now recorded in
+   `docs/spec/P9-85_ParserVerificationEvidenceGenerationCorrectionInputDefinition.md`
+   as `COMPLETE` docs-only correction input definition. It fixes one complete
+   direct-process caller and Windows PowerShell 5.1 parser-only verifier
+   contract while preserving the P9-79 fixed target identity and
+   non-execution boundary. The caller must retain stdout and stderr separately
+   and can succeed only after validating exactly one UTF-8 structured JSON
+   result; a child exit code `0` with missing, invalid, truncated,
+   inconsistent, or unretained evidence fails closed. No retry, evidence
+   reconstruction, or normalization is permitted. The P9-83 Avast event
+   remains correlated evidence with causation `UNPROVEN`; no Avast control is
+   changed or bypassed. P9-81 remains `INCOMPLETE / NO-GO`, and the P9-80
+   invocation remains consumed. P9-85 performs no materialization,
+   implementation, parser or PowerShell invocation, lifecycle, Excel,
+   workbook, fixture, process, Avast, release, external-service, or Git
+   operation. P9-86 Parser Verification Evidence-Generation Correction GO /
+   NO-GO is the next docs-only candidate and does not itself authorize
+   execution or retry.
+
 The vNext hardening backlog currently includes:
 
 - signing;
