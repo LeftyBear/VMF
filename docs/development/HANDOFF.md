@@ -2433,6 +2433,22 @@ Recommended next actions are:
    build, package, `dist`, release, publication, tag, external-service,
    flagged-executable, or Avast exception, exclusion, workaround, or bypass is
    authorized or performed.
+60. P9-108 Evidence Supplement Intake Review is now recorded in
+   `docs/spec/P9-108_EvidenceSupplementIntakeReview.md` as `COMPLETE /
+   docs-only evidence supplement intake review / NOT ACCEPTED`. It reviews the
+   P9-107 supplement against P9-97, P9-99, and P9-103. The submitted exact
+   detection, block time, target, process, component, and record ID-like value
+   materially complete the event-correlation fields, but the later Avast
+   update screen establishes definition/version only at screenshot time and
+   does not identify the definition/version active at block time. The
+   fail-closed definition-basis requirement therefore prevents acceptance;
+   no missing block-time value is inferred. Security disposition accepted
+   remains `No`, continuation authorization accepted remains `No`, P9 remains
+   `NO-GO / SAFE-STOP`, technical execution candidate remains `None`, and the
+   P9-94 allowance is not reusable. No parser, project PowerShell, Excel,
+   test, build, package, `dist`, release, publication, tag, external-service,
+   flagged-executable, or Avast exception, exclusion, workaround, or bypass is
+   authorized or performed.
 
 The vNext hardening backlog currently includes:
 
