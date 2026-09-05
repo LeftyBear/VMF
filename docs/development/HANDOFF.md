@@ -2418,6 +2418,21 @@ Recommended next actions are:
    P9 remains `NO-GO / SAFE-STOP`, technical execution candidate remains
    `None`, and the P9-94 allowance is not reusable. No technical or docs
    continuation beyond wait or closure documentation is authorized.
+59. P9-107 Security Disposition Evidence Supplement Submission is now recorded
+   in `docs/spec/P9-107_SecurityDispositionEvidenceSupplementSubmission.md` as
+   `COMPLETE / docs-only evidence supplement submission`. It records the exact
+   owner-submitted values from the Avast block notification and Avast update
+   screen without making an acceptance judgment. The update screen was
+   captured after the block event and identifies the currently installed
+   Avast definition/version at screenshot time; it does not by itself prove
+   the exact definition/version active at the block time. Acceptance requires
+   a separate next intake review. Security disposition accepted remains `No`,
+   continuation authorization accepted remains `No`, P9 remains `NO-GO /
+   SAFE-STOP`, technical execution candidate remains `None`, and the P9-94
+   allowance is not reusable. No parser, project PowerShell, Excel, test,
+   build, package, `dist`, release, publication, tag, external-service,
+   flagged-executable, or Avast exception, exclusion, workaround, or bypass is
+   authorized or performed.
 
 The vNext hardening backlog currently includes:
 
