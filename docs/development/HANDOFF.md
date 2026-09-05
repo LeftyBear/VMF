@@ -2253,6 +2253,24 @@ Recommended next actions are:
    cause, writable lifecycle success, and residual-process timing PASS remain
    `UNPROVEN`. P9-95 Runtime-Precondition Correction Parser Verification is the
    next candidate.
+47. P9-95 Runtime-Precondition Correction Parser Verification Execution Result
+   is now recorded in
+   `docs/spec/P9-95_RuntimePreconditionCorrectionParserVerificationExecutionResult.md`
+   as `INCOMPLETE / SAFE-STOP`. The reconstructed P9-93 successor matched its
+   `8465`-byte definition and SHA-256, but fixed-path materialization did not
+   complete; access denied was observed, the target was absent at final check,
+   and parser invocation count remained `0`. No alternate path, correction,
+   retry, lifecycle, Excel, workbook, fixture, or process operation occurred.
+   Separately, operator-provided Avast screenshot evidence confirms an
+   `IDP.HELU.PSE90` detection / block concerning the fixed P9-93 path and
+   Windows PowerShell 5.1 process. The Avast event and materialization failure
+   are each `CONFIRMED`, while causation is `UNPROVEN`; neither Avast causation
+   nor a simple filesystem permission cause is inferred. The P9-94 invocation
+   was not consumed, but the changed security context makes continuation or
+   re-execution under that existing authorization `NO-GO`. P9-96 Security
+   Evidence and Continuation GO / NO-GO Review is the next docs-only candidate;
+   it must not directly authorize parser execution, materialization retry, or
+   any Avast-control change or bypass.
 
 The vNext hardening backlog currently includes:
 
