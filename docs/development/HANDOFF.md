@@ -2208,6 +2208,20 @@ Recommended next actions are:
    is consumed. P9-92 Residual-Process Evidence Runtime-Precondition Correction
    Planning is the next docs-only candidate and authorizes no correction,
    retry, execution, process operation, or security-control change.
+44. P9-92 Residual-Process Evidence Runtime-Precondition Correction Planning is
+   now recorded in
+   `docs/spec/P9-92_RuntimePreconditionCorrectionPlanning.md` as a `COMPLETE`
+   docs-only plan. It defines the minimum successor-input, self-contained
+   SHA-256, semantic-equivalence, parser-readiness, isolated non-lifecycle
+   runtime-precondition evidence, fail-closed, and authorization-separation
+   requirements without defining or applying exact correction code. The
+   historical P9-79 target is unchanged, the reason for `Get-FileHash`
+   unavailability remains `UNPROVEN`, the P9-89 authorization remains
+   consumed, and no correction, probe, retry, lifecycle, Excel, workbook,
+   fixture, process, security-control, implementation, release, external-
+   service, or Git-write operation is authorized. P9-93 Residual-Process
+   Evidence Runtime-Precondition Correction Input Definition is the next
+   docs-only candidate.
 
 The vNext hardening backlog currently includes:
 
