@@ -2145,6 +2145,21 @@ Recommended next actions are:
    occurred. P9-81 remains historical `INCOMPLETE / NO-GO`, causal questions
    remain `UNPROVEN`, complete writable lifecycle success-path evidence remains
    unproven, and P9-88 result review is the next docs-only candidate.
+40. P9-88 Parser Verification Evidence-Generation Correction Result Review is
+   now recorded in
+   `docs/spec/P9-88_ParserVerificationEvidenceGenerationCorrectionResultReview.md`
+   as a `COMPLETE` docs-only review. It affirms P9-87 compliance with the exact
+   P9-85 verifier, unchanged P9-79 target, single invocation, retained raw
+   streams, complete process observations, validated structured evidence,
+   no-correction / no-retry, parser-only, and prohibited-operation boundaries.
+   The accepted result proves `ParseFile` completion, token count `1404`, and
+   parse-error count `0`, so P9-87 parser PASS is affirmed. Historical P9-81
+   remains `INCOMPLETE / NO-GO`; the exact earlier missing-evidence cause and
+   Avast causation remain `UNPROVEN`; and lifecycle readiness,
+   residual-process timing PASS, and complete writable lifecycle success-path
+   evidence remain unproven. P9-89 Corrected Residual-Process Evidence
+   Execution GO / NO-GO is the next docs-only candidate. P9-88 authorizes no
+   corrected lifecycle execution or broader operation.
 
 The vNext hardening backlog currently includes:
 
