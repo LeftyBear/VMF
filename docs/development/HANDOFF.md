@@ -2310,6 +2310,19 @@ Recommended next actions are:
    continuation remains `NO-GO / SAFE-STOP`, and the only future permissible
    step after disposition evidence is supplied is a separately requested
    docs-only intake review.
+51. P9-99 Security Disposition Submission Package Request is now recorded in
+   `docs/spec/P9-99_SecurityDispositionSubmissionPackageRequest.md` as
+   `COMPLETE / docs-only submission-package request`. It defines the exact
+   request and recommended response template for the responsible security
+   authority, including authority, attributable source, evidence and event /
+   artifact correlation, covered and excluded scope, date / time, product and
+   definition basis, exact decision wording, limitations, and approval marker.
+   It also fixes fail-closed non-acceptance conditions and expressly states
+   that a disposition is not continuation authorization, permits no execution
+   or delivery operation, and cannot reuse P9-94. No disposition or
+   continuation authorization is supplied or accepted, no external submission
+   occurs, P9 remains `NO-GO / SAFE-STOP`, and no technical execution candidate
+   is selected.
 
 The vNext hardening backlog currently includes:
 
