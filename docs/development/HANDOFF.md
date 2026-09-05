@@ -2115,6 +2115,21 @@ Recommended next actions are:
    NO-GO is the next docs-only candidate and does not itself authorize
    execution or retry.
 
+38. P9-86 Parser Verification Evidence-Generation Correction GO / NO-GO is
+   now recorded in
+   `docs/spec/P9-86_ParserVerificationEvidenceGenerationCorrectionGoNoGo.md`
+   as a `COMPLETE` docs-only GO decision. It records PASS for the complete
+   P9-85 direct-process caller, parser-only verifier, structured-evidence,
+   separate stdout / stderr retention, exit mapping, fail-closed, and
+   security-control-preserving boundaries. Exactly one later separate P9-87
+   correction execution is GO using only the unchanged P9-79 target and exact
+   P9-85 contract. No correction, retry, lifecycle-script execution, Excel,
+   workbook, fixture, process, or Avast-control operation is included. P9-81
+   remains `INCOMPLETE / NO-GO`, the P9-80 invocation remains consumed, and
+   the exact missing-evidence cause and Avast causation remain `UNPROVEN`.
+   P9-86 performs no materialization, implementation, parser or PowerShell
+   invocation, lifecycle, release, external-service, or Git operation.
+
 The vNext hardening backlog currently includes:
 
 - signing;
