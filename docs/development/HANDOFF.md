@@ -2129,6 +2129,22 @@ Recommended next actions are:
    the exact missing-evidence cause and Avast causation remain `UNPROVEN`.
    P9-86 performs no materialization, implementation, parser or PowerShell
    invocation, lifecycle, release, external-service, or Git operation.
+39. P9-87 Parser Verification Evidence-Generation Correction Execution is now
+   recorded in
+   `docs/spec/P9-87_ParserVerificationEvidenceGenerationCorrectionExecution.md`
+   as `COMPLETE / PASS` for the single parser-only correction execution. The
+   exact P9-85 verifier was materialized, the fixed direct-process caller made
+   exactly one P9-86-authorized child invocation against the unchanged P9-79
+   target, and the retained valid structured result records target length
+   `8264`, SHA-256
+   `80749CA24C4CF7A8BF27CF8D55633B526FF64FFBF6CE8216590C609060B1F353`,
+   token count `1404`, and parse-error count `0`. Child exit and caller result
+   were both `0`, stdout was 327 bytes, and stderr was empty, so parser PASS is
+   recognized. No correction, retry, second invocation, lifecycle execution,
+   Excel, workbook, fixture, Excel-process, or Avast-control operation
+   occurred. P9-81 remains historical `INCOMPLETE / NO-GO`, causal questions
+   remain `UNPROVEN`, complete writable lifecycle success-path evidence remains
+   unproven, and P9-88 result review is the next docs-only candidate.
 
 The vNext hardening backlog currently includes:
 
