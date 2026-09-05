@@ -2238,6 +2238,21 @@ Recommended next actions are:
    control, implementation, release, external-service, or Git-write operation
    is authorized. P9-94 Runtime-Precondition Correction Parser Verification GO
    / NO-GO is the next docs-only candidate.
+46. P9-94 Runtime-Precondition Correction Parser Verification GO / NO-GO is
+   now recorded in
+   `docs/spec/P9-94_RuntimePreconditionCorrectionParserVerificationGoNoGo.md`
+   as a `COMPLETE` docs-only GO decision. It accepts the exact P9-93 successor
+   identity, direct Windows PowerShell 5.1 `-File` transport, self-contained
+   SHA-256 substitution, semantic-equivalence account, structured parser-only
+   evidence, failure closure, and prohibited-operation boundaries as internally
+   consistent. Exactly one later separate P9-95 parser-only verification is GO
+   using only the fixed P9-93 successor without correction, retry,
+   substitution, script execution, runtime probe, Excel, workbook, fixture, or
+   process access. P9-94 materializes and invokes nothing. Successor parser
+   readiness awaits accepted P9-95 evidence; runtime readiness, the P9-90
+   cause, writable lifecycle success, and residual-process timing PASS remain
+   `UNPROVEN`. P9-95 Runtime-Precondition Correction Parser Verification is the
+   next candidate.
 
 The vNext hardening backlog currently includes:
 
