@@ -2449,6 +2449,18 @@ Recommended next actions are:
    test, build, package, `dist`, release, publication, tag, external-service,
    flagged-executable, or Avast exception, exclusion, workaround, or bypass is
    authorized or performed.
+61. P9-109 P9 Continuation Closure / Indefinite SAFE-STOP is now recorded in
+   `docs/spec/P9-109_P9ContinuationClosureIndefiniteSafeStop.md` as `COMPLETE /
+   docs-only closure / indefinite SAFE-STOP`. P9 continuation is closed under
+   the current evidence set. Security disposition accepted remains `No`,
+   continuation authorization accepted remains `No`, technical execution
+   candidate remains `None`, and the P9-94 allowance remains not reusable.
+   Reopening requires all of: new authoritative security evidence satisfying
+   the required fields, a new intake review, a separate continuation
+   authorization review, and an explicit new GO decision. This closure
+   authorizes no parser, project PowerShell, Excel, test, build, package,
+   `dist`, release, publication, tag, external-service, flagged-executable, or
+   Avast exception, exclusion, workaround, or bypass operation.
 
 The vNext hardening backlog currently includes:
 
