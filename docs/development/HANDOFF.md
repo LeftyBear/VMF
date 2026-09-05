@@ -2323,6 +2323,19 @@ Recommended next actions are:
    continuation authorization is supplied or accepted, no external submission
    occurs, P9 remains `NO-GO / SAFE-STOP`, and no technical execution candidate
    is selected.
+52. P9-100 Security Disposition Submission Wait State is now recorded in
+   `docs/spec/P9-100_SecurityDispositionSubmissionWaitState.md` as
+   `COMPLETE / docs-only submission wait state`. The authoritative security
+   disposition requested by P9-99 has not yet been presented or accepted, and
+   separate individual continuation authorization has not been accepted. P9
+   remains `NO-GO / SAFE-STOP`, no technical execution candidate exists, and
+   the P9-94 allowance is not reusable. Leaving this wait state requires actual
+   submission of an authoritative security disposition and separate individual
+   continuation authorization. The wait state permits no execution or
+   re-execution; parser, PowerShell, or Excel operation; tests or build;
+   package, `dist`, release, publication, or tag operation; external-service
+   access; flagged-executable run; or Avast setting change, exception,
+   exclusion, workaround, or bypass.
 
 The vNext hardening backlog currently includes:
 
