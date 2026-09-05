@@ -2054,8 +2054,30 @@ Recommended next actions are:
    or prove token count, parse-error count, or `ParseFile` completion. No exact
    missing-evidence cause is inferred, no correction or retry is authorized,
    and parser PASS, lifecycle readiness, and complete writable lifecycle
-   success-path evidence remain unproven. P9-83 Parser Verification
-   Evidence-Generation Correction Planning is the next docs-only candidate.
+   success-path evidence remain unproven. Its then-selected, unstarted P9-83
+   correction-planning candidate is superseded by the P9-83 evidence review
+   and moved to P9-84.
+
+35. P9-83 Parser Verification Avast Detection Evidence Review is now recorded
+   in `docs/spec/P9-83_ParserVerificationAvastDetectionEvidenceReview.md` as a
+   `COMPLETE` docs-only additional security evidence review. The user-presented
+   Avast screen confirms an `IDP.HELU.PSE90 - コマンド ライン検出` block of
+   `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe` by
+   `挙動監視シールド`, with displayed identifier
+   `be179406c22a/2026-09-04T14:56:48.897Z`. The event is `CONFIRMED` and is
+   additional security evidence related to P9-81, but causation between the
+   block and the missing structured JSON evidence is `UNPROVEN`. No cause is
+   inferred from mojibake. P9-81 remains `INCOMPLETE / NO-GO`; exit code `0`
+   is not parser PASS, and the P9-82 conclusion is not overwritten. Complete
+   writable lifecycle success-path evidence and residual-process timing
+   evidence remain unproven. Parser invocation / retry, PowerShell and
+   lifecycle execution, Excel, workbook, fixture, process, Avast quarantine,
+   exception / exclusion / allow-list, setting, detected-target rerun,
+   implementation, tests, tools, package / `dist`, specification, API, and
+   security-detection-evasion operations remain NO-GO. P9-84 Parser
+   Verification Evidence-Generation Correction Planning is the next separate
+   docs-only GO / NO-GO and planning candidate; it does not directly authorize
+   a new parser execution.
 
 The vNext hardening backlog currently includes:
 
