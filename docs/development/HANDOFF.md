@@ -2160,6 +2160,21 @@ Recommended next actions are:
    evidence remain unproven. P9-89 Corrected Residual-Process Evidence
    Execution GO / NO-GO is the next docs-only candidate. P9-88 authorizes no
    corrected lifecycle execution or broader operation.
+41. P9-89 Corrected Residual-Process Evidence Execution GO / NO-GO is now
+   recorded in
+   `docs/spec/P9-89_CorrectedResidualProcessEvidenceExecutionGoNoGo.md` as a
+   `COMPLETE` docs-only GO decision. It reviews the fixed P9-79 direct-process
+   `-File` transport, the accepted P9-87 structured parser evidence, unchanged
+   P9-72 plus P9-74 lifecycle semantics, the consumed P9-76 invocation, and
+   all current precondition, single-invocation, immediate HARD-STOP,
+   diagnostic-timing, final-state, and security-control boundaries. The
+   corrected input passes fixed-identity, parser-readiness, semantic-
+   preservation, fail-closed, and security-control-preservation review.
+   Exactly one later separate P9-90 Corrected Residual-Process Evidence
+   Execution is GO without correction, retry, substitution, fallback, process
+   termination, fixture repair, or security-control change. P9-89 performs no
+   execution; residual-process timing PASS and complete writable lifecycle
+   success-path evidence remain unproven pending P9-90.
 
 The vNext hardening backlog currently includes:
 
