@@ -2285,6 +2285,31 @@ Recommended next actions are:
    disposition and task-specific continuation authorization that does not
    weaken or evade the security control. Runtime readiness, writable
    lifecycle success, and residual-process timing PASS remain `UNPROVEN`.
+49. P9-97 Authoritative Security Disposition Intake Boundary is now recorded
+   in `docs/spec/P9-97_AuthoritativeSecurityDispositionIntakeBoundary.md` as a
+   `COMPLETE` docs-only intake-boundary definition. It fixes the minimum
+   authority, event and artifact correlation, outcome, scope, basis, causation
+   treatment, and validity information required for a future disposition
+   intake. No authoritative disposition is supplied or accepted, and no
+   task-specific continuation authorization is provided. P9-95 remains
+   `INCOMPLETE / SAFE-STOP`; the P9-94 allowance is not reusable; the Avast
+   block and materialization failure remain separately `CONFIRMED`; causation
+   remains `UNPROVEN`; and P9 continuation remains `NO-GO / SAFE-STOP` with
+   no technical execution candidate. A future disposition requires a separate
+   docs-only intake review, and any later continuation requires separate,
+   precisely scoped authorization.
+50. P9-98 Security Disposition Intake Readiness Review is now recorded in
+   `docs/spec/P9-98_SecurityDispositionIntakeReadinessReview.md` as
+   `COMPLETE / docs-only readiness review`. It confirms that P9-97 clearly
+   defines all seven required boundaries: acceptable authoritative source and
+   attributable record type, intake evidence requirements, fail-closed
+   non-acceptance conditions, separation from continuation authorization,
+   P9-94 allowance non-reuse, preservation of `NO-GO / SAFE-STOP`, and no
+   technical execution candidate. No readiness gap is identified. No
+   disposition or continuation authorization is presented or accepted. P9
+   continuation remains `NO-GO / SAFE-STOP`, and the only future permissible
+   step after disposition evidence is supplied is a separately requested
+   docs-only intake review.
 
 The vNext hardening backlog currently includes:
 
