@@ -2079,6 +2079,22 @@ Recommended next actions are:
    docs-only GO / NO-GO and planning candidate; it does not directly authorize
    a new parser execution.
 
+36. P9-84 Parser Verification Evidence-Generation Correction Planning is now
+   recorded in
+   `docs/spec/P9-84_ParserVerificationEvidenceGenerationCorrectionPlanning.md`
+   as `COMPLETE` docs-only correction planning. It defines the caller, P9-79
+   fixed input, Windows PowerShell 5.1 `ParseFile`, structured-evidence
+   serialization, stdout / stderr capture, exit-code propagation, confirmed
+   Avast event, and cross-boundary correlation as the minimum authoritative
+   correction inputs. The exact missing-evidence cause and Avast causation
+   remain `UNPROVEN`; P9-81 remains `INCOMPLETE / NO-GO`, exit code `0` is not
+   parser PASS, and the P9-80 single invocation remains consumed. P9-84 does
+   not define or apply a correction, change or bypass Avast controls, or
+   authorize parser, PowerShell, lifecycle, Excel, workbook, fixture, process,
+   implementation, release, external-service, or Git operations. P9-85 Parser
+   Verification Evidence-Generation Correction Input Definition is the next
+   docs-only candidate; it does not authorize execution or retry.
+
 The vNext hardening backlog currently includes:
 
 - signing;
