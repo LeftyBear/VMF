@@ -2222,6 +2222,22 @@ Recommended next actions are:
    service, or Git-write operation is authorized. P9-93 Residual-Process
    Evidence Runtime-Precondition Correction Input Definition is the next
    docs-only candidate.
+45. P9-93 Residual-Process Evidence Runtime-Precondition Correction Input
+   Definition is now recorded in
+   `docs/spec/P9-93_RuntimePreconditionCorrectionInputDefinition.md` as a
+   `COMPLETE` docs-only input definition. It fixes one exact successor path,
+   source, encoding, newline form, length, and SHA-256, preserves the P9-79
+   direct Windows PowerShell 5.1 `-File` transport, and replaces every
+   `Get-FileHash` dependency with one self-contained .NET SHA-256 stream
+   calculation. Every other P9-72 plus P9-74 lifecycle, evidence, timing,
+   hard-stop, and exit semantic is unchanged. The historical P9-79 target is
+   not changed or rematerialized; successor parser and runtime readiness, the
+   P9-90 cause, writable lifecycle success, and residual-process timing PASS
+   remain `UNPROVEN`. No target is materialized or invoked, and no parser,
+   runtime probe, lifecycle, Excel, workbook, fixture, process, security-
+   control, implementation, release, external-service, or Git-write operation
+   is authorized. P9-94 Runtime-Precondition Correction Parser Verification GO
+   / NO-GO is the next docs-only candidate.
 
 The vNext hardening backlog currently includes:
 
