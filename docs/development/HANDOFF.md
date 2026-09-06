@@ -2461,6 +2461,20 @@ Recommended next actions are:
    authorizes no parser, project PowerShell, Excel, test, build, package,
    `dist`, release, publication, tag, external-service, flagged-executable, or
    Avast exception, exclusion, workaround, or bypass operation.
+62. P9-110 Definition/Version Unavailability Determination is now recorded in
+   `docs/spec/P9-110_DefinitionVersionUnavailabilityDetermination.md` as
+   `COMPLETE / docs-only unavailability determination / indefinite SAFE-STOP`.
+   The owner states that the Avast definition/version active at block time is
+   unavailable and cannot be obtained, so the existing strict evidence
+   requirement cannot be satisfied as written. Path A keeps that value
+   mandatory and leaves P9 closed with no reopening possible under the current
+   evidence. Path B would require a separate docs-only governance decision
+   explicitly permitting an alternative evidence basis before any intake
+   acceptance; P9-110 does not select Path B or accept a disposition. Security
+   disposition accepted remains `No`, continuation authorization accepted
+   remains `No`, P9 remains closed in `NO-GO / indefinite SAFE-STOP`, technical
+   execution candidate remains `None`, and the P9-94 allowance remains not
+   reusable. No continuation or technical execution is authorized.
 
 The vNext hardening backlog currently includes:
 
