@@ -2514,6 +2514,17 @@ Recommended next actions are:
    is an explicit new GO decision. Technical execution candidate remains
    `None`, and the P9-94 allowance remains not reusable. No technical
    execution or prohibited operation is authorized.
+66. P9-114 Explicit New GO Decision is now recorded in
+   `docs/spec/P9-114_ExplicitNewGODecision.md` as `COMPLETE / docs-only
+   reopening decision / GO`. Security disposition accepted is `Yes`;
+   continuation authorization accepted is `Yes`; and explicit new GO decision
+   is `Yes`. P9 continuation governance is reopened only for docs-only
+   next-step planning and definition of future implementation or restart
+   boundaries. The block-time Avast definition/version remains unavailable
+   and unproven. Technical execution remains `NO-GO / SAFE-STOP`; technical
+   execution candidate remains `None`; and the P9-94 allowance remains not
+   reusable. The next required step is separate docs-only P9-115 continuation
+   boundary planning, not execution.
 
 The vNext hardening backlog currently includes:
 
