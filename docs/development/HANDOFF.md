@@ -2645,6 +2645,18 @@ Recommended next actions are:
    Avast detection remains unresolved, and P9-94 remains non-reusable. P9-126
    Step-Level Static Inspection GO/NO-GO Decision is the next step.
 
+76. P9-126 Step-Level Static Inspection GO/NO-GO Decision is now recorded in
+   `docs/spec/P9-126_StepLevelStaticInspectionGONOGODecision.md` as `COMPLETE /
+   docs-only step-level static inspection GO/NO-GO decision / GO`. It
+   authorizes the P9-125 read-only Git and documentation state inspection only
+   for a later, separately instructed step, using the exact commands, order,
+   named Markdown files, stop conditions, and evidence boundary recorded in
+   P9-126. No candidate or command was executed in P9-126. Every operation
+   outside that exact later-step boundary remains `NO-GO / SAFE-STOP`, Avast
+   detection remains unresolved, and P9-94 remains non-reusable. P9-127 static
+   inspection execution is the next possible step only if separately
+   instructed.
+
 The vNext hardening backlog currently includes:
 
 - signing;
