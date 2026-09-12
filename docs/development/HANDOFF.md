@@ -1422,7 +1422,7 @@ Recommended next actions are:
    persisted schema change, canonical format change, or Frozen specification
    change.
 
-> P9-124 is **COMPLETE / docs-only static command allowlist review / GO**. The P9-123 allowlist is accepted only as a future governance basis; P9-124 authorizes no command, and any actual command requires separate step-level authorization. Technical execution remains **NO-GO / SAFE-STOP**, the currently authorized technical candidate is **None**, Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-124_StaticCommandAllowlistReviewGONOGO.md`.
+> P9-125 is **COMPLETE / docs-only step-level static inspection candidate selection**. The selected candidate is **Read-only Git and documentation state inspection** for a future separate GO only. Execution authorization is **No**; technical execution remains **NO-GO / SAFE-STOP**, Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-125_StepLevelStaticInspectionCandidateSelection.md`.
 
    P9-51 Existing Workbook Writable Lifecycle Authorization Boundary is now
    recorded in
@@ -2629,6 +2629,21 @@ Recommended next actions are:
    SAFE-STOP`, the currently authorized technical candidate remains `None`,
    Avast detection remains unresolved, and P9-94 remains non-reusable. No
    candidate or command was executed.
+
+75. P9-125 Step-Level Static Inspection Candidate Selection is now recorded in
+   `docs/spec/P9-125_StepLevelStaticInspectionCandidateSelection.md` as
+   `COMPLETE / docs-only step-level static inspection candidate selection`. It
+   selects `Read-only Git and documentation state inspection` for a future
+   separate GO only, limited to `git status`, `git branch --show-current`,
+   `git rev-parse HEAD`, and read-only inspection of explicitly named Markdown
+   files. Execution authorization is `No`; no candidate or command was
+   executed. Parser, script, PowerShell, Excel / workbook / process, test /
+   build / package / `dist` / release / publication / tag, external-service,
+   flagged-executable, and Avast workaround / exception / exclusion / bypass
+   operations remain prohibited, and command substitution or retry requires
+   separate authorization. Technical execution remains `NO-GO / SAFE-STOP`,
+   Avast detection remains unresolved, and P9-94 remains non-reusable. P9-126
+   Step-Level Static Inspection GO/NO-GO Decision is the next step.
 
 The vNext hardening backlog currently includes:
 
