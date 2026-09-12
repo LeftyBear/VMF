@@ -2580,6 +2580,18 @@ Recommended next actions are:
    `dist`, release / publication / tag, external services, flagged executables,
    and Avast changes or workarounds remain prohibited. The Avast detection
    remains unresolved, and P9-94 remains not reusable.
+71. P9-120 Static Candidate Execution Result Review is now recorded in
+   `docs/spec/P9-120_StaticCandidateExecutionResultReview.md` as `COMPLETE /
+   docs-only static candidate execution result review`. It accepts the
+   supplied P9-119 result as `PASS`: exactly one authorized read-only `rg`
+   invocation used the nine authorized P9 Markdown records, found no
+   inconsistencies, and had no retry, correction, substitution, output
+   persistence, or follow-on operation. Git remained clean after P9-119. The
+   completed inspection exhausts the P9-118 authorization. Avast detection
+   remains unresolved; technical execution remains `NO-GO / SAFE-STOP`; no
+   technical execution candidate is currently authorized beyond completed
+   P9-119; and P9-94 remains non-reusable. P9-121 Next Technical Boundary
+   Candidate Planning is the next possible docs-only step.
 
 The vNext hardening backlog currently includes:
 
