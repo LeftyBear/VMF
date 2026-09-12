@@ -2671,6 +2671,20 @@ Recommended next actions are:
    unresolved, and P9-94 remains non-reusable. P9-129 Corrected Static
    Inspection Boundary Decision is the next docs-only step.
 
+78. P9-129 Corrected Static Inspection Boundary Decision is now recorded in
+   `docs/spec/P9-129_CorrectedStaticInspectionBoundaryDecision.md` as
+   `COMPLETE / docs-only corrected static inspection boundary decision / GO`.
+   It copies the exact P9-126 four-command sequence, order, and seven-file
+   boundary as the corrected future static inspection boundary. P9-127 remains
+   `SAFE-STOP` and is not accepted as conforming completion. P9-129 executes
+   nothing; future execution requires a separate P9-130 instruction, and a
+   differing boundary is `NO-GO` unless a new explicit boundary is defined
+   before execution. No retry, substitution, correction, output persistence,
+   or follow-on operation is authorized unless separately authorized.
+   Technical execution remains `NO-GO / SAFE-STOP` outside any future
+   separately authorized exact static inspection, Avast detection remains
+   unresolved, and P9-94 remains non-reusable.
+
 The vNext hardening backlog currently includes:
 
 - signing;
