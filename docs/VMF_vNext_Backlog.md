@@ -1,5 +1,7 @@
 # VMF vNext Backlog
 
+> P9-123 is **COMPLETE / docs-only static command allowlist drafting**. Command authorization is **No**; technical execution remains **NO-GO / SAFE-STOP**. Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-123_StaticCommandAllowlistDrafting.md`.
+
 Status  : Active Build vNext record
 Scope   : VMF Build vNext planning, implementation closeout, and verification state
 

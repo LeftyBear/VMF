@@ -1422,6 +1422,8 @@ Recommended next actions are:
    persisted schema change, canonical format change, or Frozen specification
    change.
 
+> P9-123 is **COMPLETE / docs-only static command allowlist drafting**. Command authorization is **No**; technical execution remains **NO-GO / SAFE-STOP**. Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-123_StaticCommandAllowlistDrafting.md`.
+
    P9-51 Existing Workbook Writable Lifecycle Authorization Boundary is now
    recorded in
    `docs/spec/P9-51_ExistingWorkbookWritableLifecycleAuthorizationBoundary.md`;

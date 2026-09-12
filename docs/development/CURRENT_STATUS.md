@@ -1,5 +1,7 @@
 # VMF Publisher Current Status
 
+> P9-123 is **COMPLETE / docs-only static command allowlist drafting**. Command authorization is **No**; technical execution remains **NO-GO / SAFE-STOP**. Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-123_StaticCommandAllowlistDrafting.md`.
+
 Status  : GO / selected completion decision approved / Avast response pending / normal development not blocked by unanswered Avast response
 Scope   : Current Publisher release-gate and local-verification state
 Depends : docs/development/Publisher_AvastResponseDecisionTemplate.md, docs/development/Publisher_AvastResponseIntakeTemplate.md, docs/development/Publisher_EvidenceBundleSpecification.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/development/Publisher_Phase4_LocalVerificationPlan.md, docs/development/Publisher_Phase4-3-5_GoNoGoReview.md, docs/development/Publisher_ReleaseApprovalPackage.md, docs/development/Publisher_TestClassification.md, docs/development/Test_Traceability_Matrix.md, docs/distribution/PublisherReleaseRunbook.md, docs/distribution/ReleaseChecklist.md
