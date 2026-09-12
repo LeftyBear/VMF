@@ -2762,3 +2762,12 @@ authorized candidate beyond completed P9-130. Avast detection remains
 unresolved, and P9-94 remains non-reusable. The next possible step is P9-132
 Truncation Recovery Boundary Planning, docs-only only; it does not become
 authorized execution through this handoff.
+# P9-132 Handoff
+
+P9-132 is a docs-only truncation-recovery planning record. It preserves P9-131 as **INCONCLUSIVE / output truncation prevents acceptance**: P9-130 conformed to its boundary, but the 1,183-line output was truncated and could not be fully reviewed. No inconsistency was confirmed, and the substantive result was not accepted.
+
+Future candidates include line-count-limited targeted `rg` checks per state term, exact decision-phrase checks, section-scoped read-only inspection of named files, and a static consistency checklist with separately authorized commands. None is selected or authorized.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Currently authorized candidate: **None**. Avast detection is unresolved. The P9-94 allowance is not reusable.
+
+Next: **P9-133 — Truncation-Safe Candidate Selection**.

@@ -790,3 +790,12 @@ not accepted. Technical execution remains `NO-GO / SAFE-STOP`; no candidate
 is currently authorized beyond completed P9-130; Avast detection remains
 unresolved; and P9-94 remains non-reusable. The next possible step is P9-132
 Truncation Recovery Boundary Planning, docs-only only.
+# P9-132 — Truncation Recovery Boundary Planning
+
+P9-132 is complete as a docs-only planning record. It records that P9-130 conformed to its command boundary, but its 1,183-line output was truncated and could not be fully reviewed. No inconsistency was confirmed, and acceptance was not possible.
+
+Recovery principles require small explicitly scoped checks, avoidance of broad high-volume regex, no output persistence without separate authorization, no retry/correction/substitution during execution, and separate planning, GO decision, execution, and result-review stages. Candidate options remain unselected and unauthorized.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Currently authorized candidate: **None**. Avast detection remains unresolved. The P9-94 allowance is not reusable.
+
+Next: **P9-133 — Truncation-Safe Candidate Selection**.
