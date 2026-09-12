@@ -1,6 +1,6 @@
 # VMF vNext Backlog
 
-> P9-136 is **COMPLETE / docs-only truncation-safe phrase check result review**. The supplied P9-135 result is accepted as **PASS**: the command boundary conformed, exactly 20 reviewable lines were produced, and missing, extra, or truncated output was absent. Technical execution remains **NO-GO / SAFE-STOP**; no candidate is authorized beyond completed P9-135; Avast detection is unresolved; and the P9-94 allowance is not reusable. See `docs/spec/P9-136_TruncationSafePhraseCheckResultReview.md`.
+> P9-137 is **COMPLETE / docs-only post-static-inspection technical boundary reassessment**. The accepted P9-135 static inspection success does not resolve the Avast detection or authorize broader technical execution. Technical execution remains **NO-GO / SAFE-STOP**; no current technical execution candidate is authorized; and the P9-94 allowance remains not reusable. See `docs/spec/P9-137_PostStaticInspectionTechnicalBoundaryReassessment.md`.
 
 Status  : Active Build vNext record
 Scope   : VMF Build vNext planning, implementation closeout, and verification state
@@ -833,3 +833,11 @@ The output contained exactly 20 reviewable lines: each of the five authorized ph
 Technical execution remains **NO-GO / SAFE-STOP**. Authorized candidate: **None beyond completed P9-135**. Avast detection remains unresolved. The P9-94 allowance is not reusable. P9-130 and P9-135 were not rerun in this review.
 
 Next: **P9-137 — Post-Static-Inspection Technical Boundary Reassessment**.
+
+# P9-137 — Post-Static-Inspection Technical Boundary Reassessment
+
+P9-137 is **COMPLETE / docs-only post-static-inspection technical boundary reassessment**. The accepted P9-135 static phrase-check result establishes only that its narrow static inspection boundary conformed. It does not resolve the Avast detection and does not authorize parser, script, PowerShell script, Excel / workbook / process, test, build, package / `dist`, release / publication / tag, external-service, flagged-executable, or Avast execution or workarounds.
+
+Technical execution remains **NO-GO / SAFE-STOP**. No current technical execution candidate is authorized. The completed P9-135 authorization is exhausted, P9-130 and P9-135 are not reusable through this reassessment, and the P9-94 allowance remains not reusable.
+
+Possible next docs-only paths are static risk-control matrix drafting, exact command allowlist hardening, a future technical GO / NO-GO template, and non-executable artifact inventory planning. None is selected or authorized for execution.
