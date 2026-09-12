@@ -2537,6 +2537,21 @@ Recommended next actions are:
    execution candidate remains `None`; the P9-94 allowance remains not
    reusable; and the block-time Avast definition/version remains unavailable
    and unproven. No technical operation or prohibited activity is authorized.
+68. P9-116 Technical Restart GO/NO-GO Boundary Decision is now recorded in
+   `docs/spec/P9-116_TechnicalRestartGONOGOBoundaryDecision.md` as `COMPLETE /
+   docs-only technical restart boundary decision / NO-GO TO EXECUTION`. The
+   Avast detection remains unresolved and must not be treated as resolved;
+   the block-time Avast definition/version remains unavailable and unproven.
+   Because no technical execution candidate is named, technical restart may
+   not proceed beyond docs-only planning. Technical execution remains `NO-GO /
+   SAFE-STOP`, technical execution candidate remains `None`, and P9-94 remains
+   non-reusable. A future technical GO requires a separately selected minimal
+   candidate with exact allowed and prohibited commands, stop and rollback
+   criteria, evidence requirements, and separate operation-specific
+   authorization. Flagged-executable rerun requires separate authorization,
+   and every Avast workaround / exception / exclusion / bypass remains
+   prohibited. The next required step is P9-117 Minimal Technical Candidate
+   Selection, docs-only only.
 
 The vNext hardening backlog currently includes:
 
