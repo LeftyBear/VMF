@@ -2592,6 +2592,19 @@ Recommended next actions are:
    technical execution candidate is currently authorized beyond completed
    P9-119; and P9-94 remains non-reusable. P9-121 Next Technical Boundary
    Candidate Planning is the next possible docs-only step.
+72. P9-121 Next Technical Boundary Candidate Planning is now recorded in
+   `docs/spec/P9-121_NextTechnicalBoundaryCandidatePlanning.md` as `COMPLETE /
+   docs-only next technical boundary candidate planning / NO CANDIDATE
+   SELECTED`. It records five possible future boundaries: additional static
+   documentation consistency inspection, static risk-control matrix review,
+   static command allowlist drafting, technical execution GO / NO-GO template
+   drafting, and non-executable artifact inventory review. No candidate is
+   selected, authorized, or executed. Each requires a later explicit docs-only
+   selection decision; any command-bearing candidate additionally requires a
+   separate operation-specific execution GO / NO-GO and separate execution
+   instruction. Avast detection remains unresolved, technical execution
+   remains `NO-GO / SAFE-STOP`, no technical candidate is currently
+   authorized, and P9-94 remains non-reusable.
 
 The vNext hardening backlog currently includes:
 
