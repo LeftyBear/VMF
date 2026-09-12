@@ -1,6 +1,6 @@
 # VMF vNext Backlog
 
-> P9-131 is **COMPLETE / docs-only corrected static inspection execution result review / INCONCLUSIVE**. P9-130 was boundary-conforming, but console truncation after 1,183 matching lines prevents full-output acceptance. Technical execution remains **NO-GO / SAFE-STOP**, no candidate is currently authorized beyond completed P9-130, Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-131_CorrectedStaticInspectionExecutionResultReview.md`.
+> P9-133 is **COMPLETE / docs-only truncation-safe candidate selection**. It selects **Exact phrase checks for specific decision lines** for future review only. Execution authorization is **No**; technical execution remains **NO-GO / SAFE-STOP**; authorized candidate remains **None**; Avast detection is unresolved; and the P9-94 allowance is not reusable. See `docs/spec/P9-133_TruncationSafeCandidateSelection.md`.
 
 Status  : Active Build vNext record
 Scope   : VMF Build vNext planning, implementation closeout, and verification state
@@ -799,3 +799,13 @@ Recovery principles require small explicitly scoped checks, avoidance of broad h
 Technical execution remains **NO-GO / SAFE-STOP**. Currently authorized candidate: **None**. Avast detection remains unresolved. The P9-94 allowance is not reusable.
 
 Next: **P9-133 — Truncation-Safe Candidate Selection**.
+
+# P9-133 — Truncation-Safe Candidate Selection
+
+P9-133 is **COMPLETE / docs-only truncation-safe candidate selection**. It selects **Exact phrase checks for specific decision lines** because the expected output is lower than broad `rg`, the checks can bind to specific governance assertions, and the review surface is not open-ended.
+
+The future-review boundary is exact phrase checks over explicitly named Markdown files only, with a bounded output expectation. No retry, substitution, correction, output persistence, or follow-on operation is permitted unless separately authorized. P9-133 defines no executable command, phrase set, or file set and executes nothing.
+
+Execution authorization is **No**. Technical execution remains **NO-GO / SAFE-STOP**. Authorized candidate: **None**. Avast detection remains unresolved. The P9-94 allowance is not reusable. P9-130 must not be rerun.
+
+Next: **P9-134 — Truncation-Safe Candidate GO/NO-GO Decision**.

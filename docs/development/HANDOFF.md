@@ -2771,3 +2771,11 @@ Future candidates include line-count-limited targeted `rg` checks per state term
 Technical execution remains **NO-GO / SAFE-STOP**. Currently authorized candidate: **None**. Avast detection is unresolved. The P9-94 allowance is not reusable.
 
 Next: **P9-133 — Truncation-Safe Candidate Selection**.
+
+# P9-133 Handoff
+
+P9-133 is **COMPLETE / docs-only truncation-safe candidate selection**. It selects **Exact phrase checks for specific decision lines** for future review only. The candidate is limited to exact phrase checks over explicitly named Markdown files with a bounded output expectation.
+
+P9-133 authorizes no execution and defines no executable command, phrase set, or file set. No retry, substitution, correction, output persistence, or follow-on operation is permitted unless separately authorized. Technical execution remains **NO-GO / SAFE-STOP**; authorized candidate is **None**; Avast detection remains unresolved; and the P9-94 allowance is not reusable. P9-130 must not be rerun.
+
+Next: **P9-134 — Truncation-Safe Candidate GO/NO-GO Decision**.
