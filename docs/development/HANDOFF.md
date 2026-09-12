@@ -2567,6 +2567,19 @@ Recommended next actions are:
    flagged-executable, or Avast-control operation is authorized. The selected
    candidate requires a separate P9-118 GO / NO-GO authorization before it
    may run.
+70. P9-118 Candidate Execution GO/NO-GO Decision is now recorded in
+   `docs/spec/P9-118_CandidateExecutionGONOGODecision.md` as `COMPLETE /
+   docs-only candidate execution decision / GO`. It authorizes only a later,
+   separately instructed execution of the P9-117 `Static P9 governance-record
+   consistency inspection`: exactly one read-only `rg` command over the named
+   P9 governance Markdown records, with no retry, correction, substitution,
+   output write, or follow-on operation. P9-118 does not execute the candidate;
+   technical execution remains pending, and every other technical execution
+   remains `NO-GO / SAFE-STOP`. Project scripts, parser, PowerShell scripts,
+   Excel / workbook / fixture / process operations, tests, build, package /
+   `dist`, release / publication / tag, external services, flagged executables,
+   and Avast changes or workarounds remain prohibited. The Avast detection
+   remains unresolved, and P9-94 remains not reusable.
 
 The vNext hardening backlog currently includes:
 
