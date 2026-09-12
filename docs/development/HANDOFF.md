@@ -1422,7 +1422,7 @@ Recommended next actions are:
    persisted schema change, canonical format change, or Frozen specification
    change.
 
-> P9-123 is **COMPLETE / docs-only static command allowlist drafting**. Command authorization is **No**; technical execution remains **NO-GO / SAFE-STOP**. Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-123_StaticCommandAllowlistDrafting.md`.
+> P9-124 is **COMPLETE / docs-only static command allowlist review / GO**. The P9-123 allowlist is accepted only as a future governance basis; P9-124 authorizes no command, and any actual command requires separate step-level authorization. Technical execution remains **NO-GO / SAFE-STOP**, the currently authorized technical candidate is **None**, Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-124_StaticCommandAllowlistReviewGONOGO.md`.
 
    P9-51 Existing Workbook Writable Lifecycle Authorization Boundary is now
    recorded in
@@ -2620,6 +2620,15 @@ Recommended next actions are:
    flagged-executable, and Avast workaround / exception / exclusion / bypass
    operations remain prohibited and unexecuted. P9-123 Static Command Allowlist
    Drafting is the next docs-only step.
+74. P9-124 Static Command Allowlist Review / GO-NO-GO is now recorded in
+   `docs/spec/P9-124_StaticCommandAllowlistReviewGONOGO.md` as `COMPLETE /
+   docs-only static command allowlist review / GO`. The P9-123 allowlist is
+   accepted only as a future governance basis. P9-124 authorizes no command;
+   any actual command requires separate step-level authorization applicable to
+   the exact command and scope. Technical execution remains `NO-GO /
+   SAFE-STOP`, the currently authorized technical candidate remains `None`,
+   Avast detection remains unresolved, and P9-94 remains non-reusable. No
+   candidate or command was executed.
 
 The vNext hardening backlog currently includes:
 
