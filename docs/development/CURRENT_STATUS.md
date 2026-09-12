@@ -1,6 +1,6 @@
 # VMF Publisher Current Status
 
-> P9-126 is **COMPLETE / docs-only step-level static inspection GO/NO-GO decision / GO**. The P9-125 candidate is authorized only for a later separate step; execution in P9-126 was not performed. Every operation outside the exact authorized static inspection remains **NO-GO / SAFE-STOP**, Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-126_StepLevelStaticInspectionGONOGODecision.md`.
+> P9-131 is **COMPLETE / docs-only corrected static inspection execution result review / INCONCLUSIVE**. P9-130 was boundary-conforming, but console truncation after 1,183 matching lines prevents full-output acceptance. Technical execution remains **NO-GO / SAFE-STOP**, no candidate is currently authorized beyond completed P9-130, Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-131_CorrectedStaticInspectionExecutionResultReview.md`.
 
 Status  : GO / selected completion decision approved / Avast response pending / normal development not blocked by unanswered Avast response
 Scope   : Current Publisher release-gate and local-verification state
@@ -1593,3 +1593,18 @@ mutation, flagged executable re-run, production code change, test change,
 Frozen specification change, public API change, staging, commit, or push was
 performed by this docs-only responsible-owner approval and release-gate
 re-evaluation record update.
+
+## 27. P9-131 Corrected Static Inspection Execution Result Review
+
+P9-131 is `COMPLETE / docs-only corrected static inspection execution result
+review / INCONCLUSIVE`. P9-130 conformed to its command boundary: four
+authorized commands ran once and in order, all returned exit code `0`, the
+seven authorized files were inspected, and no file modification occurred. No
+inconsistency was visible, but the console truncated the output after 1,183
+matching lines. Full-output consistency therefore was not verified, and the
+P9-130 substantive result is not accepted.
+
+Technical execution remains `NO-GO / SAFE-STOP`. No candidate is currently
+authorized beyond completed P9-130, Avast detection remains unresolved, and
+P9-94 remains non-reusable. The next possible docs-only step is P9-132
+Truncation Recovery Boundary Planning; no recovery or execution is authorized.

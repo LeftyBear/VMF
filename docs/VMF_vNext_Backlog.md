@@ -1,6 +1,6 @@
 # VMF vNext Backlog
 
-> P9-126 is **COMPLETE / docs-only step-level static inspection GO/NO-GO decision / GO**. The P9-125 candidate is authorized only for a later separate step; execution in P9-126 was not performed. Every operation outside the exact authorized static inspection remains **NO-GO / SAFE-STOP**, Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-126_StepLevelStaticInspectionGONOGODecision.md`.
+> P9-131 is **COMPLETE / docs-only corrected static inspection execution result review / INCONCLUSIVE**. P9-130 was boundary-conforming, but console truncation after 1,183 matching lines prevents full-output acceptance. Technical execution remains **NO-GO / SAFE-STOP**, no candidate is currently authorized beyond completed P9-130, Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-131_CorrectedStaticInspectionExecutionResultReview.md`.
 
 Status  : Active Build vNext record
 Scope   : VMF Build vNext planning, implementation closeout, and verification state
@@ -777,3 +777,16 @@ specification changes.
   Frozen specification changes as NO-GO.
 - No package / `dist`, external service, release, publication, push, tag, or
   Frozen specification change is authorized by this record.
+
+## P9-131 Corrected Static Inspection Execution Result Review
+
+P9-131 is complete as a docs-only review with decision `INCONCLUSIVE / output
+truncation prevents acceptance`. P9-130 was boundary-conforming: exactly four
+authorized commands ran once and in order, every exit code was `0`, the seven
+authorized files were inspected, no file was modified, and no inconsistency
+was visible. The `rg` output was truncated after producing 1,183 matching
+lines, so the full output could not be reviewed and definitive consistency is
+not accepted. Technical execution remains `NO-GO / SAFE-STOP`; no candidate
+is currently authorized beyond completed P9-130; Avast detection remains
+unresolved; and P9-94 remains non-reusable. The next possible step is P9-132
+Truncation Recovery Boundary Planning, docs-only only.

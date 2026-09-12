@@ -1,5 +1,7 @@
 # VMF Publisher Handoff
 
+> P9-131 is **COMPLETE / docs-only corrected static inspection execution result review / INCONCLUSIVE**. P9-130 was boundary-conforming, but console truncation after 1,183 matching lines prevents full-output acceptance. Technical execution remains **NO-GO / SAFE-STOP**, no candidate is currently authorized beyond completed P9-130, Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-131_CorrectedStaticInspectionExecutionResultReview.md`.
+
 Status  : Publisher v1.0 COMPLETE / future enhancement work is post-v1.0
 Scope   : Handoff for next worker, next chat, Codex, or Work Mode
 Depends : docs/development/CURRENT_STATUS.md, docs/development/Publisher_Phase4_LocalVerificationEvidence.md, docs/development/Publisher_Phase4_LocalVerificationChecklist.md, docs/distribution/ReleaseChecklist.md
@@ -2745,3 +2747,18 @@ is already recorded as a published GitHub prerelease.
 
 Proceed only inside the allowed scope unless the repository owner explicitly
 reopens the relevant release gate or grants operation-specific authorization.
+
+## 8. P9-131 Handoff
+
+Treat P9-131 as complete with decision `INCONCLUSIVE / output truncation
+prevents acceptance`. P9-130 was boundary-conforming: its four authorized
+commands ran once and in order with exit code `0`, inspected the seven
+authorized files, modified no files, and showed no visible inconsistency.
+Because its output was truncated after 1,183 matching lines, the full output
+was not reviewed and definitive consistency is not accepted.
+
+Technical execution remains `NO-GO / SAFE-STOP`. There is no currently
+authorized candidate beyond completed P9-130. Avast detection remains
+unresolved, and P9-94 remains non-reusable. The next possible step is P9-132
+Truncation Recovery Boundary Planning, docs-only only; it does not become
+authorized execution through this handoff.
