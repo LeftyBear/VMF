@@ -1637,3 +1637,13 @@ P9-134 records GO only for a later, separately instructed P9-135 exact literal p
 No broad regex, retry, substitution, correction, output persistence, or follow-on operation is authorized. P9-130 must not be rerun. Any deviation or non-reviewable output requires `SAFE-STOP`.
 
 Next: **P9-135 — Authorized Truncation-Safe Exact Phrase Check Execution**.
+
+# P9-136 Current-State Update
+
+P9-136 is **COMPLETE / docs-only truncation-safe phrase check result review**. The supplied P9-135 result is accepted as **PASS**: the exact authorized `rg` command ran once with exit code `0`, and the command boundary conformed.
+
+The result contained exactly 20 reviewable lines. Each of the five authorized phrases appeared exactly once in each of the four authorized files. Missing matches, extra matches, and truncated output were all absent. P9-135 modified no files.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Authorized candidate: **None beyond completed P9-135**. Avast detection remains unresolved. The P9-94 allowance is not reusable. Neither P9-130 nor P9-135 was rerun during P9-136.
+
+Next: **P9-137 — Post-Static-Inspection Technical Boundary Reassessment**.

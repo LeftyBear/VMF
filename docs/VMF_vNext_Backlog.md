@@ -1,6 +1,6 @@
 # VMF vNext Backlog
 
-> P9-133 is **COMPLETE / docs-only truncation-safe candidate selection**. It selects **Exact phrase checks for specific decision lines** for future review only. Execution authorization is **No**; technical execution remains **NO-GO / SAFE-STOP**; authorized candidate remains **None**; Avast detection is unresolved; and the P9-94 allowance is not reusable. See `docs/spec/P9-133_TruncationSafeCandidateSelection.md`.
+> P9-136 is **COMPLETE / docs-only truncation-safe phrase check result review**. The supplied P9-135 result is accepted as **PASS**: the command boundary conformed, exactly 20 reviewable lines were produced, and missing, extra, or truncated output was absent. Technical execution remains **NO-GO / SAFE-STOP**; no candidate is authorized beyond completed P9-135; Avast detection is unresolved; and the P9-94 allowance is not reusable. See `docs/spec/P9-136_TruncationSafePhraseCheckResultReview.md`.
 
 Status  : Active Build vNext record
 Scope   : VMF Build vNext planning, implementation closeout, and verification state
@@ -823,3 +823,13 @@ The selected exact-phrase candidate is authorized only for a later, separately i
 No broad regex, retry, substitution, correction, output persistence, or follow-on operation is authorized. P9-130 must not be rerun. Any deviation or non-reviewable output requires `SAFE-STOP`.
 
 Next: **P9-135 — Authorized Truncation-Safe Exact Phrase Check Execution**.
+
+# P9-136 — Truncation-Safe Phrase Check Result Review
+
+P9-136 is **COMPLETE / docs-only truncation-safe phrase check result review**. The supplied P9-135 result is accepted as **PASS**. The exact authorized `rg` command ran once with exit code `0`, and the command boundary conformed.
+
+The output contained exactly 20 reviewable lines: each of the five authorized phrases appeared exactly once in each of the four authorized files. Missing matches, extra matches, and truncated output were all absent. P9-135 modified no files.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Authorized candidate: **None beyond completed P9-135**. Avast detection remains unresolved. The P9-94 allowance is not reusable. P9-130 and P9-135 were not rerun in this review.
+
+Next: **P9-137 — Post-Static-Inspection Technical Boundary Reassessment**.
