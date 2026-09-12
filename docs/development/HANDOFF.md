@@ -2779,3 +2779,17 @@ P9-133 is **COMPLETE / docs-only truncation-safe candidate selection**. It selec
 P9-133 authorizes no execution and defines no executable command, phrase set, or file set. No retry, substitution, correction, output persistence, or follow-on operation is permitted unless separately authorized. Technical execution remains **NO-GO / SAFE-STOP**; authorized candidate is **None**; Avast detection remains unresolved; and the P9-94 allowance is not reusable. P9-130 must not be rerun.
 
 Next: **P9-134 — Truncation-Safe Candidate GO/NO-GO Decision**.
+
+# P9-134 Handoff
+
+P9-134 authorizes only a later, separately instructed P9-135 exact literal phrase check over `docs/spec/P9-134_TruncationSafeCandidateGONOGODecision.md`, `docs/VMF_vNext_Backlog.md`, `docs/development/CURRENT_STATUS.md`, and `docs/development/HANDOFF.md`. The five phrases below must each match exactly once in each named file, producing exactly 20 matching lines total.
+
+- P9-134: COMPLETE / docs-only truncation-safe candidate GO/NO-GO decision / GO
+- Candidate execution in P9-134: not performed
+- Technical execution: NO-GO / SAFE-STOP except any later separately authorized exact phrase check
+- Avast detection: unresolved
+- P9-94 allowance: not reusable
+
+No broad regex, retry, substitution, correction, output persistence, or follow-on operation is authorized. P9-130 must not be rerun. Any deviation or non-reviewable output requires `SAFE-STOP`.
+
+Next: **P9-135 — Authorized Truncation-Safe Exact Phrase Check Execution**.

@@ -809,3 +809,17 @@ The future-review boundary is exact phrase checks over explicitly named Markdown
 Execution authorization is **No**. Technical execution remains **NO-GO / SAFE-STOP**. Authorized candidate: **None**. Avast detection remains unresolved. The P9-94 allowance is not reusable. P9-130 must not be rerun.
 
 Next: **P9-134 — Truncation-Safe Candidate GO/NO-GO Decision**.
+
+# P9-134 — Truncation-Safe Candidate GO/NO-GO Decision
+
+The selected exact-phrase candidate is authorized only for a later, separately instructed P9-135 execution over `docs/spec/P9-134_TruncationSafeCandidateGONOGODecision.md`, `docs/VMF_vNext_Backlog.md`, `docs/development/CURRENT_STATUS.md`, and `docs/development/HANDOFF.md`. The future check is limited to the five decision lines below, with exactly one match per phrase per file and 20 matching lines total.
+
+- P9-134: COMPLETE / docs-only truncation-safe candidate GO/NO-GO decision / GO
+- Candidate execution in P9-134: not performed
+- Technical execution: NO-GO / SAFE-STOP except any later separately authorized exact phrase check
+- Avast detection: unresolved
+- P9-94 allowance: not reusable
+
+No broad regex, retry, substitution, correction, output persistence, or follow-on operation is authorized. P9-130 must not be rerun. Any deviation or non-reviewable output requires `SAFE-STOP`.
+
+Next: **P9-135 — Authorized Truncation-Safe Exact Phrase Check Execution**.

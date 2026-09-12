@@ -1623,3 +1623,17 @@ P9-133 is **COMPLETE / docs-only truncation-safe candidate selection**. The sele
 No executable command, phrase set, or file set is authorized or executed. No retry, substitution, correction, output persistence, or follow-on operation is permitted unless separately authorized. Execution authorization is **No**; technical execution remains **NO-GO / SAFE-STOP**; authorized candidate is **None**; Avast detection remains unresolved; and the P9-94 allowance is not reusable. P9-130 must not be rerun.
 
 Next: **P9-134 — Truncation-Safe Candidate GO/NO-GO Decision**.
+
+# P9-134 Current-State Update
+
+P9-134 records GO only for a later, separately instructed P9-135 exact literal phrase check over the P9-134 decision record, backlog, current status, and handoff. The future output is bounded to exactly one match for each of five phrases in each of those four named Markdown files, for 20 matching lines total.
+
+- P9-134: COMPLETE / docs-only truncation-safe candidate GO/NO-GO decision / GO
+- Candidate execution in P9-134: not performed
+- Technical execution: NO-GO / SAFE-STOP except any later separately authorized exact phrase check
+- Avast detection: unresolved
+- P9-94 allowance: not reusable
+
+No broad regex, retry, substitution, correction, output persistence, or follow-on operation is authorized. P9-130 must not be rerun. Any deviation or non-reviewable output requires `SAFE-STOP`.
+
+Next: **P9-135 — Authorized Truncation-Safe Exact Phrase Check Execution**.
