@@ -2657,6 +2657,20 @@ Recommended next actions are:
    inspection execution is the next possible step only if separately
    instructed.
 
+77. P9-128 P9-127 Safe-Stop Result Review is now recorded in
+   `docs/spec/P9-128_P9-127SafeStopResultReview.md` as `COMPLETE / docs-only
+   P9-127 safe-stop result review`. P9-127 ended in `SAFE-STOP`, and its
+   execution is not accepted as conforming completion because the supplied
+   instruction conflicted with the P9-126 exact four-command boundary. It used
+   `git status` instead of `git status --short` and direct inspection of six
+   suggested files excluding P9-123 instead of the specified `rg` inspection
+   over seven files. P9-127 modified no files, and Git was clean based on its
+   reported final state. Recovery requires a new docs-only boundary correction
+   before any further execution attempt. Technical execution remains `NO-GO /
+   SAFE-STOP`, no candidate is currently authorized, Avast detection remains
+   unresolved, and P9-94 remains non-reusable. P9-129 Corrected Static
+   Inspection Boundary Decision is the next docs-only step.
+
 The vNext hardening backlog currently includes:
 
 - signing;
