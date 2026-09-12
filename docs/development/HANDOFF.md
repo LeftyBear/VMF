@@ -2475,6 +2475,19 @@ Recommended next actions are:
    remains `No`, P9 remains closed in `NO-GO / indefinite SAFE-STOP`, technical
    execution candidate remains `None`, and the P9-94 allowance remains not
    reusable. No continuation or technical execution is authorized.
+63. P9-111 Alternative Evidence Acceptance Governance Decision is now recorded
+   in `docs/spec/P9-111_AlternativeEvidenceAcceptanceGovernanceDecision.md` as
+   `COMPLETE / docs-only governance decision / Path B ADOPTED`. The block-time
+   Avast definition/version remains unavailable and cannot be obtained. A later
+   separately requested docs-only intake review may assess the documented block
+   screenshot evidence, the post-event definition/version with its explicit
+   timing limitation, and explicit owner/security-authority risk acceptance as
+   an alternative evidence basis. This decision does not itself accept the
+   evidence or security disposition, authorize continuation, reopen P9, or
+   authorize technical execution. Security disposition accepted remains `No`,
+   continuation authorization accepted remains `No`, P9 remains closed in
+   `NO-GO / indefinite SAFE-STOP`, technical execution candidate remains
+   `None`, and the P9-94 allowance remains not reusable.
 
 The vNext hardening backlog currently includes:
 
