@@ -2552,6 +2552,21 @@ Recommended next actions are:
    and every Avast workaround / exception / exclusion / bypass remains
    prohibited. The next required step is P9-117 Minimal Technical Candidate
    Selection, docs-only only.
+69. P9-117 Minimal Technical Candidate Selection is now recorded in
+   `docs/spec/P9-117_MinimalTechnicalCandidateSelection.md` as `COMPLETE /
+   docs-only minimal technical candidate selection`. It selects `Static P9
+   governance-record consistency inspection` as the preferred minimal
+   candidate: one future read-only `rg` invocation limited to the named P9
+   governance Markdown records, with no correction, retry, output write, or
+   follow-on operation. The proposed command is recorded for future review
+   only and was not executed. Execution authorization is `No`; technical
+   execution remains `NO-GO / SAFE-STOP`; P9-94 remains not reusable; and the
+   Avast detection remains unresolved and is not treated as resolved. No
+   parser, project PowerShell, Excel / workbook / fixture / process, test,
+   build, package / `dist`, release / publication / tag, external-service,
+   flagged-executable, or Avast-control operation is authorized. The selected
+   candidate requires a separate P9-118 GO / NO-GO authorization before it
+   may run.
 
 The vNext hardening backlog currently includes:
 
