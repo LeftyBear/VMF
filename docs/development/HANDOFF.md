@@ -2525,6 +2525,18 @@ Recommended next actions are:
    execution candidate remains `None`; and the P9-94 allowance remains not
    reusable. The next required step is separate docs-only P9-115 continuation
    boundary planning, not execution.
+67. P9-115 Continuation Boundary Planning is now recorded in
+   `docs/spec/P9-115_ContinuationBoundaryPlanning.md` as `COMPLETE / docs-only
+   continuation boundary planning`. P9 governance continuation is reopened
+   for docs-only planning, risk framing, next-step sequencing, acceptance-
+   criteria drafting, and governance-boundary design. Possible later docs-only
+   subjects are technical restart boundary requirements, risk acceptance
+   criteria, allowed / non-allowed verification planning, and a future
+   execution GO / NO-GO template. None is selected as a technical execution
+   candidate. Technical execution remains `NO-GO / SAFE-STOP`; technical
+   execution candidate remains `None`; the P9-94 allowance remains not
+   reusable; and the block-time Avast definition/version remains unavailable
+   and unproven. No technical operation or prohibited activity is authorized.
 
 The vNext hardening backlog currently includes:
 
