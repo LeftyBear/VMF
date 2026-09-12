@@ -2605,6 +2605,19 @@ Recommended next actions are:
    instruction. Avast detection remains unresolved, technical execution
    remains `NO-GO / SAFE-STOP`, no technical candidate is currently
    authorized, and P9-94 remains non-reusable.
+73. P9-122 Next Boundary Candidate Selection is now recorded in
+   `docs/spec/P9-122_NextBoundaryCandidateSelection.md` as `COMPLETE /
+   docs-only next boundary candidate selection`. It selects `Static command
+   allowlist drafting` for future docs-only planning: read-only / static
+   command classification and explicit allowlist / prohibit-list drafting
+   before any technical restart. Execution authorization is `No`, and the
+   selection grants no execution approval. Avast detection remains unresolved,
+   technical execution remains `NO-GO / SAFE-STOP`, and P9-94 remains
+   non-reusable. Parser, script, PowerShell, Excel / workbook / process, test /
+   build / package / `dist` / release / publication / tag, external-service,
+   flagged-executable, and Avast workaround / exception / exclusion / bypass
+   operations remain prohibited and unexecuted. P9-123 Static Command Allowlist
+   Drafting is the next docs-only step.
 
 The vNext hardening backlog currently includes:
 
