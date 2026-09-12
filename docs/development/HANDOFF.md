@@ -2502,6 +2502,18 @@ Recommended next actions are:
    indefinite SAFE-STOP` pending separate continuation authorization review
    and explicit new GO; technical execution candidate remains `None`; and the
    P9-94 allowance remains not reusable.
+65. P9-113 Separate Continuation Authorization Review is now recorded in
+   `docs/spec/P9-113_SeparateContinuationAuthorizationReview.md` as `COMPLETE /
+   docs-only continuation authorization review / ACCEPTED`. Given the P9-112
+   accepted security disposition and the precise P9-113 boundaries, the prior
+   owner/security-authority statement is accepted only for docs-only next-step
+   planning and reopening-decision preparation. Security disposition accepted
+   is `Yes`; continuation authorization accepted is `Yes`. The block-time
+   Avast definition/version remains unavailable and unproven. P9 remains
+   closed in `NO-GO / indefinite SAFE-STOP`; the remaining reopening condition
+   is an explicit new GO decision. Technical execution candidate remains
+   `None`, and the P9-94 allowance remains not reusable. No technical
+   execution or prohibited operation is authorized.
 
 The vNext hardening backlog currently includes:
 
