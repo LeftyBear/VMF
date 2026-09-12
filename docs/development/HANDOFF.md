@@ -2488,6 +2488,20 @@ Recommended next actions are:
    continuation authorization accepted remains `No`, P9 remains closed in
    `NO-GO / indefinite SAFE-STOP`, technical execution candidate remains
    `None`, and the P9-94 allowance remains not reusable.
+64. P9-112 Alternative Evidence Security Disposition Intake Review is now
+   recorded in
+   `docs/spec/P9-112_AlternativeEvidenceSecurityDispositionIntakeReview.md` as
+   `COMPLETE / docs-only intake review / ACCEPTED`. P9-107, P9-110, P9-111,
+   the documented timing limitation, and the explicit owner/security-authority
+   risk acceptance satisfy the adopted Path B basis. Security disposition
+   accepted is `Yes`; the acceptance limitation remains that the block-time
+   Avast definition/version is unavailable and not proven, while the later
+   screenshot proves the value only at screenshot time. This acceptance does
+   not authorize continuation or technical execution. Continuation
+   authorization accepted remains `No`; P9 remains closed in `NO-GO /
+   indefinite SAFE-STOP` pending separate continuation authorization review
+   and explicit new GO; technical execution candidate remains `None`; and the
+   P9-94 allowance remains not reusable.
 
 The vNext hardening backlog currently includes:
 
