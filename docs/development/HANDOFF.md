@@ -1,6 +1,6 @@
 # VMF Publisher Handoff
 
-> P9-131 is **COMPLETE / docs-only corrected static inspection execution result review / INCONCLUSIVE**. P9-130 was boundary-conforming, but console truncation after 1,183 matching lines prevents full-output acceptance. Technical execution remains **NO-GO / SAFE-STOP**, no candidate is currently authorized beyond completed P9-130, Avast detection is unresolved, and the P9-94 allowance is not reusable. See `docs/spec/P9-131_CorrectedStaticInspectionExecutionResultReview.md`.
+> P9-139 is **COMPLETE / docs-only static risk-control matrix drafting / ACCEPT**. The accepted document records 12 static risk-control rows without implementing or validating any control and without authorizing technical execution. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable. See `docs/spec/P9-139_StaticRiskControlMatrix.md`.
 
 Status  : Publisher v1.0 COMPLETE / future enhancement work is post-v1.0
 Scope   : Handoff for next worker, next chat, Codex, or Work Mode
@@ -2811,3 +2811,21 @@ P9-137 is **COMPLETE / docs-only post-static-inspection technical boundary reass
 Technical execution remains **NO-GO / SAFE-STOP**. No current technical execution candidate is authorized. The completed P9-135 authorization is exhausted, P9-130 and P9-135 are not reusable through this reassessment, and the P9-94 allowance remains not reusable.
 
 Possible next docs-only paths are static risk-control matrix drafting, exact command allowlist hardening, a future technical GO / NO-GO template, and non-executable artifact inventory planning. None is selected or authorized for execution. Any next step requires a separate explicit docs-only selection decision.
+
+# P9-138 Handoff
+
+P9-138 is **COMPLETE / docs-only next-path selection**. Use **Static risk-control matrix drafting** as the selected next docs-only path. A later P9-139 may organize existing authoritative P9 risks or boundaries, controls or prohibitions, required evidence, safe-stop triggers, and authorization dependencies.
+
+Do not treat this selection as a technical candidate or execution GO. Exact command allowlist hardening, future technical GO / NO-GO template drafting, and non-executable artifact inventory planning remain unselected. No executable command or operation is authorized.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. The completed P9-135 authorization is exhausted; do not rerun P9-130 or P9-135; and do not reuse the P9-94 allowance.
+
+Next: **P9-139 — Static Risk-Control Matrix Drafting**, only under a separate docs-only instruction.
+
+# P9-139 Handoff
+
+P9-139 is **COMPLETE / docs-only static risk-control matrix drafting / ACCEPT**. Use `docs/spec/P9-139_StaticRiskControlMatrix.md` as the accepted static matrix record. It inherits the P9-138 docs-only selection and records 12 risks, preventive controls, required documentary evidence, fail-closed conditions, current dispositions, and controlling-premise traceability.
+
+Do not treat the P9-139 `ACCEPT` result as control implementation, control-effectiveness confirmation, security disposition, continuation authorization, or technical execution authorization. Avast detection remains unresolved. Do not reuse P9-94 as the present decision basis. Do not rerun P9-130 or P9-135, and do not include either in any rerun candidate set.
+
+Technical execution remains **NO-GO / SAFE-STOP** while these conditions remain unchanged. No next technical execution candidate, command, or operation is selected or authorized.
