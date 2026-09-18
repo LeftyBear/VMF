@@ -1,6 +1,6 @@
 # VMF Publisher Current Status
 
-> P9-139 is **COMPLETE / docs-only static risk-control matrix drafting / ACCEPT**. The accepted document records 12 static risk-control rows without implementing or validating any control and without authorizing technical execution. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable. See `docs/spec/P9-139_StaticRiskControlMatrix.md`.
+> P9-140 is **COMPLETE / docs-only exact command allowlist hardening / ACCEPT**. The revised draft review accepted the document content only; it did not authorize any command or technical execution. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-140_ExactCommandAllowlistHardening.md`.
 
 Status  : GO / selected completion decision approved / Avast response pending / normal development not blocked by unanswered Avast response
 Scope   : Current Publisher release-gate and local-verification state
@@ -1673,3 +1673,15 @@ P9-139 is **COMPLETE / docs-only static risk-control matrix drafting / ACCEPT**.
 The P9-139 review `ACCEPT` applies only to the document content. It is not control implementation, control-effectiveness confirmation, security disposition, continuation authorization, or technical execution authorization.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable as the present decision basis. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. No next technical execution candidate, command, or operation is selected or authorized.
+
+# P9-140 Current-State Update
+
+P9-140 is **DRAFT / docs-only exact command allowlist hardening**. It uses P9-139 as its governance basis and records eight exact future candidates limited to direct, read-only review of branch, working-tree, and the four P9-140 documentation paths. Candidate status is not authorization; a future run requires separate authority for the exact command text, repository root, narrow purpose, and single use.
+
+Each AL entry now defines its only allowed exit code, stdout, stderr, and mandatory stop conditions. AL-04 alone may use `NUL` as a synthetic empty input under the exact command; AL-08 is a path-limited status check and no longer combines `--no-index` with `--check`. Indeterminate or unexpected outcomes are unconditionally fail-closed.
+
+All unlisted or modified commands remain prohibited. PowerShell and other wrappers or scripts, tests, builds, Excel, Avast, external services, package / `dist`, release, publication, tags, Git mutation or remote operations, and direct or equivalent reruns of P9-130 or P9-135 remain outside the candidate set.
+
+The revised P9-140 draft review result is **ACCEPT**. P9-140 is **COMPLETE / docs-only exact command allowlist hardening / ACCEPT**. `ACCEPT` is limited to the document content and is not command authorization, control implementation, control-effectiveness confirmation, security disposition, continuation authorization, or technical execution authorization.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. P9-140 authorizes no command and makes no technical execution GO decision.
