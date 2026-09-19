@@ -1709,3 +1709,11 @@ P9-145 is **COMPLETE / docs-only unresolved gap register / ACCEPT**. The draft r
 Every registered gap remains **OPEN / UNRESOLVED / SAFE-STOP**. Every P9-144 inventory entry, `INV-144-01` through `INV-144-05`, remains **INCOMPLETE / SAFE-STOP**. No gap is resolved, no owner input or evidence is accepted, no technical condition is validated, and no technical candidate, continuation authority, command authority, GO decision, or execution instruction is selected or issued.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. N-145-01 through N-145-04 remain unselected docs-only candidates only.
+
+# P9-146 Current-State Update
+
+P9-146 is **COMPLETE / docs-only cross-traceability index / ACCEPT**. The draft review result is **ACCEPT**. `ACCEPT` applies only to the document content. The accepted index maps the P9-139 through P9-145 RC, AL, EV, NI, MD, U, and gap identifier sets without changing their source meanings or states.
+
+All eleven P9-145 gaps remain **OPEN / UNRESOLVED / SAFE-STOP**. Every P9-144 inventory entry, `INV-144-01` through `INV-144-05`, remains **INCOMPLETE / SAFE-STOP**. ML-146-01 through ML-146-10 remain missing-link index labels and are not gap resolution. No control is established as effective, no evidence is accepted, no command is authorized, and no technical candidate, continuation authority, GO decision, or execution instruction is selected or issued.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. N-146-01 through N-146-05 remain unselected docs-only candidates only.

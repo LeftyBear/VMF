@@ -2893,3 +2893,11 @@ P9-145 is **COMPLETE / docs-only unresolved gap register / ACCEPT**. The draft r
 The register contains eleven gaps: MD-06, MD-07, and MD-17 across the five P9-144 inventory entries, plus U-01 through U-08 preserved from P9-143. All eleven remain **OPEN / UNRESOLVED / SAFE-STOP**. All five inventory entries remain **INCOMPLETE / SAFE-STOP** and are not promoted to `COMPLETE`, `PASS`, accepted evidence, technically verified, or execution-ready. N-145-01 through N-145-04 remain unselected docs-only candidates only.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. Tests, builds, scripts, PowerShell, Excel, Avast, external services, package / `dist`, release, publication, tags, technical artifact inspection, and technical execution GO decisions remain prohibited.
+
+# P9-146 Handoff
+
+P9-146 is **COMPLETE / docs-only cross-traceability index / ACCEPT**. The draft review result is **ACCEPT**. Use `docs/spec/P9-146_CrossTraceabilityIndex.md` as the accepted documentary index across P9-139 through P9-145 RC, AL, EV, NI, MD, U, and gap identifiers. `ACCEPT` applies only to the document content. Do not treat an indexed relationship as requirement satisfaction, completeness, control effectiveness, evidence acceptance, technical validation, readiness, authorization, or execution.
+
+All eleven P9-145 gaps remain **OPEN / UNRESOLVED / SAFE-STOP**. All five P9-144 inventory entries remain **INCOMPLETE / SAFE-STOP**. ML-146-01 through ML-146-10 are missing-link index labels only and do not resolve, replace, accept, or close a gap. Do not resolve, waive, downgrade, accept, or close a gap; do not promote an inventory entry to `COMPLETE`, `PASS`, accepted evidence, technically verified, or execution-ready.
+
+N-146-01 through N-146-05 are unselected docs-only candidates and require separate explicit instruction. Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. Do not reuse P9-94. Do not rerun, reconstruct, approximate, or create an equivalent route for P9-130 or P9-135. Tests, builds, scripts, PowerShell, Excel, Avast, external services, package / `dist`, release, publication, tags, technical artifact inspection, and technical execution GO decisions remain prohibited.
