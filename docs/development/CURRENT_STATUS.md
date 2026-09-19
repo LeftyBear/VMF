@@ -1701,3 +1701,11 @@ Following draft review, EV-09 is no longer part of the GO-decision mandatory evi
 The revised draft review result is **ACCEPT**. `ACCEPT` applies only to the document content and is not a technical execution GO decision. The accepted template maps each element to P9-139 controls and P9-140 exact-command boundaries. Template completion or acceptance cannot authorize execution by itself; even a valid future `GO` would require a separate exact, single-use execution instruction. A mismatch in exact candidate, exact command, single-use scope, operator, timestamp / validity window, or prohibition boundary requires `SAFE-STOP`.
 
 No candidate is evaluated or selected. No evidence is accepted or refreshed. Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. P9-140 `ACCEPT` remains documentation-only and authorizes no command.
+
+# P9-145 Current-State Update
+
+P9-145 is **COMPLETE / docs-only unresolved gap register / ACCEPT**. The draft review result is **ACCEPT**. `ACCEPT` applies only to the document content. The register contains all eleven required gaps: MD-06, MD-07, and MD-17 for the five P9-144 inventory entries, plus P9-143 U-01 through U-08.
+
+Every registered gap remains **OPEN / UNRESOLVED / SAFE-STOP**. Every P9-144 inventory entry, `INV-144-01` through `INV-144-05`, remains **INCOMPLETE / SAFE-STOP**. No gap is resolved, no owner input or evidence is accepted, no technical condition is validated, and no technical candidate, continuation authority, command authority, GO decision, or execution instruction is selected or issued.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. N-145-01 through N-145-04 remain unselected docs-only candidates only.

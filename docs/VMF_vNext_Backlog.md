@@ -904,3 +904,11 @@ P9-143 is **COMPLETE / docs-only boundary integration closeout / ACCEPT**. It co
 The P9-143 closeout review result is **ACCEPT**. `ACCEPT` applies only to the integrated document content. It is not technical execution GO, continuation authorization, evidence acceptance, command authorization, or an execution instruction. U-01 through U-08 remain unresolved. D-01 through D-04 remain unselected candidates.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. No command, technical candidate, evidence, GO decision, execution instruction, or next path is selected or authorized.
+
+# P9-145 — Unresolved Gap Register
+
+P9-145 is **COMPLETE / docs-only unresolved gap register / ACCEPT**. The draft review result is **ACCEPT**. `ACCEPT` applies only to the document content. The accepted register records the three P9-144 metadata gap classes for MD-06, MD-07, and MD-17 and the eight P9-143 unresolved matters U-01 through U-08, for eleven gaps total.
+
+All eleven gaps remain **OPEN / UNRESOLVED / SAFE-STOP**. All five P9-144 inventory entries remain **INCOMPLETE / SAFE-STOP**. This closeout does not resolve a gap, accept owner input or evidence, perform technical validation, establish control effectiveness, select a technical candidate, authorize continuation or a command, make a technical execution GO decision, or issue an execution instruction. N-145-01 through N-145-04 remain unselected docs-only candidates only.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates.

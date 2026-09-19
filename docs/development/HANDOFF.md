@@ -2885,3 +2885,11 @@ The inventory lists five entries and maps them to NI-01 through NI-08 and MD-01 
 G-144-01 through G-144-06 and P9-143 U-01 through U-08 remain unresolved. N-144-01 through N-144-04 are unselected docs-only candidates only. Do not infer missing metadata, select a technical candidate, accept evidence, claim control effectiveness, resolve Avast, authorize continuation or a command, make a technical execution GO decision, or issue an execution instruction.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. Tests, builds, scripts, PowerShell, Excel, Avast, external services, package / `dist`, release, publication, tags, technical artifact inspection, and technical execution GO decisions remain prohibited.
+
+# P9-145 Handoff
+
+P9-145 is **COMPLETE / docs-only unresolved gap register / ACCEPT**. The draft review result is **ACCEPT**. Use `docs/spec/P9-145_UnresolvedGapRegister.md` as the accepted documentary register. `ACCEPT` applies only to the document content; it is not gap resolution, owner-input acceptance, evidence acceptance, technical validation, control-effectiveness confirmation, candidate selection, continuation authorization, command authorization, a technical execution GO decision, or an execution instruction.
+
+The register contains eleven gaps: MD-06, MD-07, and MD-17 across the five P9-144 inventory entries, plus U-01 through U-08 preserved from P9-143. All eleven remain **OPEN / UNRESOLVED / SAFE-STOP**. All five inventory entries remain **INCOMPLETE / SAFE-STOP** and are not promoted to `COMPLETE`, `PASS`, accepted evidence, technically verified, or execution-ready. N-145-01 through N-145-04 remain unselected docs-only candidates only.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. Tests, builds, scripts, PowerShell, Excel, Avast, external services, package / `dist`, release, publication, tags, technical artifact inspection, and technical execution GO decisions remain prohibited.
