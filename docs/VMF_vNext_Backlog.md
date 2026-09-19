@@ -944,3 +944,9 @@ P9-149 is **COMPLETE / docs-only owner input intake package template / ACCEPT**.
 Owner input submission remains **NOT SUBMITTED**. Intake disposition remains **NOT ASSESSED**. No owner input or evidence was requested, supplied, reviewed, or accepted; no actual intake review was performed. The template does not resolve a gap, accept evidence, validate a technical condition or control, complete an inventory entry, provide a security disposition, authorize continuation or a command, make a technical execution GO decision, or issue an execution instruction.
 
 All eleven P9-145 gaps remain **OPEN / UNRESOLVED / SAFE-STOP**. All five P9-144 inventory entries remain **INCOMPLETE / SAFE-STOP**. Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. See `docs/spec/P9-149_OwnerInputIntakePackageTemplate.md`.
+
+# P9-150 — Owner Input Submission Plan
+
+P9-150 is **COMPLETE / docs-only owner input submission plan / ACCEPT**. The draft review result is **ACCEPT** and applies only to the document content. The accepted plan uses the P9-149 blank template to define one package-envelope unit and eleven independently reviewable gap units, their dependency-gated preparation order, required unit and package pre-checks, and fail-closed withholding conditions. It does not populate or submit owner input and does not perform P9-148 intake review.
+
+Owner input remains **NOT SUBMITTED**. Intake disposition remains **NOT ASSESSED**. All eleven P9-145 gaps remain **OPEN / UNRESOLVED / SAFE-STOP**, and all five P9-144 inventory items remain **INCOMPLETE / SAFE-STOP**. Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. See `docs/spec/P9-150_OwnerInputSubmissionPlan.md`.
