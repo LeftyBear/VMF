@@ -1,5 +1,7 @@
 # VMF Publisher Handoff
 
+> P9-143 is **COMPLETE / docs-only boundary integration closeout / ACCEPT**. The closeout review accepted the integrated document content only and closes out the P9-139 through P9-142 docs-only documentation series. It is not technical execution GO, continuation authorization, evidence acceptance, command authorization, or an execution instruction. U-01 through U-08 remain unresolved, and D-01 through D-04 remain unselected candidates. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-143_DocsOnlyBoundaryIntegrationCloseout.md`.
+
 > P9-142 is **COMPLETE / docs-only non-executable artifact inventory planning / ACCEPT**. The draft review accepted the document content only. It did not perform an inventory, confirm artifact existence, accept evidence, conduct technical validation, select a candidate, make a GO decision, or issue an execution instruction. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-142_NonExecutableArtifactInventoryPlanning.md`.
 
 > P9-141 is **COMPLETE / docs-only future technical GO / NO-GO template / ACCEPT**. The revised draft review accepted the document content only; it did not make a technical execution GO decision or issue an execution instruction. GO-decision evidence is EV-01 through EV-08, and EV-09 remains a separate post-GO, pre-execution condition. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-141_FutureTechnicalGONOGOTemplate.md`.
@@ -2863,3 +2865,11 @@ The draft review result is **ACCEPT**. Treat `ACCEPT` only as acceptance of the 
 P9-139 control documentation does not establish control effectiveness. P9-140 command candidates are not inherited or authorized. P9-141 template acceptance is not a current GO decision and does not satisfy EV-01 through EV-09. Do not reuse P9-94, and do not rerun or reconstruct P9-130 or P9-135.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. Tests, builds, scripts, PowerShell, Excel, Avast, external services, package / `dist`, release, publication, tags, technical artifact inspection, and technical execution GO decisions remain prohibited.
+
+# P9-143 Handoff
+
+P9-143 is **COMPLETE / docs-only boundary integration closeout / ACCEPT**. Use `docs/spec/P9-143_DocsOnlyBoundaryIntegrationCloseout.md` as the accepted closeout boundary. It lists the P9-139 through P9-142 accepted documentary outputs, integrates their continuing constraints, records unresolved matters, and identifies unselected next docs-only path candidates.
+
+The P9-143 closeout review result is **ACCEPT**. `ACCEPT` applies only to the integrated document content and closes out the P9-139 through P9-142 docs-only documentation series. Do not treat it as technical readiness, evidence acceptance, security disposition, continuation authorization, command authorization, a technical execution GO decision, or an execution instruction.
+
+U-01 through U-08 remain unresolved. No next path is selected. D-01 through D-04 are candidate documentation paths only and require separate explicit instruction. Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. Do not reuse P9-94. Do not rerun, reconstruct, approximate, or create an equivalent route for P9-130 or P9-135. Tests, builds, scripts, PowerShell, Excel, Avast, external services, package / `dist`, release, publication, tags, technical artifact inspection, and technical execution GO decisions remain prohibited.

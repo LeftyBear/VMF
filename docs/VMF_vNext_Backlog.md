@@ -893,3 +893,11 @@ The draft review result is **ACCEPT**. `ACCEPT` applies only to the document con
 P9-139 controls remain documented rather than proven effective. P9-140 command candidates are not inherited or authorized. P9-141 `ACCEPT` remains document-content acceptance only and is not a technical GO decision or execution instruction. Missing, ambiguous, stale, inconsistent, or unattributable metadata resolves to **INCOMPLETE / SAFE-STOP**.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside rerun candidates.
+
+# P9-143 — Docs-Only Boundary Integration Closeout
+
+P9-143 is **COMPLETE / docs-only boundary integration closeout / ACCEPT**. It consolidates and closes out the accepted P9-139 through P9-142 docs-only documentation series, including its continuing constraints, unresolved matters, and unselected next docs-only path candidates. See `docs/spec/P9-143_DocsOnlyBoundaryIntegrationCloseout.md`.
+
+The P9-143 closeout review result is **ACCEPT**. `ACCEPT` applies only to the integrated document content. It is not technical execution GO, continuation authorization, evidence acceptance, command authorization, or an execution instruction. U-01 through U-08 remain unresolved. D-01 through D-04 remain unselected candidates.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. No command, technical candidate, evidence, GO decision, execution instruction, or next path is selected or authorized.
