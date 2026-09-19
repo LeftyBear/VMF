@@ -1,6 +1,6 @@
 # VMF Publisher Handoff
 
-> P9-140 is **COMPLETE / docs-only exact command allowlist hardening / ACCEPT**. The revised draft review accepted the document content only; it did not authorize any command or technical execution. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-140_ExactCommandAllowlistHardening.md`.
+> P9-141 is **COMPLETE / docs-only future technical GO / NO-GO template / ACCEPT**. The revised draft review accepted the document content only; it did not make a technical execution GO decision or issue an execution instruction. GO-decision evidence is EV-01 through EV-08, and EV-09 remains a separate post-GO, pre-execution condition. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-141_FutureTechnicalGONOGOTemplate.md`.
 
 Status  : Publisher v1.0 COMPLETE / future enhancement work is post-v1.0
 Scope   : Handoff for next worker, next chat, Codex, or Work Mode
@@ -2841,3 +2841,13 @@ Do not run a listed command merely because it appears in the draft. Any future r
 The revised P9-140 draft review result is **ACCEPT**. P9-140 is **COMPLETE / docs-only exact command allowlist hardening / ACCEPT**. Treat `ACCEPT` only as acceptance of the documentation content. It is not command authorization, control implementation, control-effectiveness confirmation, security disposition, continuation authorization, or technical execution authorization.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. Do not reuse P9-94. Do not rerun P9-130 or P9-135 directly or through an equivalent operation, and keep both outside all rerun candidates. Tests, builds, PowerShell, Excel, Avast, external services, package / `dist`, release, publication, tags, Git mutation or remote operations, and technical execution GO decisions remain prohibited.
+
+# P9-141 Handoff
+
+P9-141 is **COMPLETE / docs-only future technical GO / NO-GO template / ACCEPT**. Use `docs/spec/P9-141_FutureTechnicalGONOGOTemplate.md` as the accepted documentation boundary. It derives its risk and evidence gates from P9-139 and its exact-command, outcome-contract, and single-use boundaries from P9-140.
+
+Following draft review, treat EV-01 through EV-08 as the future GO-decision mandatory evidence package. EV-09 is not GO evidence; it is an independent pre-execution condition issued only after GO. At the GO-decision point, the separate execution instruction must be `NO / not issued`, and an execution instruction before execution must be `YES / required`.
+
+The revised draft review result is **ACCEPT**. Treat `ACCEPT` only as acceptance of the document content, not as a technical execution GO decision. Do not populate the template as a current `GO`, infer readiness from its existence, or treat the completed template as an execution instruction. A future decision must identify one exact candidate, provide EV-01 through EV-08, and record security disposition, continuation authorization, and technical execution decision independently. EV-09 remains a separate post-GO, pre-execution condition. Actual execution would require that separate, exact, single-use instruction. If it does not completely match the GO record's exact candidate, exact command, single-use scope, operator, timestamp / validity window, and prohibition boundary, retain `SAFE-STOP` and do not begin execution.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. Do not reuse P9-94. Do not rerun P9-130 or P9-135 directly or through an equivalent operation, and keep both outside all rerun candidates. P9-140 `ACCEPT` remains document-content acceptance only and authorizes no command. Tests, builds, PowerShell, Excel, Avast, external services, package / `dist`, release, publication, tags, Git mutation or remote operations, and technical execution GO decisions remain prohibited.

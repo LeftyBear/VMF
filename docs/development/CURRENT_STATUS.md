@@ -1,6 +1,6 @@
 # VMF Publisher Current Status
 
-> P9-140 is **COMPLETE / docs-only exact command allowlist hardening / ACCEPT**. The revised draft review accepted the document content only; it did not authorize any command or technical execution. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-140_ExactCommandAllowlistHardening.md`.
+> P9-141 is **COMPLETE / docs-only future technical GO / NO-GO template / ACCEPT**. The revised draft review accepted the document content only; it did not make a technical execution GO decision or issue an execution instruction. GO-decision evidence is EV-01 through EV-08, and EV-09 remains a separate post-GO, pre-execution condition. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-141_FutureTechnicalGONOGOTemplate.md`.
 
 Status  : GO / selected completion decision approved / Avast response pending / normal development not blocked by unanswered Avast response
 Scope   : Current Publisher release-gate and local-verification state
@@ -1685,3 +1685,13 @@ All unlisted or modified commands remain prohibited. PowerShell and other wrappe
 The revised P9-140 draft review result is **ACCEPT**. P9-140 is **COMPLETE / docs-only exact command allowlist hardening / ACCEPT**. `ACCEPT` is limited to the document content and is not command authorization, control implementation, control-effectiveness confirmation, security disposition, continuation authorization, or technical execution authorization.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. P9-140 authorizes no command and makes no technical execution GO decision.
+
+# P9-141 Current-State Update
+
+P9-141 is **COMPLETE / docs-only future technical GO / NO-GO template / ACCEPT**. It defines candidate-identification fields, GO conditions, NO-GO conditions, unconditional SAFE-STOP conditions, a mandatory evidence package, independent decision-authority boundaries, and a final decision block for possible future use.
+
+Following draft review, EV-09 is no longer part of the GO-decision mandatory evidence package. EV-01 through EV-08 support the future GO decision. EV-09 is an independent pre-execution condition that may be issued only after a valid GO and must be satisfied before execution begins. At the GO-decision point, the execution instruction is `NO / not issued`, and a separate execution instruction before execution is `YES / required`.
+
+The revised draft review result is **ACCEPT**. `ACCEPT` applies only to the document content and is not a technical execution GO decision. The accepted template maps each element to P9-139 controls and P9-140 exact-command boundaries. Template completion or acceptance cannot authorize execution by itself; even a valid future `GO` would require a separate exact, single-use execution instruction. A mismatch in exact candidate, exact command, single-use scope, operator, timestamp / validity window, or prohibition boundary requires `SAFE-STOP`.
+
+No candidate is evaluated or selected. No evidence is accepted or refreshed. Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. P9-140 `ACCEPT` remains documentation-only and authorizes no command.
