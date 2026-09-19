@@ -1,5 +1,7 @@
 # VMF Publisher Handoff
 
+> P9-142 is **COMPLETE / docs-only non-executable artifact inventory planning / ACCEPT**. The draft review accepted the document content only. It did not perform an inventory, confirm artifact existence, accept evidence, conduct technical validation, select a candidate, make a GO decision, or issue an execution instruction. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-142_NonExecutableArtifactInventoryPlanning.md`.
+
 > P9-141 is **COMPLETE / docs-only future technical GO / NO-GO template / ACCEPT**. The revised draft review accepted the document content only; it did not make a technical execution GO decision or issue an execution instruction. GO-decision evidence is EV-01 through EV-08, and EV-09 remains a separate post-GO, pre-execution condition. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-141_FutureTechnicalGONOGOTemplate.md`.
 
 Status  : Publisher v1.0 COMPLETE / future enhancement work is post-v1.0
@@ -2851,3 +2853,13 @@ Following draft review, treat EV-01 through EV-08 as the future GO-decision mand
 The revised draft review result is **ACCEPT**. Treat `ACCEPT` only as acceptance of the document content, not as a technical execution GO decision. Do not populate the template as a current `GO`, infer readiness from its existence, or treat the completed template as an execution instruction. A future decision must identify one exact candidate, provide EV-01 through EV-08, and record security disposition, continuation authorization, and technical execution decision independently. EV-09 remains a separate post-GO, pre-execution condition. Actual execution would require that separate, exact, single-use instruction. If it does not completely match the GO record's exact candidate, exact command, single-use scope, operator, timestamp / validity window, and prohibition boundary, retain `SAFE-STOP` and do not begin execution.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. Do not reuse P9-94. Do not rerun P9-130 or P9-135 directly or through an equivalent operation, and keep both outside all rerun candidates. P9-140 `ACCEPT` remains document-content acceptance only and authorizes no command. Tests, builds, PowerShell, Excel, Avast, external services, package / `dist`, release, publication, tags, Git mutation or remote operations, and technical execution GO decisions remain prohibited.
+
+# P9-142 Handoff
+
+P9-142 is **COMPLETE / docs-only non-executable artifact inventory planning / ACCEPT**. Use `docs/spec/P9-142_NonExecutableArtifactInventoryPlanning.md` as the accepted planning boundary. It defines eight documentary inventory categories, inclusion and exclusion criteria, MD-01 through MD-20 required metadata, fail-closed conditions, and correspondence to P9-139, P9-140, and P9-141.
+
+The draft review result is **ACCEPT**. Treat `ACCEPT` only as acceptance of the document content, not as a completed inventory, artifact-existence confirmation, evidence acceptance, technical validation, candidate selection, GO decision, or execution instruction. Do not discover, open, execute, hash, parse, render, scan, extract, generate, refresh, or validate an artifact. A documentary path or identifier is an opaque reference only unless a later, separately authorized docs-only activity permits review of the exact source set. Missing or ambiguous metadata resolves to `INCOMPLETE / SAFE-STOP`.
+
+P9-139 control documentation does not establish control effectiveness. P9-140 command candidates are not inherited or authorized. P9-141 template acceptance is not a current GO decision and does not satisfy EV-01 through EV-09. Do not reuse P9-94, and do not rerun or reconstruct P9-130 or P9-135.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. Tests, builds, scripts, PowerShell, Excel, Avast, external services, package / `dist`, release, publication, tags, technical artifact inspection, and technical execution GO decisions remain prohibited.

@@ -1,5 +1,7 @@
 # VMF Publisher Current Status
 
+> P9-142 is **COMPLETE / docs-only non-executable artifact inventory planning / ACCEPT**. The draft review accepted the document content only. It did not perform an inventory, confirm artifact existence, accept evidence, conduct technical validation, select a candidate, make a GO decision, or issue an execution instruction. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-142_NonExecutableArtifactInventoryPlanning.md`.
+
 > P9-141 is **COMPLETE / docs-only future technical GO / NO-GO template / ACCEPT**. The revised draft review accepted the document content only; it did not make a technical execution GO decision or issue an execution instruction. GO-decision evidence is EV-01 through EV-08, and EV-09 remains a separate post-GO, pre-execution condition. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-141_FutureTechnicalGONOGOTemplate.md`.
 
 Status  : GO / selected completion decision approved / Avast response pending / normal development not blocked by unanswered Avast response

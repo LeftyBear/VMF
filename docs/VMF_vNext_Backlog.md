@@ -1,5 +1,7 @@
 # VMF vNext Backlog
 
+> P9-142 is **COMPLETE / docs-only non-executable artifact inventory planning / ACCEPT**. The draft review accepted the document content only. It did not perform an inventory, confirm artifact existence, accept evidence, conduct technical validation, select a candidate, make a GO decision, or issue an execution instruction. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-142_NonExecutableArtifactInventoryPlanning.md`.
+
 > P9-141 is **COMPLETE / docs-only future technical GO / NO-GO template / ACCEPT**. The revised draft review accepted the document content only; it did not make a technical execution GO decision or issue an execution instruction. GO-decision evidence is EV-01 through EV-08, and EV-09 remains a separate post-GO, pre-execution condition. Technical execution remains **NO-GO / SAFE-STOP**; Avast detection remains unresolved; P9-94 remains non-reusable; and P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. See `docs/spec/P9-141_FutureTechnicalGONOGOTemplate.md`.
 
 Status  : Active Build vNext record
@@ -881,3 +883,13 @@ Following draft review, EV-09 is excluded from the GO-decision mandatory evidenc
 The revised draft review result is **ACCEPT**. `ACCEPT` applies only to the document content and is not a technical execution GO decision. This completed docs-only item evaluates no candidate and accepts no candidate evidence. Template acceptance cannot authorize execution. A future valid `GO` would still require a separate exact, single-use execution instruction. Any mismatch between that later instruction and the accepted GO record's exact candidate, exact command, single-use scope, operator, timestamp / validity window, or prohibition boundary requires `SAFE-STOP`.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside rerun candidates. P9-140 `ACCEPT` remains documentation-only and authorizes no command.
+
+# P9-142 — Non-Executable Artifact Inventory Planning
+
+P9-142 is **COMPLETE / docs-only non-executable artifact inventory planning / ACCEPT**. It defines eight categories for a possible later documentary inventory, inclusion and exclusion criteria, MD-01 through MD-20 required metadata, fail-closed conditions, and explicit correspondence to P9-139, P9-140, and P9-141.
+
+The draft review result is **ACCEPT**. `ACCEPT` applies only to the document content. P9-142 performs no inventory and makes no assertion that a referenced artifact currently exists, is complete, is current, is eligible evidence, or has verified integrity. It is not artifact-existence confirmation, evidence acceptance, technical validation, candidate selection, a GO decision, or an execution instruction. It authorizes no discovery, command, script, test, build, Excel or Avast operation, external-service access, package / `dist`, release, publication, tag, or technical artifact inspection.
+
+P9-139 controls remain documented rather than proven effective. P9-140 command candidates are not inherited or authorized. P9-141 `ACCEPT` remains document-content acceptance only and is not a technical GO decision or execution instruction. Missing, ambiguous, stale, inconsistent, or unattributable metadata resolves to **INCOMPLETE / SAFE-STOP**.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside rerun candidates.
