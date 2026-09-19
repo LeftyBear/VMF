@@ -1717,3 +1717,11 @@ P9-146 is **COMPLETE / docs-only cross-traceability index / ACCEPT**. The draft 
 All eleven P9-145 gaps remain **OPEN / UNRESOLVED / SAFE-STOP**. Every P9-144 inventory entry, `INV-144-01` through `INV-144-05`, remains **INCOMPLETE / SAFE-STOP**. ML-146-01 through ML-146-10 remain missing-link index labels and are not gap resolution. No control is established as effective, no evidence is accepted, no command is authorized, and no technical candidate, continuation authority, GO decision, or execution instruction is selected or issued.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. N-146-01 through N-146-05 remain unselected docs-only candidates only.
+
+# P9-147 Current-State Update
+
+P9-147 is **COMPLETE / docs-only current hold and next-path selection / ACCEPT**. The draft review result is **ACCEPT** and applies only to the document content. The current state is **HOLD / DOCS-ONLY / NO STATE PROMOTION**. All eleven P9-145 gaps remain **OPEN / UNRESOLVED / SAFE-STOP**. Every P9-144 inventory entry, `INV-144-01` through `INV-144-05`, remains **INCOMPLETE / SAFE-STOP**.
+
+`N-146-03` is selected only as the next separately instructed docs-only candidate for documentary gap-intake acceptance-criteria drafting. It has not begun and is not approved or authorized by P9-147. The selection accepts no input or evidence, resolves no gap, promotes no inventory entry, validates no technical condition, and supplies no continuation authority, command authority, technical execution GO decision, or execution instruction. N-146-01, N-146-02, N-146-04, and N-146-05 remain non-selected.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates.

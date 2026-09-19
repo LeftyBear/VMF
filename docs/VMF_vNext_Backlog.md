@@ -920,3 +920,11 @@ P9-146 is **COMPLETE / docs-only cross-traceability index / ACCEPT**. The draft 
 All eleven P9-145 gaps remain **OPEN / UNRESOLVED / SAFE-STOP**. All five P9-144 inventory entries remain **INCOMPLETE / SAFE-STOP**. ML-146-01 through ML-146-10 are missing-link index labels only and do not resolve, accept, replace, or close a gap. No inventory item is promoted to `COMPLETE` or `PASS`.
 
 Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. N-146-01 through N-146-05 are unselected docs-only candidates only.
+
+# P9-147 — Current Hold and Next Docs-Only Path Selection
+
+P9-147 is **COMPLETE / docs-only current hold and next-path selection / ACCEPT**. The draft review result is **ACCEPT** and applies only to the document content. It records the current state as **HOLD / DOCS-ONLY / NO STATE PROMOTION**. All eleven P9-145 gaps remain **OPEN / UNRESOLVED / SAFE-STOP**, and all five P9-144 inventory entries remain **INCOMPLETE / SAFE-STOP**.
+
+`N-146-03` is selected only as the next separately instructed docs-only candidate: drafting documentary gap-intake acceptance criteria keyed to the P9-146 missing-link labels and P9-145 controlling gap IDs. Selection does not begin, approve, or authorize that work; resolve a gap; accept evidence; promote an inventory entry; authorize continuation or a command; make a technical execution GO decision; or issue an execution instruction. N-146-01, N-146-02, N-146-04, and N-146-05 remain non-selected.
+
+Technical execution remains **NO-GO / SAFE-STOP**. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates. See `docs/spec/P9-147_CurrentHoldAndNextDocsOnlyPathSelection.md`.
