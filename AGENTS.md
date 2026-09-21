@@ -336,6 +336,42 @@ The AI MUST avoid unnecessary reasoning escalation when escalation would not mat
 
 ---
 
+# 10B. Governance Decision Safety Policy
+
+For VMF governance, release, security, GO / NO-GO, evidence, or authorization decisions, the AI MUST NOT remain fixed at Low reasoning.
+
+The AI MUST use Medium reasoning or higher when evaluating:
+
+* decisions or approvals
+* evidence sufficiency or validity
+* whether work may resume
+* whether a NO-GO or SAFE-STOP boundary may be cleared
+
+Before answering, the AI MUST confirm:
+
+* the current Phase
+* whether the scope is docs-only or technical execution
+* the applicable NO-GO / SAFE-STOP boundary
+* prohibited operations
+* whether the required explicit authorization exists
+
+Evidence that is missing, ambiguous, stale, expired, consumed, or otherwise non-reusable SHALL result in NO-GO / SAFE-STOP by default.
+
+The AI MUST NOT infer, reconstruct, or substitute any missing approval.
+
+VMF responses SHOULD normally state the following concisely:
+
+* Decision
+* Basis
+* Next action
+* Caution
+
+Concise responses remain preferred, but the minimum basis needed to support the decision MUST NOT be omitted.
+
+If work may involve release, package, `dist/`, tags, external services, flagged executables, Avast configuration changes, or technical execution, the AI MUST stop unless explicit authorization for the applicable operation and scope has been provided.
+
+---
+
 # 11. Coding Rules
 
 The AI SHALL:
