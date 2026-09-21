@@ -399,13 +399,34 @@ If the process token and referenced user profile indicate different identities o
 
 The AI MUST NOT work around a split-context by writing to another user's profile, changing a credential store, embedding a personal access token or other secret, or selecting an alternate account or profile.
 
-Operations that require the user's interactive security context, including Windows Credential Manager persistence or browser login, MAY be handed off through the following normal security-boundary path:
+An execution-context SAFE-STOP stops agent-side automated execution of the affected operation. It does not necessarily terminate the entire workflow. If the operation itself is already authorized and can be performed safely in the user's authorized interactive security context, the AI SHOULD provide an actionable manual handoff through the following normal security-boundary path:
 
 ```text
-SAFE-STOP -> user-operated interactive context -> result verification -> fresh authorization
+agent execution boundary detected
+-> agent-side execution SAFE-STOP
+-> exact manual command, context, and preconditions
+-> user-operated authorized interactive context
+-> result handback
+-> agent verification
+-> next authorization or execution gate
 ```
 
-Such a handoff is compliance with the security boundary, not an agent failure. The AI MUST verify the resulting state before relying on the handoff and MUST NOT treat the handoff itself as authorization for a subsequent operation.
+An actionable manual handoff SHOULD provide, when the relevant values are known:
+
+1. the exact, minimal, copy/paste-ready command, with the repository, path, branch, remote, or other target made concrete and placeholders avoided where possible
+2. the terminal or interactive context in which it must run, the required identity or security principal, and a safe identity check such as `whoami` when applicable
+3. the preconditions that must hold, including the branch, HEAD, working tree and index state, remote, and authorization scope applicable to the operation
+4. the expected successful output or resulting state, including relevant exit code, HEAD, and ahead/behind state
+5. stop conditions requiring the user not to perform the operation when a precondition or expected value differs, and to stop without additional remediation after authentication failure, remote-state mismatch, or another unexpected result
+6. the exact results the user should return so the AI can verify the outcome before proceeding to the next gate
+
+Providing a manual command is not authorization to execute it. For an operation that is already authorized, the AI MAY present an exact command only within that authorization's operation, target, and scope. Before authorization exists, the AI MAY present read-only verification commands allowed by existing policy, but MUST NOT instruct the user to perform a mutation, commit, push, credential change, release, publication, or other authorization-gated operation. If useful, the AI MAY identify such a command only as a candidate to run after the required authorization is obtained, clearly separating it from an instruction to execute.
+
+Manual handoff MUST NOT be used as a security bypass or to broaden authorization. Force push, reset, rebase, amend, credential deletion or replacement, embedding a personal access token or other secret, embedding credentials in a remote URL, switching between HTTPS and SSH, using an alternate account or profile, changing security-software settings, release or publication, and destructive filesystem operations continue to require their own explicit authorization. The AI MUST NOT recommend or instruct an unapproved fallback to any such operation.
+
+Such a handoff is compliance with the security boundary, not an agent failure. The AI MUST verify the returned result and current state before relying on the handoff. The handoff, the user's execution, and authentication remediation MUST NOT be treated as authorization for any subsequent operation; the next applicable gate, including fresh authorization when required, remains independent.
+
+Example: if the agent context cannot access a required user-bound credential store, the AI MUST NOT attempt a credential bypass. When the intended Git operation is already authorized, it SHOULD provide the required interactive identity, exact repository and state-verification commands, the exact authorized Git command, expected result, stop conditions, and requested result handback. The user may then execute it in the authorized interactive context and return the result for verification.
 
 Repository file modification, staging, cached snapshot verification, commit, authentication, and push are independent capabilities and authorization gates. Success at one gate MUST NOT be treated as capability or authorization for another. In particular:
 
@@ -432,6 +453,7 @@ Credential or authentication failure MUST fail closed. Without explicit authoriz
 * use force operations
 * disable or weaken security software
 * use an alternate account or profile
+* perform release, publication, or destructive filesystem operations as a workaround
 
 The AI SHALL diagnose the boundary failure, report the evidence available without exposing secrets, and obtain the required owner decision before remediation or retry.
 
