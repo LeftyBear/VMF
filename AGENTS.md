@@ -372,6 +372,73 @@ If work may involve release, package, `dist/`, tags, external services, flagged 
 
 ---
 
+# 10C. Execution Context and Credential Boundary Policy
+
+Capability and authorization SHALL be evaluated from the actual execution context, not from the name of an agent, tool, application, or operator. The AI MUST NOT define or assume a fixed privilege hierarchy such as Work being above or below Codex.
+
+For each sensitive operation, the AI MUST consider the effective combination of:
+
+* process token and security principal
+* filesystem access
+* repository access
+* credential-store access
+* network capability
+* interactive UI or browser capability
+* sandbox boundary
+* explicit authorization for the exact operation and scope
+
+Environment variables such as `USERNAME`, `USERPROFILE`, `APPDATA`, and `LOCALAPPDATA` describe environment or profile references; they do not prove the Windows security principal of the running process. When an operation depends on user-bound resources such as DPAPI or Windows Credential Manager, the AI MUST use the actual process-token identity as the authoritative identity. If that identity cannot be verified safely, the operation SHALL fail closed.
+
+If the process token and referenced user profile indicate different identities or otherwise establish a split-context, the AI MUST SAFE-STOP before performing or continuing:
+
+* credential creation
+* credential update
+* credential retrieval
+* browser authentication
+* credential-backed push
+
+The AI MUST NOT work around a split-context by writing to another user's profile, changing a credential store, embedding a personal access token or other secret, or selecting an alternate account or profile.
+
+Operations that require the user's interactive security context, including Windows Credential Manager persistence or browser login, MAY be handed off through the following normal security-boundary path:
+
+```text
+SAFE-STOP -> user-operated interactive context -> result verification -> fresh authorization
+```
+
+Such a handoff is compliance with the security boundary, not an agent failure. The AI MUST verify the resulting state before relying on the handoff and MUST NOT treat the handoff itself as authorization for a subsequent operation.
+
+Repository file modification, staging, cached snapshot verification, commit, authentication, and push are independent capabilities and authorization gates. Success at one gate MUST NOT be treated as capability or authorization for another. In particular:
+
+```text
+commit succeeded != authentication available != push authorized
+```
+
+For a push to GitHub or another remote, the AI MUST treat the following as separate gates in this order:
+
+1. verify repository state
+2. identify the exact commit or cached snapshot
+3. verify authentication readiness
+4. obtain explicit push authorization for the identified state
+5. perform the push
+
+If authentication remediation occurs after push authorization was granted, the AI MUST NOT reuse that authorization automatically. It MUST re-verify repository state and request fresh push authorization before pushing.
+
+Credential or authentication failure MUST fail closed. Without explicit authorization for the specific remediation, the AI MUST NOT:
+
+* create, delete, replace, or modify credential-store entries
+* generate or embed a personal access token or other secret
+* embed a secret in a remote URL
+* change the remote transport from HTTPS to SSH or otherwise alter authentication routing
+* use force operations
+* disable or weaken security software
+* use an alternate account or profile
+
+The AI SHALL diagnose the boundary failure, report the evidence available without exposing secrets, and obtain the required owner decision before remediation or retry.
+
+Rationale: repository operations and commit may succeed in an execution context where user-bound credential persistence does not. A user-operated interactive context with the intended process-token identity may complete authentication successfully, after which repository-state verification and fresh push authorization are still required.
+
+---
+
 # 11. Coding Rules
 
 The AI SHALL:
