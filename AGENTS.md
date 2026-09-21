@@ -399,6 +399,36 @@ If the process token and referenced user profile indicate different identities o
 
 The AI MUST NOT work around a split-context by writing to another user's profile, changing a credential store, embedding a personal access token or other secret, or selecting an alternate account or profile.
 
+## Known VMF `.git` Write Boundary
+
+For the VMF repository at `C:\Users\biz\Documents\Project\VMF`, the normal Codex sandbox execution context has a known repository write boundary. The observed actual process-token identity is `LAPTOP-96355HFT\codexsandboxonline`, while the profile and environment refer to `C:\Users\biz`, establishing a split-context. In this context, working-tree files are writable, but `.git` metadata writes are restricted. The AI MUST NOT treat working-tree editing capability as evidence that `.git` metadata mutation is available.
+
+This constraint was observed across the `.git` metadata area rather than as an issue specific to `.git\index`. At the time of diagnosis, `.git\index.lock` was absent; the evidence did not support a stale lock, a Git layout or configuration defect, concurrent Git lock contention, or Avast as the cause. A Git metadata mutation that failed in the normal Codex context has succeeded in a separately authorized, appropriate execution context.
+
+Operations that require `.git` metadata mutation, including `git add`, index updates, operations that create `.git\index.lock`, commits, ref updates, and other Git metadata writes, MUST NOT be assumed executable from this known sandbox context. The AI MUST NOT make a failing write attempt the standard probe for this known boundary. When the required operation involves `.git` mutation and the current process token identifies this known context, the AI SHOULD recognize the predictable permission boundary before attempting the mutation and proceed directly to the actionable manual handoff below, provided that the exact operation and scope are already authorized.
+
+The preferred workflow is:
+
+```text
+Codex edits working-tree files
+-> Codex performs read-only and static verification
+-> .git mutation required
+-> execution context check
+-> known sandbox boundary recognized
+-> agent-side mutation not attempted
+-> exact user-terminal command, context, preconditions, expected result, and stop conditions
+-> user executes as the authorized interactive identity
+-> result handback
+-> Codex verification
+-> next authorization or execution gate
+```
+
+This known execution constraint changes only the execution mechanism; it does not grant or imply authorization. Staging, cached snapshot verification, commit, authentication, and push remain independent gates. A manual handoff MUST NOT substitute for any required authorization.
+
+The AI MUST NOT attempt or propose an automatic boundary-removal workaround, including granting, resetting, or removing `.git` ACLs; removing a DENY ACE; changing ownership; using `takeown`; changing sandbox policy; using an alternate account or profile; or establishing a persistent bypass through elevation. Any such environment change requires separate diagnosis, risk review, and explicit owner authorization.
+
+This known constraint is limited to the identified VMF repository and Codex sandbox execution context. It MUST NOT be generalized to every repository, Codex environment, or Git failure. If the actual execution context or environment changes, the boundary MAY be reevaluated using safe read-only evidence.
+
 An execution-context SAFE-STOP stops agent-side automated execution of the affected operation. It does not necessarily terminate the entire workflow. If the operation itself is already authorized and can be performed safely in the user's authorized interactive security context, the AI SHOULD provide an actionable manual handoff through the following normal security-boundary path:
 
 ```text
