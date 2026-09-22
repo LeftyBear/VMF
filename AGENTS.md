@@ -372,7 +372,30 @@ If work may involve release, package, `dist/`, tags, external services, flagged 
 
 ---
 
-# 10C. Execution Context and Credential Boundary Policy
+# 10C. Development Route and Role Policy
+
+Each task SHALL use one of these routes:
+
+* Route A — normal development
+* Route B — large-scale investigation or cross-document review
+* Route C — governance, authorization, or SAFE-STOP handling
+
+Route selection changes the review depth, not any specification, approval, or safety boundary. In particular, it MUST NOT clear an existing P9 `NO-GO / SAFE-STOP`.
+
+Responsibilities SHALL remain separate:
+
+* Chat coordinates the route, prepares instructions, evaluates results, and compresses the current valid state.
+* Work performs only the delegated investigation or document work and returns evidence and results to Chat.
+* Codex performs only the delegated repository work and verification within scope.
+* User owns decisions requiring human authority and performs all Git operations.
+
+Chat SHALL send Work or Codex a standard instruction packet containing, as applicable: task and route, current valid state, scope in/out, requirements, actions, verification, stop conditions, and return format. Handoffs SHALL carry only the current valid state needed for the next step, not full historical transcripts. Work MUST NOT hand off directly to Codex; Chat SHALL evaluate and compress Work results before issuing any Codex instruction.
+
+The use of PowerShell, `cmd`, or another CLI is not by itself grounds for approval, rejection, or stopping. Decisions SHALL be based on design validity, procedural validity, impact scope, and verifiability. This general rule does not override a task-specific tool prohibition, an execution authorization gate, or an existing SAFE-STOP.
+
+---
+
+# 10D. Execution Context and Credential Boundary Policy
 
 Capability and authorization SHALL be evaluated from the actual execution context, not from the name of an agent, tool, application, or operator. The AI MUST NOT define or assume a fixed privilege hierarchy such as Work being above or below Codex.
 
@@ -658,6 +681,8 @@ The AI MUST NOT execute:
 The AI MUST preserve existing user changes.
 
 The AI MUST leave reviewable uncommitted changes and stop.
+
+All Git operations are User responsibilities. Work and Codex MUST NOT execute them. When an authorized Git operation is needed, Chat SHALL provide an exact, minimal command for the identified repository state and literal target paths; User executes it in the Codex terminal and returns the result for verification. `git add .` is not the standard staging command; staging instructions SHALL name each authorized file explicitly. Providing a command does not grant authorization, and stage, cached verification, commit, authentication, and push remain separate gates.
 
 ---
 
