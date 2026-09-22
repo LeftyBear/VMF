@@ -9,6 +9,13 @@ It is documentation-only. It does not replace Frozen Specifications,
 implementation specifications, public API contracts, release checklists, or
 runbooks, or verification evidence.
 
+For the current P9 decision and safety state, begin with
+`docs/development/CURRENT_STATUS.md`, then use `docs/development/HANDOFF.md`,
+the `Current Routing Classification` in `docs/VMF_vNext_Backlog.md`, and the
+named P9 record. An ADR's `Accepted` status records the accepted state of that
+architecture decision; it does not establish that referenced technical work is
+current, verified, authorized, released, or cleared of a later hold.
+
 ## Status Values
 
 ADR status values are limited to:
@@ -41,6 +48,22 @@ ADR status values are limited to:
 | ADR-0017 | Release Retention / Archival / Audit Trail | Accepted | - | `docs/development/Publisher_ReleaseApprovalPackage.md`; `docs/development/Publisher_AvastResponseIntakeTemplate.md`; `docs/development/CURRENT_STATUS.md`; `docs/development/Publisher_v1.0_Implementation_Voyage_Log.md`; `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md`; `docs/architecture/ADR-0008-preflight-hard-stop-and-release-boundary.md`; `docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md`; `docs/architecture/ADR-0011-release-authorization-record-and-explicit-approval-boundary.md`; `docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md`; `docs/architecture/ADR-0013-release-decision-record-and-post-authorization-traceability.md`; `docs/architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md`; `docs/architecture/ADR-0015-release-withdrawal-rollback-record-and-incident-evidence-boundary.md` |
 | ADR-0018 | Emergency Release Exception Boundary | Accepted | - | `docs/development/Publisher_ReleaseApprovalPackage.md`; `docs/development/Publisher_AvastResponseIntakeTemplate.md`; `docs/development/CURRENT_STATUS.md`; `docs/development/Publisher_v1.0_Implementation_Voyage_Log.md`; `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md`; `docs/architecture/ADR-0008-preflight-hard-stop-and-release-boundary.md`; `docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md`; `docs/architecture/ADR-0011-release-authorization-record-and-explicit-approval-boundary.md`; `docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md`; `docs/architecture/ADR-0013-release-decision-record-and-post-authorization-traceability.md`; `docs/architecture/ADR-0014-release-publication-record-and-post-release-evidence-boundary.md`; `docs/architecture/ADR-0015-release-withdrawal-rollback-record-and-incident-evidence-boundary.md`; `docs/architecture/ADR-0017-release-retention-archival-audit-trail.md` |
 | ADR-0019 | VMF Risk Acceptance And Release Hold Lift | Accepted | - | `docs/development/CURRENT_STATUS.md`; `docs/development/Publisher_AvastResponseIntakeTemplate.md`; `docs/development/Publisher_ReleaseApprovalPackage.md`; `docs/development/Publisher_TestClassification.md`; `docs/distribution/PublisherReleaseRunbook.md`; `docs/development/Publisher_v1.0_Implementation_Voyage_Log.md`; `docs/architecture/ADR-0003-release-gate-and-vendor-clearance.md`; `docs/architecture/ADR-0008-preflight-hard-stop-and-release-boundary.md`; `docs/architecture/ADR-0009-evidence-bundle-and-release-approval-package-boundary.md`; `docs/architecture/ADR-0011-release-authorization-record-and-explicit-approval-boundary.md`; `docs/architecture/ADR-0012-release-resumption-procedure-and-final-verification-order.md`; `docs/architecture/ADR-0013-release-decision-record-and-post-authorization-traceability.md` |
+
+## Current Metadata Review
+
+P9-228 reviewed the register and the metadata of ADR-0001 through ADR-0019.
+The numbered files and index rows are one-to-one, with no duplicate or missing
+number. Titles and current statuses agree between the files and this index.
+Each ADR contains `Status`, `Date`, `Scope`, `Depends`, and `Status History`
+metadata. All nineteen ADRs currently have status `Accepted`; no successor is
+recorded, so the blank successor values are consistent with the ADR files.
+
+This is a non-semantic metadata result only. The P9-223 through P9-227 records
+remain the docs-only route into this review, and
+`docs/spec/P9-228_DocsOnlyADRIndexMetadataReview.md` records its detailed
+basis. P9-223a remains isolated and unusable as technical evidence, artifact
+verification, or `PASS`. No ADR status, accepted decision meaning, historical
+judgment, evidence state, hold, or authorization boundary is changed.
 
 ## Numbering
 
