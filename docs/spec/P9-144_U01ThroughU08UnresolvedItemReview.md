@@ -1,20 +1,20 @@
-# P9-144 Non-Executable Document Inventory
+# P9-144 U-01 through U-08 Unresolved Item Review
 
 ## 1. Record status
 
 - Work item: `P9-144`
-- Activity: P9-142-based non-executable document inventory
+- Activity: P9-143 U-01 through U-08 unresolved item review, retaining the bounded P9-142-based documentary inventory as supporting context
 - Series position: New docs-only series after P9-143 closeout
 - Planning basis: `P9-142` non-executable artifact inventory planning
 - Prior-series closeout basis: `P9-143` docs-only boundary integration closeout
 - Work mode: `docs-only`
 - Inventory review date: `2026-09-19`
 - Current technical execution state: `NO-GO / SAFE-STOP`
-- Document status: `COMPLETE / docs-only non-executable document inventory / ACCEPT`
-- Draft review: `ACCEPT`
+- Document status: `COMPLETE / docs-only unresolved item review / ACCEPT`
+- Document-content review: `ACCEPT`
 - Evidence status: Documentary metadata was transcribed from the exact source set in section 3. No technical evidence was generated, refreshed, validated, revalidated, or accepted.
 
-This draft performs the P9-142-planned inventory only for the exact documentary source set declared in section 3. It is the first record in a new docs-only series after P9-143. It does not reopen the closed P9-139 through P9-143 series, confirm the existence or integrity of any non-documentary artifact, accept evidence, provide a security disposition, authorize continuation, select a technical candidate, make a technical execution GO decision, authorize a command, or issue an execution instruction.
+This draft reviews the P9-143 unresolved items U-01 through U-08 and retains the P9-142-planned inventory only as supporting documentary context. It is the first record in a new docs-only series after P9-143. It does not reopen P9-143, create a duplicate closeout record, confirm the existence or integrity of any non-documentary artifact, accept evidence, provide a security disposition, authorize continuation, select a technical candidate, make a technical execution GO decision, authorize a command, or issue an execution instruction.
 
 ## 2. Controlling premises
 
@@ -38,7 +38,7 @@ The inventory source set is limited to the following five repository documents:
 
 The documents were reviewed only as documentary sources. The paths are recorded as text and do not authorize discovery or inspection of any referenced executable, workbook, log, package, release asset, process, antivirus item, external resource, or other technical artifact. Status, backlog, and handoff documents are synchronization outputs for P9-144 and are not additional inventory sources.
 
-## 4. Non-executable document inventory list
+## 4. Supporting non-executable document inventory
 
 | Entry ID | Source record | Primary NI category | Secondary NI relationships | Lifecycle state transcribed from source | Inventory disposition |
 |---|---|---|---|---|---|
@@ -211,21 +211,41 @@ Absence of NI-05 or NI-08 primary entries is not proof that no such records or r
 |---|---|---|---|
 | G-144-01 | INV-144-01 through INV-144-05 | MD-06 attributable record owner or authoritative role is absent. | `INCOMPLETE / SAFE-STOP`; do not infer ownership. |
 | G-144-02 | INV-144-01 through INV-144-05 | MD-07 exact source-record date/version is absent. | `INCOMPLETE / SAFE-STOP`; do not use the P9-144 review date as a source-record date. |
-| G-144-03 | INV-144-01 through INV-144-05 | MD-17 exact last-review date and reviewer/authority are absent, although the review result is stated. | `INCOMPLETE / SAFE-STOP`; document `ACCEPT` remains content-only. |
+| G-144-03 | INV-144-01 through INV-144-05 | MD-17 exact last-review date and reviewer/authority are absent, although the source-record review result is stated. | `INCOMPLETE / SAFE-STOP`; the P9-139 through P9-144 document-content `ACCEPT` results remain content-only and do not supply or accept the missing MD-17 metadata. |
 | G-144-04 | Inventory as a whole | NI-05 and NI-08 have no eligible primary entries in the fixed source set. | Coverage remains source-set-limited; no repository-wide completeness claim. |
 | G-144-05 | Inventory as a whole | No current applicability determination exists for technical evidence, controls, commands, or a technical candidate. | Preserve separation; no evidence acceptance, effectiveness claim, candidate selection, GO, or execution instruction. |
 | G-144-06 | Inventory as a whole | U-01 through U-08 from P9-143 remain unresolved. | Preserve the P9-143 dispositions and technical `NO-GO / SAFE-STOP`. |
 
-## 8. Unresolved gaps preserved from P9-143
+## 8. U-01 through U-08 unresolved item review
 
-- `U-01`: Avast detection has no accepted resolution or candidate-specific security disposition.
-- `U-02`: No current eligible technical evidence package has been accepted for a named candidate.
-- `U-03`: No technical candidate has been selected.
-- `U-04`: P9-139 controls have not been implemented or proven effective through the documentation series.
-- `U-05`: P9-140 candidate commands have not been authorized or run through the documentation series.
-- `U-06`: P9-141 has not been populated as a current decision record; EV-01 through EV-09 are not satisfied by template acceptance.
-- `U-07`: P9-142 planning did not itself perform an inventory. P9-144 now performs only the bounded documentary inventory in this draft; it does not verify artifact states and does not cure the metadata gaps in section 7.
-- `U-08`: P9-94 cannot be reused, and P9-130/P9-135 cannot be rerun, reconstructed, approximated, or mapped to an equivalent route to cure a gap.
+All statuses below are documentary findings only. An acceptance condition describes what a later authoritative review would require; it is not satisfied, waived, or authorized by this draft.
+
+| ID | Definition | Current status | Dependency | Required evidence | Acceptance condition | Fail-closed condition | Next decision boundary |
+|---|---|---|---|---|---|---|---|
+| U-01 | Avast detection has no accepted resolution or candidate-specific security disposition. | `UNRESOLVED / NO-GO / SAFE-STOP`; Avast remains active as a blocking condition. | An attributable security decision for an exact, separately named candidate; security disposition remains independent of continuation and execution authorization. | Current, eligible, candidate-specific security evidence and an authoritative disposition identifying owner, scope, date/version, outcome, and residual conditions. | The recognized security authority explicitly accepts a candidate-specific disposition on complete eligible evidence, without relying on P9-94 or a barred rerun. | Evidence or authority is missing, ambiguous, stale, non-candidate-specific, or unresolved; Avast remains detected or its status is not authoritatively established. | Separate security-disposition review. A favorable result would not itself authorize continuation or execution. |
+| U-02 | No current eligible technical evidence package has been accepted for a named candidate. | `UNRESOLVED / INCOMPLETE / SAFE-STOP`; no evidence package is accepted by P9-139 through P9-144. | U-03 candidate identification; P9-141 EV-01 through EV-08; eligibility, attribution, currency, integrity, and applicability review. | A complete evidence package for the exact candidate, with provenance, owner, date/version, integrity information, applicability, and explicit review outcome. | Every applicable evidence requirement is complete and an authorized reviewer records explicit acceptance for the named candidate. | Any required element is missing, ineligible, stale, unattributable, inconsistent, unverifiable, or offered through P9-94 or a P9-130/P9-135 rerun or reconstruction. | Evidence-sufficiency and evidence-acceptance review after a candidate is separately identified. |
+| U-03 | No technical candidate has been selected. | `UNRESOLVED / NO SELECTION`; no readiness or technical path may be inferred. | Exact candidate definition, scope, purpose, boundaries, owner, and compatibility with U-08 exclusions; U-01 and U-02 remain independent gates. | An authoritative candidate-selection record naming the exact candidate and exclusions, with attributable owner and decision date/version. | A recognized decision owner explicitly selects one exact candidate within an authorized decision scope and without selecting or approximating a barred activity. | Candidate identity, owner, scope, or exclusions are absent or ambiguous; selection is inferred from a template, allowlist, historical record, or this review. | Candidate-selection decision only; selection would not establish security disposition, evidence acceptance, continuation authorization, or technical GO. |
+| U-04 | P9-139 controls have not been implemented or proven effective through the documentation series. | `UNRESOLVED / DOCUMENTED ONLY`; RC-01 through RC-12 remain documentary controls, not effectiveness evidence. | A separately authorized implementation and evaluation scope for an exact candidate, after the applicable governance gates are satisfied. | Candidate-specific implementation evidence, test or observation evidence where separately authorized, control-owner attribution, exceptions, and an explicit effectiveness assessment. | Every applicable control is shown to be implemented and effective for the named candidate, with gaps and residual risks explicitly resolved by the proper authority. | A control exists only as text, evidence is incomplete or ineligible, effectiveness is assumed, or any necessary technical activity lacks separate authorization. | Control-implementation and effectiveness review; no such review or activity is authorized here. |
+| U-05 | P9-140 candidate commands have not been authorized or run through the documentation series. | `UNRESOLVED / NO COMMAND AUTHORITY`; AL-01 through AL-08 remain candidate text only. | Separate exact, single-use command authorization satisfying the P9-140 command text, working-directory, purpose, output, and stop-condition boundary. | An attributable authorization for the exact command and scope, followed only if separately executed by complete outcome evidence matching the P9-140 contract. | Command authorization and, if later executed, command-result acceptance are each explicitly recorded at their own gate. | Authorization is absent, generic, reused, or mismatched; command text or context differs; output is incomplete or unexpected; any wrapper, substitution, or barred activity is introduced. | Exact command-authorization review. This draft neither requests nor grants that authorization. |
+| U-06 | P9-141 has not been populated as a current decision record; EV-01 through EV-09 are not satisfied by template acceptance. | `UNRESOLVED / NO GO / NO EXECUTION INSTRUCTION`; the template remains unpopulated for a current candidate. | U-01 through U-05 as applicable; a named candidate; completed EV-01 through EV-08; separate EV-09 only after a valid GO. | A fully populated, attributable P9-141 decision record with candidate identity, evidence mappings, independent gate outcomes, rationale, conditions, and decision-owner approval. | All mandatory GO conditions and EV-01 through EV-08 are explicitly satisfied and accepted for the candidate; any later EV-09 remains a separate post-GO pre-execution requirement. | Any field, gate, or EV item is incomplete, ambiguous, stale, ineligible, or inferred; any unconditional SAFE-STOP condition remains; EV-09 is treated as satisfied before GO. | Future technical GO / NO-GO decision. No GO decision is made by this review. |
+| U-07 | P9-142 planned a non-executable inventory but did not itself perform one or select a future authoritative source set. | `PARTIALLY DOCUMENTED / STILL UNRESOLVED`; sections 3 through 7 provide only a bounded documentary inventory and leave G-144-01 through G-144-06 fail-closed. | Exact source-set authority, complete MD-01 through MD-20 metadata, attributable ownership and review data, and any separately authorized applicability review. | Complete source-set declaration and complete, attributable metadata for each entry, including owner, date/version, review attribution, eligibility, applicability, and integrity status. | The authorized documentary source set is complete for the stated purpose and every mandatory metadata field is supported without inference; any technical applicability remains separately decided. | Source-set completeness is unstated; MD data is missing, ambiguous, or inferred; documentary inventory is treated as artifact verification, evidence acceptance, or technical readiness. | Documentary inventory-completeness review, followed only if separately authorized by an independent applicability decision. |
+| U-08 | P9-94 is non-reusable, and P9-130/P9-135 are non-rerunnable and may not be reconstructed, approximated, renamed, wrapped, or mapped to an equivalent route to cure a gap. | `FIXED EXCLUSION / ACTIVE`; this boundary is not a remediable evidence gap within P9-144. | Continued enforcement across every candidate, evidence, command, control, and decision review. | Documentary traceability showing that proposed paths and evidence do not use P9-94 and do not rerun or materially reproduce P9-130 or P9-135. | A later proposal remains wholly outside all three exclusions and independently satisfies its own evidence and authorization requirements. The exclusions themselves are not accepted away by this condition. | Any proposal relies on P9-94 or reruns, reconstructs, approximates, renames, wraps, or materially reproduces P9-130 or P9-135. | Exclusion-compliance review for any later proposal; an exception path is not created or selected here. |
+
+### 8.1 Review outcome
+
+U-01 through U-08 remain unresolved. This review adds structure and traceability only. It does not resolve a gap, accept evidence, select a candidate, establish control effectiveness, authorize a command, populate P9-141 as a current decision, validate an artifact, or relax an exclusion.
+
+### 8.2 Self-check against P9-139 through P9-143
+
+| Source boundary | Self-check result |
+|---|---|
+| P9-139 | RC-01 through RC-12 remain documentary controls. No control implementation, effectiveness, evidence acceptance, security disposition, continuation authorization, or technical execution authorization is inferred. |
+| P9-140 | AL-01 through AL-08 remain unauthorized candidate command text. No command was authorized or run, and no outcome contract was evaluated. |
+| P9-141 | The future GO / NO-GO template remains unpopulated for a current candidate. EV-01 through EV-08 are not satisfied or accepted, and EV-09 has not been issued. |
+| P9-142 | The NI/MD planning boundary is preserved. The bounded inventory in this record is documentary only, retains its stated gaps, and does not establish artifact existence, integrity, applicability, or evidence acceptance. |
+| P9-143 | P9-143 remains `COMPLETE / docs-only boundary integration closeout / ACCEPT`. It is not reopened, revised, or duplicated; its U-01 through U-08 definitions and continuing constraints remain the controlling source for this review. |
+
+The self-check found no basis to clear `NO-GO / SAFE-STOP`. Avast remains unresolved, P9-94 remains non-reusable, and P9-130/P9-135 remain non-rerunnable and outside all rerun candidates.
 
 ## 9. Next docs-only candidates
 
@@ -240,12 +260,14 @@ The following are unselected candidates for a later, separately instructed docs-
 
 Listing these candidates does not select, rank, recommend, or authorize one. No technical path is a candidate under P9-144.
 
-## 10. Draft review, closeout state, and non-actions
+## 10. Documentary acceptance and non-actions
 
-The P9-144 draft review result is `ACCEPT`. P9-144 is `COMPLETE / docs-only non-executable document inventory / ACCEPT`. `ACCEPT` applies only to the content of this documentation record and confirms that the fixed-source documentary inventory follows the P9-142 NI and MD framework and preserves the required fail-closed boundaries. It is not acceptance of any inventory item as complete or as evidence, artifact-existence confirmation, evidence acceptance, technical validation, security disposition, continuation authorization, command authorization, a technical execution GO decision, or an execution instruction.
+The P9-144 document-content review result is `ACCEPT`. P9-144 is `COMPLETE / docs-only unresolved item review / ACCEPT`. This acceptance is documentary only and must not convert document-content acceptance into any technical, evidence, gap-resolution, or authorization outcome.
 
-The five exact source documents were classified and described, but every inventory entry remains `INCOMPLETE / SAFE-STOP` because MD-06, MD-07, and MD-17 remain unresolved. No inventory entry is promoted to `COMPLETE`, `PASS`, or accepted evidence, and no missing value was inferred. U-01 through U-08 remain unresolved. N-144-01 through N-144-04 remain unselected docs-only candidates.
+This documentary acceptance is not acceptance of any inventory item as complete or as evidence, artifact-existence confirmation, evidence acceptance, technical validation, security disposition, continuation authorization, command authorization, a technical execution GO decision, or an execution instruction.
 
-No test, build, script, PowerShell, Excel operation, Avast operation, external-service access, artifact discovery, technical artifact inspection, parser, macro, runner, package, `dist`, release, publication, tag, Git mutation, technical execution, evidence generation, evidence revalidation, evidence acceptance, security disposition, continuation authorization, technical execution GO decision, command authorization, or execution instruction was performed or authorized by P9-144.
+The five exact source documents remain classified and described as supporting context, but every inventory entry remains `INCOMPLETE / SAFE-STOP` because MD-06, MD-07, and MD-17 remain unresolved. No inventory entry is promoted to `COMPLETE`, `PASS`, or accepted evidence, and no missing value was inferred. U-01 through U-08 remain unresolved. N-144-01 through N-144-04 remain unselected docs-only candidates.
+
+No test, build, script, PowerShell, Excel operation, Avast operation or setting change, external-service access, artifact discovery, technical artifact inspection, flagged executable rerun, parser, macro, runner, package, `dist`, release, publication, tag, Git command or Git mutation, technical execution, evidence generation, evidence revalidation, evidence acceptance, security disposition, continuation authorization, technical execution GO decision, command authorization, or execution instruction was performed or authorized by P9-144.
 
 Technical execution remains `NO-GO / SAFE-STOP`. Avast detection remains unresolved. P9-94 remains non-reusable. P9-130 and P9-135 remain non-rerunnable and outside all rerun candidates.

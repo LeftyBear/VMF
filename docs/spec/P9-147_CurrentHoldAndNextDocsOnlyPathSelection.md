@@ -4,7 +4,7 @@
 
 - Work item: `P9-147`
 - Activity: P9-144 through P9-146 current-hold consolidation and next docs-only path selection
-- Source basis: `docs/spec/P9-144_NonExecutableDocumentInventory.md`, `docs/spec/P9-145_UnresolvedGapRegister.md`, and `docs/spec/P9-146_CrossTraceabilityIndex.md`
+- Source basis: `docs/spec/P9-144_U01ThroughU08UnresolvedItemReview.md`, `docs/spec/P9-145_UnresolvedGapRegister.md`, and `docs/spec/P9-146_CrossTraceabilityIndex.md`
 - Work mode: `docs-only`
 - Record date: `2026-09-19`
 - Current technical execution state: `NO-GO / SAFE-STOP`
