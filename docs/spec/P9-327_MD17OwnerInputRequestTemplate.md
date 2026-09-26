@@ -2,12 +2,14 @@
 
 ## 1. Purpose and boundary
 
-This is a blank, non-resolving request template for future attributable owner
-input concerning `G-145-MD17` across `INV-144-01` through `INV-144-05`.
+This document is a non-resolving owner-input completion draft concerning
+`G-145-MD17` across `INV-144-01` through `INV-144-05`. P9-338 authorizes draft
+completion only. No supporting owner input was supplied with that authorization,
+so unsupported fields remain explicitly `UNRESOLVED`.
 
-Completing or submitting this template does not constitute acceptance,
-validation, gap resolution, metadata completion, authorization, or technical
-approval. Every submitted value requires a separate, explicitly authorized
+This draft does not provide, infer, validate, accept, or resolve any MD17
+evidence. `UNRESOLVED` fields are not evidence, approval, attestation, or
+authority. Every submitted value requires a separate, explicitly authorized
 documentary review.
 
 The following state remains unchanged:
@@ -22,90 +24,90 @@ The following state remains unchanged:
 
 ## 2. Submission-level fields
 
-- Submission ID:
-- Submission date (`YYYY-MM-DD`):
+- Submission ID: `UNRESOLVED`
+- Submission date (`YYYY-MM-DD`): `UNRESOLVED`
 - Controlling gap ID: `G-145-MD17`
 - P9-146 linkage: `ML-146-03`
-- Exact submission scope:
+- Exact submission scope: `MD17 OWNER-INPUT COMPLETION DRAFT ONLY`
 - Exact affected scope: `INV-144-01` through `INV-144-05`
-- Authority source:
-- Authority scope:
-- Authority limitations:
-- Submitter identity:
-- Submitter role:
-- Attestation date (`YYYY-MM-DD`):
-- Within-authority statement:
-- Documentary signature or identification reference:
+- Authority source: `UNRESOLVED`
+- Authority scope: `UNRESOLVED`
+- Authority limitations: `UNRESOLVED`
+- Submitter identity: `UNRESOLVED`
+- Submitter role: `UNRESOLVED`
+- Attestation date (`YYYY-MM-DD`): `UNRESOLVED`
+- Within-authority statement: `UNRESOLVED`
+- Documentary signature or identification reference: `UNRESOLVED`
 
 ## 3. INV-144-01
 
-- Inventory ID:
-- Exact last-review date (`YYYY-MM-DD`):
-- Attributable reviewer or reviewing authority:
-- Reviewer authority basis:
-- Exact review result:
-- Applicable conditions:
-- Exclusions:
-- Conflict declarations:
-- Attestations:
-- Evidence reference:
-- Required review fields:
+- Inventory ID: `INV-144-01`
+- Exact last-review date (`YYYY-MM-DD`): `UNRESOLVED`
+- Attributable reviewer or reviewing authority: `UNRESOLVED`
+- Reviewer authority basis: `UNRESOLVED`
+- Exact review result: `UNRESOLVED`
+- Applicable conditions: `UNRESOLVED`
+- Exclusions: `UNRESOLVED`
+- Conflict declarations: `UNRESOLVED`
+- Attestations: `UNRESOLVED`
+- Evidence reference: `UNRESOLVED`
+- Required review fields: `UNRESOLVED`
 
 ## 4. INV-144-02
 
-- Inventory ID:
-- Exact last-review date (`YYYY-MM-DD`):
-- Attributable reviewer or reviewing authority:
-- Reviewer authority basis:
-- Exact review result:
-- Applicable conditions:
-- Exclusions:
-- Conflict declarations:
-- Attestations:
-- Evidence reference:
-- Required review fields:
+- Inventory ID: `INV-144-02`
+- Exact last-review date (`YYYY-MM-DD`): `UNRESOLVED`
+- Attributable reviewer or reviewing authority: `UNRESOLVED`
+- Reviewer authority basis: `UNRESOLVED`
+- Exact review result: `UNRESOLVED`
+- Applicable conditions: `UNRESOLVED`
+- Exclusions: `UNRESOLVED`
+- Conflict declarations: `UNRESOLVED`
+- Attestations: `UNRESOLVED`
+- Evidence reference: `UNRESOLVED`
+- Required review fields: `UNRESOLVED`
 
 ## 5. INV-144-03
 
-- Inventory ID:
-- Exact last-review date (`YYYY-MM-DD`):
-- Attributable reviewer or reviewing authority:
-- Reviewer authority basis:
-- Exact review result:
-- Applicable conditions:
-- Exclusions:
-- Conflict declarations:
-- Attestations:
-- Evidence reference:
-- Required review fields:
+- Inventory ID: `INV-144-03`
+- Exact last-review date (`YYYY-MM-DD`): `UNRESOLVED`
+- Attributable reviewer or reviewing authority: `UNRESOLVED`
+- Reviewer authority basis: `UNRESOLVED`
+- Exact review result: `UNRESOLVED`
+- Applicable conditions: `UNRESOLVED`
+- Exclusions: `UNRESOLVED`
+- Conflict declarations: `UNRESOLVED`
+- Attestations: `UNRESOLVED`
+- Evidence reference: `UNRESOLVED`
+- Required review fields: `UNRESOLVED`
 
 ## 6. INV-144-04
 
-- Inventory ID:
-- Exact last-review date (`YYYY-MM-DD`):
-- Attributable reviewer or reviewing authority:
-- Reviewer authority basis:
-- Exact review result:
-- Applicable conditions:
-- Exclusions:
-- Conflict declarations:
-- Attestations:
-- Evidence reference:
-- Required review fields:
+- Inventory ID: `INV-144-04`
+- Exact last-review date (`YYYY-MM-DD`): `UNRESOLVED`
+- Attributable reviewer or reviewing authority: `UNRESOLVED`
+- Reviewer authority basis: `UNRESOLVED`
+- Exact review result: `UNRESOLVED`
+- Applicable conditions: `UNRESOLVED`
+- Exclusions: `UNRESOLVED`
+- Conflict declarations: `UNRESOLVED`
+- Attestations: `UNRESOLVED`
+- Evidence reference: `UNRESOLVED`
+- Required review fields: `UNRESOLVED`
 
 ## 7. INV-144-05
 
-- Inventory ID:
-- Exact last-review date (`YYYY-MM-DD`):
-- Attributable reviewer or reviewing authority:
-- Reviewer authority basis:
-- Exact review result:
-- Applicable conditions:
-- Exclusions:
-- Conflict declarations:
-- Attestations:
-- Evidence reference:
-- Required review fields:
+- Inventory ID: `INV-144-05`
+- Exact last-review date (`YYYY-MM-DD`): `UNRESOLVED`
+- Attributable reviewer or reviewing authority: `UNRESOLVED`
+- Reviewer authority basis: `UNRESOLVED`
+- Exact review result: `UNRESOLVED`
+- Applicable conditions: `UNRESOLVED`
+- Exclusions: `UNRESOLVED`
+- Conflict declarations: `UNRESOLVED`
+- Attestations: `UNRESOLVED`
+- Evidence reference: `UNRESOLVED`
+- Required review fields: `UNRESOLVED`
 
 ## 8. Non-resolution statement
 
