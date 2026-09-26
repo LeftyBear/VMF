@@ -177,9 +177,9 @@ Routeは確認深度を定めるものであり、仕様、承認境界、既存
 * Chat: Route調整、指示作成、結果評価、現在有効な状態への圧縮
 * Work: 委任された調査または文書作業と、その根拠・結果のChatへの返却
 * Codex: Scope内のrepository作業と検証
-* User: 人間の権限を要する判断、および全Git操作
+* User: 人間の権限を要する判断、およびGit mutationとauthenticated Git operations
 
-ChatからWorkまたはCodexへの標準指示パケットは、必要に応じて `Task / Route / Current State / Scope IN・OUT / Requirements / Actions / Verification / Stop Conditions / Return` を含める。引き継ぐのは次工程に必要な現在有効な状態だけとし、過去履歴全文は渡さない。WorkからCodexへ直接引き継がず、ChatがWorkの結果を評価・圧縮してからCodexへ指示する。
+ChatからWorkまたはCodexへの標準指示パケットは、`Task / Route / Target Executor / Current Valid State / Authorization Basis / Execution Route / Execution Context / Scope In / Scope Out / Requirements / Authorized Actions / Prohibited Actions / Verification / Stop Conditions / Return Format` を含める。適用するexecution-context制約がない場合、`Execution Context` には `Not applicable` と記載する。引き継ぐのは次工程に必要な現在有効な状態だけとし、過去履歴全文は渡さない。WorkからCodexへ直接引き継がず、ChatがWorkの結果を評価・圧縮してからCodexへ指示する。
 
 PowerShell、`cmd`、その他CLIという手段名だけを承認、拒否、停止の理由にしない。設計妥当性、手続き妥当性、影響範囲、検証可能性で判断する。ただし、タスク固有の手段禁止、実行承認ゲート、既存SAFE-STOPはこの一般則で上書きしない。
 
@@ -187,8 +187,7 @@ PowerShell、`cmd`、その他CLIという手段名だけを承認、拒否、�
 
 作業開始前に確認する。
 
-* 現在ブランチ
-* Git状態
+* 指名されたTarget Executorが、指示パケットの`Authorized Actions`で具体的なread-only Git inspectionを承認されている場合の、承認範囲内の現在ブランチおよびGit状態
 * 対象Solution
 * 関連テスト
 * 変更範囲
@@ -253,7 +252,7 @@ Google Docs、Google Drive等への更新は明示的に許可された場合の
 
 レビュー可能な未コミット差分を残して停止する。
 
-Git操作はすべてUserが担当し、WorkおよびCodexは実行しない。承認済みGit操作が必要な場合、Chatは対象repository状態と対象ファイルを特定した具体的なコマンドを提示し、UserがCodex terminalで実行して結果を返す。`git add .`は標準使用せず、承認対象ファイルをリテラルに列挙する。コマンド提示は実行承認を意味せず、stage、cached verification、commit、authentication、pushは独立したゲートとして扱う。
+Git mutationとauthenticated Git operationsはUserが担当し、WorkおよびCodexは実行しない。ただし、Target Executorとして指名されたWorkまたはCodexは、指示パケットで承認されたread-only Git inspectionを実行できる。承認済みGit mutationまたはauthenticated Git operationが必要な場合、Chatは対象repository状態と対象ファイルを特定した具体的なコマンドを提示し、UserがCodex terminalで実行して結果を返す。`git add .`は標準使用せず、承認対象ファイルをリテラルに列挙する。コマンド提示は実行承認を意味せず、stage、cached verification、commit、authentication、pushは独立したゲートとして扱う。
 
 ---
 
