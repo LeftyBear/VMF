@@ -270,23 +270,19 @@ The AI MUST avoid speculative investigation and follow established implementatio
 
 ---
 
-# 10A. Codex Usage and Reasoning Policy
+# 10A. AI Execution and Reasoning Policy
 
-Default Codex settings:
+This section applies to Chat, Work, and Codex unless a role-specific rule states otherwise.
 
-* model: GPT-5.6 Sol
-* reasoning level: Low
-* speed: Standard
+Chat, Work, and Codex MUST start each task with the lowest reasoning level sufficient for the declared scope.
 
-The AI MUST start each task with the lowest reasoning level sufficient for the declared scope.
-
-The AI MAY escalate reasoning only when necessary:
+Chat, Work, and Codex MAY escalate reasoning only when necessary:
 
 ```text
 Low -> Medium -> High
 ```
 
-The AI MUST NOT start at High reasoning by default.
+Chat, Work, and Codex MUST NOT start at High reasoning by default.
 
 Low reasoning SHOULD be used for routine and well-scoped work, including:
 
@@ -333,6 +329,32 @@ Reasoning escalation MUST NOT weaken:
 * Git restrictions
 
 The AI MUST avoid unnecessary reasoning escalation when escalation would not materially improve correctness or safety.
+
+## Work-specific policy
+
+Work:
+
+* performs only delegated investigation, cross-document review, document analysis, and other work explicitly included in the Chat-issued instruction packet
+* remains within the Chat-issued instruction packet
+* returns evidence, findings, uncertainties, and unresolved issues to Chat
+* MUST NOT independently expand scope
+* MUST NOT authorize subsequent execution
+* MUST NOT hand off directly to Codex
+
+## Codex-specific policy
+
+Default Codex settings:
+
+* model: GPT-5.6 Sol
+* reasoning level: Low
+* speed: Standard
+
+Codex:
+
+* performs only delegated repository work
+* remains within the repository scope and execution boundaries in the Chat-issued instruction packet
+* returns repository evidence, changes, verification results, uncertainties, and stop conditions to Chat
+* MUST NOT treat repository access, working-tree write capability, or successful verification as authorization for Git mutation, authentication, push, release, or another gated operation
 
 ---
 
@@ -387,9 +409,81 @@ Responsibilities SHALL remain separate:
 * Chat coordinates the route, prepares instructions, evaluates results, and compresses the current valid state.
 * Work performs only the delegated investigation or document work and returns evidence and results to Chat.
 * Codex performs only the delegated repository work and verification within scope.
-* User owns decisions requiring human authority and performs all Git operations.
+* User owns decisions requiring human authority and performs Git mutation and authenticated Git operations.
 
-Chat SHALL send Work or Codex a standard instruction packet containing, as applicable: task and route, current valid state, scope in/out, requirements, actions, verification, stop conditions, and return format. Handoffs SHALL carry only the current valid state needed for the next step, not full historical transcripts. Work MUST NOT hand off directly to Codex; Chat SHALL evaluate and compress Work results before issuing any Codex instruction.
+Handoffs SHALL carry only the current valid state needed for the next step, not full historical transcripts. Work MUST NOT hand off directly to Codex; Chat SHALL evaluate and compress Work results before issuing any Codex instruction.
+
+## Standard Instruction Packet
+
+Chat SHALL issue a Standard Instruction Packet before delegating work to Work or Codex. The packet SHALL use the following normative structure:
+
+```text
+Task:
+Route:
+Target Executor:
+
+Current Valid State:
+
+Authorization Basis:
+
+Execution Route:
+  Chat:
+  Work:
+  Codex:
+  User:
+
+Execution Context:
+
+Scope In:
+
+Scope Out:
+
+Requirements:
+
+Authorized Actions:
+
+Prohibited Actions:
+
+Verification:
+
+Stop Conditions:
+
+Return Format:
+```
+
+The fields SHALL be interpreted as follows:
+
+* `Task` identifies the delegated task.
+* `Route` identifies Route A, B, or C.
+* `Target Executor` identifies the immediate recipient as Work or Codex. For this rule, one execution step is one packet-authorized unit of work assigned to one recipient for one result handback. One execution step MUST NOT be delegated to both Work and Codex.
+* `Current Valid State` contains only the current authoritative state required for the task. Superseded decisions, stale evidence, and historical intermediate states MUST NOT be represented as current state.
+* `Authorization Basis` identifies the authorizer, exact authorized operation and scope, validity conditions, and whether the authorization is unused, consumed, expired, or otherwise non-reusable. It MUST NOT reconstruct or substitute missing authorization.
+* `Execution Route` explicitly states the responsibility of Chat, Work, Codex, and User for the workflow. Unused roles SHALL be marked `Not used`. Execution-route assignment does not itself grant authorization.
+* `Execution Context` identifies the required process identity, repository or profile context, and applicable capability boundaries. Each item SHALL be stated when required for the task and otherwise marked `Not applicable`. Capability does not itself grant authorization.
+* `Scope In` defines included work.
+* `Scope Out` defines excluded work and repeats applicable `NO-GO / SAFE-STOP` boundaries when relevant.
+* `Requirements` defines required results and authoritative rules.
+* `Authorized Actions` is interpreted narrowly. An unlisted operation MUST NOT be inferred merely because it is convenient or normally associated with the task.
+* `Prohibited Actions` identifies operations that MUST NOT be performed.
+* `Verification` defines required checks and evidence. Verification authority MUST NOT imply authorization for a prohibited operation.
+* `Stop Conditions` defines conditions requiring SAFE-STOP or return to Chat. Work and Codex MUST NOT resolve authorization boundaries by assumption.
+* `Return Format` defines the result returned to Chat.
+
+Unless another format is required, the standard return format SHOULD be:
+
+```text
+Result:
+Evidence:
+Changes:
+Verification:
+Uncertainties:
+Stop Conditions Triggered:
+Recommended Next Step:
+```
+
+`Recommended Next Step` is advisory only. Work and Codex MUST NOT authorize or initiate the next gated operation through the return report.
+
+Chat SHALL evaluate the returned result, discard superseded or irrelevant intermediate state, and prepare a new packet for subsequent delegated work.
 
 The use of PowerShell, `cmd`, or another CLI is not by itself grounds for approval, rejection, or stopping. Decisions SHALL be based on design validity, procedural validity, impact scope, and verifiability. This general rule does not override a task-specific tool prohibition, an execution authorization gate, or an existing SAFE-STOP.
 
@@ -422,95 +516,118 @@ If the process token and referenced user profile indicate different identities o
 
 The AI MUST NOT work around a split-context by writing to another user's profile, changing a credential store, embedding a personal access token or other secret, or selecting an alternate account or profile.
 
-## Known VMF `.git` Write Boundary
+## Known VMF Repository Execution Boundaries
 
-For the VMF repository at `C:\Users\biz\Documents\Project\VMF`, the normal Codex sandbox execution context has a known repository write boundary. The observed actual process-token identity is `LAPTOP-96355HFT\codexsandboxonline`, while the profile and environment refer to `C:\Users\biz`, establishing a split-context. In this context, working-tree files are writable, but `.git` metadata writes are restricted. The AI MUST NOT treat working-tree editing capability as evidence that `.git` metadata mutation is available.
+The following boundaries apply to the VMF repository at `C:\Users\biz\Documents\Project\VMF`. They determine execution routing only and do not grant or imply authorization.
 
-This constraint was observed across the `.git` metadata area rather than as an issue specific to `.git\index`. At the time of diagnosis, `.git\index.lock` was absent; the evidence did not support a stale lock, a Git layout or configuration defect, concurrent Git lock contention, or Avast as the cause. A Git metadata mutation that failed in the normal Codex context has succeeded in a separately authorized, appropriate execution context.
-
-Operations that require `.git` metadata mutation, including `git add`, index updates, operations that create `.git\index.lock`, commits, ref updates, and other Git metadata writes, MUST NOT be assumed executable from this known sandbox context. The AI MUST NOT make a failing write attempt the standard probe for this known boundary. When the required operation involves `.git` mutation and the current process token identifies this known context, the AI SHOULD recognize the predictable permission boundary before attempting the mutation and proceed directly to the actionable manual handoff below, provided that the exact operation and scope are already authorized.
-
-The preferred workflow is:
+The governing principle is:
 
 ```text
-Codex edits working-tree files
--> Codex performs read-only and static verification
--> .git mutation required
--> execution context check
--> known sandbox boundary recognized
--> agent-side mutation not attempted
--> exact user-terminal command, context, preconditions, expected result, and stop conditions
--> user executes as the authorized interactive identity
--> result handback
--> Codex verification
--> next authorization or execution gate
+Role != Capability != Authorization
 ```
 
-This known execution constraint changes only the execution mechanism; it does not grant or imply authorization. Staging, cached snapshot verification, commit, authentication, and push remain independent gates. A manual handoff MUST NOT substitute for any required authorization.
+### 1. Codex sandbox `.git` metadata boundary
 
-The AI MUST NOT attempt or propose an automatic boundary-removal workaround, including granting, resetting, or removing `.git` ACLs; removing a DENY ACE; changing ownership; using `takeown`; changing sandbox policy; using an alternate account or profile; or establishing a persistent bypass through elevation. Any such environment change requires separate diagnosis, risk review, and explicit owner authorization.
+The observed Codex sandbox process-token identity is `LAPTOP-96355HFT\codexsandboxonline`, while the referenced Windows profile is `C:\Users\biz`. This establishes a split execution context.
 
-This known constraint is limited to the identified VMF repository and Codex sandbox execution context. It MUST NOT be generalized to every repository, Codex environment, or Git failure. If the actual execution context or environment changes, the boundary MAY be reevaluated using safe read-only evidence.
+In the observed context:
 
-An execution-context SAFE-STOP stops agent-side automated execution of the affected operation. It does not necessarily terminate the entire workflow. If the operation itself is already authorized and can be performed safely in the user's authorized interactive security context, the AI SHOULD provide an actionable manual handoff through the following normal security-boundary path:
+* working-tree files are writable
+* read-only Git inspection is available
+* `.git` metadata mutation is restricted
+
+The restriction was observed across the `.git` metadata area and is not merely an `.git\index` or stale-lock issue. At the time of diagnosis, `.git\index.lock` was absent. The evidence did not support stale lock contention, a Git layout or configuration defect, concurrent Git lock contention, or Avast as the cause.
+
+Codex MUST NOT use a deliberately failing `.git` write as the standard probe for this known boundary. Working-tree write capability MUST NOT be treated as evidence that `.git` metadata mutation is available or authorized.
+
+### 2. Codex sandbox authentication boundary
+
+The Codex sandbox authentication boundary is separate from the `.git` metadata boundary. In the observed sandbox context, authenticated Git access failed with:
 
 ```text
-agent execution boundary detected
--> agent-side execution SAFE-STOP
--> exact manual command, context, and preconditions
--> user-operated authorized interactive context
--> result handback
--> agent verification
--> next authorization or execution gate
+SEC_E_NO_CREDENTIALS
 ```
 
-An actionable manual handoff SHOULD provide, when the relevant values are known:
+The GitHub CLI account associated with `LeftyBear` also reported an invalid token in that sandbox context.
 
-1. the exact, minimal, copy/paste-ready command, with the repository, path, branch, remote, or other target made concrete and placeholders avoided where possible
-2. the terminal or interactive context in which it must run, the required identity or security principal, and a safe identity check such as `whoami` when applicable
-3. the preconditions that must hold, including the branch, HEAD, working tree and index state, remote, and authorization scope applicable to the operation
-4. the expected successful output or resulting state, including relevant exit code, HEAD, and ahead/behind state
-5. stop conditions requiring the user not to perform the operation when a precondition or expected value differs, and to stop without additional remediation after authentication failure, remote-state mismatch, or another unexpected result
-6. the exact results the user should return so the AI can verify the outcome before proceeding to the next gate
+These sandbox authentication results MUST NOT be interpreted as evidence that the repository, remote, Git configuration, or the User's interactive credentials are invalid. Authenticated remote access using `git ls-remote` succeeded in a normal interactive PowerShell context running as `LAPTOP-96355HFT\biz`, and a separately authorized `git push origin main` subsequently succeeded in the appropriate interactive context.
 
-Providing a manual command is not authorization to execute it. For an operation that is already authorized, the AI MAY present an exact command only within that authorization's operation, target, and scope. Before authorization exists, the AI MAY present read-only verification commands allowed by existing policy, but MUST NOT instruct the user to perform a mutation, commit, push, credential change, release, publication, or other authorization-gated operation. If useful, the AI MAY identify such a command only as a candidate to run after the required authorization is obtained, clearly separating it from an instruction to execute.
+Authentication capability MUST be evaluated from the actual process-token and credential context.
 
-Manual handoff MUST NOT be used as a security bypass or to broaden authorization. Force push, reset, rebase, amend, credential deletion or replacement, embedding a personal access token or other secret, embedding credentials in a remote URL, switching between HTTPS and SSH, using an alternate account or profile, changing security-software settings, release or publication, and destructive filesystem operations continue to require their own explicit authorization. The AI MUST NOT recommend or instruct an unapproved fallback to any such operation.
+### 3. Required execution routing
 
-Such a handoff is compliance with the security boundary, not an agent failure. The AI MUST verify the returned result and current state before relying on the handoff. The handoff, the user's execution, and authentication remediation MUST NOT be treated as authorization for any subsequent operation; the next applicable gate, including fresh authorization when required, remains independent.
+The normal execution route is:
 
-Example: if the agent context cannot access a required user-bound credential store, the AI MUST NOT attempt a credential bypass. When the intended Git operation is already authorized, it SHOULD provide the required interactive identity, exact repository and state-verification commands, the exact authorized Git command, expected result, stop conditions, and requested result handback. The user may then execute it in the authorized interactive context and return the result for verification.
+```text
+Chat
+-> judgment, authorization control, and instruction preparation
 
-Repository file modification, staging, cached snapshot verification, commit, authentication, and push are independent capabilities and authorization gates. Success at one gate MUST NOT be treated as capability or authorization for another. In particular:
+Work or Codex, as named by Target Executor
+-> authorized non-Git work
+-> docs-only or repository working-tree work as applicable
+-> read-only Git inspection
+-> static verification
+-> result handback to Chat
+
+User
+-> authorized Git mutation
+-> authenticated Git operations
+-> result handback
+
+Chat, Work, or Codex, as specified in the instruction packet
+-> verification of the returned state within the assigned scope
+-> next independent authorization gate
+```
+
+Git mutation and authenticated Git operations remain User responsibilities under Section 16. Work and Codex MUST NOT execute them. Packet-authorized read-only Git inspection MAY be performed by the named Target Executor. Execution boundaries determine execution routing but do not grant authorization.
+
+### 4. No automatic boundary workaround
+
+The AI MUST NOT attempt or propose an automatic boundary workaround, including:
+
+* modifying `.git` ACLs
+* removing a DENY ACE
+* changing ownership
+* using `takeown`
+* changing sandbox policy
+* using alternate accounts or profiles
+* modifying a credential store
+* embedding a personal access token or another secret
+* embedding credentials in a remote URL
+* switching from HTTPS to SSH as an authentication workaround
+* weakening or disabling security software
+* establishing a persistent elevated bypass
+
+Such changes require separate diagnosis, risk review, and explicit owner authorization.
+
+### 5. Manual Git handoff
+
+When an authorized Git mutation or authenticated Git operation is required, Chat SHALL provide the User with an actionable manual handoff aligned with Section 16. The handoff SHOULD contain:
+
+1. the exact minimal command
+2. the repository and required interactive identity
+3. the applicable preconditions
+4. the expected result
+5. the stop conditions
+6. the exact result to return for verification, including the interactive identity, branch, HEAD, staged or cached paths, command exit code, and post-operation status when applicable
+
+For the currently known VMF environment, the normal authorized interactive identity is `LAPTOP-96355HFT\biz`. A safe read-only identity check such as `whoami` MAY be used when identity verification is necessary.
+
+A manual command does not itself constitute authorization. Repository file modification, staging, cached snapshot verification, commit, authentication, and push remain independent capabilities and authorization gates. In particular:
 
 ```text
 commit succeeded != authentication available != push authorized
 ```
 
-For a push to GitHub or another remote, the AI MUST treat the following as separate gates in this order:
+For a push to GitHub or another remote, the applicable gates remain separate: repository-state verification, identification of the exact commit or cached snapshot, authentication-readiness verification, explicit push authorization for the identified state, and push execution.
 
-1. verify repository state
-2. identify the exact commit or cached snapshot
-3. verify authentication readiness
-4. obtain explicit push authorization for the identified state
-5. perform the push
+If authentication remediation occurs after push authorization, the prior push authorization MUST NOT automatically be reused. Repository state MUST be re-verified and fresh push authorization obtained.
 
-If authentication remediation occurs after push authorization was granted, the AI MUST NOT reuse that authorization automatically. It MUST re-verify repository state and request fresh push authorization before pushing.
+Credential or authentication failure MUST fail closed. Without explicit authorization for the specific remediation, the AI MUST NOT create, delete, replace, or modify credential-store entries; generate or embed a personal access token or another secret; change authentication routing; use an alternate account or profile; or weaken security controls.
 
-Credential or authentication failure MUST fail closed. Without explicit authorization for the specific remediation, the AI MUST NOT:
+The handoff, the User's execution, and authentication remediation MUST NOT be treated as authorization for any subsequent operation. The next applicable gate remains independent.
 
-* create, delete, replace, or modify credential-store entries
-* generate or embed a personal access token or other secret
-* embed a secret in a remote URL
-* change the remote transport from HTTPS to SSH or otherwise alter authentication routing
-* use force operations
-* disable or weaken security software
-* use an alternate account or profile
-* perform release, publication, or destructive filesystem operations as a workaround
-
-The AI SHALL diagnose the boundary failure, report the evidence available without exposing secrets, and obtain the required owner decision before remediation or retry.
-
-Rationale: repository operations and commit may succeed in an execution context where user-bound credential persistence does not. A user-operated interactive context with the intended process-token identity may complete authentication successfully, after which repository-state verification and fresh push authorization are still required.
+The known VMF boundaries MUST NOT be generalized to unrelated repositories or execution environments. If the actual execution context or environment changes, the boundaries MAY be reevaluated using safe read-only evidence.
 
 ---
 
@@ -652,7 +769,7 @@ The AI MUST run focused verification before broader verification when both are a
 
 # 16. Git Policy
 
-The AI MAY inspect Git state using non-destructive commands such as:
+Only Work or Codex named as the Target Executor MAY inspect Git state, and only when the Standard Instruction Packet lists the specific read-only Git inspection under `Authorized Actions`. Permitted non-destructive commands include:
 
 ```powershell
 git status --short
@@ -682,7 +799,7 @@ The AI MUST preserve existing user changes.
 
 The AI MUST leave reviewable uncommitted changes and stop.
 
-All Git operations are User responsibilities. Work and Codex MUST NOT execute them. When an authorized Git operation is needed, Chat SHALL provide an exact, minimal command for the identified repository state and literal target paths; User executes it in the Codex terminal and returns the result for verification. `git add .` is not the standard staging command; staging instructions SHALL name each authorized file explicitly. Providing a command does not grant authorization, and stage, cached verification, commit, authentication, and push remain separate gates.
+Git mutation and authenticated Git operations are User responsibilities. Work and Codex MUST NOT execute them. Work or Codex, when named as the Target Executor, MAY perform only the packet-authorized read-only Git inspection described above. When an authorized Git mutation or authenticated Git operation is needed, Chat SHALL provide an exact, minimal command for the identified repository state and literal target paths; User manually executes it in the required interactive context and returns the result for verification. `git add .` is not the standard staging command; staging instructions SHALL name each authorized file explicitly. Providing a command does not grant authorization, and stage, cached verification, commit, authentication, and push remain separate gates.
 
 ---
 
