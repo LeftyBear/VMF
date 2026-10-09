@@ -1,5 +1,9 @@
 # PG-01 Implementation Contract v1.0
 
+> **Current applicability:** **SUPERSEDED FOR CURRENT IMPLEMENTATION** by
+> `PG-01_TemplateDerivationImplementationContract_v1.1.md`. This v1.0 record
+> is retained unchanged for version history.
+
 ## 1. Document Control
 
 - ID: PG-01 Implementation Contract
