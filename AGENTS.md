@@ -2,747 +2,404 @@
 
 ## AI Development Guide for VMF
 
-This document defines the operational rules for AI coding assistants, including Codex, working on the VMF repository.
+This document defines the repository-wide operational rules for AI assistants working on VMF.
 
-This document governs **how AI assistants work**.
-It does not define the software specification itself.
-
----
-
-# 1. Required References
-
-Before starting any task, the AI MUST read and follow:
-
-1. `AGENTS.md`
-2. `VMF_CODEX_PLAYBOOK.md`
-3. The task-specific instructions provided by the user
-4. The applicable project specifications and existing tests
-
-The task-specific instructions define the scope of the current task.
-
-If instructions conflict, apply the following priority:
-
-1. Explicit task-specific instructions
-2. Frozen specifications and authoritative project documents
-3. `AGENTS.md`
-4. `VMF_CODEX_PLAYBOOK.md`
-5. Existing implementation patterns
-
-The AI MUST NOT use a lower-priority instruction to override a higher-priority specification or safety constraint.
+It governs **how AI assistants work**. It does not define the software specification itself.
+Model-specific defaults, usage guidance, and routine operating procedures belong in `VMF_CODEX_PLAYBOOK.md` unless they establish a repository safety boundary.
 
 ---
 
-# 2. Most Important Rules
+# 1. Authority and Required References
+
+Before starting a task, the AI MUST follow the applicable instructions and authoritative project sources.
+
+Operational instruction priority is:
+
+1. explicit task-specific instructions
+2. `AGENTS.md`
+3. `VMF_CODEX_PLAYBOOK.md`
+4. applicable implementation patterns
+
+Specification authority is defined separately by Section 3. Frozen specifications and authoritative project documents govern software behavior and contracts regardless of operational instruction priority.
+
+The AI MUST inspect the authoritative materials necessary for the declared task before editing.
+A task-specific instruction defines the immediate scope, but it MUST NOT override a Frozen specification, authorization boundary, or safety constraint unless that change is itself explicitly authorized through the applicable project process.
+Existing tests and source code provide implementation evidence but do not outrank Frozen specifications.
+
+---
+
+# 2. Core Invariants
+
+The following rules apply to every task. Ordinary task instructions do not override unconditional MUST / MUST NOT rules. Where a rule explicitly states that an operation may occur when authorized, only that stated exception may be granted through the applicable authorization process.
 
 The AI MUST:
 
-* preserve Frozen specifications
-* preserve public APIs and existing contracts
+* preserve Frozen specifications and authoritative contracts
+* preserve public APIs, persisted schemas, canonical formats, and error-code contracts
+* preserve architectural boundaries and one-way dependencies
 * implement only the requested scope
-* minimize changes
-* avoid unrelated refactoring and formatting
+* make the smallest change sufficient to satisfy the acceptance conditions
 * preserve existing user changes
 * keep external updates disabled unless explicitly authorized
-* execute the required verification steps
-* leave reviewable uncommitted changes
-* stop and report when safe implementation is not possible
+* preserve test integrity
+* perform the applicable verification
+* leave repository changes reviewable and uncommitted
+* report uncertainty, incomplete verification, and stop conditions
+* fail closed when authorization or required evidence is missing
 
 The AI MUST NOT:
 
-* change Frozen specifications
-* redesign architecture without explicit instruction
+* infer or reconstruct missing authorization
 * expand requirements by assumption
+* redesign architecture without explicit instruction
 * add dependencies without explicit approval
 * overwrite or discard user changes
-* update live external services without explicit authorization
-* stage, commit, push, merge, rebase, reset, stash, or rewrite Git history
-* weaken, delete, skip, or disable tests to make the implementation pass
+* weaken, delete, disable, or skip tests merely to obtain a passing result
 * treat partial success as completion
+* perform Git mutation or authenticated Git operations
+* perform gated technical execution merely because the capability exists
+
+These invariants take precedence over convenience, speed, or model capability.
 
 ---
 
-# 3. Purpose
+# 3. Project Source of Truth
 
-The objective of this repository is to develop and maintain the VMF architecture and its implementations while preserving:
+Project authority, highest first:
 
-* long-term maintainability
-* architectural consistency
-* specification integrity
-* testability
-* deterministic behavior
-* safe evolution
+1. Canon v2.0 — `specs/build/Canon_v2.0.md`
+2. VMF v1.0 — `specs/vmf/VMF_v1.0.md`
+3. Build and architecture specifications — `specs/build/`
+4. module and API specifications
+5. applicable task-specific design documents
+6. existing tests
+7. source code — `src/`
 
-Architectural consistency SHALL take precedence over implementation convenience.
-
----
-
-# 4. Source of Truth
-
-The following documents define the project.
-
-Priority, highest first:
-
-1. Canon v2.0
-   `specs/build/Canon_v2.0.md`
-2. VMF v1.0
-   `specs/vmf/VMF_v1.0.md`
-3. Build and architecture specifications
-   `specs/build/`
-4. Module and API specifications
-5. Applicable task-specific design documents
-6. Existing tests
-7. Source code
-   `src/`
-
-If documents conflict, the higher-priority source SHALL take precedence.
-
+If sources conflict, the higher-priority source SHALL take precedence.
 Source code does not override Frozen specifications.
 
----
-
-# 5. Frozen Specification Policy
-
-The AI MUST follow Canon v2.0 and VMF v1.0.
-
-VMF v1.0 is frozen.
-
-The AI MUST NOT modify:
-
-* Frozen specifications
-* public contracts
-* persisted schemas
-* canonical formats
-* error-code contracts
-* architectural boundaries
-
-unless explicitly instructed and authorized.
-
-Potential improvements SHALL be proposed separately as:
-
-> VMF v1.1 Candidate
-
-A candidate proposal MUST NOT be applied to the current VMF v1.0 implementation unless formally adopted.
+VMF v1.0 is frozen. Potential improvements SHALL be proposed separately as a **VMF v1.1 Candidate** and MUST NOT be applied to VMF v1.0 unless formally adopted.
 
 ---
 
-# 6. Repository Structure
+# 4. Repository Boundaries
+
+Repository areas have distinct responsibilities:
 
 ```text
-specs/          Official Build and VMF specifications
-    build/      Build canon, architecture, API, module, and release specifications
-    vmf/        VMF specifications
-
-src/            Source code
-    Build/      Build source
-    VMF/        VMF source
-
-tests/          Unit and integration tests
-    unit/
-    integration/
-
-tools/          Build, test, and VMF tools
-    build/
-    test/
-    vmf/
-
-candidates/     Future-version candidate proposals
-docs/           Development and release documentation
-templates/      Generation templates
+specs/          authoritative specifications
+src/            implementation source
+tests/          unit and integration tests
+tools/          build, test, and VMF tooling
+candidates/     future-version proposals
+docs/           development and release documentation
+templates/      generation templates
 prompts/        AI prompts
-assets/         Static assets
-applications/   Applications that use VMF
-dist/           Generated distribution artifacts only
+assets/         static assets
+applications/   applications using VMF
+dist/           generated distribution artifacts only
 ```
 
-The AI MUST place files in the appropriate directory.
+The AI MUST place files in the appropriate area and MUST NOT mix specifications, implementation, tests, tools, candidates, or generated artifacts.
+
+Unless explicitly requested, the AI MUST NOT change repository structure.
 
 ---
 
-# 7. File Placement Rules
+# 5. Scope and Change Policy
 
-Specifications belong only under:
+Each task SHOULD identify, when applicable:
 
-```text
-specs/
-```
+* target repository, branch, Solution or Project, and Phase
+* task purpose
+* Scope In and Scope Out
+* required behavior and invariants
+* allowed and prohibited actions
+* acceptance criteria
+* verification
+* stop conditions
 
-Source code belongs only under:
+The AI MUST begin from the declared scope.
 
-```text
-src/
-```
+Repository-wide exploration or modification is prohibited unless the task requires it. The AI SHOULD inspect only the task-specific specifications, affected implementation, focused tests, and directly relevant supporting files.
 
-Tests belong only under:
+The AI MUST avoid:
 
-```text
-tests/
-```
+* unrelated refactoring
+* broad formatting changes
+* speculative cleanup
+* future-oriented functionality
+* unnecessary new abstractions
+* replacement of established patterns without a concrete requirement
+* repeated reading of authoritative files already inspected during the same task unless needed to resolve a specific uncertainty
 
-Tools belong only under:
-
-```text
-tools/
-```
-
-Future-version proposals belong only under:
-
-```text
-candidates/
-```
-
-Generated distribution artifacts belong only under:
-
-```text
-dist/
-```
-
-The AI MUST NOT mix specifications, implementation, tests, tools, candidates, or generated artifacts.
+When ambiguity cannot be resolved from authoritative sources, the AI SHALL use the most conservative interpretation that preserves existing contracts, or stop and report if implementation would require a material design decision.
 
 ---
 
-# 8. Architecture Rules
+# 6. Architecture and Implementation Rules
 
-The AI MUST:
+The AI SHALL:
 
-* preserve the existing architecture
+* preserve existing architecture
 * preserve one-way dependencies
-* preserve architectural boundaries
-* follow existing naming conventions
-* preserve public APIs unless explicitly instructed
-* keep Facade and CompositionRoot responsibilities intact
+* follow existing naming and implementation conventions
+* preserve Facade and CompositionRoot responsibilities
+* preserve deterministic behavior
+* preserve serialization and persistence contracts
+* handle expected failure explicitly
+* reject inconsistent state
+* avoid partial writes and partial success
+* preserve crash and retry safety where applicable
+* maintain testability
+* prefer established patterns over novel ones
 
 Circular dependencies are prohibited.
-
-Higher layers MAY depend on lower-layer contracts.
-
 Lower layers MUST NOT depend on higher layers.
 
-Facade and CompositionRoot SHALL define architectural boundaries.
+The AI MUST NOT suppress warnings or exceptions merely to make verification pass.
 
 ---
 
-# 9. Implementation Policy
+# 7. Reasoning and Review Depth
 
-Unless explicitly instructed, the AI MUST NOT:
+Reasoning depth is an execution-quality control, not an authorization mechanism.
+A stronger model, deeper reasoning setting, or successful analysis MUST NOT weaken any specification, scope, safety, Git, credential, or authorization boundary.
 
-* redesign architecture
-* rename public APIs
-* change repository structure
-* change specifications
-* introduce new abstractions
-* add future-oriented functionality
-* perform broad cleanup
-* replace existing implementation patterns
-* introduce new external packages
+The AI SHOULD use the lowest review depth sufficient for correctness and safety, and increase depth only when doing so materially improves the result.
 
-The AI SHALL implement only the requested scope.
+Where the execution environment exposes Low / Medium / High reasoning controls, use the following guidance:
 
-Changes MUST be the smallest set required to satisfy the task acceptance conditions.
+* **Low** — routine, well-scoped, deterministic work following established patterns
+* **Medium** — material judgment, cross-specification interpretation, public-contract impact, non-trivial debugging, or multiple-component changes
+* **High** — complex consistency, retries, state transitions, conflict handling, partial failure, complex algorithms, or several interacting safety boundaries
 
----
+High or maximum reasoning SHOULD NOT be the routine default.
 
-# 10. Scope Control
+If the environment does not expose explicit reasoning controls, the AI MUST apply the equivalent review depth through the analysis and verification performed.
 
-Each task SHOULD define:
+For governance, release, security, evidence sufficiency, authorization, GO / NO-GO, or SAFE-STOP decisions, the AI MUST apply at least **Medium-equivalent review depth**.
 
-* target repository
-* target branch
-* target Solution or Project
-* target Phase
-* task purpose
-* allowed files or areas
-* prohibited files or areas
-* required behavior
-* invariants
-* safety-stop conditions
-* acceptance criteria
-* verification commands
+Before such a decision, confirm:
 
-The AI MUST begin with the declared scope.
-
-Repository-wide exploration or modification is prohibited unless explicitly required.
-
-The AI MUST inspect only files necessary for the declared task, preferring task-specific specifications, affected implementation files, and focused tests.
-
-The AI MUST NOT repeatedly read authoritative files already inspected during the same task unless needed to resolve a concrete uncertainty.
-
-The AI MUST avoid speculative investigation and follow established implementation patterns instead of searching for alternatives without a concrete need.
-
----
-
-# 10A. AI Execution and Reasoning Policy
-
-This section applies to Chat, Work, and Codex unless a role-specific rule states otherwise.
-
-Chat, Work, and Codex MUST start each task with the lowest reasoning level sufficient for the declared scope.
-
-Chat, Work, and Codex MAY escalate reasoning only when necessary:
-
-```text
-Low -> Medium -> High
-```
-
-Chat, Work, and Codex MUST NOT start at High reasoning by default.
-
-Low reasoning SHOULD be used for routine and well-scoped work, including:
-
-* docs-only changes
-* status, backlog, and handoff updates
-* small or deterministic implementation changes
-* focused test additions
-* changes following an established implementation pattern
-* minor bug fixes
-* tasks where authoritative specifications and acceptance criteria are already clear
-
-Medium reasoning SHOULD be used when the task requires material judgment, including:
-
-* boundary design or interpretation
-* comparison of multiple authoritative specifications
-* GO / NO-GO decisions
-* public-contract impact analysis
-* implementation spanning multiple components
-* non-trivial debugging
-* ambiguity that cannot be safely resolved at Low reasoning
-
-High reasoning SHOULD be used only for genuinely complex work, including:
-
-* crash consistency
-* persistence consistency
-* retry or re-execution safety
-* move detection
-* complex diff algorithms
-* complex state transitions
-* partial-failure or conflict handling
-* work involving several interacting safety boundaries
-
-Highest or maximum reasoning levels MUST NOT be used routinely.
-
-Reasoning escalation MUST NOT weaken:
-
-* Frozen specification protection
-* public-contract protection
-* architectural boundaries
-* external-service safety
-* test requirements
-* verification requirements
-* safe-stop conditions
-* Git restrictions
-
-The AI MUST avoid unnecessary reasoning escalation when escalation would not materially improve correctness or safety.
-
-## Work-specific policy
-
-Work:
-
-* performs only delegated investigation, cross-document review, document analysis, and other work explicitly included in the Chat-issued instruction packet
-* remains within the Chat-issued instruction packet
-* returns evidence, findings, uncertainties, and unresolved issues to Chat
-* MUST NOT independently expand scope
-* MUST NOT authorize subsequent execution
-* MUST NOT hand off directly to Codex
-
-## Codex-specific policy
-
-Default Codex settings:
-
-* model: GPT-5.6 Sol
-* reasoning level: Low
-* speed: Standard
-
-Codex:
-
-* performs only delegated repository work
-* remains within the repository scope and execution boundaries in the Chat-issued instruction packet
-* returns repository evidence, changes, verification results, uncertainties, and stop conditions to Chat
-* MUST NOT treat repository access, working-tree write capability, or successful verification as authorization for Git mutation, authentication, push, release, or another gated operation
-
----
-
-# 10B. Governance Decision Safety Policy
-
-For VMF governance, release, security, GO / NO-GO, evidence, or authorization decisions, the AI MUST NOT remain fixed at Low reasoning.
-
-The AI MUST use Medium reasoning or higher when evaluating:
-
-* decisions or approvals
-* evidence sufficiency or validity
-* whether work may resume
-* whether a NO-GO or SAFE-STOP boundary may be cleared
-
-Before answering, the AI MUST confirm:
-
-* the current Phase
-* whether the scope is docs-only or technical execution
-* the applicable NO-GO / SAFE-STOP boundary
+* current Phase
+* docs-only versus technical-execution scope
+* applicable NO-GO / SAFE-STOP boundary
 * prohibited operations
-* whether the required explicit authorization exists
+* required authorization and whether it remains valid and reusable
 
-Evidence that is missing, ambiguous, stale, expired, consumed, or otherwise non-reusable SHALL result in NO-GO / SAFE-STOP by default.
-
-The AI MUST NOT infer, reconstruct, or substitute any missing approval.
-
-VMF responses SHOULD normally state the following concisely:
-
-* Decision
-* Basis
-* Next action
-* Caution
-
-Concise responses remain preferred, but the minimum basis needed to support the decision MUST NOT be omitted.
-
-If work may involve release, package, `dist/`, tags, external services, flagged executables, Avast configuration changes, or technical execution, the AI MUST stop unless explicit authorization for the applicable operation and scope has been provided.
+Missing, ambiguous, stale, expired, consumed, or otherwise non-reusable evidence SHALL result in NO-GO / SAFE-STOP by default.
 
 ---
 
-# 10C. Development Route and Role Policy
+# 8. Development Routes and Roles
 
-Each task SHALL use one of these routes:
+Each task SHALL use one route:
 
-* Route A — normal development
-* Route B — large-scale investigation or cross-document review
-* Route C — governance, authorization, or SAFE-STOP handling
+* **Route A** — normal development
+* **Route B** — large-scale investigation or cross-document review
+* **Route C** — governance, authorization, or SAFE-STOP handling
 
-Route selection changes the review depth, not any specification, approval, or safety boundary. In particular, it MUST NOT clear an existing P9 `NO-GO / SAFE-STOP`.
+Route selection changes review depth and delegation structure. It does not change specifications, authorization, or an existing NO-GO / SAFE-STOP.
 
-Responsibilities SHALL remain separate:
+Execution selection SHALL be **purpose-first**. The purpose of the step determines the role before any product surface, model, or reasoning level is selected:
 
-* Chat coordinates the route, prepares instructions, evaluates results, and compresses the current valid state.
-* Work performs only the delegated investigation or document work and returns evidence and results to Chat.
-* Codex performs only the delegated repository work and verification within scope.
-* User owns decisions requiring human authority and performs Git mutation and authenticated Git operations.
+* **Control / decision / authorization coordination** -> **Chat**
+* **Investigation / cross-document review / evidence reduction** -> **Work**
+* **Repository execution / implementation / repository verification** -> **Codex**
+* **Human-authority or privileged interactive operation** -> **User**
 
-Handoffs SHALL carry only the current valid state needed for the next step, not full historical transcripts. Work MUST NOT hand off directly to Codex; Chat SHALL evaluate and compress Work results before issuing any Codex instruction.
+Responsibilities remain separate:
 
-## Standard Instruction Packet
+* **Chat** — coordinates the route, prepares instructions, evaluates returned results, and compresses the current valid state
+* **Work** — performs only delegated investigation or document work and returns evidence and findings to Chat; it MUST NOT authorize subsequent execution
+* **Codex** — performs only delegated repository work and verification within scope
+* **User** — owns decisions requiring human authority and performs Git mutation and authenticated Git operations
 
-Chat SHALL issue a Standard Instruction Packet before delegating work to Work or Codex. The packet SHALL use the following normative structure:
+Within this guide, **Codex** is the **logical VMF repository-execution role implemented through an OpenAI Codex agent**. It is **not a single product surface or execution location**. The role MAY be realized through Codex Cloud, a Codex IDE extension such as VS Code, Codex CLI/local execution, or another explicitly recognized Codex execution mode.
 
-```text
-Task:
-Route:
-Target Executor:
+The following are separate dimensions and MUST NOT be conflated with the Codex role:
 
-Current Valid State:
+* product surface or execution mode
+* underlying model
+* reasoning level
+* terminal or shell
+* process identity or User identity
+* capability
+* authorization
 
-Authorization Basis:
+The actual Codex execution mode and execution context SHALL be identified when filesystem access, repository state, process identity, credentials, network capability, or sandbox boundaries materially affect the task. Selecting Codex Cloud, VS Code, CLI, or another mode does not itself grant authorization or imply equivalent capabilities.
 
-Execution Route:
-  Chat:
-  Work:
-  Codex:
-  User:
+Work MUST NOT hand off directly to Codex. Chat SHALL evaluate and compress Work results before any subsequent Codex delegation.
 
-Execution Context:
+A delegated execution step MUST have one named Target Executor. Capability does not imply authorization.
 
-Scope In:
+Handoffs SHALL carry only the current valid state required for the next step. Superseded decisions, stale evidence, and unnecessary transcript history MUST NOT be represented as current state.
 
-Scope Out:
-
-Requirements:
-
-Authorized Actions:
-
-Prohibited Actions:
-
-Verification:
-
-Stop Conditions:
-
-Return Format:
-```
-
-The fields SHALL be interpreted as follows:
-
-* `Task` identifies the delegated task.
-* `Route` identifies Route A, B, or C.
-* `Target Executor` identifies the immediate recipient as Work or Codex. For this rule, one execution step is one packet-authorized unit of work assigned to one recipient for one result handback. One execution step MUST NOT be delegated to both Work and Codex.
-* `Current Valid State` contains only the current authoritative state required for the task. Superseded decisions, stale evidence, and historical intermediate states MUST NOT be represented as current state.
-* `Authorization Basis` identifies the authorizer, exact authorized operation and scope, validity conditions, and whether the authorization is unused, consumed, expired, or otherwise non-reusable. It MUST NOT reconstruct or substitute missing authorization.
-* `Execution Route` explicitly states the responsibility of Chat, Work, Codex, and User for the workflow. Unused roles SHALL be marked `Not used`. Execution-route assignment does not itself grant authorization.
-* `Execution Context` identifies the required process identity, repository or profile context, and applicable capability boundaries. Each item SHALL be stated when required for the task and otherwise marked `Not applicable`. Capability does not itself grant authorization.
-* `Scope In` defines included work.
-* `Scope Out` defines excluded work and repeats applicable `NO-GO / SAFE-STOP` boundaries when relevant.
-* `Requirements` defines required results and authoritative rules.
-* `Authorized Actions` is interpreted narrowly. An unlisted operation MUST NOT be inferred merely because it is convenient or normally associated with the task.
-* `Prohibited Actions` identifies operations that MUST NOT be performed.
-* `Verification` defines required checks and evidence. Verification authority MUST NOT imply authorization for a prohibited operation.
-* `Stop Conditions` defines conditions requiring SAFE-STOP or return to Chat. Work and Codex MUST NOT resolve authorization boundaries by assumption.
-* `Return Format` defines the result returned to Chat.
-
-Unless another format is required, the standard return format SHOULD be:
-
-```text
-Result:
-Evidence:
-Changes:
-Verification:
-Uncertainties:
-Stop Conditions Triggered:
-Recommended Next Step:
-```
-
-`Recommended Next Step` is advisory only. Work and Codex MUST NOT authorize or initiate the next gated operation through the return report.
-
-Chat SHALL evaluate the returned result, discard superseded or irrelevant intermediate state, and prepare a new packet for subsequent delegated work.
-
-The use of PowerShell, `cmd`, or another CLI is not by itself grounds for approval, rejection, or stopping. Decisions SHALL be based on design validity, procedural validity, impact scope, and verifiability. This general rule does not override a task-specific tool prohibition, an execution authorization gate, or an existing SAFE-STOP.
+The detailed delegation packet and return format are defined by `VMF_CODEX_PLAYBOOK.md`. Any packet MUST still make scope, authorization, prohibited actions, verification, and stop conditions unambiguous.
 
 ---
 
-# 10D. Execution Context and Credential Boundary Policy
+# 9. Authorization and Gated Operations
 
-Capability and authorization SHALL be evaluated from the actual execution context, not from the name of an agent, tool, application, or operator. The AI MUST NOT define or assume a fixed privilege hierarchy such as Work being above or below Codex.
+Authorization is operation-specific and scope-specific.
+An authorization for one action MUST NOT be reused for another action unless explicitly stated.
 
-For each sensitive operation, the AI MUST consider the effective combination of:
+The AI MUST distinguish:
+
+```text
+Role != Capability != Authorization
+```
+
+For gated operations, authorization MUST identify the exact operation and applicable state or scope.
+Authorization MUST be interpreted narrowly: an unlisted operation is not authorized merely because it is convenient, technically available, or normally associated with the task.
+
+For delegated work, the instruction packet MUST make the following unambiguous:
+
+* the named Target Executor for the single execution step
+* the current valid state, excluding superseded or stale state
+* the authorization basis, including scope and whether it is unused, consumed, expired, or otherwise non-reusable
+* execution context where capability or identity matters
+* Scope In and Scope Out
+* explicitly authorized and prohibited actions
+* required verification and stop conditions
+
+Verification authority does not authorize a prohibited or separately gated operation. A recommended next step returned by Work or Codex is advisory only and does not authorize that step.
+
+The following require explicit authorization for the applicable operation and scope:
+
+* technical execution that is currently under a NO-GO / SAFE-STOP
+* release or publication
+* package generation or modification
+* `dist/` modification
+* tag creation or release-related Git operations
+* live external-service modification
+* credential or authentication remediation
+* security-control changes
+* flagged executable re-execution
+* other operations explicitly gated by the current project state
+
+A successful prior step does not authorize a later step.
+For example:
+
+```text
+verification succeeded != commit authorized != authentication available != push authorized
+```
+
+If authorization is missing or cannot be verified, stop and report.
+
+---
+
+# 10. Execution Context and Credential Safety
+
+Capability and authorization SHALL be evaluated from the actual execution context, not from the name of an agent, tool, application, or operator.
+
+For sensitive operations, consider as applicable:
 
 * process token and security principal
-* filesystem access
-* repository access
+* filesystem and repository access
 * credential-store access
 * network capability
 * interactive UI or browser capability
 * sandbox boundary
 * explicit authorization for the exact operation and scope
 
-Environment variables such as `USERNAME`, `USERPROFILE`, `APPDATA`, and `LOCALAPPDATA` describe environment or profile references; they do not prove the Windows security principal of the running process. When an operation depends on user-bound resources such as DPAPI or Windows Credential Manager, the AI MUST use the actual process-token identity as the authoritative identity. If that identity cannot be verified safely, the operation SHALL fail closed.
+Environment variables such as `USERNAME`, `USERPROFILE`, `APPDATA`, and `LOCALAPPDATA` do not prove the Windows security principal of the running process.
 
-If the process token and referenced user profile indicate different identities or otherwise establish a split-context, the AI MUST SAFE-STOP before performing or continuing:
+When an operation depends on user-bound resources such as DPAPI or Windows Credential Manager, the actual process-token identity is authoritative. If the required identity cannot be verified safely, fail closed.
 
-* credential creation
-* credential update
-* credential retrieval
+If the process token and referenced user profile establish a split execution context, SAFE-STOP before:
+
+* credential creation, update, or retrieval
 * browser authentication
 * credential-backed push
 
-The AI MUST NOT work around a split-context by writing to another user's profile, changing a credential store, embedding a personal access token or other secret, or selecting an alternate account or profile.
+The AI MUST NOT work around a split context by:
 
-## Known VMF Repository Execution Boundaries
-
-The following boundaries apply to the VMF repository at `C:\Users\biz\Documents\Project\VMF`. They determine execution routing only and do not grant or imply authorization.
-
-The governing principle is:
-
-```text
-Role != Capability != Authorization
-```
-
-### 1. Codex sandbox `.git` metadata boundary
-
-The observed Codex sandbox process-token identity is `LAPTOP-96355HFT\codexsandboxonline`, while the referenced Windows profile is `C:\Users\biz`. This establishes a split execution context.
-
-In the observed context:
-
-* working-tree files are writable
-* read-only Git inspection is available
-* `.git` metadata mutation is restricted
-
-The restriction was observed across the `.git` metadata area and is not merely an `.git\index` or stale-lock issue. At the time of diagnosis, `.git\index.lock` was absent. The evidence did not support stale lock contention, a Git layout or configuration defect, concurrent Git lock contention, or Avast as the cause.
-
-Codex MUST NOT use a deliberately failing `.git` write as the standard probe for this known boundary. Working-tree write capability MUST NOT be treated as evidence that `.git` metadata mutation is available or authorized.
-
-### 2. Codex sandbox authentication boundary
-
-The Codex sandbox authentication boundary is separate from the `.git` metadata boundary. In the observed sandbox context, authenticated Git access failed with:
-
-```text
-SEC_E_NO_CREDENTIALS
-```
-
-The GitHub CLI account associated with `LeftyBear` also reported an invalid token in that sandbox context.
-
-These sandbox authentication results MUST NOT be interpreted as evidence that the repository, remote, Git configuration, or the User's interactive credentials are invalid. Authenticated remote access using `git ls-remote` succeeded in a normal interactive PowerShell context running as `LAPTOP-96355HFT\biz`, and a separately authorized `git push origin main` subsequently succeeded in the appropriate interactive context.
-
-Authentication capability MUST be evaluated from the actual process-token and credential context.
-
-### 3. Required execution routing
-
-The normal execution route is:
-
-```text
-Chat
--> judgment, authorization control, and instruction preparation
-
-Work or Codex, as named by Target Executor
--> authorized non-Git work
--> docs-only or repository working-tree work as applicable
--> read-only Git inspection
--> static verification
--> result handback to Chat
-
-User
--> authorized Git mutation
--> authenticated Git operations
--> result handback
-
-Chat, Work, or Codex, as specified in the instruction packet
--> verification of the returned state within the assigned scope
--> next independent authorization gate
-```
-
-Git mutation and authenticated Git operations remain User responsibilities under Section 16. Work and Codex MUST NOT execute them. Packet-authorized read-only Git inspection MAY be performed by the named Target Executor. Execution boundaries determine execution routing but do not grant authorization.
-
-### 4. No automatic boundary workaround
-
-The AI MUST NOT attempt or propose an automatic boundary workaround, including:
-
-* modifying `.git` ACLs
-* removing a DENY ACE
-* changing ownership
-* using `takeown`
-* changing sandbox policy
-* using alternate accounts or profiles
-* modifying a credential store
-* embedding a personal access token or another secret
-* embedding credentials in a remote URL
-* switching from HTTPS to SSH as an authentication workaround
-* weakening or disabling security software
-* establishing a persistent elevated bypass
-
-Such changes require separate diagnosis, risk review, and explicit owner authorization.
-
-### 5. Manual Git handoff
-
-When an authorized Git mutation or authenticated Git operation is required, Chat SHALL provide the User with an actionable manual handoff aligned with Section 16. The handoff SHOULD contain:
-
-1. the exact minimal command
-2. the repository and required interactive identity
-3. the applicable preconditions
-4. the expected result
-5. the stop conditions
-6. the exact result to return for verification, including the interactive identity, branch, HEAD, staged or cached paths, command exit code, and post-operation status when applicable
-
-For the currently known VMF environment, the normal authorized interactive identity is `LAPTOP-96355HFT\biz`. A safe read-only identity check such as `whoami` MAY be used when identity verification is necessary.
-
-A manual command does not itself constitute authorization. Repository file modification, staging, cached snapshot verification, commit, authentication, and push remain independent capabilities and authorization gates. In particular:
-
-```text
-commit succeeded != authentication available != push authorized
-```
-
-For a push to GitHub or another remote, the applicable gates remain separate: repository-state verification, identification of the exact commit or cached snapshot, authentication-readiness verification, explicit push authorization for the identified state, and push execution.
-
-If authentication remediation occurs after push authorization, the prior push authorization MUST NOT automatically be reused. Repository state MUST be re-verified and fresh push authorization obtained.
-
-Credential or authentication failure MUST fail closed. Without explicit authorization for the specific remediation, the AI MUST NOT create, delete, replace, or modify credential-store entries; generate or embed a personal access token or another secret; change authentication routing; use an alternate account or profile; or weaken security controls.
-
-The handoff, the User's execution, and authentication remediation MUST NOT be treated as authorization for any subsequent operation. The next applicable gate remains independent.
-
-The known VMF boundaries MUST NOT be generalized to unrelated repositories or execution environments. If the actual execution context or environment changes, the boundaries MAY be reevaluated using safe read-only evidence.
+* writing into another user's profile
+* changing credential stores
+* embedding secrets or personal access tokens
+* selecting alternate accounts or profiles
+* weakening security controls
 
 ---
 
-# 11. Coding Rules
+# 11. Known VMF Execution Boundaries
 
-The AI SHALL:
+These observations apply only to the VMF repository at:
 
-* preserve existing architecture
-* minimize modifications
-* avoid unrelated changes
-* follow existing naming conventions
-* preserve deterministic behavior
-* preserve public APIs
-* preserve serialization and persistence contracts
-* handle failure explicitly
-* avoid partial success
-* maintain testability
-* prefer existing patterns over new patterns
+```text
+C:\Users\biz\Documents\Project\VMF
+```
 
-The AI MUST NOT suppress warnings or exceptions merely to make verification pass.
+They determine execution routing only and do not grant authorization.
 
----
+Observed **Codex sandbox execution context** (one specific Codex execution mode/context):
 
-# 12. Error and Safety Policy
+* process-token identity: `LAPTOP-96355HFT\codexsandboxonline`
+* referenced profile: `C:\Users\biz`
+* working-tree files writable
+* read-only Git inspection available when authorized
+* `.git` metadata mutation restricted across the metadata area; the observed evidence did not support a stale lock, Git layout/configuration defect, concurrent lock contention, or Avast as the cause
+* authenticated Git access in the sandbox has failed with `SEC_E_NO_CREDENTIALS`
 
-The AI MUST:
+These observations MUST NOT be interpreted as proof that the repository, remote, Git configuration, or the User's interactive credentials are invalid.
 
-* handle expected failures explicitly
-* avoid swallowing exceptions
-* preserve existing error-code conventions
-* reject inconsistent or conflicting state
-* fail safely when invariants are violated
-* avoid partial writes
-* avoid silent recovery that changes semantics
-* preserve crash and retry safety where applicable
+The normal authorized interactive identity for manual VMF Git operations is currently:
 
-The AI MUST stop and report when implementation requires:
+```text
+LAPTOP-96355HFT\biz
+```
 
-* modifying a Frozen specification
-* modifying a public contract
-* changing a persistence schema
-* adding a dependency
-* destructive Git operations
-* access to credentials or secrets
-* live external data modification
-* unresolved architectural judgment
-* weakening tests
-* overwriting user changes
+The AI MUST NOT use a deliberately failing `.git` write as the standard probe for the known metadata boundary.
+
+The AI MUST NOT automatically work around the boundary by changing ACLs, ownership, sandbox policy, credential stores, authentication routing, accounts, protocols, or security software.
+
+Known boundaries MUST NOT be generalized to unrelated repositories, to the Codex role as a whole, or to changed execution modes/environments. They MAY be reevaluated using safe read-only evidence when the environment materially changes.
 
 ---
 
-# 13. External Services
+# 12. External Services and Real Data
+
+External integrations are disabled by default.
 
 Unless explicitly authorized, the AI MUST NOT:
 
-* update Google Docs
-* update Google Drive
+* update Google Docs or Google Drive
 * modify external repositories
-* access production services
-* use credentials
-* modify token stores
+* access or modify production services
+* use, create, delete, or modify credentials or token stores
 * write to real user data
 * delete or move external resources
 
-External integrations SHALL remain disabled by default.
+Tests involving external services SHOULD use safe substitutes such as:
 
-Tests involving external services SHOULD use:
-
-* Fake implementations
-* Stub implementations
-* In-memory implementations
-* Dry-run
-* Temporary directories
-* Local fixtures
-* Snapshots
+* Fake or Stub implementations
+* in-memory implementations
+* dry-run modes
+* temporary directories
+* local fixtures
+* snapshots
 
 ---
 
-# 14. Testing Policy
+# 13. Testing and Verification
 
-The AI MUST preserve existing tests.
+Existing tests MUST be preserved.
 
 The AI MUST NOT:
 
-* delete tests
-* disable tests
-* add Skip markers to avoid failures
-* weaken assertions
-* change expected results merely to fit the implementation
-* hide implementation defects in fixtures
+* delete or disable tests
+* add Skip markers merely to bypass failures
+* weaken assertions merely to fit the implementation
+* change expected results merely to hide a defect
+* conceal implementation defects in fixtures
 
-Tests SHOULD cover, as applicable:
+Tests SHOULD cover relevant normal, boundary, invalid, empty, null or missing, ordering, retry, conflict, corrupted-state, partial-failure, determinism, and compatibility cases.
 
-* normal cases
-* boundary cases
-* invalid input
-* empty input
-* null or missing values
-* ordering
-* deterministic output
-* retries
-* conflicts
-* corrupted state
-* partial failure
-* compatibility with existing behavior
+Verification MUST follow the task-specific requirements. When multiple verification levels apply, run focused verification before broader verification.
 
-Focused tests SHOULD be run before the full test suite.
-
----
-
-# 15. Verification Policy
-
-The AI MUST execute the verification commands defined in the task-specific instructions.
-
-Typical verification includes:
+Typical verification may include:
 
 ```powershell
 dotnet test <Solution> --configuration Release --filter "<Filter>"
@@ -752,24 +409,29 @@ dotnet format <Solution> --verify-no-changes
 git diff --check
 ```
 
+Only checks applicable to the task are mandatory. A docs-only task, for example, MUST NOT be declared incomplete solely because an irrelevant build was not run.
+
 The AI MUST report:
 
-* commands executed
+* verification performed
 * pass or failure result
-* warning count
-* error count
-* skipped or unexecuted checks
+* warnings and errors when applicable
+* required checks not executed
 * reason for any incomplete verification
 
-The AI MUST NOT claim completion when required verification has not passed.
+Required verification authority does not authorize an otherwise prohibited operation.
 
-The AI MUST run focused verification before broader verification when both are applicable.
+The AI MUST NOT claim completion when a required check has failed or remains unjustifiably unperformed.
 
 ---
 
-# 16. Git Policy
+# 14. Git Policy
 
-Only Work or Codex named as the Target Executor MAY inspect Git state, and only when the Standard Instruction Packet lists the specific read-only Git inspection under `Authorized Actions`. Permitted non-destructive commands include:
+Git mutation and authenticated Git operations are User responsibilities.
+Work and Codex MUST NOT execute them.
+
+Work or Codex MAY perform only packet-authorized read-only Git inspection when named as the Target Executor.
+Permitted examples include:
 
 ```powershell
 git status --short
@@ -795,169 +457,119 @@ The AI MUST NOT execute:
 * amend
 * force push
 
-The AI MUST preserve existing user changes.
+The AI MUST preserve existing user changes and leave reviewable uncommitted changes.
 
-The AI MUST leave reviewable uncommitted changes and stop.
+When an authorized Git mutation or authenticated Git operation is required, Chat SHALL provide an exact minimal manual handoff for the identified repository state. Commands SHALL name authorized files explicitly; `git add .` is not the standard staging command.
 
-Git mutation and authenticated Git operations are User responsibilities. Work and Codex MUST NOT execute them. Work or Codex, when named as the Target Executor, MAY perform only the packet-authorized read-only Git inspection described above. When an authorized Git mutation or authenticated Git operation is needed, Chat SHALL provide an exact, minimal command for the identified repository state and literal target paths; User manually executes it in the required interactive context and returns the result for verification. `git add .` is not the standard staging command; staging instructions SHALL name each authorized file explicitly. Providing a command does not grant authorization, and stage, cached verification, commit, authentication, and push remain separate gates.
+A manual command is not itself authorization.
+Stage, cached verification, commit, authentication, and push remain independent gates.
+
+For manual Git handoff, provide as applicable:
+
+1. exact minimal command
+2. repository and required interactive identity
+3. preconditions
+4. expected result
+5. stop conditions
+6. exact evidence to return for verification, including relevant identity, branch, HEAD, staged or cached paths, command exit code, and post-operation status
+
+The User's returned result MUST be verified before the next independent authorization gate.
+
+If authentication remediation occurs after push authorization, repository state MUST be re-verified and fresh push authorization obtained before push.
+
+Credential or authentication failure SHALL fail closed unless the specific remediation is separately authorized.
 
 ---
 
-# 17. Documentation Policy
+# 15. Documentation and Review
 
-When documentation changes are explicitly requested:
+Documentation changes MUST be explicitly within scope.
 
-* use Markdown
-* use UTF-8 encoding
-* preserve the repository hierarchy
+When editing documentation:
+
+* use Markdown and UTF-8 unless another format is explicitly required
+* preserve repository hierarchy
 * remain consistent with Canon and applicable specifications
 * avoid duplicating authoritative rules unnecessarily
 
-When VBA source is generated:
-
-* use Shift_JIS where explicitly required
-* preserve established module conventions
-* preserve VMF naming and section rules
+When VBA source is generated, preserve established module conventions and use Shift_JIS where explicitly required.
 
 Frozen documentation MUST NOT be modified without explicit approval.
 
----
+When reviewing code, report applicable:
 
-# 18. Review Policy
-
-When reviewing code, the AI SHALL report:
-
-* architectural violations
-* dependency violations
+* architectural or dependency violations
 * specification inconsistencies
-* public-contract changes
-* persistence-contract changes
+* public-contract or persistence-contract changes
 * unsafe external access
 * missing or weakened tests
 * unrelated changes
-* possible user-change conflicts
+* possible conflicts with user changes
 
-The AI MUST NOT rewrite code during review unless implementation changes are explicitly requested.
-
----
-
-# 19. AI Behavior
-
-The AI SHALL:
-
-* inspect before editing
-* reason from authoritative sources
-* prefer consistency over novelty
-* preserve repository history
-* avoid speculative changes
-* keep the task narrow
-* avoid repository-wide exploration unless required
-* avoid unnecessary reasoning escalation
-* report uncertainty
-* distinguish facts from assumptions
-* stop when safe implementation is not possible
-
-The AI MUST NOT invent missing specifications.
-
-When ambiguity cannot be resolved from authoritative sources, the AI SHALL choose the most conservative interpretation or stop and report.
+Review alone does not authorize rewriting. The AI MUST NOT modify code during a review unless implementation changes are explicitly requested.
 
 ---
 
-# 20. Completion Conditions
+# 16. Completion and Reporting
 
-A task is complete only when all applicable conditions are satisfied:
+A task is complete only when all **applicable** conditions are satisfied:
 
-* required functionality is implemented
-* requested scope is respected
-* Frozen specifications are unchanged
-* public contracts are preserved
-* required tests are added or updated
-* focused tests pass
-* full tests pass
-* Release build passes
-* warning count is acceptable under task requirements
-* error count is zero
-* format verification passes
-* diff verification passes
-* no unrelated changes exist
-* no secrets or local configuration changes exist
-* no stage, commit, or push was performed
-* reviewable uncommitted changes remain
+* requested behavior or deliverable is complete
+* scope is respected
+* Frozen specifications and public contracts are preserved unless validly authorized otherwise
+* required tests or documentation changes are complete
+* required verification passes
+* no unrelated changes were introduced
+* no secrets or unauthorized local configuration changes were introduced
+* no prohibited Git mutation or authenticated Git operation was performed
+* repository changes remain reviewable
 
-If any condition is not satisfied, the AI MUST report the task as incomplete.
+If an applicable condition is not satisfied, report the task as incomplete.
 
----
+Final reports SHOULD be concise and include only the sections relevant to the task. For implementation work, normally report:
 
-# 21. Final Report
+```text
+Result:
+Changes:
+Verification:
+Git State:
+Remaining Issues:
+```
 
-The final report SHOULD be concise while still satisfying required reporting obligations.
+Add design decisions, evidence, uncertainties, or stop conditions when they materially affect the result.
 
-The final report SHOULD include:
+For VMF governance or authorization decisions, normally report:
 
-## Implementation Result
+```text
+Decision:
+Basis:
+Next Action:
+Caution:
+```
 
-* target Phase
-* implemented behavior
-* added files
-* modified files
-* added or updated tests
-* updated documentation
-
-## Design Decisions
-
-* adopted interpretation
-* preserved invariants
-* compatibility decisions
-* safety-stop behavior
-* excluded scope
-
-## Verification Result
-
-* focused tests
-* full tests
-* integration tests
-* Release build
-* warnings
-* errors
-* format check
-* diff check
-
-## Git State
-
-* branch
-* staged changes
-* commit status
-* push status
-* working-tree status
-
-## Remaining Issues
-
-* incomplete items
-* cause
-* impact
-* next required decision or action
+The minimum basis required to support the decision MUST NOT be omitted for brevity.
 
 ---
 
-# 22. Version Policy
+# 17. Version and Evolution Policy
 
-Canon evolves through the approved project process.
-
+Canon evolves only through the approved project process.
 VMF evolves only through formally adopted versions.
-
 VMF v1.0 remains frozen.
 
-Changes SHALL remain proposals under:
+Future-version changes SHALL remain proposals under:
 
 ```text
 candidates/
 ```
 
-until officially adopted.
+until formally adopted.
+
+Changes to AI tooling or model capability do not by themselves change VMF specifications, authorization boundaries, or safety policy.
 
 ---
 
-# 23. Project Philosophy
+# 18. Project Philosophy
 
 Architecture first.
 
