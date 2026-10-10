@@ -21,12 +21,10 @@ Frozen仕様、認可、安全境界、Git禁止事項などの恒久規則は`A
 
 本Playbookでいう **Codex** は、VMFにおける **repository execution role** であり、その役割をOpenAI Codex agentで実現するものを指す。
 
-Codexは特定のsurfaceや実行場所を意味しない。実行modeとして、例えば次を取り得る。
+Codexは単一のsurfaceや実行場所を意味しない。delegated VMF workでは、次のCodex Execution Routeの一方を取る。
 
 * Codex Cloud
-* Codex IDE extension（VS Code等）
-* Codex CLI / local execution
-* 将来、VMF文書で明示的に認めたCodex execution mode
+* VS Code Codex LOCAL
 
 `Codex`は以下を意味しない。
 
@@ -38,7 +36,7 @@ Codexは特定のsurfaceや実行場所を意味しない。実行modeとして�
 * authorizationそのもの
 * coding可能なAI一般
 
-したがって、**roleとしてCodexを選ぶこと**と、**どのCodex execution modeを使うか**は別判断である。execution modeは、必要なrepository context、local tooling、sandbox/isolation、process identity、credentials、network capability、interactive reviewの必要性から選択する。modeを選択しただけではauthorizationは発生しない。
+したがって、**roleとしてCodexを選ぶこと**と、**どのCodex Execution Routeを使うか**は別判断である。Codex Execution Routeは、必要なrepository context、local tooling、sandbox/isolation、process identity、credentials、network capability、interactive reviewの必要性から選択する。routeを選択しただけではauthorizationは発生しない。
 
 Codexが使用するmodelはSection 3.1で別に選択する。将来、Codex以外の製品・agentをrepository execution roleへ割り当てる場合は、能力が類似しているだけで自動代替せず、本Playbookまたは`AGENTS.md`でrole mappingを明示的に更新する。
 
@@ -107,19 +105,23 @@ Purpose
 | control / decision / authorization coordination | Chat | Medium or higher when judgment is material | Low–Medium |
 | investigation / cross-document review / evidence reduction | Work | Medium; High only when materially necessary | Medium–High |
 | repository implementation / repository verification | Codex | Low for routine; Medium+ when non-trivial | Low–Medium to Medium |
+| exact authorized interactive technical operation | User Interactive Executor | Packet-defined | Packet-defined |
 | human-authority / privileged interactive operation | User | N/A | N/A |
 
-`Target Executor`としてAIへ委任するexecution stepでは、原則としてWorkまたはCodexの一方を指定する。Chatはcontrol plane、Userはhuman authority planeとして扱う。
+1 execution stepの`Target Executor`には、Work、Codex、User Interactive Executorのいずれか一つだけを指定する。Chatはcontrol plane、Userはhuman authority planeとして扱う。
 
-#### Step 2 — Codexを選んだ場合にexecution modeを決める
+User Interactive Technical Executionは、`Target Executor: User Interactive Executor`のstepで、Userが指定されたinteractive execution contextを通じてexact authorized technical operationを実行するmechanismである。新しいRouteではなく、Route A / B / Cを変更しない。
 
-| Codex execution mode | 選択目的 | 典型的に重視するもの |
+このmechanismは、packetに記載されたexact operation、execution context、Authorization Basis、authorized use count、consumption boundaryで制御する。利用可能性、interactiveであること、prior successから、別operation、別context、別use、別stepへのauthorization portabilityを推定しない。不明または曖昧な場合はexecution前にSAFE-STOPする。
+
+#### Step 2 — Codexを選んだ場合にCodex Execution Routeを決める
+
+| Codex Execution Route | 選択目的 | 典型的に重視するもの |
 |---|---|---|
 | **Codex Cloud** | self-containedなrepository taskを隔離・委任して実行したい | sandbox/isolation、再現可能な環境、非対話的な委任 |
-| **Codex IDE extension (VS Code等)** | 現在のlocal workspaceやIDE contextを使い、Userが近接してreviewしながら進めたい | local files/tooling、IDE context、interactive supervision |
-| **Codex CLI / local** | terminal中心のlocal repository作業を直接扱いたい | local shell/toolchain、command-centric workflow |
+| **VS Code Codex LOCAL** | 現在のlocal workspaceとVS Code Codex contextを使い、Userが近接してreviewしながら進めたい | local files/tooling、IDE context、interactive supervision |
 
-この表は優劣ではなく**目的適合性**を示す。実際のcapabilityはexecution contextごとに確認する。Cloudで可能な操作がIDE/CLIで同じとは限らず、その逆も同様である。
+`Target Executor: Codex`のpacketは、`Codex Execution Route: VS Code Codex LOCAL | Codex Cloud`からexactly oneを必須指定する。genericな`Codex`だけの指定はincompleteとしてdelegation前にSAFE-STOPする。この選択はauthorizationを発生させず、実際のcapabilityはexecution contextごとに確認する。
 
 #### Step 3 — Reasoningを独立して選ぶ
 
@@ -134,7 +136,7 @@ Purpose
 * Prefer direct **Chat -> Codex** when Work would not materially improve correctness or safety.
 * Use Work when cross-document reading, evidence reduction, or independent analysis materially improves the next decision or instruction packet.
 * Use the Codex execution mode that provides the required context with the least unnecessary transfer or duplication.
-* Do not choose Work, Codex Cloud, IDE/CLI, or a higher reasoning level merely because more capability is available.
+* Do not choose Work, Codex Cloud, VS Code Codex LOCAL, User Interactive Executor, or a higher reasoning level merely because more capability is available.
 * `Token profile` is a relative planning heuristic, not a quota or completion criterion.
 
 ---
@@ -162,7 +164,7 @@ Purpose
 * repository横断分析
 * 実装前evidence収集
 
-原則: 1 execution stepにつきTarget ExecutorはWorkまたはCodexの一方。WorkからCodexへ直接hand-offしない。
+原則: 1 execution stepにつきTarget ExecutorはWork、Codex、User Interactive Executorのいずれか一つ。WorkからCodexへ直接hand-offしない。
 
 ### Route C — Governance / Authorization / SAFE-STOP
 
@@ -210,7 +212,20 @@ Workは次stepを承認せず、Codexへ直接hand-offしない。
 * authorized read-only Git inspection
 * 結果返却
 
-CodexはCloud / IDE / CLI等のexecution modeから、taskに必要なcontextとcapabilityに適したmodeを選ぶ。modeはinstruction packetの`Execution Context`で必要に応じて明示する。Codexは設計・認可を推測で補わない。
+CodexをTarget Executorとするpacketは、`Codex Execution Route`に`VS Code Codex LOCAL`または`Codex Cloud`の一方を必ず明示する。指定がなければdelegation前にSAFE-STOPする。Codexは設計・認可を推測で補わない。
+
+### User Interactive Executor
+
+目的: packetで厳密に限定された **User Interactive Technical Execution**。
+
+* exact authorized technical operationのみ実行
+* packet指定のinteractive execution contextのみ使用
+* authorized use countとconsumption boundaryを遵守
+* required evidenceをChatへ返却
+* authorization判断、scope拡張、authorization portabilityの推定を行わない
+* Git inspection、Git mutation、authenticated Git operationsを行わない
+
+User Interactive Executorは既存のexecution-context safety rejectionを迂回しない。特にSchema-4 Experiment executionに対するCodex LOCAL safety rejectionとNO-GOは、別途解決・認可されない限り維持する。
 
 ### User
 
@@ -227,6 +242,7 @@ CodexはCloud / IDE / CLI等のexecution modeから、taskに必要なcontextと
 Task:
 Route:
 Target Executor:
+Codex Execution Route:  # Target Executor = Codexの場合: VS Code Codex LOCAL | Codex Cloud
 
 Current Valid State:
 Authorization Basis:
@@ -235,6 +251,7 @@ Execution Route:
   Chat:
   Work:
   Codex:
+  User Interactive Executor:
   User:
 
 Execution Context:
@@ -251,11 +268,12 @@ Return Format:
 記述ルール:
 
 * `Task` — 1 execution stepで達成する1目的
-* `Target Executor` — WorkまたはCodexの一方のみ
+* `Target Executor` — Work、Codex、User Interactive Executorのいずれか一つのみ
+* `Codex Execution Route` — Target ExecutorがCodexなら`VS Code Codex LOCAL`または`Codex Cloud`の一方を必須指定。genericな`Codex`のみはincompleteとしてSAFE-STOP
 * `Current Valid State` — 次stepに必要な現行状態のみ。superseded / stale stateを含めない
-* `Authorization Basis` — authorizer、exact operation、scope、validity、unused / consumed / expired / non-reusableを必要に応じて明示。不要なら`Not required for this step`
+* `Authorization Basis` — authorizer、exact operation、scope、validity、authorized use count、consumption boundary、unused / consumed / expired / non-reusableを必要に応じて明示。不要なら`Not required for this step`
 * `Execution Route` — 未使用roleは`Not used`
-* `Execution Context` — identity / repository / profile / sandboxが結果へ影響するときに記載。不要なら`Not applicable`
+* `Execution Context` — authorized operationのexecution contextを特定し、identity / repository / profile / sandboxが結果へ影響するときは明示。不要なら`Not applicable`
 * `Scope Out` — 関連するNO-GO / SAFE-STOPを必要に応じて再掲
 * `Authorized Actions` — 狭義に列挙。未記載operationを推定しない
 * `Prohibited Actions` — task固有で誤実行riskが高い事項を明示。`AGENTS.md`全文を複製しない
@@ -323,6 +341,7 @@ git diff --check
 
 Git mutationとauthenticated Git operationsはUser routeへ渡す。
 Work / Codexはpacket-authorized read-only inspectionのみ実行する。
+User Interactive ExecutorにはGit authorityを付与せず、read-only Git inspectionも委任しない。
 
 ChatからUserへの標準形式:
 

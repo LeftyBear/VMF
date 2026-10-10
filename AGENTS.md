@@ -207,6 +207,7 @@ Execution selection SHALL be **purpose-first**. The purpose of the step determin
 * **Control / decision / authorization coordination** -> **Chat**
 * **Investigation / cross-document review / evidence reduction** -> **Work**
 * **Repository execution / implementation / repository verification** -> **Codex**
+* **Authorized interactive technical operation performed by the User in the specified execution context** -> **User Interactive Executor**
 * **Human-authority or privileged interactive operation** -> **User**
 
 Responsibilities remain separate:
@@ -214,9 +215,14 @@ Responsibilities remain separate:
 * **Chat** — coordinates the route, prepares instructions, evaluates returned results, and compresses the current valid state
 * **Work** — performs only delegated investigation or document work and returns evidence and findings to Chat; it MUST NOT authorize subsequent execution
 * **Codex** — performs only delegated repository work and verification within scope
+* **User Interactive Executor** — performs only the exact authorized technical operation through the specified interactive execution context and returns the required evidence; it does not make authorization decisions
 * **User** — owns decisions requiring human authority and performs Git mutation and authenticated Git operations
 
-Within this guide, **Codex** is the **logical VMF repository-execution role implemented through an OpenAI Codex agent**. It is **not a single product surface or execution location**. The role MAY be realized through Codex Cloud, a Codex IDE extension such as VS Code, Codex CLI/local execution, or another explicitly recognized Codex execution mode.
+User Interactive Technical Execution is an execution mechanism available to a step whose named Target Executor is `User Interactive Executor`. It is not a new Route and does not alter Route A, Route B, or Route C.
+
+User Interactive Technical Execution MUST be controlled by the exact operation, execution context, authorization basis, authorized use count, and consumption boundary stated in the instruction packet. Its availability, interactivity, or prior success does not make authorization portable to another operation, context, use, or step. Missing or ambiguous control information SHALL result in SAFE-STOP before execution.
+
+Within this guide, **Codex** is the **logical VMF repository-execution role implemented through an OpenAI Codex agent**. It is **not a single product surface or execution location**. For delegated VMF work, the role SHALL be realized through one of the two recognized Codex Execution Routes: `VS Code Codex LOCAL` or `Codex Cloud`.
 
 The following are separate dimensions and MUST NOT be conflated with the Codex role:
 
@@ -228,11 +234,17 @@ The following are separate dimensions and MUST NOT be conflated with the Codex r
 * capability
 * authorization
 
-The actual Codex execution mode and execution context SHALL be identified when filesystem access, repository state, process identity, credentials, network capability, or sandbox boundaries materially affect the task. Selecting Codex Cloud, VS Code, CLI, or another mode does not itself grant authorization or imply equivalent capabilities.
+When the Target Executor is `Codex`, the instruction packet MUST contain a `Codex Execution Route` with exactly one of these values:
+
+```text
+VS Code Codex LOCAL | Codex Cloud
+```
+
+Generic `Codex` without an explicit Codex Execution Route is incomplete and SHALL result in SAFE-STOP before delegation. Selecting a Codex Execution Route does not itself grant authorization or imply equivalent capabilities. The execution context SHALL additionally identify any filesystem, repository-state, process-identity, credential, network, or sandbox facts that materially affect the task.
 
 Work MUST NOT hand off directly to Codex. Chat SHALL evaluate and compress Work results before any subsequent Codex delegation.
 
-A delegated execution step MUST have one named Target Executor. Capability does not imply authorization.
+A delegated execution step MUST have exactly one named Target Executor: `Work`, `Codex`, or `User Interactive Executor`. Capability does not imply authorization.
 
 Handoffs SHALL carry only the current valid state required for the next step. Superseded decisions, stale evidence, and unnecessary transcript history MUST NOT be represented as current state.
 
@@ -257,14 +269,21 @@ Authorization MUST be interpreted narrowly: an unlisted operation is not authori
 For delegated work, the instruction packet MUST make the following unambiguous:
 
 * the named Target Executor for the single execution step
+* the Codex Execution Route when the Target Executor is Codex
 * the current valid state, excluding superseded or stale state
-* the authorization basis, including scope and whether it is unused, consumed, expired, or otherwise non-reusable
-* execution context where capability or identity matters
+* the authorization basis, including the exact operation, scope, authorized use count, consumption boundary, and whether it is unused, consumed, expired, or otherwise non-reusable
+* the execution context in which the operation is authorized, including capability or identity facts where material
 * Scope In and Scope Out
 * explicitly authorized and prohibited actions
 * required verification and stop conditions
 
-Verification authority does not authorize a prohibited or separately gated operation. A recommended next step returned by Work or Codex is advisory only and does not authorize that step.
+Verification authority does not authorize a prohibited or separately gated operation. A recommended next step returned by any Target Executor is advisory only and does not authorize that step.
+
+An authorization is not portable across Target Executors, execution contexts, operations, or uses unless that portability is explicit. Each authorized use SHALL be consumed at the packet-defined boundary. An unclear use count or consumption boundary SHALL result in SAFE-STOP.
+
+User Interactive Technical Execution does not grant Git authority. A User Interactive Executor MUST NOT perform Git inspection, Git mutation, or authenticated Git operations unless a higher-priority project rule is formally amended to authorize that exact class of operation. Under the current Git Policy, packet-authorized read-only Git inspection remains limited to Work or Codex, and Git mutation and authenticated Git operations remain User responsibilities.
+
+User Interactive Technical Execution MUST NOT be used to bypass an existing execution-context safety rejection. In particular, the existing Codex LOCAL safety rejection and NO-GO for Schema-4 Experiment execution remain unchanged unless separately resolved and authorized through the applicable process.
 
 The following require explicit authorization for the applicable operation and scope:
 
@@ -429,6 +448,7 @@ The AI MUST NOT claim completion when a required check has failed or remains unj
 
 Git mutation and authenticated Git operations are User responsibilities.
 Work and Codex MUST NOT execute them.
+User Interactive Executor receives no Git authority by virtue of its role or execution mechanism.
 
 Work or Codex MAY perform only packet-authorized read-only Git inspection when named as the Target Executor.
 Permitted examples include:
