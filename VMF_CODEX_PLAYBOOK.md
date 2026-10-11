@@ -446,3 +446,5 @@ Chatはreturned resultをそのまま次stepへ転送せず、次を確認する
 * safetyを維持しながらinstruction overheadを減らす
 
 目的はAIを細かく縛ることではなく、現在のモデル能力を安全かつ効率的にVMFへ適用することである。
+
+VMF Ownerの承認権限、兼務条件および独立レビューの取扱いは、AGENTS.md第10章の『VMF Owner Authorization and Independent Review Policy』節に従う。上位規程、P9 HOLDおよび技術的実行禁止条件を優先する。

@@ -341,6 +341,24 @@ The AI MUST NOT work around a split context by:
 * selecting alternate accounts or profiles
 * weakening security controls
 
+## VMF Owner Authorization and Independent Review Policy
+
+1. VMF Ownerを、VMFプロジェクト内部の管理方針、リスク処置方針および技術実行に関する最終判断責任者とする。ただし、組織のセキュリティ規程その他の上位権限を代替しない。
+
+2. VMF Ownerは、セキュリティ審査、P9 HOLD判断、限定実行承認の各判断責任を兼務できる。ただし、既存規程に反せず、各審査の根拠と結果を個別に記録することを条件とする。
+
+3. 判断責任の兼務は、独立レビューの省略を認めるものではない。独立性を要する審査は、対象成果物の作成・実行から分離されたレビューとして実施する。
+
+4. AIによる静的レビューは判断補助資料とし、必要な人間のセキュリティ判断または組織上の承認を代替しない。
+
+5. P9におけるSecurity disposition、Continuation authorization、Evidence completion、Readinessの4レビューを維持する。
+
+6. 証拠不足、権限不明、リスク未解決の場合、既存のNO-GO / SAFE-STOPを維持する。
+
+7. 管理方針承認、リスク受容、P9 HOLD解除、実行用コードハッシュ承認、限定実行承認、個別実行指示は、それぞれ別個の判断として記録する。
+
+8. 本規定の採用のみを根拠として、既存のHOLDを解除し、禁止操作を許可し、技術的実行を開始してはならない。
+
 ---
 
 # 11. Known VMF Execution Boundaries
