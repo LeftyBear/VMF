@@ -1,450 +1,184 @@
-# VMF Codex Playbook vNext
+# VMF Local Work Playbook
 
 ## 1. 目的
 
-本Playbookは、`AGENTS.md`で定義されたVMFのAI運用原則を、Chat / Work / Codexの日常運用へ適用するための実務ガイドである。
+本Playbookは、`AGENTS.md`の安全原則を日常のVMF開発へ適用するための簡潔な運用手順である。
 
-本Playbookは主に以下を定める。
+標準運用は次の3者で構成する。
 
-* 推奨モデル・reasoning運用
-* Route選択
-* 役割分担
-* Standard Instruction Packet
-* 実行・検証手順
-* Git手動引継ぎ
-* 結果返却形式
+* **Chat** — 判断、方針決定、scope確認、結果評価
+* **Local Work** — ローカル環境での調査、設計、実装、test、build、文書編集、検証
+* **VS Code / User** — 差分確認およびGit変更操作
 
-Frozen仕様、認可、安全境界、Git禁止事項などの恒久規則は`AGENTS.md`を正典とする。
-矛盾がある場合は`AGENTS.md`およびより上位の権威ある指示を優先する。
+Codexは標準運用から外す。旧来のRoute A / B / C、Target Executor、Codex Execution Route、User Interactive Executor、承認消費回数管理は日常運用では使用しない。
 
-### 1.1 Codexの定義
+恒久的な安全境界は`AGENTS.md`を正典とし、矛盾時は`AGENTS.md`を優先する。
 
-本Playbookでいう **Codex** は、VMFにおける **repository execution role** であり、その役割をOpenAI Codex agentで実現するものを指す。
+## 2. 基本方針
 
-Codexは単一のsurfaceや実行場所を意味しない。delegated VMF workでは、次のCodex Execution Routeの一方を取る。
+* 1依頼1目的を基本とする
+* 必要なauthoritative sourceとaffected filesを先に確認する
+* Frozen仕様と公開contractを維持する
+* requested scope内で最小変更を行う
+* userの既存変更を保護する
+* Focused Verificationから開始する
+* testを弱めず、失敗や未確認事項を隠さない
+* credential、外部service、実データを安全に扱う
+* 変更はuncommittedのままUserへ返す
+* 結果報告は短く、判断に必要なevidenceは省略しない
 
-* Codex Cloud
-* VS Code Codex LOCAL
+## 3. 標準ワークフロー
 
-`Codex`は以下を意味しない。
+### 3.1 Chat
 
-* underlying model名
-* reasoning level
-* terminal / shellそのもの
-* process identityまたはUser identity
-* capabilityそのもの
-* authorizationそのもの
-* coding可能なAI一般
+Chatは依頼を判断し、必要に応じて次を明確化する。
 
-したがって、**roleとしてCodexを選ぶこと**と、**どのCodex Execution Routeを使うか**は別判断である。Codex Execution Routeは、必要なrepository context、local tooling、sandbox/isolation、process identity、credentials、network capability、interactive reviewの必要性から選択する。routeを選択しただけではauthorizationは発生しない。
+* Task / purpose
+* Scope In / Scope Out
+* authoritative source
+* acceptance conditions
+* verification
+* stop conditions
+* P9 SAFE-STOPまたは高リスク操作との接触有無
 
-Codexが使用するmodelはSection 3.1で別に選択する。将来、Codex以外の製品・agentをrepository execution roleへ割り当てる場合は、能力が類似しているだけで自動代替せず、本Playbookまたは`AGENTS.md`でrole mappingを明示的に更新する。
+通常開発では、簡潔な依頼文で十分である。固定headingをすべて埋めるinstruction packetやexecutor選択は不要とする。
 
----
+### 3.2 Local Work
 
-## 2. 基本運用
+Local Workはrequested scope内で次を一連の作業として実施できる。
 
-* 1依頼1目的
-* 必要なfileだけ確認する
-* current valid stateだけを引き継ぐ
-* 既存patternを優先する
-* Focused Verificationを先に行う
-* 不要な再読・再調査を避ける
-* 結果報告は短く、必要なevidenceは省略しない
+1. 必要な調査と設計
+2. 最小限の実装または文書編集
+3. Focused Test / static check
+4. 影響範囲に応じたUnit / Integration Test
+5. 必要なbuild / format / lint
+6. workspace diffの確認
+7. 結果、変更、検証、残課題の返却
 
-モデル能力やreasoning性能が向上しても、`AGENTS.md`の仕様・認可・安全境界は変わらない。
+調査、編集、test、build、文書更新へ進むたびにUser承認を取り直さない。通常開発の依頼は、この一連のLocal Workを包括承認する。
 
----
+ただし、scope拡張、Frozen仕様変更、materialなarchitecture判断、高リスク操作、またはP9 SAFE-STOP対象への接触が必要になった時点で停止してChatへ戻す。
 
-## 3. 推奨実行設定
+### 3.3 VS Code / User
 
-### 3.1 Model
+UserはVS Codeで変更差分を確認し、必要なGit操作を行う。
 
-既定は、その時点でVMF作業に利用可能な高性能コーディングモデルとする。
-モデル名は運用設定であり、恒久規則ではない。
+Local WorkはGit変更操作を実行しない。必要な場合は、対象file、operation、precondition、expected result、stop conditionを短いhandoffとして提示する。
 
-### 3.2 Reasoning
+## 4. 承認境界
 
-必要な最小レベルから開始する。
+### 4.1 包括承認される通常開発
+
+依頼scope内では、次を都度承認なしで実行できる。
+
+* read-only調査
+* 設計と分析
+* source / test / local fixture / documentationの編集
+* focused test、unit test、必要なintegration test
+* local build、format、lint、非破壊的な検証
+* read-only Git inspectionと差分確認
+
+### 4.2 個別承認が必要な操作
+
+次は実行前にUserの個別承認を必要とする。
+
+* stage、unstage、commit、amend、merge、rebase、reset、tag、push等のGit mutation
+* authenticated Git operation
+* release、publish、deploy、`dist/`またはrelease packageの変更
+* 破壊的または復旧困難な操作
+* 外部repository、live service、production data、shared remote documentの変更
+* credential、authentication、account、ACL、ownership、sandbox、security controlの変更
+* flagged / quarantined executableの実行
+* NO-GO / SAFE-STOP対象のtechnical execution
+
+個別承認はoperationとscopeを特定する。通常開発には承認のuse countやconsumption trackingを設けない。Userが明示的にsingle-useまたは期限を指定した場合だけ、その条件を記録する。
+
+## 5. P9 SAFE-STOP
+
+未解決のP9 security対象は通常開発から切り分け、**NO-GO / SAFE-STOP**を維持する。
+
+影響対象を実行、変更、package化、公開、または依存しない通常開発は継続できる。通常開発の包括承認、他領域のtest成功、static review、文書作成、一般的なowner承認はP9 HOLDを解除しない。
+
+次は独立した判断として扱う。
+
+* design / document acceptance
+* evidence sufficiency
+* security-risk disposition
+* SAFE-STOP release
+* specific technical execution authorization
+* release / publication authorization
+
+P9対象またはcontainmentへ接触する場合はtechnical execution前に停止する。解除には、必要evidenceに基づく明示的なUser判断が必要である。
+
+## 6. 変更と検証
+
+Local Workは、authoritative source、既存architecture、naming、determinism、serialization、persistence、error contract、atomicity、retry safetyを維持する。
+
+避ける事項:
+
+* unrelated refactoring
+* broad formatting
+* speculative cleanup
+* unnecessary abstraction
+* future functionality
+* dependency追加の推測実施
+* test削除、Skip追加、assertion弱体化、fixtureによるdefect隠蔽
+
+検証はriskと影響範囲に比例させる。
 
 ```text
-Low -> Medium -> High
+Focused Test / Static Check
+  -> Unit Test
+  -> relevant Integration Test
+  -> required Build / Format / Lint
+  -> Diff Review
 ```
 
-* **Low** — routine、docs-only、小規模・決定論的変更、既存patternに従う実装
-* **Medium** — 複数仕様の整合確認、境界解釈、GO / NO-GO、公開契約影響、非自明なdebugging
-* **High** — crash / persistence consistency、retry safety、複雑なstate transition、conflict / partial-failure、複数安全境界
+全taskで全項目を機械的に要求しない。docs-only taskでは無関係なbuildを要求しない。実施check、結果、warning / error、未実施checkと理由を報告する。
 
-Route Cは少なくともMedium相当とする。
-明示的なreasoning設定がない環境では、同等のreview depthを分析・検証で確保する。
-High / maximumを既定にしない。
+## 7. Git handoff
 
-### 3.3 Speed
+Git mutationとauthenticated Git operationはUserがVS Codeで行う。
 
-Speedは運用設定として扱い、taskの正確性・verification・安全境界を弱めない範囲で選択する。
-判断密度が高い作業では速度より正確性を優先する。
-
-### 3.4 Purpose-First Execution Selection
-
-実行先は、次の順序で選択する。
-
-```text
-Purpose
-  -> Role / Target
-  -> Execution Mode / Context
-  -> Reasoning Depth
-  -> Token Profile
-```
-
-製品surface、reasoning、token効率から先に実行先を決めない。
-
-#### Step 1 — Purposeからroleを決める
-
-| Execution purpose | Primary role / target | Typical reasoning | Token profile |
-|---|---|---|---|
-| control / decision / authorization coordination | Chat | Medium or higher when judgment is material | Low–Medium |
-| investigation / cross-document review / evidence reduction | Work | Medium; High only when materially necessary | Medium–High |
-| repository implementation / repository verification | Codex | Low for routine; Medium+ when non-trivial | Low–Medium to Medium |
-| exact authorized interactive technical operation | User Interactive Executor | Packet-defined | Packet-defined |
-| human-authority / privileged interactive operation | User | N/A | N/A |
-
-1 execution stepの`Target Executor`には、Work、Codex、User Interactive Executorのいずれか一つだけを指定する。Chatはcontrol plane、Userはhuman authority planeとして扱う。
-
-User Interactive Technical Executionは、`Target Executor: User Interactive Executor`のstepで、Userが指定されたinteractive execution contextを通じてexact authorized technical operationを実行するmechanismである。新しいRouteではなく、Route A / B / Cを変更しない。
-
-このmechanismは、packetに記載されたexact operation、execution context、Authorization Basis、authorized use count、consumption boundaryで制御する。利用可能性、interactiveであること、prior successから、別operation、別context、別use、別stepへのauthorization portabilityを推定しない。不明または曖昧な場合はexecution前にSAFE-STOPする。
-
-#### Step 2 — Codexを選んだ場合にCodex Execution Routeを決める
-
-| Codex Execution Route | 選択目的 | 典型的に重視するもの |
-|---|---|---|
-| **Codex Cloud** | self-containedなrepository taskを隔離・委任して実行したい | sandbox/isolation、再現可能な環境、非対話的な委任 |
-| **VS Code Codex LOCAL** | 現在のlocal workspaceとVS Code Codex contextを使い、Userが近接してreviewしながら進めたい | local files/tooling、IDE context、interactive supervision |
-
-`Target Executor: Codex`のpacketは、`Codex Execution Route: VS Code Codex LOCAL | Codex Cloud`からexactly oneを必須指定する。genericな`Codex`だけの指定はincompleteとしてdelegation前にSAFE-STOPする。この選択はauthorizationを発生させず、実際のcapabilityはexecution contextごとに確認する。
-
-#### Step 3 — Reasoningを独立して選ぶ
-
-* Routine repository work: **Codex / Low**
-* Non-trivial repository work: **Codex / Medium**
-* Cross-document investigation: **Work / Medium**
-* Complex cross-document or safety analysis: **Work / High only when necessary**
-* Governance / authorization decision: **Chat / Medium or higher**
-
-#### Step 4 — Token効率を最適化する
-
-* Prefer direct **Chat -> Codex** when Work would not materially improve correctness or safety.
-* Use Work when cross-document reading, evidence reduction, or independent analysis materially improves the next decision or instruction packet.
-* Use the Codex execution mode that provides the required context with the least unnecessary transfer or duplication.
-* Do not choose Work, Codex Cloud, VS Code Codex LOCAL, User Interactive Executor, or a higher reasoning level merely because more capability is available.
-* `Token profile` is a relative planning heuristic, not a quota or completion criterion.
-
----
-
-## 4. Route
-
-### Route A — Normal Development
-
-対象:
-
-* 小規模実装
-* bug fix
-* Focused Test追加
-* docs-only更新
-* 既存patternに従う変更
-
-原則: 最小探索、Codex単独委任を基本、Focused Verification優先。
-
-### Route B — Investigation / Cross-Document Review
-
-対象:
-
-* 大規模調査
-* 複数文書の整合確認
-* repository横断分析
-* 実装前evidence収集
-
-原則: 1 execution stepにつきTarget ExecutorはWork、Codex、User Interactive Executorのいずれか一つ。WorkからCodexへ直接hand-offしない。
-
-### Route C — Governance / Authorization / SAFE-STOP
-
-対象:
-
-* GO / NO-GO
-* SAFE-STOP
-* security / release / evidence判断
-* authorization確認
-* credential / execution-context境界
-
-原則: Medium以上。Current Valid StateとAuthorization Basisを明示し、不明・期限切れ・消費済み・再利用不能なevidenceはfail closed。
-
-Route選択は既存のNO-GO / SAFE-STOPを解除しない。
-
----
-
-## 5. 役割
-
-### Chat
-
-* Route選択
-* current valid state圧縮
-* instruction packet作成
-* Work / Codex結果評価
-* authorization gate管理
-* Userへのmanual Git handoff
-
-### Work
-
-* 委任された調査
-* 文書横断review
-* evidence整理
-* docs-only分析
-
-Workは次stepを承認せず、Codexへ直接hand-offしない。
-
-### Codex
-
-目的: **repository execution**。
-
-* 委任されたrepository作業
-* 実装・test追加
-* authorized verification
-* authorized read-only Git inspection
-* 結果返却
-
-CodexをTarget Executorとするpacketは、`Codex Execution Route`に`VS Code Codex LOCAL`または`Codex Cloud`の一方を必ず明示する。指定がなければdelegation前にSAFE-STOPする。Codexは設計・認可を推測で補わない。
-
-### User Interactive Executor
-
-目的: packetで厳密に限定された **User Interactive Technical Execution**。
-
-* exact authorized technical operationのみ実行
-* packet指定のinteractive execution contextのみ使用
-* authorized use countとconsumption boundaryを遵守
-* required evidenceをChatへ返却
-* authorization判断、scope拡張、authorization portabilityの推定を行わない
-* Git inspection、Git mutation、authenticated Git operationsを行わない
-
-User Interactive Executorは既存のexecution-context safety rejectionを迂回しない。特にSchema-4 Experiment executionに対するCodex LOCAL safety rejectionとNO-GOは、別途解決・認可されない限り維持する。
-
-### User
-
-* 人間判断を要する承認
-* Git mutation
-* authenticated Git operations
-* 必要なinteractive-context操作
-
----
-
-## 6. Standard Instruction Packet
-
-```text
-Task:
-Route:
-Target Executor:
-Codex Execution Route:  # Target Executor = Codexの場合: VS Code Codex LOCAL | Codex Cloud
-
-Current Valid State:
-Authorization Basis:
-
-Execution Route:
-  Chat:
-  Work:
-  Codex:
-  User Interactive Executor:
-  User:
-
-Execution Context:
-Scope In:
-Scope Out:
-Requirements:
-Authorized Actions:
-Prohibited Actions:
-Verification:
-Stop Conditions:
-Return Format:
-```
-
-記述ルール:
-
-* `Task` — 1 execution stepで達成する1目的
-* `Target Executor` — Work、Codex、User Interactive Executorのいずれか一つのみ
-* `Codex Execution Route` — Target ExecutorがCodexなら`VS Code Codex LOCAL`または`Codex Cloud`の一方を必須指定。genericな`Codex`のみはincompleteとしてSAFE-STOP
-* `Current Valid State` — 次stepに必要な現行状態のみ。superseded / stale stateを含めない
-* `Authorization Basis` — authorizer、exact operation、scope、validity、authorized use count、consumption boundary、unused / consumed / expired / non-reusableを必要に応じて明示。不要なら`Not required for this step`
-* `Execution Route` — 未使用roleは`Not used`
-* `Execution Context` — authorized operationのexecution contextを特定し、identity / repository / profile / sandboxが結果へ影響するときは明示。不要なら`Not applicable`
-* `Scope Out` — 関連するNO-GO / SAFE-STOPを必要に応じて再掲
-* `Authorized Actions` — 狭義に列挙。未記載operationを推定しない
-* `Prohibited Actions` — task固有で誤実行riskが高い事項を明示。`AGENTS.md`全文を複製しない
-* `Verification` — 必要checkのみ。verification authorityは別operationのauthorizationではない
-* `Stop Conditions` — scope逸脱、contract変更、authorization不足などのreturn-to-Chat条件
-
----
-
-## 7. Packetの簡略化
-
-Standard headingsは維持するが、内容量はRouteに合わせる。
-
-* **Route A** — 各fieldを必要最小限にする
-* **Route B** — Current Valid State / Scope / Verification / Return Formatを具体化
-* **Route C** — Current Valid State / Authorization Basis / applicable Execution Context / Scope Out / Prohibited Actions / Stop Conditionsを省略しない
-
-Route Cでは簡潔さより認可境界を優先する。
-
----
-
-## 8. Codex標準手順
-
-1. Task / Scope / Authorized Actions / Stop Conditions確認
-2. 必要なauthoritative sourceとaffected filesのみ確認
-3. 必要ならauthorized read-only Git inspection
-4. Focused change
-5. Focused Verification
-6. 必要なbroader verification
-7. diff確認
-8. 結果返却
-
-同じauthoritative fileを理由なく繰り返し読まない。
-repository-wide explorationは明示的に必要な場合に限定する。
-
----
-
-## 9. Verification
-
-標準順序:
-
-1. Focused Test / Focused static check
-2. Unit Test
-3. 必要なIntegration Test
-4. Release Build
-5. Format Check
-6. Diff Check
-
-全taskで全項目を機械的に要求しない。
-docs-onlyでは無関係なbuild未実行を理由に未完了としない。
-task-specificに指定されたverificationは省略しない。
-
-代表例:
-
-```powershell
-dotnet test <Solution> --configuration Release --filter "<Filter>"
-dotnet test <Solution> --configuration Release
-dotnet build <Solution> --configuration Release
-dotnet format <Solution> --verify-no-changes
-git diff --check
-```
-
----
-
-## 10. Git Manual Handoff
-
-Git mutationとauthenticated Git operationsはUser routeへ渡す。
-Work / Codexはpacket-authorized read-only inspectionのみ実行する。
-User Interactive ExecutorにはGit authorityを付与せず、read-only Git inspectionも委任しない。
-
-ChatからUserへの標準形式:
+必要なhandoffは次の最小形式とする。
 
 ```text
 Operation:
 Repository:
-Required Identity:
+Files / Scope:
 Preconditions:
-Command:
 Expected Result:
 Stop Conditions:
-Return Evidence:
 ```
 
-`git add .`は標準使用せず、対象fileをliteral pathで列挙する。
-stage、cached verification、commit、authentication、pushは独立gateとする。
-前step成功を次stepのauthorizationとして再利用しない。
+対象fileは可能な限りliteral pathで示し、`git add .`を標準手順にしない。stage、cached diff review、commit、authentication、push、tag、releaseは、Userが明示的にまとめて承認しない限り別操作として扱う。
 
-VMF固有のidentity、credential、split-context、`.git`境界の詳細は`AGENTS.md`を参照する。
-既知境界を自動workaroundしない。
+## 8. Credentialと外部service
 
----
+Capabilityはauthorizationではない。credential依存操作では実process identity、profile、credential store、network、sandboxを確認する。
 
-## 11. Work標準手順
+identity不明またはsplit contextが疑われる場合、credential creation / update / retrieval、browser authentication、credential-backed pushを停止する。別profileへの書込み、secret埋込み、別account選択、credential store変更、security control弱体化で回避しない。
 
-Workは調査・文書横断分析・evidence整理に使用する。
+外部integrationは既定で無効とし、個別承認がない限りFake、Stub、in-memory、dry-run、temporary directory、local fixtureを使用する。
 
-Packetでは次を明確にする。
+## 9. 結果返却
 
-* 調査対象
-* authoritative source
-* Scope Out
-* uncertaintyの扱い
-* Return Format
-
-Workはfact / inference / uncertaintyを区別して返す。
-Chatは結果から次stepに必要なcurrent valid stateだけを抽出する。
-
----
-
-## 12. Standard Return Format
+通常は次の項目だけを返す。
 
 ```text
 Result:
-Evidence:
 Changes:
 Verification:
-Uncertainties:
-Stop Conditions Triggered:
-Recommended Next Step:
+Remaining Issues:
+Git / High-Risk Actions:
 ```
 
-`Recommended Next Step`はadvisoryでありauthorizationではない。
-RoutineなRoute Aでは空sectionを省略してよい。
+空の項目は省略できる。proposal、draft、requested approval、partial evidenceをacceptedまたはcompleteとして扱わない。
 
----
+Chatは、達成状況、scope逸脱、verification、uncertainty、P9または高リスク境界を確認する。次の作業が通常開発scope内ならそのままLocal Workへ続行できる。新しい判断、高リスク操作、またはSAFE-STOP解除が必要ならUserへ戻す。
 
-## 13. Chat Result Review
+## 10. 保守方針
 
-Chatはreturned resultをそのまま次stepへ転送せず、次を確認する。
+本Playbookは運用文書として更新できるが、モデルや製品機能の向上だけを理由にFrozen protection、最小変更、test integrity、user change protection、credential safety、Git境界、P9 SAFE-STOPを弱めない。
 
-* Task達成
-* Scope逸脱
-* Verification
-* Uncertainty / Stop Conditions
-* Authorization消費状況
-* 次stepへ引き継ぐCurrent Valid State
-
-確認後、必要情報だけを圧縮して新しいpacketを作成する。
-
----
-
-## 14. モデル能力向上時の見直し
-
-モデルまたはthinking機能が向上した場合、まず本Playbookを見直す。
-
-主な見直し対象:
-
-* 推奨model
-* reasoning既定値
-* Route別review depth
-* Packetの冗長性
-* 探索量
-* Verification効率
-* Return Format
-
-モデル能力向上だけを理由に、Frozen protection、authorization、Git、credential、SAFE-STOP、external-service safetyを変更しない。
-恒久的な安全境界変更が必要な場合のみ`AGENTS.md`改訂を検討する。
-
----
-
-## 15. 保守方針
-
-本Playbookは運用文書として、モデル・製品機能・実行環境に応じて更新してよい。
-
-更新時は:
-
-* `AGENTS.md`と矛盾させない
-* 恒久規則を重複再定義しない
-* obsoleteなモデル名・機能を残さない
-* 不要になった手順を削除する
-* safetyを維持しながらinstruction overheadを減らす
-
-目的はAIを細かく縛ることではなく、現在のモデル能力を安全かつ効率的にVMFへ適用することである。
-
-VMF Ownerの承認権限、兼務条件および独立レビューの取扱いは、AGENTS.md第10章の『VMF Owner Authorization and Independent Review Policy』節に従う。上位規程、P9 HOLDおよび技術的実行禁止条件を優先する。
+目的は、通常開発ではLocal Workへ十分な自律性を与え、Gitと高リスク操作ではUserの明示的統制を維持することである。
