@@ -431,22 +431,21 @@ internal static class CliApplication
 
             var image = block.Image
                 ?? throw new InvalidOperationException("An image block requires image content.");
+            ImageMetadata metadata;
             if (previewUpdatePathGuard is not null && image.Source is LocalImageSource local)
             {
-                previewUpdatePathGuard.Validate(local.Path, markdownPath);
+                metadata = await new PreviewUpdateLocalImageReader(previewUpdatePathGuard)
+                    .ReadAsync(local, markdownPath, cancellationToken).ConfigureAwait(false);
             }
-
-            var resolved = await services.ImageSourceResolver.ResolveAsync(
-                image.Source,
-                markdownPath,
-                cancellationToken).ConfigureAwait(false);
-            if (previewUpdatePathGuard is not null && resolved is LocalImageSource resolvedLocal)
+            else
             {
-                previewUpdatePathGuard.ValidateResolved(resolvedLocal.Path, markdownPath);
+                var resolved = await services.ImageSourceResolver.ResolveAsync(
+                    image.Source,
+                    markdownPath,
+                    cancellationToken).ConfigureAwait(false);
+                metadata = await services.ImageMetadataReader.ReadAsync(resolved, cancellationToken)
+                    .ConfigureAwait(false);
             }
-
-            var metadata = await services.ImageMetadataReader.ReadAsync(resolved, cancellationToken)
-                .ConfigureAwait(false);
             var size = services.ImageSizeCalculator.Calculate(metadata);
             blocks.Add(new DocumentBlock(
                 new ImageBlock(

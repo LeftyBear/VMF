@@ -148,6 +148,28 @@ public sealed class CliApplicationTests
     }
 
     [Fact]
+    public async Task RunAsync_PreviewUpdatePreparesLocalImage()
+    {
+        using var capture = new ConsoleCapture();
+        var directory = Path.Combine(Path.GetTempPath(), $"vmf-publisher-preview-image-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            var markdown = Path.Combine(directory, "document.md");
+            await File.WriteAllTextAsync(markdown, "![image](image.gif)\n");
+            await File.WriteAllBytesAsync(Path.Combine(directory, "image.gif"),
+                "GIF89a"u8.ToArray().Concat(new byte[] { 1, 0, 2, 0 }).ToArray());
+            Assert.Equal(0, await CliApplication.RunAsync(["preview-update", markdown], CancellationToken.None));
+            Assert.Equal("PREVIEW_UPDATE_SUCCEEDED", LastJsonLine(capture.Error).GetProperty("code").GetString());
+            Assert.DoesNotContain(directory, capture.Error, StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Fact]
     public async Task RunAsync_DryRunStillPreparesLocalImages()
     {
         using var capture = new ConsoleCapture();
