@@ -371,7 +371,7 @@ public sealed class WindowsHandleRelativeFileOpenerReparsePointTests : IDisposab
         }
     }
 
-    [Fact(Skip = "Requires Windows symbolic-link creation privilege; run in the privileged reparse-point lane.")]
+    [WindowsSymbolicLinkFact(SymbolicLinkKind.File)]
     public void OpenRead_RejectsFileSymbolicLink()
     {
         var target = CreateTarget("target/image.png");
@@ -381,7 +381,7 @@ public sealed class WindowsHandleRelativeFileOpenerReparsePointTests : IDisposab
         Assert.Throws<IOException>(() => new WindowsHandleRelativeFileOpener().OpenRead(link));
     }
 
-    [Fact(Skip = "Requires Windows symbolic-link creation privilege; run in the privileged reparse-point lane.")]
+    [WindowsSymbolicLinkFact(SymbolicLinkKind.Directory)]
     public void OpenRead_RejectsDirectorySymbolicLink()
     {
         var target = CreateTarget("target/image.png");

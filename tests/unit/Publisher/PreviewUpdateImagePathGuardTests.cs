@@ -16,7 +16,7 @@ public sealed class PreviewUpdateImagePathGuardTests
         Assert.True(File.Exists(imagePath));
     }
 
-    [Fact(Skip = "Requires Windows symbolic-link creation privilege; unavailable in this verification environment.")]
+    [WindowsSymbolicLinkFact(SymbolicLinkKind.File)]
     [Trait("Privilege", "ReparsePointCreation")]
     public void Validate_RejectsFileSymbolicLink()
     {
@@ -28,7 +28,7 @@ public sealed class PreviewUpdateImagePathGuardTests
         AssertInvalid(() => new PreviewUpdateImagePathGuard().Validate("image.png", fixture.MarkdownPath));
     }
 
-    [Fact(Skip = "Requires Windows symbolic-link creation privilege; unavailable in this verification environment.")]
+    [WindowsSymbolicLinkFact(SymbolicLinkKind.Directory)]
     [Trait("Privilege", "ReparsePointCreation")]
     public void Validate_RejectsDirectorySymbolicLink()
     {
@@ -84,7 +84,7 @@ public sealed class PreviewUpdateImagePathGuardTests
         AssertInvalid(() => new PreviewUpdateImagePathGuard().Validate("image.png", fixture.MarkdownPath));
     }
 
-    [Fact(Skip = "Requires Windows symbolic-link creation privilege; unavailable in this verification environment.")]
+    [WindowsSymbolicLinkFact(SymbolicLinkKind.File)]
     [Trait("Privilege", "ReparsePointCreation")]
     public void Validate_RejectsDanglingFileSymbolicLink()
     {
