@@ -44,6 +44,27 @@ public sealed class PreviewUpdateLocalImageReaderTests : IDisposable
     }
 
     [Theory]
+    [MemberData(nameof(ImageMetadataReaderTests.ParserCases), MemberType = typeof(ImageMetadataReaderTests))]
+    public async Task DefaultOpenerReadsSupportedImageFormats(
+        byte[] bytes, string mime, int width, int height, double x, double y)
+    {
+        var extension = mime == "image/png" ? ".png" : mime == "image/jpeg" ? ".jpg" : ".gif";
+        var path = Create(extension);
+        File.WriteAllBytes(path, bytes);
+
+        var actual = await new PreviewUpdateLocalImageReader(new())
+            .ReadAsync(new("image" + extension), Markdown, default);
+
+        Assert.Equal(mime, actual.MimeType);
+        Assert.Equal(width, actual.PixelWidth);
+        Assert.Equal(height, actual.PixelHeight);
+        Assert.Equal(x, actual.HorizontalDpi, 6);
+        Assert.Equal(y, actual.VerticalDpi, 6);
+        Assert.Equal(ImageMetadataParser.Parse(bytes, new LocalImageSource(path)).ContentHash,
+            actual.ContentHash);
+    }
+
+    [Theory]
     [MemberData(nameof(ImageMetadataReaderTests.InvalidParserCases), MemberType = typeof(ImageMetadataReaderTests))]
     public async Task InvalidBytesPreserveErrors(byte[] bytes, string code)
     {

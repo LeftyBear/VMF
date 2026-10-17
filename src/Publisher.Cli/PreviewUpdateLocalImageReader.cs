@@ -12,7 +12,7 @@ internal sealed class PreviewUpdateLocalImageReader
         Func<string, Stream>? openRead = null)
     {
         this.guard = guard;
-        this.openRead = openRead ?? File.OpenRead;
+        this.openRead = openRead ?? new WindowsHandleRelativeFileOpener().OpenRead;
     }
 
     internal async Task<ImageMetadata> ReadAsync(LocalImageSource source, string markdownPath,
