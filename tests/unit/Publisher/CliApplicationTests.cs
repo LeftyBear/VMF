@@ -8,6 +8,131 @@ namespace Vmf.Publisher.UnitTests;
 
 public sealed class CliApplicationTests
 {
+    [Theory]
+    [InlineData("preview-update", "", "PREVIEW_UPDATE_SUCCEEDED")]
+    [InlineData("preview-update", "# Title\n\nParagraph.\n", "PREVIEW_UPDATE_SUCCEEDED")]
+    [InlineData("dry-run", "# Title\n\nParagraph.\n", "DRY_RUN_SUCCEEDED")]
+    public async Task RunAsync_LocalPlanningWithoutImagesSucceeds(string command, string markdown, string code)
+    {
+        using var capture = new ConsoleCapture();
+        var path = Path.Combine(Path.GetTempPath(), $"vmf-publisher-local-plan-{Guid.NewGuid():N}.md");
+        try
+        {
+            await File.WriteAllTextAsync(path, markdown);
+            Assert.Equal(0, await CliApplication.RunAsync([command, path], CancellationToken.None));
+            Assert.Equal(code, LastJsonLine(capture.Error).GetProperty("code").GetString());
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Theory]
+    [InlineData("http://secret-host.invalid/private-image?token=secret-token")]
+    [InlineData("https://secret-host.invalid/private-image?token=secret-token")]
+    [InlineData("https://drive.google.com/uc?id=secret-file&token=secret-token")]
+    public async Task RunAsync_PreviewUpdateRejectsRemoteImagesWithoutExposingSecrets(string url)
+    {
+        using var capture = new ConsoleCapture();
+        var path = Path.Combine(Path.GetTempPath(), $"vmf-publisher-preview-{Guid.NewGuid():N}.md");
+        try
+        {
+            // A missing local image first proves the whole model is checked before image preparation.
+            await File.WriteAllTextAsync(path, $"![local](missing-image.png)\n\n![secret-alt]({url})\n");
+            Assert.Equal(1, await CliApplication.RunAsync(["preview-update", path], CancellationToken.None));
+            var summary = LastJsonLine(capture.Error);
+            Assert.Equal(PublishErrorCodes.ImageRemoteHostNotAllowed, summary.GetProperty("code").GetString());
+            Assert.Equal("Input", summary.GetProperty("classification").GetString());
+            Assert.DoesNotContain("PREVIEW_UPDATE_PLAN", capture.Error, StringComparison.Ordinal);
+            Assert.DoesNotContain("PREVIEW_UPDATE_SUMMARY", capture.Error, StringComparison.Ordinal);
+            Assert.DoesNotContain("secret", capture.Out + capture.Error, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(url, capture.Out + capture.Error, StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public void PreviewUpdateImagesRejectsGoogleDriveSourceWithoutExposingSecrets()
+    {
+        var model = new DocumentModel([new DocumentBlock(new ImageBlock(
+            "secret-alt",
+            new GoogleDriveImageSource("secret-file", new Uri("https://drive.google.com/secret"), false)))]);
+        var method = typeof(CliApplication).GetMethod("ValidatePreviewUpdateImages", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var invocation = Assert.Throws<TargetInvocationException>(() =>
+            method.Invoke(null, [model, @"C:\safe\document.md"]));
+        var exception = Assert.IsType<PublishPipelineException>(invocation.InnerException);
+        Assert.Equal(PublishErrorCodes.ImageRemoteHostNotAllowed, exception.Code);
+        Assert.DoesNotContain("secret", exception.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [InlineData(@"C:\secret\image.png")]
+    [InlineData(@"\\secret-server\secret-share\image.png")]
+    [InlineData("file:///C:/secret/image.png")]
+    [InlineData(@"..\secret\image.png")]
+    [InlineData("invalid\0secret.png")]
+    public async Task RunAsync_PreviewUpdateRejectsDisallowedLocalPathsWithoutExposingPath(string imagePath)
+    {
+        using var capture = new ConsoleCapture();
+        var directory = Path.Combine(Path.GetTempPath(), $"vmf-publisher-preview-path-{Guid.NewGuid():N}");
+        var markdownDirectory = Path.Combine(directory, "markdown");
+        var markdownPath = Path.Combine(markdownDirectory, "document.md");
+        Directory.CreateDirectory(markdownDirectory);
+        try
+        {
+            await File.WriteAllTextAsync(markdownPath, $"![image]({imagePath})\n");
+
+            Assert.Equal(1, await CliApplication.RunAsync(["preview-update", markdownPath], CancellationToken.None));
+
+            var summary = LastJsonLine(capture.Error);
+            Assert.Equal(PublishErrorCodes.ImagePathInvalid, summary.GetProperty("code").GetString());
+            Assert.Equal("Input", summary.GetProperty("classification").GetString());
+            Assert.DoesNotContain("PREVIEW_UPDATE_PLAN", capture.Error, StringComparison.Ordinal);
+            Assert.DoesNotContain("PREVIEW_UPDATE_SUMMARY", capture.Error, StringComparison.Ordinal);
+            Assert.DoesNotContain("secret", capture.Out + capture.Error, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(imagePath, capture.Out + capture.Error, StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Theory]
+    [InlineData("image.png")]
+    [InlineData(@"images\nested\image.png")]
+    [InlineData(@"images\..\image.png")]
+    public void PreviewUpdateImagesAllowsLocalPathsWithinMarkdownParent(string imagePath)
+    {
+        var model = new DocumentModel([new DocumentBlock(new ImageBlock(
+            "image",
+            new LocalImageSource(imagePath))) ]);
+        var method = typeof(CliApplication).GetMethod("ValidatePreviewUpdateImages", BindingFlags.NonPublic | BindingFlags.Static)!;
+
+        method.Invoke(null, [model, @"C:\safe\markdown\document.md"]);
+    }
+
+    [Fact]
+    public async Task RunAsync_DryRunStillPreparesLocalImages()
+    {
+        using var capture = new ConsoleCapture();
+        var path = Path.Combine(Path.GetTempPath(), $"vmf-publisher-dry-run-image-{Guid.NewGuid():N}.md");
+        try
+        {
+            await File.WriteAllTextAsync(path, $"![local](missing-{Guid.NewGuid():N}.png)\n");
+            Assert.Equal(1, await CliApplication.RunAsync(["dry-run", path], CancellationToken.None));
+            Assert.Equal("PUBLISHER_ERROR", LastJsonLine(capture.Error).GetProperty("code").GetString());
+            Assert.Equal("Internal", LastJsonLine(capture.Error).GetProperty("classification").GetString());
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
     [Fact]
     public async Task RunAsync_HelpReturnsSuccessAndStructuredSummary()
     {

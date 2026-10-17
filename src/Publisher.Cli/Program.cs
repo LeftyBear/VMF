@@ -276,7 +276,20 @@ internal static class CliApplication
         ValidateMarkdownPath(arguments[1]);
 
         logger.SetContext("planner", "compile");
-        var compiled = await CompileAsync(arguments[1], settings.Publisher, cancellationToken).ConfigureAwait(false);
+        CompiledDocument compiled;
+        try
+        {
+            compiled = await CompileAsync(arguments[1], settings.Publisher, cancellationToken, rejectRemoteImages: true).ConfigureAwait(false);
+        }
+        catch (PublishPipelineException exception) when (
+            exception.Code is PublishErrorCodes.ImageRemoteHostNotAllowed or PublishErrorCodes.ImagePathInvalid)
+        {
+            return CliResult.Failure(
+                ExitPublishFailed,
+                exception.Code,
+                SafeMessage(ErrorClassification.Input),
+                ErrorClassification.Input);
+        }
 
         logger.PreviewUpdatePlan(compiled);
         logger.PreviewUpdateSummary(compiled);
@@ -354,19 +367,86 @@ internal static class CliApplication
     private static async Task<CompiledDocument> CompileAsync(
         string markdownPath,
         PublisherOptions options,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool rejectRemoteImages = false)
     {
         using var imageHttpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
         var services = CreateLocalServices(options, imageHttpClient);
         var markdown = await new MarkdownFileDocumentLoader()
             .LoadAsync(markdownPath, cancellationToken).ConfigureAwait(false);
+        var parsed = services.Parser.Parse(markdown);
+        if (rejectRemoteImages)
+        {
+            ValidatePreviewUpdateImages(parsed, markdownPath);
+        }
+
         var model = await PrepareImagesAsync(
-            services.Parser.Parse(markdown),
+            parsed,
             markdownPath,
             services,
             cancellationToken).ConfigureAwait(false);
         return services.Compiler.Compile(model, Path.GetFileNameWithoutExtension(markdownPath));
     }
+
+    private static void ValidatePreviewUpdateImages(DocumentModel model, string markdownPath)
+    {
+        foreach (var image in model.Blocks.Select(block => block.Image).Where(image => image is not null))
+        {
+            if (image!.Source is RemoteImageSource or GoogleDriveImageSource)
+            {
+                throw new PublishPipelineException(
+                    PublishErrorCodes.ImageRemoteHostNotAllowed,
+                    "Remote images are not allowed in preview-update.");
+            }
+
+            if (image.Source is LocalImageSource local)
+            {
+                ValidatePreviewUpdateLocalImagePath(local.Path, markdownPath);
+            }
+        }
+    }
+
+    private static void ValidatePreviewUpdateLocalImagePath(string imagePath, string markdownPath)
+    {
+        try
+        {
+            if (Uri.TryCreate(imagePath, UriKind.Absolute, out var uri) && uri.IsFile)
+            {
+                throw InvalidPreviewUpdateImagePath();
+            }
+
+            if (Path.IsPathRooted(imagePath) || Path.IsPathFullyQualified(imagePath))
+            {
+                throw InvalidPreviewUpdateImagePath();
+            }
+
+            var markdownFullPath = Path.GetFullPath(markdownPath);
+            var baseDirectory = Path.GetDirectoryName(markdownFullPath)
+                ?? throw new InvalidOperationException("Markdown path has no parent directory.");
+            var normalizedBase = Path.TrimEndingDirectorySeparator(Path.GetFullPath(baseDirectory));
+            var normalizedImage = Path.GetFullPath(imagePath, normalizedBase);
+            var basePrefix = normalizedBase + Path.DirectorySeparatorChar;
+            if (!normalizedImage.StartsWith(basePrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                throw InvalidPreviewUpdateImagePath();
+            }
+        }
+        catch (PublishPipelineException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is ArgumentException or NotSupportedException or
+            PathTooLongException or IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            throw InvalidPreviewUpdateImagePath(exception);
+        }
+    }
+
+    private static PublishPipelineException InvalidPreviewUpdateImagePath(Exception? innerException = null) =>
+        new(
+            PublishErrorCodes.ImagePathInvalid,
+            "Local image path is invalid for preview-update.",
+            innerException);
 
     private static async Task<DocumentModel> PrepareImagesAsync(
         DocumentModel model,
