@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Vmf.Publisher.UnitTests;
 
+[Trait("Privilege", "StandardUser")]
 public sealed class WindowsHandleRelativeFileOpenerTests : IDisposable
 {
     private readonly string root = Path.Combine(Path.GetTempPath(), "vmf-b3-" + Guid.NewGuid().ToString("N"));
@@ -33,55 +34,27 @@ public sealed class WindowsHandleRelativeFileOpenerTests : IDisposable
         Assert.False(File.Exists(path));
     }
 
-    [Fact]
-    public void NativeLayoutsMatchWindowsAbi()
+    [Theory]
+    [InlineData(4)]
+    [InlineData(8)]
+    public void NativeLayoutsMatchWindowsAbiForX86AndX64(int pointerSize)
     {
-        var owner = typeof(WindowsHandleRelativeFileOpener);
-        var unicodeString = Nested(owner, "UnicodeString");
-        var objectAttributes = Nested(owner, "ObjectAttributes");
-        var ioStatusBlock = Nested(owner, "IoStatusBlock");
+        var owner = typeof(WindowsNativeFile);
+        var unicodeString = Nested(owner, nameof(WindowsNativeFile.UnicodeString));
+        var objectAttributes = Nested(owner, nameof(WindowsNativeFile.ObjectAttributes));
+        var ioStatusBlock = Nested(owner, nameof(WindowsNativeFile.IoStatusBlock));
 
-        AssertLayout(unicodeString, IntPtr.Size == 8 ? 16 : 8,
-            ("Length", 0), ("MaximumLength", 2), ("Buffer", IntPtr.Size == 8 ? 8 : 4));
-        AssertLayout(objectAttributes, IntPtr.Size == 8 ? 48 : 24,
+        AssertPortableLayout(unicodeString, pointerSize, pointerSize == 8 ? 16 : 8,
+            ("Length", 0), ("MaximumLength", 2), ("Buffer", pointerSize == 8 ? 8 : 4));
+        AssertPortableLayout(objectAttributes, pointerSize, pointerSize == 8 ? 48 : 24,
             ("Length", 0),
-            ("RootDirectory", IntPtr.Size == 8 ? 8 : 4),
-            ("ObjectName", IntPtr.Size == 8 ? 16 : 8),
-            ("Attributes", IntPtr.Size == 8 ? 24 : 12),
-            ("SecurityDescriptor", IntPtr.Size == 8 ? 32 : 16),
-            ("SecurityQualityOfService", IntPtr.Size == 8 ? 40 : 20));
-        AssertLayout(ioStatusBlock, IntPtr.Size == 8 ? 16 : 8,
-            ("Status", 0), ("Information", IntPtr.Size));
-    }
-
-    [Fact]
-    public void OpenRead_RejectsJunction()
-    {
-        var target = Path.Combine(root, "target");
-        Directory.CreateDirectory(target);
-        Write("target/image.png", [1]);
-        var junction = Path.Combine(root, "images");
-        CreateJunction(junction, target);
-
-        Assert.Throws<IOException>(() =>
-            new WindowsHandleRelativeFileOpener().OpenRead(Path.Combine(junction, "image.png")));
-
-        Directory.Delete(junction);
-    }
-
-    [Fact]
-    public void OpenRead_RejectsAncestorJunction()
-    {
-        var target = Path.Combine(root, "target");
-        Directory.CreateDirectory(Path.Combine(target, "nested"));
-        Write("target/nested/image.png", [1]);
-        var junction = Path.Combine(root, "ancestor");
-        CreateJunction(junction, target);
-
-        Assert.Throws<IOException>(() => new WindowsHandleRelativeFileOpener().OpenRead(
-            Path.Combine(junction, "nested", "image.png")));
-
-        Directory.Delete(junction);
+            ("RootDirectory", pointerSize == 8 ? 8 : 4),
+            ("ObjectName", pointerSize == 8 ? 16 : 8),
+            ("Attributes", pointerSize == 8 ? 24 : 12),
+            ("SecurityDescriptor", pointerSize == 8 ? 32 : 16),
+            ("SecurityQualityOfService", pointerSize == 8 ? 40 : 20));
+        AssertPortableLayout(ioStatusBlock, pointerSize, pointerSize == 8 ? 16 : 8,
+            ("Status", 0), ("Information", pointerSize));
     }
 
     [Fact]
@@ -227,13 +200,128 @@ public sealed class WindowsHandleRelativeFileOpenerTests : IDisposable
         owner.GetNestedType(name, BindingFlags.NonPublic) ??
         throw new InvalidOperationException($"Missing nested type {name}.");
 
-    private static void AssertLayout(Type type, int size, params (string Name, int Offset)[] fields)
+    private static void AssertPortableLayout(Type type, int pointerSize, int size,
+        params (string Name, int Offset)[] fields)
     {
-        Assert.Equal(size, Marshal.SizeOf(type));
+        var actual = CalculateSequentialLayout(type, pointerSize);
+        Assert.Equal(size, actual.Size);
         foreach (var (name, offset) in fields)
         {
-            Assert.Equal(offset, Marshal.OffsetOf(type, name).ToInt32());
+            Assert.Equal(offset, actual.Offsets[name]);
         }
+
+        if (pointerSize == IntPtr.Size)
+        {
+            Assert.Equal(size, Marshal.SizeOf(type));
+            foreach (var (name, offset) in fields)
+            {
+                Assert.Equal(offset, Marshal.OffsetOf(type, name).ToInt32());
+            }
+        }
+    }
+
+    private static (int Size, Dictionary<string, int> Offsets) CalculateSequentialLayout(
+        Type type, int pointerSize)
+    {
+        var offsets = new Dictionary<string, int>();
+        var position = 0;
+        var maximumAlignment = 1;
+        foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+                     .OrderBy(field => field.MetadataToken))
+        {
+            var size = field.FieldType == typeof(IntPtr) || field.FieldType == typeof(UIntPtr)
+                ? pointerSize
+                : Marshal.SizeOf(field.FieldType);
+            var alignment = Math.Min(size, 8);
+            maximumAlignment = Math.Max(maximumAlignment, alignment);
+            position = Align(position, alignment);
+            offsets.Add(field.Name, position);
+            position += size;
+        }
+
+        return (Align(position, maximumAlignment), offsets);
+    }
+
+    private static int Align(int value, int alignment) =>
+        checked((value + alignment - 1) / alignment * alignment);
+}
+
+[Trait("Privilege", "ReparsePointCreation")]
+public sealed class WindowsHandleRelativeFileOpenerReparsePointTests : IDisposable
+{
+    private readonly string root = Path.Combine(Path.GetTempPath(), "vmf-b3-link-" + Guid.NewGuid().ToString("N"));
+
+    public WindowsHandleRelativeFileOpenerReparsePointTests() => Directory.CreateDirectory(root);
+
+    public void Dispose()
+    {
+        if (Directory.Exists(root))
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void OpenRead_RejectsJunction()
+    {
+        var target = CreateTarget("target/image.png");
+        var junction = Path.Combine(root, "images");
+        CreateJunction(junction, Path.GetDirectoryName(target)!);
+        try
+        {
+            Assert.Throws<IOException>(() =>
+                new WindowsHandleRelativeFileOpener().OpenRead(Path.Combine(junction, "image.png")));
+        }
+        finally
+        {
+            Directory.Delete(junction);
+        }
+    }
+
+    [Fact]
+    public void OpenRead_RejectsAncestorJunction()
+    {
+        CreateTarget("target/nested/image.png");
+        var junction = Path.Combine(root, "ancestor");
+        CreateJunction(junction, Path.Combine(root, "target"));
+        try
+        {
+            Assert.Throws<IOException>(() => new WindowsHandleRelativeFileOpener().OpenRead(
+                Path.Combine(junction, "nested", "image.png")));
+        }
+        finally
+        {
+            Directory.Delete(junction);
+        }
+    }
+
+    [Fact(Skip = "Requires Windows symbolic-link creation privilege; run in the privileged reparse-point lane.")]
+    public void OpenRead_RejectsFileSymbolicLink()
+    {
+        var target = CreateTarget("target/image.png");
+        var link = Path.Combine(root, "image.png");
+        File.CreateSymbolicLink(link, target);
+
+        Assert.Throws<IOException>(() => new WindowsHandleRelativeFileOpener().OpenRead(link));
+    }
+
+    [Fact(Skip = "Requires Windows symbolic-link creation privilege; run in the privileged reparse-point lane.")]
+    public void OpenRead_RejectsDirectorySymbolicLink()
+    {
+        var target = CreateTarget("target/image.png");
+        var link = Path.Combine(root, "images");
+        Directory.CreateSymbolicLink(link, Path.GetDirectoryName(target)!);
+
+        Assert.Throws<IOException>(() =>
+            new WindowsHandleRelativeFileOpener().OpenRead(Path.Combine(link, "image.png")));
+    }
+
+    private string CreateTarget(string relativePath)
+    {
+        var path = Path.Combine(root, relativePath.Replace('/', Path.DirectorySeparatorChar));
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllBytes(path, [1]);
+        return path;
     }
 
     private static void CreateJunction(string junction, string target)
@@ -248,6 +336,7 @@ public sealed class WindowsHandleRelativeFileOpenerTests : IDisposable
             CreateNoWindow = true,
         }) ?? throw new InvalidOperationException("Could not start mklink.");
         process.WaitForExit();
-        Assert.True(process.ExitCode == 0, $"Junction creation failed (exit {process.ExitCode}).");
+        Assert.True(process.ExitCode == 0,
+            $"Junction creation failed (exit {process.ExitCode}): {process.StandardError.ReadToEnd()}");
     }
 }

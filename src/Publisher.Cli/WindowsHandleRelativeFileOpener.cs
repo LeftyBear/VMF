@@ -1,26 +1,12 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
+using static WindowsNativeFile;
 
 // Opens every path element relative to an already-open directory handle. Reparse points are
 // opened themselves and rejected, so neither validation nor the final file open follows them.
 internal sealed class WindowsHandleRelativeFileOpener
 {
-    private const uint GenericRead = 0x80000000;
-    private const uint FileReadAttributes = 0x00000080;
-    private const uint Synchronize = 0x00100000;
-    private const uint ObjCaseInsensitive = 0x00000040;
-    private const uint FileAttributeReparsePoint = 0x00000400;
-    private const uint FileFlagBackupSemantics = 0x02000000;
-    private const uint FileFlagOpenReparsePoint = 0x00200000;
-    private const uint OpenExisting = 3;
-    private const uint FileOpen = 1;
-    private const uint FileDirectoryFile = 0x00000001;
-    private const uint FileNonDirectoryFile = 0x00000040;
-    private const uint FileOpenReparsePoint = 0x00200000;
-    private const uint FileSynchronousIoNonAlert = 0x00000020;
-    private const int FileAttributeTagInfo = 9;
-
     private readonly Action? parentOpened;
 
     internal WindowsHandleRelativeFileOpener(Action? parentOpened = null) =>
@@ -162,7 +148,7 @@ internal sealed class WindowsHandleRelativeFileOpener
             if (status < 0)
             {
                 handle?.Dispose();
-                var error = unchecked((int)RtlNtStatusToDosError(status));
+                var error = NtStatusToWin32Error(status);
                 throw new IOException("A path element could not be opened.", new Win32Exception(error));
             }
 
@@ -177,6 +163,12 @@ internal sealed class WindowsHandleRelativeFileOpener
 
             Marshal.FreeHGlobal(nameBuffer);
         }
+    }
+
+    private static int NtStatusToWin32Error(int status)
+    {
+        var error = RtlNtStatusToDosError(status);
+        return error > int.MaxValue ? unchecked((int)error) : (int)error;
     }
 
     private static void RejectReparsePoint(SafeFileHandle handle)
@@ -198,71 +190,4 @@ internal sealed class WindowsHandleRelativeFileOpener
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    private struct UnicodeString
-    {
-        internal ushort Length;
-        internal ushort MaximumLength;
-        internal IntPtr Buffer;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct ObjectAttributes
-    {
-        internal int Length;
-        internal IntPtr RootDirectory;
-        internal IntPtr ObjectName;
-        internal uint Attributes;
-        internal IntPtr SecurityDescriptor;
-        internal IntPtr SecurityQualityOfService;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct IoStatusBlock
-    {
-        internal IntPtr Status;
-        internal nuint Information;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct FileAttributeTagInformation
-    {
-        internal uint FileAttributes;
-        internal uint ReparseTag;
-    }
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern SafeFileHandle CreateFileW(
-        string fileName,
-        uint desiredAccess,
-        FileShare shareMode,
-        IntPtr securityAttributes,
-        uint creationDisposition,
-        uint flagsAndAttributes,
-        IntPtr templateFile);
-
-    [DllImport("ntdll.dll")]
-    private static extern int NtCreateFile(
-        out SafeFileHandle fileHandle,
-        uint desiredAccess,
-        ref ObjectAttributes objectAttributes,
-        out IoStatusBlock ioStatusBlock,
-        IntPtr allocationSize,
-        uint fileAttributes,
-        FileShare shareAccess,
-        uint createDisposition,
-        uint createOptions,
-        IntPtr eaBuffer,
-        uint eaLength);
-
-    [DllImport("ntdll.dll")]
-    private static extern uint RtlNtStatusToDosError(int status);
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GetFileInformationByHandleEx(
-        SafeFileHandle fileHandle,
-        int fileInformationClass,
-        out FileAttributeTagInformation fileInformation,
-        uint bufferSize);
 }

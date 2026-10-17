@@ -17,6 +17,7 @@ public sealed class PreviewUpdateImagePathGuardTests
     }
 
     [Fact(Skip = "Requires Windows symbolic-link creation privilege; unavailable in this verification environment.")]
+    [Trait("Privilege", "ReparsePointCreation")]
     public void Validate_RejectsFileSymbolicLink()
     {
         using var fixture = new PathFixture();
@@ -28,6 +29,7 @@ public sealed class PreviewUpdateImagePathGuardTests
     }
 
     [Fact(Skip = "Requires Windows symbolic-link creation privilege; unavailable in this verification environment.")]
+    [Trait("Privilege", "ReparsePointCreation")]
     public void Validate_RejectsDirectorySymbolicLink()
     {
         using var fixture = new PathFixture();
@@ -39,6 +41,7 @@ public sealed class PreviewUpdateImagePathGuardTests
     }
 
     [Fact]
+    [Trait("Privilege", "ReparsePointCreation")]
     public void Validate_RejectsJunction()
     {
         using var fixture = new PathFixture();
@@ -52,6 +55,7 @@ public sealed class PreviewUpdateImagePathGuardTests
     }
 
     [Fact]
+    [Trait("Privilege", "ReparsePointCreation")]
     public void Validate_RejectsMarkdownDirectoryThatIsJunction()
     {
         using var fixture = new PathFixture(createMarkdownDirectory: false);
@@ -64,6 +68,7 @@ public sealed class PreviewUpdateImagePathGuardTests
     }
 
     [Fact]
+    [Trait("Privilege", "ReparsePointCreation")]
     public void Validate_RejectsMarkdownAncestorThatIsJunction()
     {
         using var fixture = new PathFixture(createMarkdownDirectory: false);
@@ -80,6 +85,7 @@ public sealed class PreviewUpdateImagePathGuardTests
     }
 
     [Fact(Skip = "Requires Windows symbolic-link creation privilege; unavailable in this verification environment.")]
+    [Trait("Privilege", "ReparsePointCreation")]
     public void Validate_RejectsDanglingFileSymbolicLink()
     {
         using var fixture = new PathFixture();
