@@ -137,6 +137,34 @@ public sealed class PreviewUpdateImagePathGuardTests
         AssertInvalid(() => guard.Validate("dangling.png", fixture.MarkdownPath));
     }
 
+    [Fact]
+    public void Validate_InjectedFileSymlinkAttributeRejectsExistingLeaf()
+    {
+        using var fixture = new PathFixture();
+        var image = fixture.CreateFile("image.png");
+        var guard = new PreviewUpdateImagePathGuard(path =>
+            string.Equals(path, image, StringComparison.OrdinalIgnoreCase)
+                ? FileAttributes.Normal | FileAttributes.ReparsePoint
+                : File.GetAttributes(path));
+
+        AssertInvalid(() => guard.Validate("image.png", fixture.MarkdownPath));
+    }
+
+    [Fact]
+    public void Validate_InjectedDirectorySymlinkAttributeRejectsAncestor()
+    {
+        using var fixture = new PathFixture();
+        var directory = Path.Combine(fixture.MarkdownDirectory, "images");
+        Directory.CreateDirectory(directory);
+        fixture.CreateFile("images/image.png");
+        var guard = new PreviewUpdateImagePathGuard(path =>
+            string.Equals(path, directory, StringComparison.OrdinalIgnoreCase)
+                ? FileAttributes.Directory | FileAttributes.ReparsePoint
+                : File.GetAttributes(path));
+
+        AssertInvalid(() => guard.Validate("images/image.png", fixture.MarkdownPath));
+    }
+
     private static void AssertInvalid(Action action)
     {
         var exception = Assert.Throws<PublishPipelineException>(action);

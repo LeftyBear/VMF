@@ -120,7 +120,83 @@ public sealed class WindowsHandleRelativeFileOpenerTests : IDisposable
 
         var native = Assert.IsType<Win32Exception>(error.InnerException);
         Assert.Equal(2, native.NativeErrorCode);
+        Assert.DoesNotContain("missing.png", error.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(parent, error.Message, StringComparison.OrdinalIgnoreCase);
         Directory.Move(parent, Path.Combine(root, "moved"));
+    }
+
+    [Fact]
+    public void OpenRead_InjectedFileReparseAttributeIsRejectedWithoutPathDetails()
+    {
+        var path = Write("images/image.png", [1]);
+        var relative = Path.GetFullPath(path)[Path.GetPathRoot(path)!.Length..];
+        var expectedInspections = relative.Split(
+            [Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar],
+            StringSplitOptions.RemoveEmptyEntries).Length + 1;
+        var inspections = 0;
+        var opener = new WindowsHandleRelativeFileOpener(
+            getAttributeTagInformation: _ =>
+            {
+                inspections++;
+                return new WindowsNativeFile.FileAttributeTagInformation
+                {
+                    FileAttributes = inspections == expectedInspections
+                        ? WindowsNativeFile.FileAttributeReparsePoint
+                        : 0,
+                };
+            });
+
+        var error = Assert.Throws<IOException>(() => opener.OpenRead(path));
+
+        Assert.Equal(expectedInspections, inspections);
+        Assert.Equal("A reparse point was rejected.", error.Message);
+        Assert.DoesNotContain(path, error.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void OpenRead_InjectedDirectoryReparseAttributeStopsBeforeFileOpen()
+    {
+        var path = Write("images/image.png", [1]);
+        var relative = Path.GetFullPath(path)[Path.GetPathRoot(path)!.Length..];
+        var fileInspection = relative.Split(
+            [Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar],
+            StringSplitOptions.RemoveEmptyEntries).Length + 1;
+        var directoryInspection = fileInspection - 1;
+        var inspections = 0;
+        var opener = new WindowsHandleRelativeFileOpener(
+            getAttributeTagInformation: _ =>
+            {
+                inspections++;
+                return new WindowsNativeFile.FileAttributeTagInformation
+                {
+                    FileAttributes = inspections == directoryInspection
+                        ? WindowsNativeFile.FileAttributeReparsePoint
+                        : 0,
+                };
+            });
+
+        var error = Assert.Throws<IOException>(() => opener.OpenRead(path));
+
+        Assert.Equal(directoryInspection, inspections);
+        Assert.Equal("A reparse point was rejected.", error.Message);
+        Assert.DoesNotContain(path, error.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void OpenRead_InjectedAttributeInspectionFailurePreservesGenericDiagnostic()
+    {
+        var path = Write("images/image.png", [1]);
+        var failure = new IOException("A path element could not be inspected.",
+            new Win32Exception(5, "secret-path-details"));
+        var opener = new WindowsHandleRelativeFileOpener(
+            getAttributeTagInformation: _ => throw failure);
+
+        var error = Assert.Throws<IOException>(() => opener.OpenRead(path));
+
+        Assert.Same(failure, error);
+        Assert.Equal("A path element could not be inspected.", error.Message);
+        Assert.DoesNotContain("secret", error.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(path, error.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

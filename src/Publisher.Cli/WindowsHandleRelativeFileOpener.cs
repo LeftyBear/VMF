@@ -8,9 +8,15 @@ using static WindowsNativeFile;
 internal sealed class WindowsHandleRelativeFileOpener
 {
     private readonly Action? parentOpened;
+    private readonly Func<SafeFileHandle, FileAttributeTagInformation> getAttributeTagInformation;
 
-    internal WindowsHandleRelativeFileOpener(Action? parentOpened = null) =>
+    internal WindowsHandleRelativeFileOpener(
+        Action? parentOpened = null,
+        Func<SafeFileHandle, FileAttributeTagInformation>? getAttributeTagInformation = null)
+    {
         this.parentOpened = parentOpened;
+        this.getAttributeTagInformation = getAttributeTagInformation ?? ReadAttributeTagInformation;
+    }
 
     internal Stream OpenRead(string fullPath)
     {
@@ -171,7 +177,16 @@ internal sealed class WindowsHandleRelativeFileOpener
         return error > int.MaxValue ? unchecked((int)error) : (int)error;
     }
 
-    private static void RejectReparsePoint(SafeFileHandle handle)
+    private void RejectReparsePoint(SafeFileHandle handle)
+    {
+        var information = getAttributeTagInformation(handle);
+        if ((information.FileAttributes & FileAttributeReparsePoint) != 0)
+        {
+            throw new IOException("A reparse point was rejected.");
+        }
+    }
+
+    private static FileAttributeTagInformation ReadAttributeTagInformation(SafeFileHandle handle)
     {
         if (!GetFileInformationByHandleEx(
             handle,
@@ -184,10 +199,7 @@ internal sealed class WindowsHandleRelativeFileOpener
                 new Win32Exception(Marshal.GetLastWin32Error()));
         }
 
-        if ((information.FileAttributes & FileAttributeReparsePoint) != 0)
-        {
-            throw new IOException("A reparse point was rejected.");
-        }
+        return information;
     }
 
 }
