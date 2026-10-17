@@ -210,6 +210,23 @@ public sealed class PreviewUpdateLocalImageReaderTests : IDisposable
         Assert.False(stream.CanRead);
     }
 
+    [Fact]
+    public async Task MidReadDisconnectIsBoundedAndDisposesStream()
+    {
+        Create(".gif");
+        var bytes = "GIF89a"u8.ToArray().Concat(new byte[] { 1, 0, 2, 0 }).ToArray();
+        using var stream = new DisconnectingStream(bytes, disconnectAfter: 8);
+        var reader = new PreviewUpdateLocalImageReader(new(), _ => stream);
+
+        var error = await Assert.ThrowsAsync<PublishPipelineException>(() =>
+            reader.ReadAsync(new("image.gif"), Markdown, default));
+
+        Assert.Equal(PublishErrorCodes.ImageMetadataReadFailed, error.Code);
+        Assert.Equal("Image dimensions could not be read.", error.Message);
+        Assert.DoesNotContain(Markdown, error.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.False(stream.CanRead);
+    }
+
     private sealed class SignatureStream(Exception failure) : MemoryStream
     {
         internal bool Disposed { get; private set; }
@@ -226,6 +243,20 @@ public sealed class PreviewUpdateLocalImageReaderTests : IDisposable
     {
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) =>
             base.ReadAsync(buffer[..Math.Min(buffer.Length, chunkSize)], cancellationToken);
+    }
+
+    private sealed class DisconnectingStream(byte[] bytes, int disconnectAfter) : MemoryStream(bytes)
+    {
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            if (Position >= disconnectAfter)
+            {
+                return ValueTask.FromResult(0);
+            }
+
+            var remaining = disconnectAfter - checked((int)Position);
+            return base.ReadAsync(buffer[..Math.Min(buffer.Length, remaining)], cancellationToken);
+        }
     }
 
     [Fact]

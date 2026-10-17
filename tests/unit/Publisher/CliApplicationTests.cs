@@ -170,6 +170,42 @@ public sealed class CliApplicationTests
     }
 
     [Fact]
+    public async Task RunAsync_PreviewUpdateSharingViolationDoesNotExposeNativeDetails()
+    {
+        using var capture = new ConsoleCapture();
+        var directory = Path.Combine(Path.GetTempPath(), $"vmf-publisher-preview-share-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            var markdown = Path.Combine(directory, "document.md");
+            var image = Path.Combine(directory, "private-image.gif");
+            await File.WriteAllTextAsync(markdown, "![image](private-image.gif)\n");
+            await File.WriteAllBytesAsync(image,
+                "GIF89a"u8.ToArray().Concat(new byte[] { 1, 0, 2, 0 }).ToArray());
+
+            using (File.Open(image, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+            {
+                Assert.Equal(1, await CliApplication.RunAsync(
+                    ["preview-update", markdown], CancellationToken.None));
+            }
+
+            var output = capture.Out + capture.Error;
+            var summary = LastJsonLine(capture.Error);
+            Assert.Equal(PublishErrorCodes.ImagePathInvalid, summary.GetProperty("code").GetString());
+            Assert.Equal("Input", summary.GetProperty("classification").GetString());
+            Assert.DoesNotContain(directory, output, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(image, output, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("private-image", output, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("sharing violation", output, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("Win32Exception", output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Fact]
     public async Task RunAsync_DryRunStillPreparesLocalImages()
     {
         using var capture = new ConsoleCapture();

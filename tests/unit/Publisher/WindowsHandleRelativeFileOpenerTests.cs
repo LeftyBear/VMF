@@ -118,6 +118,25 @@ public sealed class WindowsHandleRelativeFileOpenerTests : IDisposable
     }
 
     [Fact]
+    public void OpenRead_ExistingWriterIsRejectedEvenWhenItSharesReadAndWrite()
+    {
+        var path = Write("images/image.png", [1, 2, 3]);
+        var parent = Path.GetDirectoryName(path)!;
+
+        using (var writer = File.Open(path, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+        {
+            writer.Position = 0;
+            writer.Write([9, 9, 9]);
+            writer.Flush(flushToDisk: true);
+
+            Assert.Throws<IOException>(() => new WindowsHandleRelativeFileOpener().OpenRead(path));
+        }
+
+        Directory.Move(parent, Path.Combine(root, "moved"));
+        Assert.Equal([9, 9, 9], File.ReadAllBytes(Path.Combine(root, "moved", "image.png")));
+    }
+
+    [Fact]
     public void OpenRead_MissingFileConvertsNtStatusAndReleasesParentHandles()
     {
         var parent = Path.Combine(root, "images");
@@ -156,6 +175,22 @@ public sealed class WindowsHandleRelativeFileOpenerTests : IDisposable
 
         File.Move(path, path + ".moved");
         Assert.True(File.Exists(path + ".moved"));
+    }
+
+    [Fact]
+    public void OpenRead_OpenFileCannotBeModifiedUntilStreamIsDisposed()
+    {
+        var path = Write("images/image.png", [1, 2, 3]);
+
+        using (var stream = new WindowsHandleRelativeFileOpener().OpenRead(path))
+        {
+            Assert.Throws<IOException>(() => File.Open(
+                path, FileMode.Open, FileAccess.Write, FileShare.ReadWrite));
+            Assert.Equal([1, 2, 3], ReadAll(stream));
+        }
+
+        File.WriteAllBytes(path, [9, 9, 9]);
+        Assert.Equal([9, 9, 9], File.ReadAllBytes(path));
     }
 
     [Fact]
