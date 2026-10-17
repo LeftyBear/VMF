@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Cryptography;
 using Vmf.Publisher.Application;
 using Vmf.Publisher.Domain;
 using Vmf.Publisher.Infrastructure;
@@ -7,6 +8,101 @@ namespace Vmf.Publisher.UnitTests;
 
 public sealed class ImageMetadataReaderTests
 {
+    public static IEnumerable<object[]> ParserCases()
+    {
+        yield return [CreatePng(1200, 600, 3780, 7560), "image/png", 1200, 600, 96.012d, 192.024d];
+        yield return [CreatePng(1, 2, null, null), "image/png", 1, 2, 96d, 96d];
+        yield return [CreatePng(1, 2, 0, 3780), "image/png", 1, 2, 96d, 96d];
+        foreach (var signature in new[] { "GIF87a", "GIF89a" })
+        {
+            yield return [signature.Select(c => (byte)c).Concat(new byte[] { 32, 3, 88, 2 }).ToArray(),
+                "image/gif", 800, 600, 96d, 96d];
+        }
+
+        foreach (byte units in new byte[] { 0, 1, 2 })
+        {
+            byte[] jpeg =
+            [
+                0xFF, 0xD8, 0xFF, 0xE0, 0, 16,
+                (byte)'J', (byte)'F', (byte)'I', (byte)'F', 0,
+                1, 1, units, 0, 72, 0, 144, 0, 0,
+                0xFF, 0xC0, 0, 11, 8, 2, 88, 3, 32, 1, 1, 0x11, 0,
+                0xFF, 0xD9,
+            ];
+            yield return [jpeg, "image/jpeg", 800, 600,
+                units == 0 ? 96d : units == 1 ? 72d : 182.88d,
+                units == 0 ? 96d : units == 1 ? 144d : 365.76d];
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(ParserCases))]
+    public async Task Parse_UsesSuppliedBytesAndMatchesLocalReader(
+        byte[] bytes, string mimeType, int width, int height, double xDpi, double yDpi)
+    {
+        // Deliberately use an unrelated extension: metadata detection is signature-based.
+        var path = await WriteTemporaryImageAsync(".bin", bytes);
+        try
+        {
+            var source = new LocalImageSource(path);
+            var read = await CreateReader().ReadAsync(source, CancellationToken.None);
+            File.Delete(path);
+            var parsed = ImageMetadataParser.Parse(bytes, source);
+
+            foreach (var metadata in new[] { read, parsed })
+            {
+                Assert.Same(source, metadata.Source);
+                Assert.Equal(width, metadata.PixelWidth);
+                Assert.Equal(height, metadata.PixelHeight);
+                Assert.Equal(xDpi, metadata.HorizontalDpi, 6);
+                Assert.Equal(yDpi, metadata.VerticalDpi, 6);
+                Assert.Equal(mimeType, metadata.MimeType);
+                Assert.Equal("image-v1:sha256:" + Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant(),
+                    metadata.ContentHash);
+            }
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    public static IEnumerable<object[]> InvalidParserCases()
+    {
+        yield return [Array.Empty<byte>(), PublishErrorCodes.ImageFormatNotSupported];
+        yield return [new byte[] { 1, 2, 3 }, PublishErrorCodes.ImageFormatNotSupported];
+        yield return [new byte[] { 0x89, 0x50, 0x4E, 0x47, 13, 10, 26, 10 }, PublishErrorCodes.ImageMetadataReadFailed];
+        yield return [CreatePng(0, 1, null, null), PublishErrorCodes.ImageMetadataReadFailed];
+        yield return [CreatePng(1, 1, null, null)[..^1], PublishErrorCodes.ImageMetadataReadFailed];
+        yield return ["GIF89a"u8.ToArray(), PublishErrorCodes.ImageMetadataReadFailed];
+        yield return [new byte[] { 71, 73, 70, 56, 57, 97, 0, 0, 1, 0 }, PublishErrorCodes.ImageMetadataReadFailed];
+        yield return [new byte[] { 0xFF, 0xD8, 0xFF }, PublishErrorCodes.ImageMetadataReadFailed];
+        yield return [new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0, 16 }, PublishErrorCodes.ImageMetadataReadFailed];
+    }
+
+    [Theory]
+    [MemberData(nameof(InvalidParserCases))]
+    public async Task Parse_InvalidBytesPreserveReaderExceptionContract(byte[] bytes, string code)
+    {
+        var path = await WriteTemporaryImageAsync(".bin", bytes);
+        try
+        {
+            var source = new LocalImageSource(path);
+            var parsed = Assert.Throws<PublishPipelineException>(() => ImageMetadataParser.Parse(bytes, source));
+            var read = await Assert.ThrowsAsync<PublishPipelineException>(() =>
+                CreateReader().ReadAsync(source, CancellationToken.None));
+            Assert.Equal(code, parsed.Code);
+            Assert.Equal(parsed.Code, read.Code);
+            Assert.Equal(parsed.Message, read.Message);
+            Assert.Null(parsed.InnerException);
+            Assert.Null(read.InnerException);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
     [Fact]
     public async Task ReadAsync_PngReadsPixelsDpiAndMimeType()
     {
