@@ -108,12 +108,43 @@ public sealed class CliApplicationTests
     [InlineData(@"images\..\image.png")]
     public void PreviewUpdateImagesAllowsLocalPathsWithinMarkdownParent(string imagePath)
     {
+        var directory = Path.Combine(Path.GetTempPath(), $"vmf-publisher-preview-allowed-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
         var model = new DocumentModel([new DocumentBlock(new ImageBlock(
             "image",
             new LocalImageSource(imagePath))) ]);
         var method = typeof(CliApplication).GetMethod("ValidatePreviewUpdateImages", BindingFlags.NonPublic | BindingFlags.Static)!;
+        try
+        {
+            method.Invoke(null, [model, Path.Combine(directory, "document.md")]);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
 
-        method.Invoke(null, [model, @"C:\safe\markdown\document.md"]);
+    [Fact]
+    public async Task RunAsync_PreviewUpdatePreservesMissingImageResolverError()
+    {
+        using var capture = new ConsoleCapture();
+        var directory = Path.Combine(Path.GetTempPath(), $"vmf-publisher-preview-missing-{Guid.NewGuid():N}");
+        var markdownPath = Path.Combine(directory, "document.md");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            await File.WriteAllTextAsync(markdownPath, "![image](missing/image.png)\n");
+
+            Assert.Equal(1, await CliApplication.RunAsync(["preview-update", markdownPath], CancellationToken.None));
+
+            var summary = LastJsonLine(capture.Error);
+            Assert.Equal("PUBLISHER_ERROR", summary.GetProperty("code").GetString());
+            Assert.Equal("Internal", summary.GetProperty("classification").GetString());
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     }
 
     [Fact]

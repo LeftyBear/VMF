@@ -384,12 +384,14 @@ internal static class CliApplication
             parsed,
             markdownPath,
             services,
-            cancellationToken).ConfigureAwait(false);
+            cancellationToken,
+            rejectRemoteImages ? new PreviewUpdateImagePathGuard() : null).ConfigureAwait(false);
         return services.Compiler.Compile(model, Path.GetFileNameWithoutExtension(markdownPath));
     }
 
     private static void ValidatePreviewUpdateImages(DocumentModel model, string markdownPath)
     {
+        var pathGuard = new PreviewUpdateImagePathGuard();
         foreach (var image in model.Blocks.Select(block => block.Image).Where(image => image is not null))
         {
             if (image!.Source is RemoteImageSource or GoogleDriveImageSource)
@@ -401,58 +403,17 @@ internal static class CliApplication
 
             if (image.Source is LocalImageSource local)
             {
-                ValidatePreviewUpdateLocalImagePath(local.Path, markdownPath);
+                pathGuard.Validate(local.Path, markdownPath);
             }
         }
     }
-
-    private static void ValidatePreviewUpdateLocalImagePath(string imagePath, string markdownPath)
-    {
-        try
-        {
-            if (Uri.TryCreate(imagePath, UriKind.Absolute, out var uri) && uri.IsFile)
-            {
-                throw InvalidPreviewUpdateImagePath();
-            }
-
-            if (Path.IsPathRooted(imagePath) || Path.IsPathFullyQualified(imagePath))
-            {
-                throw InvalidPreviewUpdateImagePath();
-            }
-
-            var markdownFullPath = Path.GetFullPath(markdownPath);
-            var baseDirectory = Path.GetDirectoryName(markdownFullPath)
-                ?? throw new InvalidOperationException("Markdown path has no parent directory.");
-            var normalizedBase = Path.TrimEndingDirectorySeparator(Path.GetFullPath(baseDirectory));
-            var normalizedImage = Path.GetFullPath(imagePath, normalizedBase);
-            var basePrefix = normalizedBase + Path.DirectorySeparatorChar;
-            if (!normalizedImage.StartsWith(basePrefix, StringComparison.OrdinalIgnoreCase))
-            {
-                throw InvalidPreviewUpdateImagePath();
-            }
-        }
-        catch (PublishPipelineException)
-        {
-            throw;
-        }
-        catch (Exception exception) when (exception is ArgumentException or NotSupportedException or
-            PathTooLongException or IOException or UnauthorizedAccessException or InvalidOperationException)
-        {
-            throw InvalidPreviewUpdateImagePath(exception);
-        }
-    }
-
-    private static PublishPipelineException InvalidPreviewUpdateImagePath(Exception? innerException = null) =>
-        new(
-            PublishErrorCodes.ImagePathInvalid,
-            "Local image path is invalid for preview-update.",
-            innerException);
 
     private static async Task<DocumentModel> PrepareImagesAsync(
         DocumentModel model,
         string markdownPath,
         LocalPublisherServices services,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        PreviewUpdateImagePathGuard? previewUpdatePathGuard = null)
     {
         if (!model.Blocks.Any(block => block.Kind == DocumentBlockKind.Image))
         {
@@ -470,10 +431,20 @@ internal static class CliApplication
 
             var image = block.Image
                 ?? throw new InvalidOperationException("An image block requires image content.");
+            if (previewUpdatePathGuard is not null && image.Source is LocalImageSource local)
+            {
+                previewUpdatePathGuard.Validate(local.Path, markdownPath);
+            }
+
             var resolved = await services.ImageSourceResolver.ResolveAsync(
                 image.Source,
                 markdownPath,
                 cancellationToken).ConfigureAwait(false);
+            if (previewUpdatePathGuard is not null && resolved is LocalImageSource resolvedLocal)
+            {
+                previewUpdatePathGuard.ValidateResolved(resolvedLocal.Path, markdownPath);
+            }
+
             var metadata = await services.ImageMetadataReader.ReadAsync(resolved, cancellationToken)
                 .ConfigureAwait(false);
             var size = services.ImageSizeCalculator.Calculate(metadata);
